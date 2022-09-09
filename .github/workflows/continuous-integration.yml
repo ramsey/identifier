@@ -27,16 +27,16 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@2.21.2"
         with:
           php-version: "latest"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@2.1.0"
 
       - name: "Check syntax (php-parallel-lint)"
         shell: "bash"
@@ -51,16 +51,16 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@2.21.2"
         with:
           php-version: "latest"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@2.1.0"
 
       - name: "Statically analyze code (PHPStan)"
         shell: "bash"
@@ -76,23 +76,23 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@2.21.2"
         with:
           php-version: "latest"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@2.1.0"
 
       - name: "Analyze security of code (Psalm)"
         shell: "bash"
         run: "./vendor/bin/psalm --taint-analysis --report=build/logs/psalm.sarif"
 
       - name: "Upload security analysis results to GitHub"
-        uses: "github/codeql-action/upload-sarif@v1"
+        uses: "github/codeql-action/upload-sarif@v2"
         with:
           sarif_file: "build/logs/psalm.sarif"
 
@@ -102,17 +102,17 @@ jobs:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@2.21.2"
         with:
           php-version: "latest"
           coverage: "pcov"
           ini-values: "memory_limit=-1"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@2.1.0"
 
       - name: "Run unit tests (PHPUnit)"
         shell: "bash"
@@ -130,8 +130,6 @@ jobs:
       fail-fast: false
       matrix:
         php-version:
-          - "7.4"
-          - "8.0"
           - "8.1"
         operating-system:
           - "macos-latest"
@@ -150,16 +148,16 @@ jobs:
           git config --system core.eol lf
 
       - name: "Checkout repository"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@2.21.2"
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v2"
+        uses: "ramsey/composer-install@2.1.0"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
           composer-options: "${{ matrix.composer-options }}"

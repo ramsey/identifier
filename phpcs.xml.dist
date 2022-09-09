@@ -8,6 +8,14 @@
     <file>./src</file>
     <file>./tests</file>
 
-    <rule ref="Ramsey"/>
+    <rule ref="Ramsey">
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousAbstractClassNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousErrorNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousExceptionNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming"/>
+        <exclude name="SlevomatCodingStandard.Classes.SuperfluousTraitNaming"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
 
 </ruleset>
