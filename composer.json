@@ -19,7 +19,9 @@
         }
     ],
     "require": {
-        "php": "^8.1"
+        "php": "^8.1",
+        "brick/math": "^0.10.2",
+        "identifier/identifier": "dev-main"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",
@@ -52,7 +54,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ramsey\\Test\\Identifier\\": "tests/"
+            "Ramsey\\Test\\Identifier\\": "tests/unit/"
         }
     },
     "config": {
