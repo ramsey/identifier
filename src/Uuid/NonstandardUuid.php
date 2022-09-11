@@ -33,7 +33,6 @@ use function is_string;
 use function preg_match;
 use function sprintf;
 use function str_pad;
-use function str_starts_with;
 use function substr;
 use function unpack;
 
@@ -96,7 +95,7 @@ final class NonstandardUuid implements UuidInterface
         return match (true) {
             $msb === '111' => Variant::ReservedFuture,
             $msb === '110' => Variant::ReservedMicrosoft,
-            str_starts_with($msb, '10') => Variant::Rfc4122,
+            $msb === '100', $msb === '101' => Variant::Rfc4122,
             default => Variant::ReservedNcs,
         };
     }
