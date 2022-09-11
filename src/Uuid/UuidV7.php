@@ -22,49 +22,51 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use DateTimeImmutable;
+use Exception;
 use Identifier\TimeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
 use function explode;
 use function hexdec;
+use function number_format;
 use function sprintf;
 
 /**
  * @psalm-immutable
  */
-final class UuidV2 implements TimeBasedUuidInterface
+final class UuidV7 implements TimeBasedUuidInterface
 {
     use TimeBasedUuid;
 
+    /**
+     * @throws Exception When unable to create a DateTimeImmutable instance.
+     */
+    public function getDateTime(): DateTimeImmutable
+    {
+        $unixTimestamp = number_format(hexdec($this->getTimestamp()) / 1000, 6, '.', '');
+
+        return new DateTimeImmutable('@' . $unixTimestamp);
+    }
+
     public function getVersion(): Version
     {
-        return Version::DceSecurity;
+        return Version::UnixTime;
     }
 
     protected function getValidationPattern(): string
     {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-2[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
+        return '/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
     }
 
     /**
-     * Returns the full 60-bit timestamp as a hexadecimal string, without the version
-     *
-     * For version 2 UUIDs, the time_low field is the local identifier and
-     * should not be returned as part of the time. For this reason, we set the
-     * bottom 32 bits of the timestamp to 0's. As a result, there is some loss
-     * of fidelity of the timestamp, for version 2 UUIDs. The timestamp can be
-     * off by a range of 0 to 429.4967295 seconds (or 7 minutes, 9 seconds, and
-     * 496730 microseconds).
+     * Returns a 48-bit timestamp as a hexadecimal string representing the Unix
+     * Epoch in milliseconds
      */
     protected function getTimestamp(): string
     {
         $fields = explode('-', $this->uuid);
 
-        return sprintf(
-            '%03x%04s%08s',
-            hexdec($fields[2]) & 0x0fff,
-            $fields[1],
-            '',
-        );
+        return sprintf('%08s%04s', $fields[0], $fields[1]);
     }
 }
