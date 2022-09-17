@@ -23,7 +23,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use BadMethodCallException;
-use Identifier\UuidInterface;
+use Identifier\Uuid\UuidInterface;
+use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid;
 
 /**
@@ -51,9 +52,11 @@ final class MaxUuid implements UuidInterface
         $this->uuid = Uuid::MAX;
     }
 
-    public function getVariant(): never
+    public function getVariant(): Variant
     {
-        throw new BadMethodCallException('Max UUIDs do not have a variant field');
+        // Max UUIDs are defined according to the rules of RFC 4122, so they are
+        // an RFC 4122 variant of UUID.
+        return Variant::Rfc4122;
     }
 
     public function getVersion(): never

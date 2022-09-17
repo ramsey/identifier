@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use BadMethodCallException;
+use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Test\Identifier\TestCase;
@@ -132,12 +133,9 @@ class NilUuidTest extends TestCase
         ];
     }
 
-    public function testGetVariantThrowsException(): void
+    public function testGetVariant(): void
     {
-        $this->expectException(BadMethodCallException::class);
-        $this->expectExceptionMessage('Nil UUIDs do not have a variant field');
-
-        $this->nilUuid->getVariant();
+        $this->assertSame(Variant::Rfc4122, $this->nilUuid->getVariant());
     }
 
     public function testGetVersionThrowsException(): void
