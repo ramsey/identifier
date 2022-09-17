@@ -11,6 +11,7 @@ use Identifier\Uuid\Version;
 use InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Dce\Domain;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -20,7 +21,7 @@ use function unserialize;
 
 class UuidV2Test extends TestCase
 {
-    private const UUID_V2 = '27433d43-011d-2a6a-9161-1550863792c9';
+    private const UUID_V2 = '27433d43-011d-2a6a-9100-1550863792c9';
 
     private Uuid\UuidV2 $uuid;
 
@@ -40,9 +41,9 @@ class UuidV2Test extends TestCase
     public function testConstructorThrowsExceptionForInvalidUuid(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 2 UUID: "27433d43-011d-9a6a-9161-1550863792c9"');
+        $this->expectExceptionMessage('Invalid version 2 UUID: "27433d43-011d-9a6a-9100-1550863792c9"');
 
-        new Uuid\UuidV2('27433d43-011d-9a6a-9161-1550863792c9');
+        new Uuid\UuidV2('27433d43-011d-9a6a-9100-1550863792c9');
     }
 
     public function testConstructorThrowsExceptionForInvalidVariantUuid(): void
@@ -56,7 +57,7 @@ class UuidV2Test extends TestCase
     public function testSerialize(): void
     {
         $expected =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-2a6a-9161-1550863792c9";}';
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-2a6a-9100-1550863792c9";}';
         $serialized = serialize($this->uuid);
 
         $this->assertSame($expected, $serialized);
@@ -70,7 +71,7 @@ class UuidV2Test extends TestCase
     public function testUnserialize(): void
     {
         $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-2a6a-9161-1550863792c9";}';
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-2a6a-9100-1550863792c9";}';
         $uuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\UuidV2::class, $uuid);
@@ -80,7 +81,7 @@ class UuidV2Test extends TestCase
     public function testUnserializeFailsAssertionWhenUuidIsNotSet(): void
     {
         $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:3:"foo";s:36:"27433d43-011d-2a6a-9161-1550863792c9";}';
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:3:"foo";s:36:"27433d43-011d-2a6a-9100-1550863792c9";}';
 
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage('\'uuid\' is not set in serialized data');
@@ -113,11 +114,11 @@ class UuidV2Test extends TestCase
     public function testUnserializeFailsAssertionForInvalidVersionUuid(): void
     {
         $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-9a6a-9161-1550863792c9";}';
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-9a6a-9100-1550863792c9";}';
 
         $this->expectException(AssertionError::class);
         $this->expectExceptionMessage(
-            '\'uuid\' in serialized data is not a valid version 2 UUID: "27433d43-011d-9a6a-9161-1550863792c9"',
+            '\'uuid\' in serialized data is not a valid version 2 UUID: "27433d43-011d-9a6a-9100-1550863792c9"',
         );
 
         unserialize($serialized);
@@ -237,7 +238,7 @@ class UuidV2Test extends TestCase
     public function testToBytes(): void
     {
         $this->assertSame(
-            "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+            "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x91\x00\x15\x50\x86\x37\x92\xc9",
             $this->uuid->toBytes(),
         );
     }
@@ -245,7 +246,7 @@ class UuidV2Test extends TestCase
     public function testToHexadecimal(): void
     {
         $this->assertSame(
-            '27433d43011d2a6a91611550863792c9',
+            '27433d43011d2a6a91001550863792c9',
             $this->uuid->toHexadecimal(),
         );
     }
@@ -253,7 +254,7 @@ class UuidV2Test extends TestCase
     public function testToInteger(): void
     {
         $this->assertSame(
-            '52189018260751007865779497451700851401',
+            '52189018260751007865752194378959917769',
             $this->uuid->toInteger(),
         );
     }
@@ -276,5 +277,20 @@ class UuidV2Test extends TestCase
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
         $this->assertSame('3960-10-02T03:46:38+00:00', $dateTime->format('c'));
+    }
+
+    public function testGetNode(): void
+    {
+        $this->assertSame('1550863792c9', $this->uuid->getNode());
+    }
+
+    public function testGetLocalDomain(): void
+    {
+        $this->assertSame(Domain::Person, $this->uuid->getLocalDomain());
+    }
+
+    public function testGetLocalIdentifier(): void
+    {
+        $this->assertSame(658718019, $this->uuid->getLocalIdentifier());
     }
 }

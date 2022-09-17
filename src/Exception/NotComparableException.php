@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use Identifier\NotComparableExceptionInterface;
+use Identifier\Exception\NotComparableExceptionInterface;
 use RuntimeException;
 
 class NotComparableException extends RuntimeException implements

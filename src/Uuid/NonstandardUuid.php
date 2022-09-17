@@ -23,8 +23,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use BadMethodCallException;
+use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
-use Identifier\UuidInterface;
 use InvalidArgumentException;
 
 use function assert;

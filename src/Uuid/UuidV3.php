@@ -22,8 +22,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
-use Identifier\UuidInterface;
 
 /**
  * @psalm-immutable

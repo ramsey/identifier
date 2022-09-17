@@ -24,7 +24,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Exception;
-use Identifier\TimeBasedUuidInterface;
+use Identifier\Uuid\TimeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
 use function explode;

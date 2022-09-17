@@ -22,15 +22,61 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
-use Identifier\UuidInterface;
+
+use function explode;
+use function hexdec;
+use function sprintf;
+use function substr;
 
 /**
+ * Version 8, Custom UUIDs provide an RFC 4122 compatible format for
+ * experimental or vendor-specific uses
+ *
+ * The only requirement for version 8 UUIDs is that the version and variant bits
+ * must be set. Otherwise, implementations are free to set the other bits
+ * according to their needs. As a result, the uniqueness of version 8 UUIDs is
+ * implementation-specific and should not be assumed.
+ *
+ * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.3 UUID Version 8
+ *
  * @psalm-immutable
  */
 final class UuidV8 implements UuidInterface
 {
     use StandardUuid;
+
+    /**
+     * Returns the first 48 bits of the layout
+     */
+    public function getCustomFieldA(): string
+    {
+        $fields = explode('-', $this->uuid);
+
+        return sprintf('%08s%04s', $fields[0], $fields[1]);
+    }
+
+    /**
+     * Returns the 12 bits of the layout following the version bits
+     */
+    public function getCustomFieldB(): string
+    {
+        $fields = explode('-', $this->uuid);
+
+        return sprintf('%03s', substr($fields[2], 1));
+    }
+
+    /**
+     * Returns the 62 bits of the layout following the variant bits
+     */
+    public function getCustomFieldC(): string
+    {
+        $fields = explode('-', $this->uuid);
+        $clockSeqLow = hexdec($fields[3]) & 0x3fff;
+
+        return sprintf('%04x%012s', $clockSeqLow, $fields[4]);
+    }
 
     public function getVersion(): Version
     {

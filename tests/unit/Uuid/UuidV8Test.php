@@ -266,4 +266,19 @@ class UuidV8Test extends TestCase
     {
         $this->assertSame('urn:uuid:' . self::UUID_V8, $this->uuid->toUrn());
     }
+
+    public function testGetCustomFieldA(): void
+    {
+        $this->assertSame('27433d43011d', $this->uuid->getCustomFieldA());
+    }
+
+    public function testGetCustomFieldB(): void
+    {
+        $this->assertSame('a6a', $this->uuid->getCustomFieldB());
+    }
+
+    public function testGetCustomFieldC(): void
+    {
+        $this->assertSame('11611550863792c9', $this->uuid->getCustomFieldC());
+    }
 }

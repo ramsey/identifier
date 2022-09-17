@@ -275,4 +275,9 @@ class UuidV1Test extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('3960-10-02T03:47:44+00:00', $dateTime->format('c'));
     }
+
+    public function testGetNode(): void
+    {
+        $this->assertSame('1550863792c9', $this->uuid->getNode());
+    }
 }

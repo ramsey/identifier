@@ -22,39 +22,21 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\Uuid\NodeBasedUuidInterface;
-use Identifier\Uuid\Version;
-
-use function explode;
-use function hexdec;
-use function sprintf;
+use function substr;
 
 /**
  * @psalm-immutable
  */
-final class UuidV1 implements NodeBasedUuidInterface
+trait NodeBasedUuid
 {
-    use NodeBasedUuid;
+    use TimeBasedUuid;
 
-    public function getVersion(): Version
+    /**
+     * @return non-empty-string
+     */
+    public function getNode(): string
     {
-        return Version::GregorianTime;
-    }
-
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-1[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
-    }
-
-    protected function getTimestamp(): string
-    {
-        $fields = explode('-', $this->uuid);
-
-        return sprintf(
-            '%03x%04s%08s',
-            hexdec($fields[2]) & 0x0fff,
-            $fields[1],
-            $fields[0],
-        );
+        /** @var non-empty-string */
+        return substr($this->uuid, -12);
     }
 }

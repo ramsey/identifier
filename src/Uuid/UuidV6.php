@@ -22,7 +22,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\TimeBasedUuidInterface;
+use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
 use function explode;
@@ -32,9 +32,9 @@ use function sprintf;
 /**
  * @psalm-immutable
  */
-final class UuidV6 implements TimeBasedUuidInterface
+final class UuidV6 implements NodeBasedUuidInterface
 {
-    use TimeBasedUuid;
+    use NodeBasedUuid;
 
     public function getVersion(): Version
     {

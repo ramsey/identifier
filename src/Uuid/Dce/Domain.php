@@ -20,25 +20,27 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid;
-
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Version;
+namespace Ramsey\Identifier\Uuid\Dce;
 
 /**
- * @psalm-immutable
+ * DCE local domains for version 2, DCE Security UUIDs
+ *
+ * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01 DCE 1.1: Auth & Sec, §11.5.1.1
  */
-final class UuidV5 implements UuidInterface
+enum Domain: int
 {
-    use StandardUuid;
+    /**
+     * Principal domain
+     */
+    case Person = 0;
 
-    public function getVersion(): Version
-    {
-        return Version::HashSha1;
-    }
+    /**
+     * Group domain
+     */
+    case Group = 1;
 
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
-    }
+    /**
+     * Organization domain
+     */
+    case Org = 2;
 }
