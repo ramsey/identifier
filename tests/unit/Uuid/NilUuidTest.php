@@ -218,11 +218,6 @@ class NilUuidTest extends TestCase
         );
     }
 
-    public function testToRfc4122(): void
-    {
-        $this->assertSame(Uuid::NIL, $this->nilUuid->toRfc4122());
-    }
-
     public function testToUrn(): void
     {
         $this->assertSame('urn:uuid:' . Uuid::NIL, $this->nilUuid->toUrn());

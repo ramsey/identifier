@@ -218,11 +218,6 @@ class MaxUuidTest extends TestCase
         );
     }
 
-    public function testToRfc4122(): void
-    {
-        $this->assertSame(Uuid::MAX, $this->maxUuid->toRfc4122());
-    }
-
     public function testToUrn(): void
     {
         $this->assertSame('urn:uuid:' . Uuid::MAX, $this->maxUuid->toUrn());

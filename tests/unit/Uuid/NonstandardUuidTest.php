@@ -226,11 +226,6 @@ class NonstandardUuidTest extends TestCase
         );
     }
 
-    public function testToRfc4122(): void
-    {
-        $this->assertSame(self::UUID_NONSTANDARD, $this->uuid->toRfc4122());
-    }
-
     public function testToUrn(): void
     {
         $this->assertSame('urn:uuid:' . self::UUID_NONSTANDARD, $this->uuid->toUrn());

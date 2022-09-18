@@ -175,14 +175,6 @@ trait StandardUuid
     /**
      * @return non-empty-string
      */
-    public function toRfc4122(): string
-    {
-        return $this->uuid;
-    }
-
-    /**
-     * @return non-empty-string
-     */
     public function toUrn(): string
     {
         return 'urn:uuid:' . $this->uuid;

@@ -231,11 +231,6 @@ class UuidV8Test extends TestCase
         );
     }
 
-    public function testToRfc4122(): void
-    {
-        $this->assertSame(self::UUID_V8, $this->uuid->toRfc4122());
-    }
-
     public function testToUrn(): void
     {
         $this->assertSame('urn:uuid:' . self::UUID_V8, $this->uuid->toUrn());
