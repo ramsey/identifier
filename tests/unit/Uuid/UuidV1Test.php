@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use AssertionError;
 use DateTimeImmutable;
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
@@ -77,48 +76,23 @@ class UuidV1Test extends TestCase
         $this->assertSame(self::UUID_V1, (string) $uuid);
     }
 
-    public function testUnserializeFailsAssertionWhenUuidIsNotSet(): void
+    public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
     {
-        $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV1":1:{s:3:"foo";s:36:"27433d43-011d-1a6a-9161-1550863792c9";}';
+        $serialized = 'O:29:"Ramsey\\Identifier\\Uuid\\UuidV1":1:{s:4:"uuid";s:0:"";}';
 
-        $this->expectException(AssertionError::class);
-        $this->expectExceptionMessage('\'uuid\' is not set in serialized data');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 1 UUID: ""');
 
         unserialize($serialized);
     }
 
-    public function testUnserializeFailsAssertionWhenUuidIsNotAString(): void
-    {
-        $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV1":1:{s:4:"uuid";i:1234;}';
-
-        $this->expectException(AssertionError::class);
-        $this->expectExceptionMessage('\'uuid\' in serialized data is not a string');
-
-        unserialize($serialized);
-    }
-
-    public function testUnserializeFailsAssertionWhenUuidIsAnEmptyString(): void
-    {
-        $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV1":1:{s:4:"uuid";s:0:"";}';
-
-        $this->expectException(AssertionError::class);
-        $this->expectExceptionMessage('\'uuid\' in serialized data is an empty string');
-
-        unserialize($serialized);
-    }
-
-    public function testUnserializeFailsAssertionForInvalidVersionUuid(): void
+    public function testUnserializeFailsForInvalidVersionUuid(): void
     {
         $serialized =
             'O:29:"Ramsey\\Identifier\\Uuid\\UuidV1":1:{s:4:"uuid";s:36:"27433d43-011d-9a6a-9161-1550863792c9";}';
 
-        $this->expectException(AssertionError::class);
-        $this->expectExceptionMessage(
-            '\'uuid\' in serialized data is not a valid version 1 UUID: "27433d43-011d-9a6a-9161-1550863792c9"',
-        );
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 1 UUID: "27433d43-011d-9a6a-9161-1550863792c9"');
 
         unserialize($serialized);
     }

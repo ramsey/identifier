@@ -98,17 +98,9 @@ trait StandardUuid
     {
         assert(isset($data['uuid']), "'uuid' is not set in serialized data");
         assert(is_string($data['uuid']), "'uuid' in serialized data is not a string");
-        assert($data['uuid'] !== '', "'uuid' in serialized data is an empty string");
-        assert(
-            preg_match($this->getValidationPattern(), $data['uuid']) === 1,
-            sprintf(
-                "'uuid' in serialized data is not a valid version %d UUID: \"%s\"",
-                $this->getVersion()->value,
-                $data['uuid'],
-            ),
-        );
 
-        $this->uuid = $data['uuid'];
+        /** @psalm-suppress UnusedMethodCall */
+        $this->__construct($data['uuid']);
     }
 
     /**

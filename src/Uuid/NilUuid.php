@@ -25,7 +25,11 @@ namespace Ramsey\Identifier\Uuid;
 use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
+use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
+
+use function sprintf;
+use function strtolower;
 
 /**
  * The Nil UUID is a special form of UUID that is specified to have all 128
@@ -39,17 +43,16 @@ final class NilUuid implements UuidInterface
 {
     use StandardUuid;
 
-    public function __construct()
+    public function __construct(string $uuid = Uuid::NIL)
     {
-        $this->uuid = Uuid::NIL;
-    }
+        if ($uuid === '' || strtolower($uuid) !== Uuid::NIL) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid Nil UUID: "%s"',
+                $uuid,
+            ));
+        }
 
-    /**
-     * @inheritDoc
-     */
-    public function __unserialize(array $data): void
-    {
-        $this->uuid = Uuid::NIL;
+        $this->uuid = $uuid;
     }
 
     public function getVariant(): Variant

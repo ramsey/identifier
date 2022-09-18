@@ -27,9 +27,7 @@ use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 
-use function assert;
 use function decbin;
-use function is_string;
 use function preg_match;
 use function sprintf;
 use function str_pad;
@@ -55,25 +53,6 @@ final class NonstandardUuid implements UuidInterface
         }
 
         $this->uuid = $uuid;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function __unserialize(array $data): void
-    {
-        assert(isset($data['uuid']), "'uuid' is not set in serialized data");
-        assert(is_string($data['uuid']), "'uuid' in serialized data is not a string");
-        assert($data['uuid'] !== '', "'uuid' in serialized data is an empty string");
-        assert(
-            preg_match($this->getValidationPattern(), $data['uuid']) === 1,
-            sprintf(
-                "'uuid' in serialized data is not a valid nonstandard UUID: \"%s\"",
-                $data['uuid'],
-            ),
-        );
-
-        $this->uuid = $data['uuid'];
     }
 
     /**

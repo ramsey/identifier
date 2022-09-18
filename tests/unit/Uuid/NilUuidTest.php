@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use BadMethodCallException;
 use Identifier\Uuid\Variant;
+use InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Test\Identifier\TestCase;
@@ -22,6 +23,22 @@ class NilUuidTest extends TestCase
     protected function setUp(): void
     {
         $this->nilUuid = new Uuid\NilUuid();
+    }
+
+    public function testConstructorThrowsExceptionForEmptyUuid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Nil UUID: ""');
+
+        new Uuid\NilUuid('');
+    }
+
+    public function testConstructorThrowsExceptionForInvalidUuid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Nil UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+
+        new Uuid\NilUuid('a6a011d2-7433-9d43-9161-1550863792c9');
     }
 
     public function testSerialize(): void
@@ -46,6 +63,27 @@ class NilUuidTest extends TestCase
 
         $this->assertInstanceOf(Uuid\NilUuid::class, $nilUuid);
         $this->assertSame(Uuid::NIL, (string) $nilUuid);
+    }
+
+    public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
+    {
+        $serialized = 'O:30:"Ramsey\\Identifier\\Uuid\\NilUuid":1:{s:4:"uuid";s:0:"";}';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Nil UUID: ""');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsForInvalidVersionUuid(): void
+    {
+        $serialized =
+            'O:30:"Ramsey\\Identifier\\Uuid\\NilUuid":1:{s:4:"uuid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Nil UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+
+        unserialize($serialized);
     }
 
     /**

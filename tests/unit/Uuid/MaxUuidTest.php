@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use BadMethodCallException;
 use Identifier\Uuid\Variant;
+use InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Test\Identifier\TestCase;
@@ -22,6 +23,22 @@ class MaxUuidTest extends TestCase
     protected function setUp(): void
     {
         $this->maxUuid = new Uuid\MaxUuid();
+    }
+
+    public function testConstructorThrowsExceptionForEmptyUuid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Max UUID: ""');
+
+        new Uuid\MaxUuid('');
+    }
+
+    public function testConstructorThrowsExceptionForInvalidUuid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Max UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+
+        new Uuid\MaxUuid('a6a011d2-7433-9d43-9161-1550863792c9');
     }
 
     public function testSerialize(): void
@@ -46,6 +63,27 @@ class MaxUuidTest extends TestCase
 
         $this->assertInstanceOf(Uuid\MaxUuid::class, $maxUuid);
         $this->assertSame(Uuid::MAX, (string) $maxUuid);
+    }
+
+    public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
+    {
+        $serialized = 'O:30:"Ramsey\\Identifier\\Uuid\\MaxUuid":1:{s:4:"uuid";s:0:"";}';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Max UUID: ""');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsForInvalidVersionUuid(): void
+    {
+        $serialized =
+            'O:30:"Ramsey\\Identifier\\Uuid\\MaxUuid":1:{s:4:"uuid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid Max UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+
+        unserialize($serialized);
     }
 
     /**
