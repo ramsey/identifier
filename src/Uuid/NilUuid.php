@@ -29,6 +29,7 @@ use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
 use function sprintf;
+use function strlen;
 use function strtolower;
 
 /**
@@ -45,10 +46,10 @@ final class NilUuid implements UuidInterface
 
     public function __construct(string $uuid = Uuid::NIL)
     {
-        if ($uuid === '' || strtolower($uuid) !== Uuid::NIL) {
+        if (!$this->isValid($uuid)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid Nil UUID: "%s"',
-                $uuid,
+                $this->getFormat(Format::String, $uuid),
             ));
         }
 
@@ -67,11 +68,13 @@ final class NilUuid implements UuidInterface
         throw new BadMethodCallException('Nil UUIDs do not have a version field');
     }
 
-    /**
-     * @codeCoverageIgnore This code path is unreachable.
-     */
-    protected function getValidationPattern(): never
+    private function isValid(string $uuid): bool
     {
-        throw new BadMethodCallException('Nil UUIDs do not have a validation pattern');
+        return match (strlen($uuid)) {
+            36 => strtolower($uuid) === Uuid::NIL,
+            32 => strtolower($uuid) === '00000000000000000000000000000000',
+            16 => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            default => false,
+        };
     }
 }

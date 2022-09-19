@@ -28,7 +28,6 @@ use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 
 use function decbin;
-use function preg_match;
 use function sprintf;
 use function str_pad;
 use function substr;
@@ -45,10 +44,10 @@ final class NonstandardUuid implements UuidInterface
 
     public function __construct(string $uuid)
     {
-        if ($uuid === '' || !preg_match($this->getValidationPattern(), $uuid)) {
+        if (!$this->isValid($uuid)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid nonstandard UUID: "%s"',
-                $uuid,
+                $this->getFormat(Format::String, $uuid),
             ));
         }
 
@@ -84,14 +83,19 @@ final class NonstandardUuid implements UuidInterface
         throw new BadMethodCallException('Nonstandard UUIDs do not have a version field');
     }
 
-    protected function getValidationPattern(): string
+    private function isValid(string $uuid): bool
     {
-        // If the variant is anything other than RFC 4122, it is nonstandard.
-        $nonstandardGeneral = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-7c-f][0-9a-f]{3}-[0-9a-f]{12}';
+        if ($uuid === '') {
+            return false;
+        }
 
-        // If the variant is RFC 4122 but the version is 0 or 9-15, it is nonstandard.
-        $nonstandardRfc4122 = '[0-9a-f]{8}-[0-9a-f]{4}-[09a-f][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}';
+        $variant = $this->getVariantFromUuid($uuid);
+        $version = $this->getVersionFromUuid($uuid);
 
-        return '/^' . $nonstandardGeneral . '|' . $nonstandardRfc4122 . '$/Di';
+        if ($variant !== 8) {
+            return true;
+        }
+
+        return $version < 1 || $version > 8;
     }
 }

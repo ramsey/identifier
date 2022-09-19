@@ -27,10 +27,10 @@ use Exception;
 use Identifier\Uuid\TimeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
-use function explode;
 use function hexdec;
 use function number_format;
 use function sprintf;
+use function substr;
 
 /**
  * @psalm-immutable
@@ -54,19 +54,16 @@ final class UuidV7 implements TimeBasedUuidInterface
         return Version::UnixTime;
     }
 
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
-    }
-
     /**
      * Returns a 48-bit timestamp as a hexadecimal string representing the Unix
      * Epoch in milliseconds
      */
     protected function getTimestamp(): string
     {
-        $fields = explode('-', $this->uuid);
-
-        return sprintf('%08s%04s', $fields[0], $fields[1]);
+        return sprintf(
+            '%08s%04s',
+            substr($this->getFormat(Format::String, $this->uuid), 0, 8),
+            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
+        );
     }
 }

@@ -19,13 +19,19 @@ use function unserialize;
 
 class UuidV7Test extends TestCase
 {
-    private const UUID_V7 = '017F22E2-79B0-7CC3-98C4-DC0C0C07398F';
+    private const UUID_V7_STRING = '017f22e2-79b0-7cc3-98c4-dc0c0c07398f';
+    private const UUID_V7_HEX = '017f22e279b07cc398c4dc0c0c07398f';
+    private const UUID_V7_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
 
-    private Uuid\UuidV7 $uuid;
+    private Uuid\UuidV7 $uuidWithString;
+    private Uuid\UuidV7 $uuidWithHex;
+    private Uuid\UuidV7 $uuidWithBytes;
 
     protected function setUp(): void
     {
-        $this->uuid = new Uuid\UuidV7(self::UUID_V7);
+        $this->uuidWithString = new Uuid\UuidV7(self::UUID_V7_STRING);
+        $this->uuidWithHex = new Uuid\UuidV7(self::UUID_V7_HEX);
+        $this->uuidWithBytes = new Uuid\UuidV7(self::UUID_V7_BYTES);
     }
 
     public function testConstructorThrowsExceptionForEmptyUuid(): void
@@ -36,44 +42,118 @@ class UuidV7Test extends TestCase
         new Uuid\UuidV7('');
     }
 
-    public function testConstructorThrowsExceptionForInvalidUuid(): void
+    public function testConstructorThrowsExceptionForInvalidStringUuid(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 7 UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-9cc3-98c4-dc0c0c07398f"');
 
-        new Uuid\UuidV7('a6a011d2-7433-9d43-9161-1550863792c9');
+        new Uuid\UuidV7('017f22e2-79b0-9cc3-98c4-dc0c0c07398f');
     }
 
-    public function testConstructorThrowsExceptionForInvalidVariantUuid(): void
+    public function testConstructorThrowsExceptionForInvalidHexUuid(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 7 UUID: "a6a011d2-7433-7d43-c161-1550863792c9"');
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-9cc3-98c4-dc0c0c07398f"');
 
-        new Uuid\UuidV7('a6a011d2-7433-7d43-c161-1550863792c9');
+        new Uuid\UuidV7('017f22e279b09cc398c4dc0c0c07398f');
     }
 
-    public function testSerialize(): void
+    public function testConstructorThrowsExceptionForInvalidBytesUuid(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-9cc3-98c4-dc0c0c07398f"');
+
+        new Uuid\UuidV7("\x01\x7f\x22\xe2\x79\xb0\x9c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f");
+    }
+
+    public function testConstructorThrowsExceptionForInvalidVariantUuidString(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-7cc3-c8c4-dc0c0c07398f"');
+
+        new Uuid\UuidV7('017f22e2-79b0-7cc3-c8c4-dc0c0c07398f');
+    }
+
+    public function testConstructorThrowsExceptionForInvalidVariantUuidHex(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-7cc3-c8c4-dc0c0c07398f"');
+
+        new Uuid\UuidV7('017f22e279b07cc3c8c4dc0c0c07398f');
+    }
+
+    public function testConstructorThrowsExceptionForInvalidVariantUuidBytes(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid version 7 UUID: "017f22e2-79b0-7cc3-c8c4-dc0c0c07398f"');
+
+        new Uuid\UuidV7("\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\xc8\xc4\xdc\x0c\x0c\x07\x39\x8f");
+    }
+
+    public function testSerializeForString(): void
     {
         $expected =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:36:"017F22E2-79B0-7CC3-98C4-DC0C0C07398F";}';
-        $serialized = serialize($this->uuid);
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:36:"017f22e2-79b0-7cc3-98c4-dc0c0c07398f";}';
+        $serialized = serialize($this->uuidWithString);
+
+        $this->assertSame($expected, $serialized);
+    }
+
+    public function testSerializeForHex(): void
+    {
+        $expected =
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:32:"017f22e279b07cc398c4dc0c0c07398f";}';
+        $serialized = serialize($this->uuidWithHex);
+
+        $this->assertSame($expected, $serialized);
+    }
+
+    public function testSerializeForBytes(): void
+    {
+        $expected =
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:16:'
+            . "\"\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f\";}";
+        $serialized = serialize($this->uuidWithBytes);
 
         $this->assertSame($expected, $serialized);
     }
 
     public function testCastsToString(): void
     {
-        $this->assertSame(self::UUID_V7, (string) $this->uuid);
+        $this->assertSame(self::UUID_V7_STRING, (string) $this->uuidWithString);
+        $this->assertSame(self::UUID_V7_STRING, (string) $this->uuidWithHex);
+        $this->assertSame(self::UUID_V7_STRING, (string) $this->uuidWithBytes);
     }
 
-    public function testUnserialize(): void
+    public function testUnserializeForString(): void
     {
         $serialized =
-            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:36:"017F22E2-79B0-7CC3-98C4-DC0C0C07398F";}';
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:36:"017f22e2-79b0-7cc3-98c4-dc0c0c07398f";}';
         $uuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\UuidV7::class, $uuid);
-        $this->assertSame(self::UUID_V7, (string) $uuid);
+        $this->assertSame(self::UUID_V7_STRING, (string) $uuid);
+    }
+
+    public function testUnserializeForHex(): void
+    {
+        $serialized =
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:32:"017f22e279b07cc398c4dc0c0c07398f";}';
+        $uuid = unserialize($serialized);
+
+        $this->assertInstanceOf(Uuid\UuidV7::class, $uuid);
+        $this->assertSame(self::UUID_V7_STRING, (string) $uuid);
+    }
+
+    public function testUnserializeForBytes(): void
+    {
+        $serialized =
+            'O:29:"Ramsey\\Identifier\\Uuid\\UuidV7":1:{s:4:"uuid";s:16:'
+            . "\"\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f\";}";
+        $uuid = unserialize($serialized);
+
+        $this->assertInstanceOf(Uuid\UuidV7::class, $uuid);
+        $this->assertSame(self::UUID_V7_STRING, (string) $uuid);
     }
 
     public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
@@ -102,7 +182,9 @@ class UuidV7Test extends TestCase
      */
     public function testCompareTo(mixed $other, int $expected): void
     {
-        $this->assertSame($expected, $this->uuid->compareTo($other));
+        $this->assertSame($expected, $this->uuidWithString->compareTo($other));
+        $this->assertSame($expected, $this->uuidWithHex->compareTo($other));
+        $this->assertSame($expected, $this->uuidWithBytes->compareTo($other));
     }
 
     /**
@@ -117,8 +199,11 @@ class UuidV7Test extends TestCase
             'with string' => ['foobar', -1],
             'with string Nil UUID' => [Uuid::NIL, 1],
             'with string Nil UUID all caps' => [strtoupper(Uuid::NIL), 1],
-            'with same string UUID' => [self::UUID_V7, 0],
-            'with same string UUID all caps' => [strtoupper(self::UUID_V7), 0],
+            'with same string UUID' => [self::UUID_V7_STRING, 0],
+            'with same string UUID all caps' => [strtoupper(self::UUID_V7_STRING), 0],
+            'with same hex UUID' => [self::UUID_V7_HEX, 0],
+            'with same hex UUID all caps' => [strtoupper(self::UUID_V7_HEX), 0],
+            'with same bytes UUID' => [self::UUID_V7_BYTES, 0],
             'with string Max UUID' => [Uuid::MAX, -1],
             'with string Max UUID all caps' => [strtoupper(Uuid::MAX), -1],
             'with bool true' => [true, -1],
@@ -132,8 +217,23 @@ class UuidV7Test extends TestCase
                 },
                 -1,
             ],
+            'with Stringable class returning UUID bytes' => [
+                new class (self::UUID_V7_BYTES) {
+                    public function __construct(private readonly string $uuidBytes)
+                    {
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->uuidBytes;
+                    }
+                },
+                0,
+            ],
             'with NilUuid' => [new Uuid\NilUuid(), 1],
-            'with same UuidV7' => [new Uuid\UuidV7(self::UUID_V7), 0],
+            'with UuidV7 from string' => [new Uuid\UuidV7(self::UUID_V7_STRING), 0],
+            'with UuidV7 from hex' => [new Uuid\UuidV7(self::UUID_V7_HEX), 0],
+            'with UuidV7 from bytes' => [new Uuid\UuidV7(self::UUID_V7_BYTES), 0],
             'with MaxUuid' => [new Uuid\MaxUuid(), -1],
         ];
     }
@@ -143,7 +243,7 @@ class UuidV7Test extends TestCase
         $this->expectException(NotComparableException::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
-        $this->uuid->compareTo([]);
+        $this->uuidWithString->compareTo([]);
     }
 
     /**
@@ -151,7 +251,9 @@ class UuidV7Test extends TestCase
      */
     public function testEquals(mixed $other, bool $expected): void
     {
-        $this->assertSame($expected, $this->uuid->equals($other));
+        $this->assertSame($expected, $this->uuidWithString->equals($other));
+        $this->assertSame($expected, $this->uuidWithHex->equals($other));
+        $this->assertSame($expected, $this->uuidWithBytes->equals($other));
     }
 
     /**
@@ -166,8 +268,11 @@ class UuidV7Test extends TestCase
             'with string' => ['foobar', false],
             'with string Nil UUID' => [Uuid::NIL, false],
             'with string Nil UUID all caps' => [strtoupper(Uuid::NIL), false],
-            'with same string UUID' => [self::UUID_V7, true],
-            'with same string UUID all caps' => [strtoupper(self::UUID_V7), true],
+            'with same string UUID' => [self::UUID_V7_STRING, true],
+            'with same string UUID all caps' => [strtoupper(self::UUID_V7_STRING), true],
+            'with same hex UUID' => [self::UUID_V7_HEX, true],
+            'with same hex UUID all caps' => [strtoupper(self::UUID_V7_HEX), true],
+            'with same bytes UUID' => [self::UUID_V7_BYTES, true],
             'with string Max UUID' => [Uuid::MAX, false],
             'with string Max UUID all caps' => [strtoupper(Uuid::MAX), false],
             'with bool true' => [true, false],
@@ -181,8 +286,23 @@ class UuidV7Test extends TestCase
                 },
                 false,
             ],
+            'with Stringable class returning UUID bytes' => [
+                new class (self::UUID_V7_BYTES) {
+                    public function __construct(private readonly string $uuidBytes)
+                    {
+                    }
+
+                    public function __toString(): string
+                    {
+                        return $this->uuidBytes;
+                    }
+                },
+                true,
+            ],
             'with NilUuid' => [new Uuid\NilUuid(), false],
-            'with same UuidV7' => [new Uuid\UuidV7(self::UUID_V7), true],
+            'with UuidV7 from string' => [new Uuid\UuidV7(self::UUID_V7_STRING), true],
+            'with UuidV7 from hex' => [new Uuid\UuidV7(self::UUID_V7_HEX), true],
+            'with UuidV7 from bytes' => [new Uuid\UuidV7(self::UUID_V7_BYTES), true],
             'with MaxUuid' => [new Uuid\MaxUuid(), false],
             'with array' => [[], false],
         ];
@@ -190,56 +310,113 @@ class UuidV7Test extends TestCase
 
     public function testGetVariant(): void
     {
-        $this->assertSame(Variant::Rfc4122, $this->uuid->getVariant());
+        $this->assertSame(Variant::Rfc4122, $this->uuidWithString->getVariant());
+        $this->assertSame(Variant::Rfc4122, $this->uuidWithHex->getVariant());
+        $this->assertSame(Variant::Rfc4122, $this->uuidWithBytes->getVariant());
     }
 
     public function testGetVersion(): void
     {
-        $this->assertSame(Version::UnixTime, $this->uuid->getVersion());
+        $this->assertSame(Version::UnixTime, $this->uuidWithString->getVersion());
+        $this->assertSame(Version::UnixTime, $this->uuidWithHex->getVersion());
+        $this->assertSame(Version::UnixTime, $this->uuidWithBytes->getVersion());
     }
 
     public function testJsonSerialize(): void
     {
-        $this->assertSame('"' . self::UUID_V7 . '"', json_encode($this->uuid));
+        $this->assertSame('"' . self::UUID_V7_STRING . '"', json_encode($this->uuidWithString));
+        $this->assertSame('"' . self::UUID_V7_STRING . '"', json_encode($this->uuidWithHex));
+        $this->assertSame('"' . self::UUID_V7_STRING . '"', json_encode($this->uuidWithBytes));
     }
 
     public function testToString(): void
     {
-        $this->assertSame(self::UUID_V7, $this->uuid->toString());
+        $this->assertSame(self::UUID_V7_STRING, $this->uuidWithString->toString());
+        $this->assertSame(self::UUID_V7_STRING, $this->uuidWithHex->toString());
+        $this->assertSame(self::UUID_V7_STRING, $this->uuidWithBytes->toString());
     }
 
     public function testToBytes(): void
     {
-        $this->assertSame(
-            "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f",
-            $this->uuid->toBytes(),
-        );
+        $this->assertSame(self::UUID_V7_BYTES, $this->uuidWithString->toBytes());
+        $this->assertSame(self::UUID_V7_BYTES, $this->uuidWithHex->toBytes());
+        $this->assertSame(self::UUID_V7_BYTES, $this->uuidWithBytes->toBytes());
     }
 
     public function testToHexadecimal(): void
     {
-        $this->assertSame(
-            '017F22E279B07CC398C4DC0C0C07398F',
-            $this->uuid->toHexadecimal(),
-        );
+        $this->assertSame(self::UUID_V7_HEX, $this->uuidWithString->toHexadecimal());
+        $this->assertSame(self::UUID_V7_HEX, $this->uuidWithHex->toHexadecimal());
+        $this->assertSame(self::UUID_V7_HEX, $this->uuidWithBytes->toHexadecimal());
     }
 
     public function testToInteger(): void
     {
-        $this->assertSame(
-            '1989357241971137676463954034883508623',
-            $this->uuid->toInteger(),
-        );
+        $int = '1989357241971137676463954034883508623';
+
+        $this->assertSame($int, $this->uuidWithString->toInteger());
+        $this->assertSame($int, $this->uuidWithHex->toInteger());
+        $this->assertSame($int, $this->uuidWithBytes->toInteger());
     }
 
     public function testToUrn(): void
     {
-        $this->assertSame('urn:uuid:' . self::UUID_V7, $this->uuid->toUrn());
+        $this->assertSame('urn:uuid:' . self::UUID_V7_STRING, $this->uuidWithString->toUrn());
+        $this->assertSame('urn:uuid:' . self::UUID_V7_STRING, $this->uuidWithHex->toUrn());
+        $this->assertSame('urn:uuid:' . self::UUID_V7_STRING, $this->uuidWithBytes->toUrn());
     }
 
-    public function testGetDateTime(): void
+    /**
+     * @dataProvider valuesForLowercaseConversionTestProvider
+     */
+    public function testLowercaseConversion(string $value, string $expected): void
     {
-        $dateTime = $this->uuid->getDateTime();
+        $uuid = new Uuid\UuidV7($value);
+
+        $this->assertTrue($uuid->equals($value));
+        $this->assertSame($expected, $uuid->toString());
+    }
+
+    /**
+     * @return array<array{value: string, expected: string}>
+     */
+    public function valuesForLowercaseConversionTestProvider(): array
+    {
+        return [
+            [
+                'value' => '017F22E2-79B0-7CC3-98C4-DC0C0C07398F',
+                'expected' => '017f22e2-79b0-7cc3-98c4-dc0c0c07398f',
+            ],
+            [
+                'value' => '017F22E279B07CC398C4DC0C0C07398F',
+                'expected' => '017f22e2-79b0-7cc3-98c4-dc0c0c07398f',
+            ],
+            [
+                'value' => "\x01\x7F\x22\xE2\x79\xB0\x7C\xC3\x98\xC4\xDC\x0C\x0C\x07\x39\x8F",
+                'expected' => '017f22e2-79b0-7cc3-98c4-dc0c0c07398f',
+            ],
+        ];
+    }
+
+    public function testGetDateTimeFromStringUuid(): void
+    {
+        $dateTime = $this->uuidWithString->getDateTime();
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
+        $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
+    }
+
+    public function testGetDateTimeFromHexUuid(): void
+    {
+        $dateTime = $this->uuidWithHex->getDateTime();
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
+        $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
+    }
+
+    public function testGetDateTimeFromBytesUuid(): void
+    {
+        $dateTime = $this->uuidWithBytes->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));

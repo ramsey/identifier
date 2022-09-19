@@ -25,7 +25,6 @@ namespace Ramsey\Identifier\Uuid;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
 
-use function explode;
 use function hexdec;
 use function sprintf;
 use function substr;
@@ -52,9 +51,11 @@ final class UuidV8 implements UuidInterface
      */
     public function getCustomFieldA(): string
     {
-        $fields = explode('-', $this->uuid);
-
-        return sprintf('%08s%04s', $fields[0], $fields[1]);
+        return sprintf(
+            '%08s%04s',
+            substr($this->getFormat(Format::String, $this->uuid), 0, 8),
+            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
+        );
     }
 
     /**
@@ -62,9 +63,10 @@ final class UuidV8 implements UuidInterface
      */
     public function getCustomFieldB(): string
     {
-        $fields = explode('-', $this->uuid);
-
-        return sprintf('%03s', substr($fields[2], 1));
+        return sprintf(
+            '%03s',
+            substr($this->getFormat(Format::String, $this->uuid), 15, 3),
+        );
     }
 
     /**
@@ -72,19 +74,13 @@ final class UuidV8 implements UuidInterface
      */
     public function getCustomFieldC(): string
     {
-        $fields = explode('-', $this->uuid);
-        $clockSeqLow = hexdec($fields[3]) & 0x3fff;
+        $clockSeqLow = hexdec(substr($this->getFormat(Format::String, $this->uuid), 19, 4)) & 0x3fff;
 
-        return sprintf('%04x%012s', $clockSeqLow, $fields[4]);
+        return sprintf('%04x%012s', $clockSeqLow, substr($this->getFormat(Format::String, $this->uuid), 24));
     }
 
     public function getVersion(): Version
     {
         return Version::Custom;
-    }
-
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-8[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
     }
 }

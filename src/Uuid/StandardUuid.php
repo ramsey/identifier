@@ -23,55 +23,53 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
+use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Stringable;
 
 use function assert;
+use function bin2hex;
 use function gettype;
 use function hex2bin;
+use function hexdec;
 use function is_scalar;
 use function is_string;
-use function preg_match;
 use function sprintf;
 use function str_replace;
 use function strcasecmp;
+use function strlen;
+use function strtolower;
+use function substr;
+use function unpack;
 
 /**
+ * @internal
+ *
  * @psalm-immutable
  */
 trait StandardUuid
 {
     /**
-     * String standard representation of the UUID.
-     *
-     * @var non-empty-string
+     * A representation of the UUID in either the string standard, hexadecimal,
+     * or bytes form
      */
     private readonly string $uuid;
 
     /**
-     * Returns a PCRE pattern to validate the string standard
-     * representation of this UUID
+     * Constructs an {@see \Identifier\UuidInterface} instance
      *
-     * To see how this is used, see {@see self::__construct()} and
-     * {@see self::__unserialize()}.
-     */
-    abstract protected function getValidationPattern(): string;
-
-    /**
-     * Constructs an {@see \Identifier\UuidInterface} instance from the string
-     * standard representation of a UUID
-     *
-     * @param string $uuid The string standard representation of the UUID
+     * @param string $uuid A representation of the UUID in either string
+     *     standard, hexadecimal, or bytes form
      */
     public function __construct(string $uuid)
     {
-        if ($uuid === '' || !preg_match($this->getValidationPattern(), $uuid)) {
+        if (!$this->isValid($uuid)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
-                $uuid,
+                $this->getFormat(Format::String, $uuid),
             ));
         }
 
@@ -88,7 +86,7 @@ trait StandardUuid
 
     public function __toString(): string
     {
-        return $this->uuid;
+        return $this->getFormat(Format::String, $this->uuid);
     }
 
     /**
@@ -109,7 +107,11 @@ trait StandardUuid
     public function compareTo(mixed $other): int
     {
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            $compare = strcasecmp($this->toString(), (string) $other);
+            if (!$other instanceof UuidInterface && $this->isValid((string) $other)) {
+                $other = $this->getFormat(Format::String, (string) $other);
+            }
+
+            $compare = strcasecmp($this->getFormat(Format::String, $this->uuid), (string) $other);
 
             return match (true) {
                 $compare < 0 => - 1,
@@ -140,18 +142,17 @@ trait StandardUuid
 
     public function jsonSerialize(): string
     {
-        return $this->uuid;
+        return $this->getFormat(Format::String, $this->uuid);
     }
 
     public function toString(): string
     {
-        return $this->uuid;
+        return $this->getFormat(Format::String, $this->uuid);
     }
 
     public function toBytes(): string
     {
-        /** @var non-empty-string */
-        return hex2bin($this->toHexadecimal());
+        return $this->getFormat(Format::Bytes, $this->uuid);
     }
 
     /**
@@ -159,8 +160,7 @@ trait StandardUuid
      */
     public function toHexadecimal(): string
     {
-        /** @var non-empty-string */
-        return str_replace('-', '', $this->uuid);
+        return $this->getFormat(Format::Hexadecimal, $this->uuid);
     }
 
     /**
@@ -169,7 +169,7 @@ trait StandardUuid
     public function toInteger(): int | string
     {
         /** @psalm-var numeric-string */
-        return BigInteger::fromBase($this->toHexadecimal(), 16)->__toString();
+        return BigInteger::fromBase($this->getFormat(Format::Hexadecimal, $this->uuid), 16)->__toString();
     }
 
     /**
@@ -177,6 +177,96 @@ trait StandardUuid
      */
     public function toUrn(): string
     {
-        return 'urn:uuid:' . $this->uuid;
+        return 'urn:uuid:' . $this->getFormat(Format::String, $this->uuid);
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function getFormat(Format $format, string $uuid): string
+    {
+        /** @var non-empty-string */
+        return match ($format) {
+            Format::String => match (strlen($uuid)) {
+                36 => strtolower($uuid),
+                32 => strtolower(sprintf(
+                    '%08s-%04s-%04s-%04s-%012s',
+                    substr($uuid, 0, 8),
+                    substr($uuid, 8, 4),
+                    substr($uuid, 12, 4),
+                    substr($uuid, 16, 4),
+                    substr($uuid, 20),
+                )),
+                16 => (static function (string $uuid): string {
+                    $hex = bin2hex($uuid);
+
+                    return sprintf(
+                        '%08s-%04s-%04s-%04s-%012s',
+                        substr($hex, 0, 8),
+                        substr($hex, 8, 4),
+                        substr($hex, 12, 4),
+                        substr($hex, 16, 4),
+                        substr($hex, 20),
+                    );
+                })(
+                    $uuid,
+                ),
+                default => $uuid,
+            },
+            Format::Hexadecimal => match (strlen($uuid)) {
+                36 => strtolower(str_replace('-', '', $uuid)),
+                32 => strtolower($uuid),
+                16 => bin2hex($uuid),
+                default => $uuid,
+            },
+            default => match (strlen($uuid)) {
+                36 => hex2bin(str_replace('-', '', $uuid)),
+                32 => hex2bin($uuid),
+                default => $uuid,
+            },
+        };
+    }
+
+    private function getVariantFromUuid(string $uuid): ?int
+    {
+        return match (strlen($uuid)) {
+            36 => hexdec(substr($uuid, 19, 1)) & 0xc,
+            32 => hexdec(substr($uuid, 16, 1)) & 0xc,
+            16 => (static function (string $uuid): int {
+                /** @var positive-int[] $parts */
+                $parts = unpack('n*', $uuid, 8);
+
+                return ($parts[1] & 0xc000) >> 12;
+            })($uuid),
+            default => null,
+        };
+    }
+
+    private function getVersionFromUuid(string $uuid): ?int
+    {
+        return match (strlen($uuid)) {
+            36 => (int) hexdec(substr($uuid, 14, 1)),
+            32 => (int) hexdec(substr($uuid, 12, 1)),
+            16 => (static function (string $uuid): int {
+                /** @var positive-int[] $parts */
+                $parts = unpack('n*', $uuid, 6);
+
+                return ($parts[1] & 0xf000) >> 12;
+            })($uuid),
+            default => null,
+        };
+    }
+
+    private function isValid(string $uuid): bool
+    {
+        if ($uuid === '') {
+            return false;
+        }
+
+        $variant = $this->getVariantFromUuid($uuid);
+        $version = $this->getVersionFromUuid($uuid);
+
+        /** @psalm-suppress InvalidPropertyFetch */
+        return $variant === 8 && $version === $this->getVersion()->value;
     }
 }

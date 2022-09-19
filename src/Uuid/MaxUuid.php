@@ -29,6 +29,7 @@ use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
 use function sprintf;
+use function strlen;
 use function strtolower;
 
 /**
@@ -45,10 +46,10 @@ final class MaxUuid implements UuidInterface
 
     public function __construct(string $uuid = Uuid::MAX)
     {
-        if ($uuid === '' || strtolower($uuid) !== Uuid::MAX) {
+        if (!$this->isValid($uuid)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid Max UUID: "%s"',
-                $uuid,
+                $this->getFormat(Format::String, $uuid),
             ));
         }
 
@@ -67,11 +68,13 @@ final class MaxUuid implements UuidInterface
         throw new BadMethodCallException('Max UUIDs do not have a version field');
     }
 
-    /**
-     * @codeCoverageIgnore This code path is unreachable.
-     */
-    protected function getValidationPattern(): never
+    private function isValid(string $uuid): bool
     {
-        throw new BadMethodCallException('Max UUIDs do not have a validation pattern');
+        return match (strlen($uuid)) {
+            36 => strtolower($uuid) === Uuid::MAX,
+            32 => strtolower($uuid) === 'ffffffffffffffffffffffffffffffff',
+            16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+            default => false,
+        };
     }
 }

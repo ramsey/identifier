@@ -22,32 +22,12 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\Uuid\NodeBasedUuidInterface;
-use Identifier\Uuid\Version;
-
-use function hexdec;
-use function sprintf;
-use function substr;
-
 /**
- * @psalm-immutable
+ * @internal
  */
-final class UuidV1 implements NodeBasedUuidInterface
+enum Format
 {
-    use NodeBasedUuid;
-
-    public function getVersion(): Version
-    {
-        return Version::GregorianTime;
-    }
-
-    protected function getTimestamp(): string
-    {
-        return sprintf(
-            '%03x%04s%08s',
-            hexdec(substr($this->getFormat(Format::String, $this->uuid), 14, 4)) & 0x0fff,
-            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
-            substr($this->getFormat(Format::String, $this->uuid), 0, 8),
-        );
-    }
+    case String;
+    case Hexadecimal;
+    case Bytes;
 }

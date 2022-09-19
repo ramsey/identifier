@@ -26,7 +26,6 @@ use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\Dce\Domain;
 
-use function explode;
 use function hexdec;
 use function sprintf;
 use function substr;
@@ -70,8 +69,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     public function getLocalDomain(): Domain
     {
-        $fields = explode('-', $this->uuid);
-        $clockSeqLow = substr($fields[3], 2);
+        $clockSeqLow = substr($this->getFormat(Format::String, $this->uuid), 21, 2);
 
         return Domain::from((int) hexdec($clockSeqLow));
     }
@@ -87,19 +85,12 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     public function getLocalIdentifier(): int
     {
-        $fields = explode('-', $this->uuid);
-
-        return (int) hexdec($fields[0]);
+        return (int) hexdec(substr($this->getFormat(Format::String, $this->uuid), 0, 8));
     }
 
     public function getVersion(): Version
     {
         return Version::DceSecurity;
-    }
-
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-2[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
     }
 
     /**
@@ -114,12 +105,10 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $fields = explode('-', $this->uuid);
-
         return sprintf(
             '%03x%04s%08s',
-            hexdec($fields[2]) & 0x0fff,
-            $fields[1],
+            hexdec(substr($this->getFormat(Format::String, $this->uuid), 14, 4)) & 0x0fff,
+            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
             '',
         );
     }

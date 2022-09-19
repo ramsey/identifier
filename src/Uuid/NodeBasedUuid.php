@@ -25,6 +25,8 @@ namespace Ramsey\Identifier\Uuid;
 use function substr;
 
 /**
+ * @internal
+ *
  * @psalm-immutable
  */
 trait NodeBasedUuid
@@ -37,6 +39,6 @@ trait NodeBasedUuid
     public function getNode(): string
     {
         /** @var non-empty-string */
-        return substr($this->uuid, -12);
+        return substr($this->getFormat(Format::Hexadecimal, $this->uuid), -12);
     }
 }

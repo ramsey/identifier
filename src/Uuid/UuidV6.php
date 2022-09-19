@@ -25,9 +25,9 @@ namespace Ramsey\Identifier\Uuid;
 use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
-use function explode;
 use function hexdec;
 use function sprintf;
+use function substr;
 
 /**
  * @psalm-immutable
@@ -41,11 +41,6 @@ final class UuidV6 implements NodeBasedUuidInterface
         return Version::ReorderedGregorianTime;
     }
 
-    protected function getValidationPattern(): string
-    {
-        return '/^[0-9a-f]{8}-[0-9a-f]{4}-6[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/Di';
-    }
-
     /**
      * Returns the full 60-bit timestamp as a hexadecimal string, without the version
      *
@@ -56,13 +51,11 @@ final class UuidV6 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $fields = explode('-', $this->uuid);
-
         return sprintf(
             '%08s%04s%03x',
-            $fields[0],
-            $fields[1],
-            hexdec($fields[2]) & 0x0fff,
+            substr($this->getFormat(Format::String, $this->uuid), 0, 8),
+            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
+            hexdec(substr($this->getFormat(Format::String, $this->uuid), 14, 4)) & 0x0fff,
         );
     }
 }
