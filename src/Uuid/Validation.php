@@ -16,6 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
 
 use function count;
@@ -47,18 +48,40 @@ trait Validation
     /**
      * Returns the UUID variant, if available
      */
-    private function getVariantFromUuid(string $uuid): ?int
+    private function getVariantFromUuid(string $uuid): ?Variant
     {
         return match (strlen($uuid)) {
-            36 => hexdec(substr($uuid, 19, 1)) & 0xc,
-            32 => hexdec(substr($uuid, 16, 1)) & 0xc,
-            16 => (static function (string $uuid): int {
-                /** @var positive-int[] $parts */
-                $parts = unpack('n*', $uuid, 8);
+            36 => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
+            32 => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
+            16 => $this->determineVariant(
+                (
+                    function (string $uuid): int {
+                        /** @var positive-int[] $parts */
+                        $parts = unpack('n*', $uuid, 8);
 
-                return ($parts[1] & 0xc000) >> 12;
-            })($uuid),
+                        return $parts[1] >> 12;
+                    }
+                )(
+                    $uuid,
+                ),
+            ),
             default => null,
+        };
+    }
+
+    /**
+     * Given an integer value of the variant bits, this returns the variant
+     * associated with those bits
+     *
+     * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1 Variant
+     */
+    private function determineVariant(int $value): Variant
+    {
+        return match (true) {
+            $value >> 1 === 7 => Variant::ReservedFuture,
+            $value >> 1 === 6 => Variant::ReservedMicrosoft,
+            $value >> 2 === 2 => Variant::Rfc4122,
+            default => Variant::ReservedNcs,
         };
     }
 
@@ -135,7 +158,7 @@ trait Validation
     private function isValid(string $uuid): bool
     {
         return $this->hasValidFormat($uuid)
-            && $this->getVariantFromUuid($uuid) === 8
+            && $this->getVariantFromUuid($uuid) === Variant::Rfc4122
             && $this->getVersionFromUuid($uuid) === $this->getVersion()->value;
     }
 

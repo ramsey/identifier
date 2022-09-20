@@ -21,13 +21,9 @@ use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 
-use function decbin;
+use function hexdec;
 use function sprintf;
-use function str_pad;
 use function substr;
-use function unpack;
-
-use const STR_PAD_LEFT;
 
 /**
  * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
@@ -55,23 +51,11 @@ final class NonstandardUuid implements UuidInterface
 
     public function getVariant(): Variant
     {
-        /** @var int[] $parts */
-        $parts = unpack('n*', $this->toBytes());
-
-        // $parts[5] is a 16-bit, unsigned integer containing the variant bits
-        // of the UUID. We convert this integer into a string containing a
-        // binary representation, padded to 16 characters. We analyze the first
-        // three characters (three most-significant bits) to determine the
-        // variant.
-        $binary = str_pad(decbin($parts[5]), 16, '0', STR_PAD_LEFT);
-        $msb = substr($binary, 0, 3);
-
-        return match (true) {
-            $msb === '111' => Variant::ReservedFuture,
-            $msb === '110' => Variant::ReservedMicrosoft,
-            $msb === '100', $msb === '101' => Variant::Rfc4122,
-            default => Variant::ReservedNcs,
-        };
+        return $this->determineVariant(
+            (int) hexdec(
+                substr($this->getFormat(Format::String, $this->uuid), 19, 1),
+            ),
+        );
     }
 
     public function getVersion(): never
@@ -89,7 +73,7 @@ final class NonstandardUuid implements UuidInterface
             return false;
         }
 
-        if ($this->getVariantFromUuid($uuid) !== 8) {
+        if ($this->getVariantFromUuid($uuid) !== Variant::Rfc4122) {
             return true;
         }
 
