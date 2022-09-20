@@ -29,8 +29,6 @@ use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
 use function sprintf;
-use function strlen;
-use function strtolower;
 
 /**
  * The Nil UUID is a special form of UUID that is specified to have all 128
@@ -67,11 +65,6 @@ final class NilUuid implements UuidInterface
 
     private function isValid(string $uuid): bool
     {
-        return match (strlen($uuid)) {
-            36 => strtolower($uuid) === Uuid::NIL,
-            32 => strtolower($uuid) === '00000000000000000000000000000000',
-            16 => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-            default => false,
-        };
+        return $this->isNil($uuid);
     }
 }

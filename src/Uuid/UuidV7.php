@@ -60,10 +60,8 @@ final class UuidV7 implements TimeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        return sprintf(
-            '%08s%04s',
-            substr($this->getFormat(Format::String, $this->uuid), 0, 8),
-            substr($this->getFormat(Format::String, $this->uuid), 9, 4),
-        );
+        $uuid = $this->getFormat(Format::String, $this->uuid);
+
+        return sprintf('%08s%04s', substr($uuid, 0, 8), substr($uuid, 9, 4));
     }
 }

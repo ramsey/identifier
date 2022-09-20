@@ -30,8 +30,6 @@ use InvalidArgumentException;
 use function decbin;
 use function sprintf;
 use function str_pad;
-use function strlen;
-use function strspn;
 use function substr;
 use function unpack;
 
@@ -88,21 +86,7 @@ final class NonstandardUuid implements UuidInterface
             return false;
         }
 
-        $isMax = match (strlen($uuid)) {
-            36 => strspn($uuid, '-fF') === 36,
-            32 => strspn($uuid, 'fF') === 32,
-            16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            default => false,
-        };
-
-        $isMin = match (strlen($uuid)) {
-            36 => $uuid === '00000000-0000-0000-0000-000000000000',
-            32 => $uuid === '00000000000000000000000000000000',
-            16 => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
-            default => false,
-        };
-
-        if ($isMin || $isMax) {
+        if ($this->isMax($uuid) || $this->isNil($uuid)) {
             return false;
         }
 

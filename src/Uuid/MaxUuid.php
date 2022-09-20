@@ -29,8 +29,6 @@ use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
 use function sprintf;
-use function strlen;
-use function strtolower;
 
 /**
  * The Max UUID is a special form of UUID that is specified to have all 128
@@ -67,11 +65,6 @@ final class MaxUuid implements UuidInterface
 
     private function isValid(string $uuid): bool
     {
-        return match (strlen($uuid)) {
-            36 => strtolower($uuid) === Uuid::MAX,
-            32 => strtolower($uuid) === 'ffffffffffffffffffffffffffffffff',
-            16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            default => false,
-        };
+        return $this->isMax($uuid);
     }
 }
