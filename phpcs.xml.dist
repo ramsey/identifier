@@ -18,4 +18,11 @@
 
     <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
 
+    <!-- Allow duplicate spaces in comments -->
+    <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces">
+        <properties>
+            <property name="ignoreSpacesInComment" value="true"/>
+        </properties>
+    </rule>
+
 </ruleset>

@@ -8,12 +8,6 @@
  * (the "License"). You may not use this file except in
  * compliance with the License.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * permissions and limitations under the License.
- *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
  */
@@ -36,6 +30,14 @@ use function unpack;
 use const STR_PAD_LEFT;
 
 /**
+ * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
+ * version bits set according to RFC 4122
+ *
+ * It is possible a nonstandard UUID was generated according to RFC 4122 but had
+ * its bits rearranged for reasons such as sortability. Without knowing which
+ * rearrangement algorithm was used, it is impossible to determine to UUID's
+ * original layout, so we treat it as a "nonstandard" UUID.
+ *
  * @psalm-immutable
  */
 final class NonstandardUuid implements UuidInterface
@@ -51,9 +53,6 @@ final class NonstandardUuid implements UuidInterface
         $this->uuid = $uuid;
     }
 
-    /**
-     * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1 RFC 4122, § 4.1.1
-     */
     public function getVariant(): Variant
     {
         /** @var int[] $parts */

@@ -8,12 +8,6 @@
  * (the "License"). You may not use this file except in
  * compliance with the License.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * permissions and limitations under the License.
- *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
  */
@@ -26,6 +20,12 @@ use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
 
 /**
+ * Version 3 UUIDs are named-based, using a combination of a namespace and name
+ * that are hashed into a 128-bit unsigned integer using the MD5 hashing
+ * algorithm
+ *
+ * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1 Format
+ *
  * @psalm-immutable
  */
 final class UuidV3 implements UuidInterface

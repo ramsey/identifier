@@ -8,12 +8,6 @@
  * (the "License"). You may not use this file except in
  * compliance with the License.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * permissions and limitations under the License.
- *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
  */
@@ -33,14 +27,26 @@ use function substr;
 use function unpack;
 
 /**
+ * This internal trait provides common validation functionality for RFC 4122 UUIDs
+ *
  * @internal
  *
  * @psalm-immutable
  */
 trait Validation
 {
+    /**
+     * Returns the Version enum for the UUID type represented by the class
+     * using this trait
+     *
+     * We use this in {@see self::isValid()} to determine whether the UUID is
+     * valid for the type the class represents.
+     */
     abstract protected function getVersion(): Version;
 
+    /**
+     * Returns the UUID variant, if available
+     */
     private function getVariantFromUuid(string $uuid): ?int
     {
         return match (strlen($uuid)) {
@@ -56,6 +62,9 @@ trait Validation
         };
     }
 
+    /**
+     * Returns the UUID version, if available
+     */
     private function getVersionFromUuid(string $uuid): ?int
     {
         return match (strlen($uuid)) {
@@ -71,6 +80,10 @@ trait Validation
         };
     }
 
+    /**
+     * Returns true if the given string standard, hexadecimal, or bytes
+     * representation of a UUID has a valid format
+     */
     private function hasValidFormat(string $uuid): bool
     {
         $mask = '0123456789abcdefABCDEF';
@@ -83,6 +96,10 @@ trait Validation
         };
     }
 
+    /**
+     * Returns true if the given string standard, hexadecimal, or bytes
+     * representation of a UUID is a Max UUID
+     */
     private function isMax(string $uuid): bool
     {
         // We support uppercase, lowercase, and mixed case.
@@ -96,6 +113,10 @@ trait Validation
         };
     }
 
+    /**
+     * Returns true if the given string standard, hexadecimal, or bytes
+     * representation of a UUID is a Nil UUID
+     */
     private function isNil(string $uuid): bool
     {
         return match (strlen($uuid)) {
@@ -106,6 +127,11 @@ trait Validation
         };
     }
 
+    /**
+     * Validates a UUID according to the RFC 4122 layout
+     *
+     * The UUID may be in string standard, hexadecimal, or bytes representation.
+     */
     private function isValid(string $uuid): bool
     {
         return $this->hasValidFormat($uuid)
@@ -113,6 +139,12 @@ trait Validation
             && $this->getVersionFromUuid($uuid) === $this->getVersion()->value;
     }
 
+    /**
+     * Returns true if the UUID is a valid string standard representation
+     *
+     * @param string $mask Typically a hexadecimal mask but may also be used to
+     *     validate alternate masks, such as with Max UUIDs
+     */
     private function isValidStringLayout(string $uuid, string $mask): bool
     {
         $format = explode('-', $uuid);

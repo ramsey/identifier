@@ -8,12 +8,6 @@
  * (the "License"). You may not use this file except in
  * compliance with the License.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
- * implied. See the License for the specific language governing
- * permissions and limitations under the License.
- *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
  */
@@ -34,7 +28,7 @@ use function sprintf;
  * The Nil UUID is a special form of UUID that is specified to have all 128
  * bits set to zero (0)
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.7 RFC 4122, § 4.1.7
+ * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.7 Nil UUID
  *
  * @psalm-immutable
  */
