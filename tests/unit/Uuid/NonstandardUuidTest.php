@@ -11,14 +11,10 @@ use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Test\Identifier\TestCase;
 
-use function bin2hex;
 use function json_encode;
 use function serialize;
 use function sprintf;
-use function strlen;
-use function strtolower;
 use function strtoupper;
-use function substr;
 use function unserialize;
 
 class NonstandardUuidTest extends TestCase
@@ -38,36 +34,138 @@ class NonstandardUuidTest extends TestCase
         $this->uuidWithBytes = new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_BYTES);
     }
 
-    public function testConstructorThrowsExceptionForEmptyUuid(): void
+    /**
+     * @dataProvider invalidUuidsProvider
+     */
+    public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid nonstandard UUID: ""');
+        $this->expectExceptionMessage(sprintf('Invalid nonstandard UUID: "%s"', $value));
 
-        new Uuid\NonstandardUuid('');
+        new Uuid\NonstandardUuid($value);
     }
 
-    public function testConstructorThrowsExceptionForInvalidUuidFromString(): void
+    /**
+     * @return array<array{value: string, messageValue?: string}>
+     */
+    public function invalidUuidsProvider(): array
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid nonstandard UUID: "27433d43-011d-4a6a-a161-1550863792c9"');
+        return [
+            ['value' => ''],
 
-        new Uuid\NonstandardUuid('27433d43-011d-4a6a-a161-1550863792c9');
+            // This is 35 characters:
+            ['value' => '00000000-0000-0000-0000-00000000000'],
+
+            // This is 31 characters:
+            ['value' => '0000000000000000000000000000000'],
+
+            // This is 15 bytes:
+            ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
+
+            // These contain invalid characters:
+            ['value' => '00000000-0000-0000-0000-00000000000g'],
+            ['value' => '0000000000000000000000000000000g'],
+            ['value' => '00000000-0000-0000-0000-00000000'],
+
+            // Valid Nil UUID:
+            ['value' => '00000000-0000-0000-0000-000000000000'],
+            ['value' => '00000000000000000000000000000000'],
+            ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
+
+            // Valid Max UUID:
+            ['value' => 'ffffffff-ffff-ffff-ffff-ffffffffffff'],
+            ['value' => 'ffffffffffffffffffffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 1 UUID:
+            ['value' => 'ffffffff-ffff-1fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff1fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 2 UUID:
+            ['value' => 'ffffffff-ffff-2fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff2fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 3 UUID:
+            ['value' => 'ffffffff-ffff-3fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff3fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x3f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 4 UUID:
+            ['value' => 'ffffffff-ffff-4fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff4fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x4f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 5 UUID:
+            ['value' => 'ffffffff-ffff-5fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff5fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x5f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 6 UUID:
+            ['value' => 'ffffffff-ffff-6fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff6fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x6f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 7 UUID:
+            ['value' => 'ffffffff-ffff-7fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff7fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x7f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 8 UUID:
+            ['value' => 'ffffffff-ffff-8fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff8fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x8f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+        ];
     }
 
-    public function testConstructorThrowsExceptionForInvalidUuidFromHex(): void
+    /**
+     * @dataProvider nonstandardUuidProvider
+     */
+    public function testSucceedsForNonstandardUuids(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid nonstandard UUID: "27433d43-011d-4a6a-a161-1550863792c9"');
+        $uuid = new Uuid\NonstandardUuid($value);
 
-        new Uuid\NonstandardUuid('27433d43011d4a6aa1611550863792c9');
+        $this->assertInstanceOf(Uuid\NonstandardUuid::class, $uuid);
     }
 
-    public function testConstructorThrowsExceptionForInvalidUuidFromBytes(): void
+    /**
+     * @return array<array{value: string, messageValue?: string}>
+     */
+    public function nonstandardUuidProvider(): array
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid nonstandard UUID: "27433d43-011d-4a6a-a161-1550863792c9"');
+        return [
+            // These 16 bytes don't form a standard UUID, but they are a valid
+            // nonstandard UUID:
+            ['value' => 'foobarbazquux123'],
 
-        new Uuid\NonstandardUuid("\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9");
+            // These appear to have valid versions, but they have invalid variants,
+            // so they are nonstandard.
+            ['value' => 'ffffffff-ffff-1fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff1fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-2fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff2fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-3fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff3fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x3f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-4fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff4fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x4f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-5fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff5fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x5f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-6fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff6fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x6f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-7fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff7fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x7f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-8fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff8fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x8f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+        ];
     }
 
     public function testSerializeForString(): void
@@ -513,34 +611,8 @@ class NonstandardUuidTest extends TestCase
      */
     public function testInvalidNonstandard(string $uuid): void
     {
-        $formatted = match (strlen($uuid)) {
-            36 => strtolower($uuid),
-            32 => strtolower(sprintf(
-                '%08s-%04s-%04s-%04s-%012s',
-                substr($uuid, 0, 8),
-                substr($uuid, 8, 4),
-                substr($uuid, 12, 4),
-                substr($uuid, 16, 4),
-                substr($uuid, 20),
-            )),
-            default => (static function (string $uuid): string {
-                $hex = bin2hex($uuid);
-
-                return sprintf(
-                    '%08s-%04s-%04s-%04s-%012s',
-                    substr($hex, 0, 8),
-                    substr($hex, 8, 4),
-                    substr($hex, 12, 4),
-                    substr($hex, 16, 4),
-                    substr($hex, 20),
-                );
-            })(
-                $uuid,
-            ),
-        };
-
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage("Invalid nonstandard UUID: \"$formatted\"");
+        $this->expectExceptionMessage("Invalid nonstandard UUID: \"$uuid\"");
 
         new Uuid\NonstandardUuid($uuid);
     }

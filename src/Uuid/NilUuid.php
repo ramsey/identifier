@@ -47,10 +47,7 @@ final class NilUuid implements UuidInterface
     public function __construct(string $uuid = Uuid::NIL)
     {
         if (!$this->isValid($uuid)) {
-            throw new InvalidArgumentException(sprintf(
-                'Invalid Nil UUID: "%s"',
-                $this->getFormat(Format::String, $uuid),
-            ));
+            throw new InvalidArgumentException(sprintf('Invalid Nil UUID: "%s"', $uuid));
         }
 
         $this->uuid = $uuid;

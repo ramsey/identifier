@@ -47,10 +47,7 @@ final class MaxUuid implements UuidInterface
     public function __construct(string $uuid = Uuid::MAX)
     {
         if (!$this->isValid($uuid)) {
-            throw new InvalidArgumentException(sprintf(
-                'Invalid Max UUID: "%s"',
-                $this->getFormat(Format::String, $uuid),
-            ));
+            throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $uuid));
         }
 
         $this->uuid = $uuid;

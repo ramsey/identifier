@@ -40,6 +40,7 @@ use function sprintf;
 use function str_replace;
 use function strcasecmp;
 use function strlen;
+use function strspn;
 use function strtolower;
 use function substr;
 use function unpack;
@@ -69,7 +70,7 @@ trait StandardUuid
             throw new InvalidArgumentException(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
-                $this->getFormat(Format::String, $uuid),
+                $uuid,
             ));
         }
 
@@ -257,16 +258,21 @@ trait StandardUuid
         };
     }
 
+    private function hasValidFormat(string $uuid): bool
+    {
+        return match (strlen($uuid)) {
+            36 => strspn($uuid, '-0123456789abcdefABCDEF') === 36,
+            32 => strspn($uuid, '0123456789abcdefABCDEF') === 32,
+            16 => true,
+            default => false,
+        };
+    }
+
     private function isValid(string $uuid): bool
     {
-        if ($uuid === '') {
-            return false;
-        }
-
-        $variant = $this->getVariantFromUuid($uuid);
-        $version = $this->getVersionFromUuid($uuid);
-
         /** @psalm-suppress InvalidPropertyFetch */
-        return $variant === 8 && $version === $this->getVersion()->value;
+        return $this->hasValidFormat($uuid)
+            && $this->getVariantFromUuid($uuid) === 8
+            && $this->getVersionFromUuid($uuid) === $this->getVersion()->value;
     }
 }

@@ -14,6 +14,7 @@ use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
 use function serialize;
+use function sprintf;
 use function strtoupper;
 use function unserialize;
 
@@ -34,60 +35,113 @@ class UuidV6Test extends TestCase
         $this->uuidWithBytes = new Uuid\UuidV6(self::UUID_V6_BYTES);
     }
 
-    public function testConstructorThrowsExceptionForEmptyUuid(): void
+    /**
+     * @dataProvider invalidUuidsProvider
+     */
+    public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: ""');
+        $this->expectExceptionMessage(sprintf('Invalid version 6 UUID: "%s"', $value));
 
-        new Uuid\UuidV6('');
+        new Uuid\UuidV6($value);
     }
 
-    public function testConstructorThrowsExceptionForInvalidStringUuid(): void
+    /**
+     * @return array<array{value: string, messageValue?: string}>
+     */
+    public function invalidUuidsProvider(): array
     {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+        return [
+            ['value' => ''],
 
-        new Uuid\UuidV6('a6a011d2-7433-9d43-9161-1550863792c9');
-    }
+            // This is 35 characters:
+            ['value' => '00000000-0000-0000-0000-00000000000'],
 
-    public function testConstructorThrowsExceptionForInvalidHexUuid(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+            // This is 31 characters:
+            ['value' => '0000000000000000000000000000000'],
 
-        new Uuid\UuidV6('a6a011d274339d4391611550863792c9');
-    }
+            // This is 15 bytes:
+            ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
 
-    public function testConstructorThrowsExceptionForInvalidBytesUuid(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+            // These 16 bytes don't form a standard UUID:
+            ['value' => 'foobarbazquux123'],
 
-        new Uuid\UuidV6("\xa6\xa0\x11\xd2\x74\x33\x9d\x43\x91\x61\x15\x50\x86\x37\x92\xc9");
-    }
+            // These contain invalid characters:
+            ['value' => '00000000-0000-0000-0000-00000000000g'],
+            ['value' => '0000000000000000000000000000000g'],
+            ['value' => '00000000-0000-0000-0000-00000000'],
 
-    public function testConstructorThrowsExceptionForInvalidVariantUuidString(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-6d43-c161-1550863792c9"');
+            // Valid Nil UUID:
+            ['value' => '00000000-0000-0000-0000-000000000000'],
+            ['value' => '00000000000000000000000000000000'],
+            ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
 
-        new Uuid\UuidV6('a6a011d2-7433-6d43-c161-1550863792c9');
-    }
+            // Valid Max UUID:
+            ['value' => 'ffffffff-ffff-ffff-ffff-ffffffffffff'],
+            ['value' => 'ffffffffffffffffffffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"],
 
-    public function testConstructorThrowsExceptionForInvalidVariantUuidHex(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-6d43-c161-1550863792c9"');
+            // Valid version 1 UUID:
+            ['value' => 'ffffffff-ffff-1fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff1fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
 
-        new Uuid\UuidV6('a6a011d274336d43c1611550863792c9');
-    }
+            // Valid version 2 UUID:
+            ['value' => 'ffffffff-ffff-2fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff2fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
 
-    public function testConstructorThrowsExceptionForInvalidVariantUuidBytes(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid version 6 UUID: "a6a011d2-7433-6d43-c161-1550863792c9"');
+            // Valid version 3 UUID:
+            ['value' => 'ffffffff-ffff-3fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff3fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x3f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
 
-        new Uuid\UuidV6("\xa6\xa0\x11\xd2\x74\x33\x6d\x43\xc1\x61\x15\x50\x86\x37\x92\xc9");
+            // Valid version 4 UUID:
+            ['value' => 'ffffffff-ffff-4fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff4fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x4f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 5 UUID:
+            ['value' => 'ffffffff-ffff-5fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff5fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x5f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 7 UUID:
+            ['value' => 'ffffffff-ffff-7fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff7fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x7f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Valid version 8 UUID:
+            ['value' => 'ffffffff-ffff-8fff-9fff-ffffffffffff'],
+            ['value' => 'ffffffffffff8fff9fffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x8f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // These appear to have valid versions, but they have invalid variants
+            ['value' => 'ffffffff-ffff-1fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff1fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-2fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff2fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-3fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff3fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x3f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-4fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff4fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x4f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-5fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff5fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x5f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-6fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff6fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x6f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-7fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff7fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x7f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-8fff-cfff-ffffffffffff'],
+            ['value' => 'ffffffffffff8fffcfffffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x8f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+        ];
     }
 
     public function testSerializeForString(): void

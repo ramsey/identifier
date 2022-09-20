@@ -30,6 +30,8 @@ use InvalidArgumentException;
 use function decbin;
 use function sprintf;
 use function str_pad;
+use function strlen;
+use function strspn;
 use function substr;
 use function unpack;
 
@@ -45,10 +47,7 @@ final class NonstandardUuid implements UuidInterface
     public function __construct(string $uuid)
     {
         if (!$this->isValid($uuid)) {
-            throw new InvalidArgumentException(sprintf(
-                'Invalid nonstandard UUID: "%s"',
-                $this->getFormat(Format::String, $uuid),
-            ));
+            throw new InvalidArgumentException(sprintf('Invalid nonstandard UUID: "%s"', $uuid));
         }
 
         $this->uuid = $uuid;
@@ -85,16 +84,33 @@ final class NonstandardUuid implements UuidInterface
 
     private function isValid(string $uuid): bool
     {
-        if ($uuid === '') {
+        if (!$this->hasValidFormat($uuid)) {
             return false;
         }
 
-        $variant = $this->getVariantFromUuid($uuid);
-        $version = $this->getVersionFromUuid($uuid);
+        $isMax = match (strlen($uuid)) {
+            36 => strspn($uuid, '-fF') === 36,
+            32 => strspn($uuid, 'fF') === 32,
+            16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+            default => false,
+        };
 
-        if ($variant !== 8) {
+        $isMin = match (strlen($uuid)) {
+            36 => $uuid === '00000000-0000-0000-0000-000000000000',
+            32 => $uuid === '00000000000000000000000000000000',
+            16 => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            default => false,
+        };
+
+        if ($isMin || $isMax) {
+            return false;
+        }
+
+        if ($this->getVariantFromUuid($uuid) !== 8) {
             return true;
         }
+
+        $version = $this->getVersionFromUuid($uuid);
 
         return $version < 1 || $version > 8;
     }
