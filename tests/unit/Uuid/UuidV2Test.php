@@ -55,6 +55,11 @@ class UuidV2Test extends TestCase
         return [
             ['value' => ''],
 
+            // Version 2 UUIDs that do not have proper domains:
+            ['value' => '27433d43-011d-2a6a-9103-1550863792c9'],
+            ['value' => '27433d43011d2a6a91031550863792c9'],
+            ['value' => "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x91\x03\x15\x50\x86\x37\x92\xc9"],
+
             // This is 35 characters:
             ['value' => '00000000-0000-0000-0000-00000000000'],
 

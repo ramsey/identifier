@@ -83,9 +83,9 @@ class NonstandardUuidTest extends TestCase
             ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
 
             // Valid version 2 UUID:
-            ['value' => 'ffffffff-ffff-2fff-9fff-ffffffffffff'],
-            ['value' => 'ffffffffffff2fff9fffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => 'ffffffff-ffff-2fff-9f00-ffffffffffff'],
+            ['value' => 'ffffffffffff2fff9f00ffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\x00\xff\xff\xff\xff\xff\xff"],
 
             // Valid version 3 UUID:
             ['value' => 'ffffffff-ffff-3fff-9fff-ffffffffffff'],
@@ -165,6 +165,12 @@ class NonstandardUuidTest extends TestCase
             ['value' => 'ffffffff-ffff-8fff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffff8fffcfffffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\x8f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
+
+            // These look like valid version 2 UUIDs, but they have
+            // invalid domains, so they're nonstandard.
+            ['value' => 'ffffffff-ffff-2fff-9f03-ffffffffffff'],
+            ['value' => 'ffffffffffff2fff9f03ffffffffffff'],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\x03\xff\xff\xff\xff\xff\xff"],
         ];
     }
 
@@ -624,179 +630,179 @@ class NonstandardUuidTest extends TestCase
     {
         return [
             // The variant character is "8".
-            'string: RFC 4122, version 1, variant "8"' => ['27433d43-011d-1a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 2, variant "8"' => ['27433d43-011d-2a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 3, variant "8"' => ['27433d43-011d-3a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 4, variant "8"' => ['27433d43-011d-4a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 5, variant "8"' => ['27433d43-011d-5a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 6, variant "8"' => ['27433d43-011d-6a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 7, variant "8"' => ['27433d43-011d-7a6a-8161-1550863792c9'],
-            'string: RFC 4122, version 8, variant "8"' => ['27433d43-011d-8a6a-8161-1550863792c9'],
+            'string: RFC 4122, version 1, variant "8"' => ['27433d43-011d-1a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 2, variant "8"' => ['27433d43-011d-2a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 3, variant "8"' => ['27433d43-011d-3a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 4, variant "8"' => ['27433d43-011d-4a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 5, variant "8"' => ['27433d43-011d-5a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 6, variant "8"' => ['27433d43-011d-6a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 7, variant "8"' => ['27433d43-011d-7a6a-8101-1550863792c9'],
+            'string: RFC 4122, version 8, variant "8"' => ['27433d43-011d-8a6a-8101-1550863792c9'],
 
-            'hex: RFC 4122, version 1, variant "8"' => ['27433d43011d1a6a81611550863792c9'],
-            'hex: RFC 4122, version 2, variant "8"' => ['27433d43011d2a6a81611550863792c9'],
-            'hex: RFC 4122, version 3, variant "8"' => ['27433d43011d3a6a81611550863792c9'],
-            'hex: RFC 4122, version 4, variant "8"' => ['27433d43011d4a6a81611550863792c9'],
-            'hex: RFC 4122, version 5, variant "8"' => ['27433d43011d5a6a81611550863792c9'],
-            'hex: RFC 4122, version 6, variant "8"' => ['27433d43011d6a6a81611550863792c9'],
-            'hex: RFC 4122, version 7, variant "8"' => ['27433d43011d7a6a81611550863792c9'],
-            'hex: RFC 4122, version 8, variant "8"' => ['27433d43011d8a6a81611550863792c9'],
+            'hex: RFC 4122, version 1, variant "8"' => ['27433d43011d1a6a81011550863792c9'],
+            'hex: RFC 4122, version 2, variant "8"' => ['27433d43011d2a6a81011550863792c9'],
+            'hex: RFC 4122, version 3, variant "8"' => ['27433d43011d3a6a81011550863792c9'],
+            'hex: RFC 4122, version 4, variant "8"' => ['27433d43011d4a6a81011550863792c9'],
+            'hex: RFC 4122, version 5, variant "8"' => ['27433d43011d5a6a81011550863792c9'],
+            'hex: RFC 4122, version 6, variant "8"' => ['27433d43011d6a6a81011550863792c9'],
+            'hex: RFC 4122, version 7, variant "8"' => ['27433d43011d7a6a81011550863792c9'],
+            'hex: RFC 4122, version 8, variant "8"' => ['27433d43011d8a6a81011550863792c9'],
 
             'bytes: RFC 4122, version 1, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 2, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 3, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 4, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 5, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 6, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 7, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 8, variant "8"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",
             ],
 
             // The variant character is "9".
-            'string: RFC 4122, version 1, variant "9"' => ['27433d43-011d-1a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 2, variant "9"' => ['27433d43-011d-2a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 3, variant "9"' => ['27433d43-011d-3a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 4, variant "9"' => ['27433d43-011d-4a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 5, variant "9"' => ['27433d43-011d-5a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 6, variant "9"' => ['27433d43-011d-6a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 7, variant "9"' => ['27433d43-011d-7a6a-9161-1550863792c9'],
-            'string: RFC 4122, version 8, variant "9"' => ['27433d43-011d-8a6a-9161-1550863792c9'],
+            'string: RFC 4122, version 1, variant "9"' => ['27433d43-011d-1a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 2, variant "9"' => ['27433d43-011d-2a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 3, variant "9"' => ['27433d43-011d-3a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 4, variant "9"' => ['27433d43-011d-4a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 5, variant "9"' => ['27433d43-011d-5a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 6, variant "9"' => ['27433d43-011d-6a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 7, variant "9"' => ['27433d43-011d-7a6a-9101-1550863792c9'],
+            'string: RFC 4122, version 8, variant "9"' => ['27433d43-011d-8a6a-9101-1550863792c9'],
 
-            'hex: RFC 4122, version 1, variant "9"' => ['27433d43011d1a6a91611550863792c9'],
-            'hex: RFC 4122, version 2, variant "9"' => ['27433d43011d2a6a91611550863792c9'],
-            'hex: RFC 4122, version 3, variant "9"' => ['27433d43011d3a6a91611550863792c9'],
-            'hex: RFC 4122, version 4, variant "9"' => ['27433d43011d4a6a91611550863792c9'],
-            'hex: RFC 4122, version 5, variant "9"' => ['27433d43011d5a6a91611550863792c9'],
-            'hex: RFC 4122, version 6, variant "9"' => ['27433d43011d6a6a91611550863792c9'],
-            'hex: RFC 4122, version 7, variant "9"' => ['27433d43011d7a6a91611550863792c9'],
-            'hex: RFC 4122, version 8, variant "9"' => ['27433d43011d8a6a91611550863792c9'],
+            'hex: RFC 4122, version 1, variant "9"' => ['27433d43011d1a6a91011550863792c9'],
+            'hex: RFC 4122, version 2, variant "9"' => ['27433d43011d2a6a91011550863792c9'],
+            'hex: RFC 4122, version 3, variant "9"' => ['27433d43011d3a6a91011550863792c9'],
+            'hex: RFC 4122, version 4, variant "9"' => ['27433d43011d4a6a91011550863792c9'],
+            'hex: RFC 4122, version 5, variant "9"' => ['27433d43011d5a6a91011550863792c9'],
+            'hex: RFC 4122, version 6, variant "9"' => ['27433d43011d6a6a91011550863792c9'],
+            'hex: RFC 4122, version 7, variant "9"' => ['27433d43011d7a6a91011550863792c9'],
+            'hex: RFC 4122, version 8, variant "9"' => ['27433d43011d8a6a91011550863792c9'],
 
             'bytes: RFC 4122, version 1, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 2, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 3, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 4, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 5, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 6, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 7, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 8, variant "9"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\x91\x01\x15\x50\x86\x37\x92\xc9",
             ],
 
             // The variant character is "a".
-            'string: RFC 4122, version 1, variant "a"' => ['27433d43-011d-1a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 2, variant "a"' => ['27433d43-011d-2a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 3, variant "a"' => ['27433d43-011d-3a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 4, variant "a"' => ['27433d43-011d-4a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 5, variant "a"' => ['27433d43-011d-5a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 6, variant "a"' => ['27433d43-011d-6a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 7, variant "a"' => ['27433d43-011d-7a6a-a161-1550863792c9'],
-            'string: RFC 4122, version 8, variant "a"' => ['27433d43-011d-8a6a-a161-1550863792c9'],
+            'string: RFC 4122, version 1, variant "a"' => ['27433d43-011d-1a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 2, variant "a"' => ['27433d43-011d-2a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 3, variant "a"' => ['27433d43-011d-3a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 4, variant "a"' => ['27433d43-011d-4a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 5, variant "a"' => ['27433d43-011d-5a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 6, variant "a"' => ['27433d43-011d-6a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 7, variant "a"' => ['27433d43-011d-7a6a-a101-1550863792c9'],
+            'string: RFC 4122, version 8, variant "a"' => ['27433d43-011d-8a6a-a101-1550863792c9'],
 
-            'hex: RFC 4122, version 1, variant "a"' => ['27433d43011d1a6aa1611550863792c9'],
-            'hex: RFC 4122, version 2, variant "a"' => ['27433d43011d2a6aa1611550863792c9'],
-            'hex: RFC 4122, version 3, variant "a"' => ['27433d43011d3a6aa1611550863792c9'],
-            'hex: RFC 4122, version 4, variant "a"' => ['27433d43011d4a6aa1611550863792c9'],
-            'hex: RFC 4122, version 5, variant "a"' => ['27433d43011d5a6aa1611550863792c9'],
-            'hex: RFC 4122, version 6, variant "a"' => ['27433d43011d6a6aa1611550863792c9'],
-            'hex: RFC 4122, version 7, variant "a"' => ['27433d43011d7a6aa1611550863792c9'],
-            'hex: RFC 4122, version 8, variant "a"' => ['27433d43011d8a6aa1611550863792c9'],
+            'hex: RFC 4122, version 1, variant "a"' => ['27433d43011d1a6aa1011550863792c9'],
+            'hex: RFC 4122, version 2, variant "a"' => ['27433d43011d2a6aa1011550863792c9'],
+            'hex: RFC 4122, version 3, variant "a"' => ['27433d43011d3a6aa1011550863792c9'],
+            'hex: RFC 4122, version 4, variant "a"' => ['27433d43011d4a6aa1011550863792c9'],
+            'hex: RFC 4122, version 5, variant "a"' => ['27433d43011d5a6aa1011550863792c9'],
+            'hex: RFC 4122, version 6, variant "a"' => ['27433d43011d6a6aa1011550863792c9'],
+            'hex: RFC 4122, version 7, variant "a"' => ['27433d43011d7a6aa1011550863792c9'],
+            'hex: RFC 4122, version 8, variant "a"' => ['27433d43011d8a6aa1011550863792c9'],
 
             'bytes: RFC 4122, version 1, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 2, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 3, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 4, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 5, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 6, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 7, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 8, variant "a"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\xa1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\xa1\x01\x15\x50\x86\x37\x92\xc9",
             ],
 
             // The variant character is "b".
-            'string: RFC 4122, version 1, variant "b"' => ['27433d43-011d-1a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 2, variant "b"' => ['27433d43-011d-2a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 3, variant "b"' => ['27433d43-011d-3a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 4, variant "b"' => ['27433d43-011d-4a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 5, variant "b"' => ['27433d43-011d-5a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 6, variant "b"' => ['27433d43-011d-6a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 7, variant "b"' => ['27433d43-011d-7a6a-b161-1550863792c9'],
-            'string: RFC 4122, version 8, variant "b"' => ['27433d43-011d-8a6a-b161-1550863792c9'],
+            'string: RFC 4122, version 1, variant "b"' => ['27433d43-011d-1a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 2, variant "b"' => ['27433d43-011d-2a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 3, variant "b"' => ['27433d43-011d-3a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 4, variant "b"' => ['27433d43-011d-4a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 5, variant "b"' => ['27433d43-011d-5a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 6, variant "b"' => ['27433d43-011d-6a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 7, variant "b"' => ['27433d43-011d-7a6a-b101-1550863792c9'],
+            'string: RFC 4122, version 8, variant "b"' => ['27433d43-011d-8a6a-b101-1550863792c9'],
 
-            'hex: RFC 4122, version 1, variant "b"' => ['27433d43011d1a6ab1611550863792c9'],
-            'hex: RFC 4122, version 2, variant "b"' => ['27433d43011d2a6ab1611550863792c9'],
-            'hex: RFC 4122, version 3, variant "b"' => ['27433d43011d3a6ab1611550863792c9'],
-            'hex: RFC 4122, version 4, variant "b"' => ['27433d43011d4a6ab1611550863792c9'],
-            'hex: RFC 4122, version 5, variant "b"' => ['27433d43011d5a6ab1611550863792c9'],
-            'hex: RFC 4122, version 6, variant "b"' => ['27433d43011d6a6ab1611550863792c9'],
-            'hex: RFC 4122, version 7, variant "b"' => ['27433d43011d7a6ab1611550863792c9'],
-            'hex: RFC 4122, version 8, variant "b"' => ['27433d43011d8a6ab1611550863792c9'],
+            'hex: RFC 4122, version 1, variant "b"' => ['27433d43011d1a6ab1011550863792c9'],
+            'hex: RFC 4122, version 2, variant "b"' => ['27433d43011d2a6ab1011550863792c9'],
+            'hex: RFC 4122, version 3, variant "b"' => ['27433d43011d3a6ab1011550863792c9'],
+            'hex: RFC 4122, version 4, variant "b"' => ['27433d43011d4a6ab1011550863792c9'],
+            'hex: RFC 4122, version 5, variant "b"' => ['27433d43011d5a6ab1011550863792c9'],
+            'hex: RFC 4122, version 6, variant "b"' => ['27433d43011d6a6ab1011550863792c9'],
+            'hex: RFC 4122, version 7, variant "b"' => ['27433d43011d7a6ab1011550863792c9'],
+            'hex: RFC 4122, version 8, variant "b"' => ['27433d43011d8a6ab1011550863792c9'],
 
             'bytes: RFC 4122, version 1, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 2, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x2a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 3, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x3a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 4, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 5, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 6, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x6a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 7, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x7a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
             'bytes: RFC 4122, version 8, variant "b"' => [
-                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\xb1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x8a\x6a\xb1\x01\x15\x50\x86\x37\x92\xc9",
             ],
         ];
     }

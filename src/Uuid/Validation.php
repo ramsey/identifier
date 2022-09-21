@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Dce\Domain;
 
 use function count;
 use function explode;
@@ -26,6 +27,8 @@ use function strlen;
 use function strspn;
 use function substr;
 use function unpack;
+
+use const PHP_INT_MIN;
 
 /**
  * This internal trait provides common validation functionality for RFC 4122 UUIDs
@@ -44,6 +47,44 @@ trait Validation
      * valid for the type the class represents.
      */
     abstract protected function getVersion(): Version;
+
+    /**
+     * Given an integer value of the variant bits, this returns the variant
+     * associated with those bits
+     *
+     * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1 Variant
+     */
+    private function determineVariant(int $value): Variant
+    {
+        return match (true) {
+            $value >> 1 === 7 => Variant::ReservedFuture,
+            $value >> 1 === 6 => Variant::ReservedMicrosoft,
+            $value >> 2 === 2 => Variant::Rfc4122,
+            default => Variant::ReservedNcs,
+        };
+    }
+
+    /**
+     * Returns a Domain for the UUID, if available
+     *
+     * The domain field is only relevant to version 2 UUIDs.
+     */
+    private function getLocalDomainFromUuid(string $uuid): ?Domain
+    {
+        return match (strlen($uuid)) {
+            36 => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
+            32 => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
+            16 => Domain::tryFrom((static function (string $bytes): int {
+                /** @var int[] $parts */
+                $parts = unpack('n*', "\x00" . substr($bytes, 9, 1));
+
+                // If $parts[1] is not set, return an integer that won't
+                // exist in Domain, so that Domain::tryFrom() returns null.
+                return $parts[1] ?? PHP_INT_MIN;
+            })($uuid)),
+            default => null,
+        };
+    }
 
     /**
      * Returns the UUID variant, if available
@@ -66,22 +107,6 @@ trait Validation
                 ),
             ),
             default => null,
-        };
-    }
-
-    /**
-     * Given an integer value of the variant bits, this returns the variant
-     * associated with those bits
-     *
-     * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1 Variant
-     */
-    private function determineVariant(int $value): Variant
-    {
-        return match (true) {
-            $value >> 1 === 7 => Variant::ReservedFuture,
-            $value >> 1 === 6 => Variant::ReservedMicrosoft,
-            $value >> 2 === 2 => Variant::Rfc4122,
-            default => Variant::ReservedNcs,
         };
     }
 

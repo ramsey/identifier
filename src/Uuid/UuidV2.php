@@ -18,7 +18,6 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
-use Ramsey\Identifier\Uuid\Dce\Domain;
 
 use function hexdec;
 use function sprintf;
@@ -52,20 +51,21 @@ use function substr;
  */
 final class UuidV2 implements NodeBasedUuidInterface
 {
-    use NodeBasedUuid;
+    use NodeBasedUuid {
+        isValid as private primaryIsValid;
+    }
 
     /**
      * Returns the local domain to which the local identifier belongs
      *
-     * For example, if the local domain is {@see Domain::Person}, then the local
-     * identifier should indicate the ID of a person's account on the local host.
-     * On POSIX systems, this is usually the UID.
+     * For example, if the local domain is {@see Dce\Domain::Person}, then the
+     * local identifier should indicate the ID of a person's account on the
+     * local host. On POSIX systems, this is usually the UID.
      */
-    public function getLocalDomain(): Domain
+    public function getLocalDomain(): Dce\Domain
     {
-        $clockSeqLow = substr($this->getFormat(Format::String, $this->uuid), 21, 2);
-
-        return Domain::from((int) hexdec($clockSeqLow));
+        /** @var Dce\Domain */
+        return $this->getLocalDomainFromUuid($this->uuid);
     }
 
     /**
@@ -74,8 +74,8 @@ final class UuidV2 implements NodeBasedUuidInterface
      *
      * The type of this identifier is indicated by the domain returned from
      * {@see self::getLocalDomain()}. For example, if the domain is
-     * {@see Domain::Group}, this identifier is a group ID on the local host.
-     * On POSIX systems, this is usually the GID.
+     * {@see Dce\Domain::Group}, this identifier is a group ID on the local
+     * host. On POSIX systems, this is usually the GID.
      */
     public function getLocalIdentifier(): int
     {
@@ -107,5 +107,10 @@ final class UuidV2 implements NodeBasedUuidInterface
             substr($uuid, 9, 4),
             '',
         );
+    }
+
+    protected function isValid(string $uuid): bool
+    {
+        return $this->primaryIsValid($uuid) && $this->getLocalDomainFromUuid($uuid) !== null;
     }
 }

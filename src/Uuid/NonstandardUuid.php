@@ -79,6 +79,11 @@ final class NonstandardUuid implements UuidInterface
 
         $version = $this->getVersionFromUuid($uuid);
 
+        // Version 2 UUIDs that do not have a proper domain are nonstandard.
+        if ($version === 2 && $this->getLocalDomainFromUuid($uuid) === null) {
+            return true;
+        }
+
         return $version < 1 || $version > 8;
     }
 }
