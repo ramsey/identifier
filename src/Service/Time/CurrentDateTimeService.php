@@ -21,7 +21,7 @@ use DateTimeImmutable;
 /**
  * A date-time service that always returns the current date-time
  */
-class CurrentDateTimeService implements TimeServiceInterface
+final class CurrentDateTimeService implements TimeServiceInterface
 {
     /**
      * Returns the current date-time

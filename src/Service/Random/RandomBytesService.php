@@ -29,7 +29,7 @@ use function random_bytes;
 final class RandomBytesService implements RandomServiceInterface
 {
     /**
-     * @throws Exception
+     * @throws Exception If a suitable source of randomness is not available
      */
     public function getRandomBytes(int $length): string
     {

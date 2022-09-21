@@ -48,28 +48,20 @@ trait StandardUuid
     use Validation;
 
     /**
-     * A representation of the UUID in either the string standard, hexadecimal,
-     * or bytes form
-     */
-    private readonly string $uuid;
-
-    /**
      * Constructs an {@see \Identifier\UuidInterface} instance
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form
      */
-    public function __construct(string $uuid)
+    public function __construct(private readonly string $uuid)
     {
-        if (!$this->isValid($uuid)) {
+        if (!$this->isValid($this->uuid)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
-                $uuid,
+                $this->uuid,
             ));
         }
-
-        $this->uuid = $uuid;
     }
 
     /**
