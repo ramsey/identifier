@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Util;
 use Ramsey\Identifier\Uuid\Dce\Domain;
 
 use function count;
@@ -134,11 +135,9 @@ trait Validation
      */
     private function hasValidFormat(string $uuid): bool
     {
-        $mask = '0123456789abcdefABCDEF';
-
         return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, $mask),
-            32 => strspn($uuid, $mask) === 32,
+            36 => $this->isValidStringLayout($uuid, Util::HEX_MASK),
+            32 => strspn($uuid, Util::HEX_MASK) === 32,
             16 => true,
             default => false,
         };
@@ -150,12 +149,9 @@ trait Validation
      */
     private function isMax(string $uuid): bool
     {
-        // We support uppercase, lowercase, and mixed case.
-        $mask = 'fF';
-
         return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, $mask),
-            32 => strspn($uuid, $mask) === 32,
+            36 => $this->isValidStringLayout($uuid, Util::MAX_MASK),
+            32 => strspn($uuid, Util::MAX_MASK) === 32,
             16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
