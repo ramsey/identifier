@@ -148,7 +148,7 @@ jobs:
 
       - name: "Run benchmark (PHPBench)"
         shell: "bash"
-        run: "composer dev:test:benchmark -- --ansi"
+        run: "composer dev:test:benchmark -- --ansi --progress=plain"
 
   unit-tests:
     name: "Unit tests"
