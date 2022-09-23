@@ -109,7 +109,7 @@ jobs:
         with:
           php-version: "latest"
           coverage: "pcov"
-          ini-values: "memory_limit=-1, zend.assertions=1, assert.exception=1"
+          ini-values: "memory_limit=-1"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@2.1.0"
@@ -120,6 +120,35 @@ jobs:
 
       - name: "Publish coverage report to Codecov"
         uses: "codecov/codecov-action@v3.1.0"
+
+  benchmark:
+    name: "Benchmark"
+    needs: ["coding-standards", "static-analysis"]
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "8.1"
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v3.0.2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.21.2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "none"
+          ini-values: "memory_limit=-1"
+
+      - name: "Install dependencies (Composer)"
+        uses: "ramsey/composer-install@2.1.0"
+
+      - name: "Run benchmark (PHPBench)"
+        shell: "bash"
+        run: "composer dev:test:benchmark -- --ansi"
 
   unit-tests:
     name: "Unit tests"
@@ -155,7 +184,6 @@ jobs:
         with:
           php-version: "${{ matrix.php-version }}"
           coverage: "none"
-          ini-values: "zend.assertions=1, assert.exception=1"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@2.1.0"

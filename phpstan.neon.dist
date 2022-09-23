@@ -3,4 +3,4 @@ parameters:
     level: max
     paths:
         - ./src
-        - ./tests
+        - ./tests/unit
