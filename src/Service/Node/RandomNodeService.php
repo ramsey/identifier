@@ -26,7 +26,7 @@ use function unpack;
 /**
  * A node service that generates a random node and sets the multicast bit
  */
-final class RandomNodeService
+final class RandomNodeService implements NodeServiceInterface
 {
     /**
      * @throws Exception If a suitable source of randomness is not available
@@ -38,7 +38,7 @@ final class RandomNodeService
         /** @var int[] $parts */
         $parts = unpack('n*', $nodeBytes);
 
-        // Set the multicast bit (the least significant bit of the first octet).
+        /** @var non-empty-string */
         return bin2hex(pack('n*', $parts[1] | 0x0100, $parts[2], $parts[3]));
     }
 }

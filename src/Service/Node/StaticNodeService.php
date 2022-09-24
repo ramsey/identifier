@@ -32,7 +32,7 @@ use function unpack;
 /**
  * A node service that provides a static node value with the multicast bit set
  */
-final class StaticNodeService
+final class StaticNodeService implements NodeServiceInterface
 {
     /**
      * @var non-empty-string

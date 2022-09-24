@@ -40,6 +40,7 @@
         "phpunit/phpunit": "^9.5",
         "psalm/plugin-mockery": "^0.9.1",
         "psalm/plugin-phpunit": "^0.17.0",
+        "psr/simple-cache": "^3.0",
         "ramsey/coding-standard": "^2.0",
         "ramsey/composer-repl": "^1.4",
         "ramsey/conventional-commits": "^1.3",
@@ -48,6 +49,9 @@
     },
     "provide": {
         "identifier/identifier-implementation": "dev-main"
+    },
+    "suggest": {
+        "psr/simple-cache-implementation": "To cache the system node (MAC address) for faster lookup"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
