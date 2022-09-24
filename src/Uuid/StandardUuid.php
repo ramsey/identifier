@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid;
 use Brick\Math\BigInteger;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Stringable;
 

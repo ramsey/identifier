@@ -16,11 +16,15 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use Identifier\Exception\NotComparableExceptionInterface;
+use Identifier\Exception\NotComparableException as IdentifierNotComparableException;
 use RuntimeException;
 
+/**
+ * Thrown when unable to compare values, e.g. because the other value is not of
+ * the proper type, etc.
+ */
 class NotComparableException extends RuntimeException implements
     IdentifierExceptionInterface,
-    NotComparableExceptionInterface
+    IdentifierNotComparableException
 {
 }

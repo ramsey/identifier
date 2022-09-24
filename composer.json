@@ -46,6 +46,9 @@
         "roave/security-advisories": "dev-latest",
         "vimeo/psalm": "^4.27"
     },
+    "provide": {
+        "identifier/identifier-implementation": "dev-main"
+    },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {

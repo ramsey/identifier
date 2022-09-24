@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Util;
 
 use function bin2hex;

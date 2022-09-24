@@ -16,11 +16,15 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use Identifier\Exception\IdentifierException;
+use Identifier\Exception\InvalidArgumentException as IdentifierInvalidArgumentException;
+use InvalidArgumentException as PhpInvalidArgumentException;
 
 /**
- * Describes a common interface for all exceptions thrown by ramsey/identifier
+ * Thrown when a method or function argument does not conform to
+ * validation requirements
  */
-interface IdentifierExceptionInterface extends IdentifierException
+class InvalidArgumentException extends PhpInvalidArgumentException implements
+    IdentifierExceptionInterface,
+    IdentifierInvalidArgumentException
 {
 }
