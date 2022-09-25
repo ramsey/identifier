@@ -10,8 +10,8 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\CacheException;
 use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Mask;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
-use Ramsey\Identifier\Util;
 use Ramsey\Test\Identifier\TestCase;
 
 use function hexdec;
@@ -67,7 +67,7 @@ class SystemNodeServiceTest extends TestCase
             ->expects()
             ->set(
                 SystemNodeService::class . '::$node',
-                Mockery::on(fn (string $value): bool => strspn($value, Util::HEX_MASK) === 12),
+                Mockery::on(fn (string $value): bool => strspn($value, Mask::Hex->value) === 12),
             )
             ->andReturns(true);
 

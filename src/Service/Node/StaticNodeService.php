@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Node;
 
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Util;
+use Ramsey\Identifier\Mask;
 
 use function bin2hex;
 use function hex2bin;
@@ -49,7 +49,7 @@ final class StaticNodeService implements NodeServiceInterface
         if (is_int($node)) {
             /** @var non-empty-string $node */
             $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), 4);
-        } elseif (strspn($node, Util::HEX_MASK) === strlen($node) && strlen($node) <= 12) {
+        } elseif (strspn($node, Mask::Hex->value) === strlen($node) && strlen($node) <= 12) {
             /** @var int[] $parts */
             $parts = unpack('n*', (string) hex2bin(sprintf('%012s', $node)));
 

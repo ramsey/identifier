@@ -17,24 +17,19 @@ declare(strict_types=1);
 namespace Ramsey\Identifier;
 
 /**
+ * Masks used when validating identifier strings
+ *
  * @internal
  */
-final class Util
+enum Mask: string
 {
     /**
      * A mask used with functions like {@see strspn()} to validate hexadecimal strings
      */
-    public const HEX_MASK = '0123456789abcdefABCDEF';
+    case Hex = '0123456789abcdefABCDEF';
 
     /**
      * A mask used with functions like {@see strspn()} to validate Max UUID strings
      */
-    public const MAX_MASK = 'fF';
-
-    /**
-     * Disallow public instantiation
-     */
-    private function __construct()
-    {
-    }
+    case Max = 'fF';
 }
