@@ -39,11 +39,9 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Check syntax (php-parallel-lint)"
-        shell: "bash"
         run: "composer dev:lint:syntax"
 
       - name: "Check coding standards (PHP_CodeSniffer)"
-        shell: "bash"
         run: "composer dev:lint:style"
 
   static-analysis:
@@ -63,11 +61,9 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Statically analyze code (PHPStan)"
-        shell: "bash"
         run: "composer dev:analyze:phpstan"
 
       - name: "Statically analyze code (Psalm)"
-        shell: "bash"
         run: "composer dev:analyze:psalm -- --shepherd"
 
   security-analysis:
@@ -88,7 +84,6 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Analyze security of code (Psalm)"
-        shell: "bash"
         run: "./vendor/bin/psalm --taint-analysis --report=build/logs/psalm.sarif"
 
       - name: "Upload security analysis results to GitHub"
@@ -124,7 +119,6 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Run unit tests (PHPUnit)"
-        shell: "bash"
         run: "composer dev:test:coverage:ci"
 
       - name: "Publish coverage report to Codecov"
@@ -156,7 +150,6 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Run benchmark (PHPBench)"
-        shell: "bash"
         run: "composer dev:test:benchmark -- --ansi --progress=plain"
 
   unit-tests:
@@ -180,7 +173,6 @@ jobs:
     steps:
       - name: "Configure Git (for Windows)"
         if: ${{ matrix.operating-system == 'windows-latest' }}
-        shell: "bash"
         run: |
           git config --system core.autocrlf false
           git config --system core.eol lf
@@ -201,5 +193,4 @@ jobs:
           composer-options: "${{ matrix.composer-options }}"
 
       - name: "Run unit tests (PHPUnit)"
-        shell: "bash"
         run: "composer dev:test:unit"
