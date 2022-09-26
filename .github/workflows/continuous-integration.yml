@@ -124,6 +124,32 @@ jobs:
       - name: "Publish coverage report to Codecov"
         uses: "codecov/codecov-action@v3.1.1"
 
+  code-coverage-x86:
+    name: "Code coverage (i386)"
+    needs: ["coding-standards", "static-analysis"]
+    runs-on: "ubuntu-latest"
+    container: "shivammathur/node:latest-i386"
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v3.0.2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.21.2"
+        with:
+          php-version: "latest"
+          coverage: "pcov"
+          ini-values: "memory_limit=-1"
+
+      - name: "Install dependencies (Composer)"
+        uses: "ramsey/composer-install@2.1.0"
+
+      - name: "Run unit tests (PHPUnit)"
+        run: "composer dev:test:coverage:ci"
+
+      - name: "Publish coverage report to Codecov"
+        uses: "codecov/codecov-action@v3.1.0"
+
   benchmark:
     name: "Benchmark"
     needs: ["coding-standards", "static-analysis"]
@@ -154,7 +180,7 @@ jobs:
 
   unit-tests:
     name: "Unit tests"
-    needs: ["code-coverage", "security-analysis"]
+    needs: ["code-coverage", "code-coverage-x86", "security-analysis"]
     runs-on: ${{ matrix.operating-system }}
 
     strategy:
@@ -171,12 +197,6 @@ jobs:
           - "highest"
 
     steps:
-      - name: "Configure Git (for Windows)"
-        if: ${{ matrix.operating-system == 'windows-latest' }}
-        run: |
-          git config --system core.autocrlf false
-          git config --system core.eol lf
-
       - name: "Checkout repository"
         uses: "actions/checkout@v3.0.2"
 
@@ -190,7 +210,6 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
         with:
           dependency-versions: "${{ matrix.dependencies }}"
-          composer-options: "${{ matrix.composer-options }}"
 
       - name: "Run unit tests (PHPUnit)"
         run: "composer dev:test:unit"
