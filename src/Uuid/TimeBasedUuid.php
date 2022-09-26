@@ -38,17 +38,6 @@ trait TimeBasedUuid
     use StandardUuid;
 
     /**
-     * The number of 100-nanosecond intervals from the Gregorian calendar epoch
-     * to the Unix epoch.
-     */
-    private int $gregorianToUnixIntervals = 0x1b21dd213814000;
-
-    /**
-     * The number of 100-nanosecond intervals in one second.
-     */
-    private int $secondIntervals = 0x989680;
-
-    /**
      * Returns the full 60-bit timestamp as a hexadecimal string, without the version
      */
     abstract protected function getTimestamp(): string;
@@ -59,10 +48,10 @@ trait TimeBasedUuid
     public function getDateTime(): DateTimeImmutable
     {
         $epochNanoseconds = BigInteger::fromBase($this->getTimestamp(), 16)
-            ->minus($this->gregorianToUnixIntervals);
+            ->minus(Util::GREGORIAN_OFFSET_INT);
 
         $unixTimestamp = $epochNanoseconds->dividedBy(
-            $this->secondIntervals,
+            Util::NANOSECOND_INTERVALS,
             RoundingMode::HALF_UP,
         );
 

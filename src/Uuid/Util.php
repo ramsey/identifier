@@ -30,6 +30,23 @@ use function unpack;
 final class Util
 {
     /**
+     * The number of 100-nanosecond intervals as a native integer between the
+     * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     */
+    public const GREGORIAN_OFFSET_INT = 0x01b21dd213814000;
+
+    /**
+     * The number of 100-nanosecond intervals as bytes between the
+     * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     */
+    public const GREGORIAN_OFFSET_BIN = "\x01\xb2\x1d\xd2\x13\x81\x40\x00";
+
+    /**
+     * The number of 100-nanosecond intervals in one second.
+     */
+    public const NANOSECOND_INTERVALS = 10000000;
+
+    /**
      * Applies the RFC 4122 version number and variant field to the 128-bit
      * integer (as a 16-byte string) provided
      *
