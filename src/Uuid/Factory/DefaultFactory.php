@@ -32,8 +32,6 @@ use const STR_PAD_LEFT;
  * This internal trait provides common factory functionality for RFC 4122 UUIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait DefaultFactory
 {
@@ -50,6 +48,7 @@ trait DefaultFactory
     private function createFromBytesInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 16) {
+            /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
 
@@ -59,6 +58,7 @@ trait DefaultFactory
     private function createFromHexadecimalInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 32 && $this->hasValidFormat($identifier)) {
+            /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
 
@@ -85,6 +85,7 @@ trait DefaultFactory
     private function createFromStringInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 36 && $this->hasValidFormat($identifier)) {
+            /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
 

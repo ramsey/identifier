@@ -27,8 +27,6 @@ use function hash;
 
 /**
  * A factory for creating version 3, name-based (MD5) UUIDs
- *
- * @psalm-immutable
  */
 final class UuidV3Factory implements UuidFactoryInterface
 {
@@ -75,6 +73,9 @@ final class UuidV3Factory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     protected function getVersion(): Version
     {
         return Version::HashMd5;

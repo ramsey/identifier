@@ -26,8 +26,6 @@ use Ramsey\Identifier\Uuid\UuidV4;
 
 /**
  * A factory for creating version 4, random UUIDs
- *
- * @psalm-immutable
  */
 final class UuidV4Factory implements UuidFactoryInterface
 {
@@ -43,7 +41,6 @@ final class UuidV4Factory implements UuidFactoryInterface
      */
     public function create(): UuidV4
     {
-        /** @psalm-suppress ImpureMethodCall */
         $bytes = $this->randomService->getRandomBytes(16);
         $bytes = Util::applyVersionAndVariant($bytes, Version::Random);
 
@@ -74,6 +71,9 @@ final class UuidV4Factory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     protected function getVersion(): Version
     {
         return Version::Random;

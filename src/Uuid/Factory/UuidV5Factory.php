@@ -28,8 +28,6 @@ use function substr;
 
 /**
  * A factory for creating version 5, name-based (SHA-1) UUIDs
- *
- * @psalm-immutable
  */
 final class UuidV5Factory implements UuidFactoryInterface
 {
@@ -76,6 +74,9 @@ final class UuidV5Factory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
+    /**
+     * @psalm-mutation-free
+     */
     protected function getVersion(): Version
     {
         return Version::HashSha1;
