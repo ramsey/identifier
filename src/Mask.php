@@ -21,15 +21,22 @@ namespace Ramsey\Identifier;
  *
  * @internal
  */
-enum Mask: string
+final class Mask
 {
     /**
      * A mask used with functions like {@see strspn()} to validate hexadecimal strings
      */
-    case Hex = '0123456789abcdefABCDEF';
+    public const HEX = '0123456789abcdefABCDEF';
 
     /**
      * A mask used with functions like {@see strspn()} to validate Max UUID strings
      */
-    case Max = 'fF';
+    public const MAX = 'fF';
+
+    /**
+     * Disallow public instantiation
+     */
+    private function __construct()
+    {
+    }
 }

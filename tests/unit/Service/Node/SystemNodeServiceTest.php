@@ -67,7 +67,7 @@ class SystemNodeServiceTest extends TestCase
             ->expects()
             ->set(
                 SystemNodeService::class . '::$node',
-                Mockery::on(fn (string $value): bool => strspn($value, Mask::Hex->value) === 12),
+                Mockery::on(fn (string $value): bool => strspn($value, Mask::HEX) === 12),
             )
             ->andReturns(true);
 

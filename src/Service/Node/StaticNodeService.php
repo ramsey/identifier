@@ -49,7 +49,7 @@ final class StaticNodeService implements NodeServiceInterface
         if (is_int($node)) {
             /** @var non-empty-string $node */
             $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), 4);
-        } elseif (strspn($node, Mask::Hex->value) === strlen($node) && strlen($node) <= 12) {
+        } elseif (strspn($node, Mask::HEX) === strlen($node) && strlen($node) <= 12) {
             /** @var int[] $parts */
             $parts = unpack('n*', (string) hex2bin(sprintf('%012s', $node)));
 

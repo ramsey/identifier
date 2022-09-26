@@ -136,8 +136,8 @@ trait Validation
     private function hasValidFormat(string $uuid): bool
     {
         return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, Mask::Hex->value),
-            32 => strspn($uuid, Mask::Hex->value) === 32,
+            36 => $this->isValidStringLayout($uuid, Mask::HEX),
+            32 => strspn($uuid, Mask::HEX) === 32,
             16 => true,
             default => false,
         };
@@ -150,8 +150,8 @@ trait Validation
     private function isMax(string $uuid): bool
     {
         return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, Mask::Max->value),
-            32 => strspn($uuid, Mask::Max->value) === 32,
+            36 => $this->isValidStringLayout($uuid, Mask::MAX),
+            32 => strspn($uuid, Mask::MAX) === 32,
             16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
