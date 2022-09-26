@@ -51,7 +51,7 @@ final class StaticNodeService implements NodeServiceInterface
         if (is_int($node)) {
             if (PHP_INT_SIZE >= 8) {
                 /** @var non-empty-string $node */
-                $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), 4);
+                $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), -12);
             } else {
                 /** @var int[] $parts */
                 $parts = unpack('n*', pack('N*', $node));
