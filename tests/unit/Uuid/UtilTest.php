@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
@@ -207,5 +209,40 @@ class UtilTest extends TestCase
 
         /** @phpstan-ignore-next-line */
         Util::applyVersionAndVariant('foobar', null);
+    }
+
+    /**
+     * @dataProvider timeBytesForGregorianEpochProvider
+     */
+    public function testGetTimeBytesForGregorianEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
+    {
+        $bytes = Util::getTimeBytesForGregorianEpoch($dateTime);
+
+        $this->assertSame(
+            $expectedBytes,
+            $bytes,
+            sprintf('Expected "%s", received "%s"', bin2hex($expectedBytes), bin2hex($bytes)),
+        );
+    }
+
+    /**
+     * @return array<array{dateTime: DateTimeInterface, expectedBytes: non-empty-string}>
+     */
+    public function timeBytesForGregorianEpochProvider(): array
+    {
+        return [
+            [
+                'dateTime' => new DateTimeImmutable('1582-10-15 00:00:00'),
+                'expectedBytes' => "\x00\x00\x00\x00\x00\x00\x00\x00",
+            ],
+            [
+                'dateTime' => new DateTimeImmutable('1970-01-01 00:00:00'),
+                'expectedBytes' => "\x01\xb2\x1d\xd2\x13\x81\x40\x00",
+            ],
+            [
+                'dateTime' => new DateTimeImmutable('2022-09-26 17:53:42.123456'),
+                'expectedBytes' => "\x01\xed\x3d\xc4\x28\x87\xed\x80",
+            ],
+        ];
     }
 }

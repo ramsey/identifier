@@ -16,13 +16,19 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Brick\Math\BigInteger;
+use DateTimeInterface;
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 
 use function pack;
+use function str_pad;
 use function strlen;
 use function unpack;
+
+use const PHP_INT_SIZE;
+use const STR_PAD_LEFT;
 
 /**
  * Utilities for manipulating and managing UUIDs
@@ -31,13 +37,13 @@ final class Util
 {
     /**
      * The number of 100-nanosecond intervals as a native integer between the
-     * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      */
     public const GREGORIAN_OFFSET_INT = 0x01b21dd213814000;
 
     /**
      * The number of 100-nanosecond intervals as bytes between the
-     * UUID epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      */
     public const GREGORIAN_OFFSET_BIN = "\x01\xb2\x1d\xd2\x13\x81\x40\x00";
 
@@ -80,6 +86,33 @@ final class Util
 
         /** @var non-empty-string */
         return pack('n*', ...$parts);
+    }
+
+    /**
+     * Returns an 8-byte string representing a count of 100-nanosecond intervals
+     * since the Gregorian epoch, 1582-10-15 00:00:00
+     *
+     * @param DateTimeInterface $dateTime The date-time for which to construct
+     *     a count of 100-nanosecond intervals since the Gregorian epoch
+     *
+     * @return non-empty-string
+     */
+    public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
+    {
+        if (PHP_INT_SIZE >= 8) {
+            /** @var non-empty-string */
+            return pack('J*', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
+        }
+
+        /** @var non-empty-string */
+        return str_pad(
+            BigInteger::of($dateTime->format('Uu0'))
+                ->plus(BigInteger::fromBytes(self::GREGORIAN_OFFSET_BIN))
+                ->toBytes(false),
+            8,
+            "\x00",
+            STR_PAD_LEFT,
+        );
     }
 
     /**

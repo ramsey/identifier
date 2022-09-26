@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Factory;
 
-use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Exception;
 use Identifier\Uuid\UuidFactoryInterface;
@@ -24,7 +23,9 @@ use Identifier\Uuid\Version;
 use Ramsey\Identifier\Service\ClockSequence\ClockSequenceServiceInterface;
 use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
+use Ramsey\Identifier\Service\Node\FallbackNodeService;
 use Ramsey\Identifier\Service\Node\NodeServiceInterface;
+use Ramsey\Identifier\Service\Node\RandomNodeService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
@@ -35,11 +36,7 @@ use Ramsey\Identifier\Uuid\UuidV1;
 use function hex2bin;
 use function pack;
 use function sprintf;
-use function str_pad;
 use function substr;
-
-use const PHP_INT_SIZE;
-use const STR_PAD_LEFT;
 
 /**
  * A factory for creating version 1, Gregorian time UUIDs
@@ -50,7 +47,10 @@ final class UuidV1Factory implements UuidFactoryInterface
 
     public function __construct(
         private readonly ClockSequenceServiceInterface $clockSequenceService = new RandomClockSequenceService(),
-        private readonly NodeServiceInterface $nodeService = new SystemNodeService(),
+        private readonly NodeServiceInterface $nodeService = new FallbackNodeService([
+            new SystemNodeService(),
+            new RandomNodeService(),
+        ]),
         private readonly TimeServiceInterface $timeService = new CurrentDateTimeService(),
     ) {
     }
@@ -74,30 +74,15 @@ final class UuidV1Factory implements UuidFactoryInterface
         ?DateTimeInterface $dateTime = null,
         ?int $clockSequence = null,
     ): UuidV1 {
-        $node = $node !== null
-            ? (new StaticNodeService($node))->getNode()
-            : $this->nodeService->getNode();
-
+        $node = $node === null ? $this->nodeService->getNode() : (new StaticNodeService($node))->getNode();
         $dateTime = $dateTime ?? $this->timeService->getDateTime();
+        $clockSequence = $clockSequence === null
+            ? $this->clockSequenceService->getClockSequence()
+            : (new StaticClockSequenceService($clockSequence))->getClockSequence();
 
-        $clockSequence = $clockSequence !== null
-            ? (new StaticClockSequenceService($clockSequence))->getClockSequence()
-            : $this->clockSequenceService->getClockSequence();
+        $timeBytes = Util::getTimeBytesForGregorianEpoch($dateTime);
 
-        if (PHP_INT_SIZE >= 8) {
-            $timeBytes = pack('J*', (int) $dateTime->format('Uu0') + Util::GREGORIAN_OFFSET_INT);
-        } else {
-            $timeBytes = str_pad(
-                BigInteger::of($dateTime->format('Uu0'))->plus(
-                    BigInteger::fromBytes(Util::GREGORIAN_OFFSET_BIN),
-                )->toBytes(false),
-                8,
-                "\x00",
-                STR_PAD_LEFT,
-            );
-        }
-
-        /** @var non-empty-string $bytes */
+        /** @psalm-var non-empty-string $bytes */
         $bytes = substr($timeBytes, -4)
             . substr($timeBytes, 2, 2)
             . substr($timeBytes, 0, 2)

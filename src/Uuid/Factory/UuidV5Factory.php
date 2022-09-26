@@ -43,7 +43,7 @@ final class UuidV5Factory implements UuidFactoryInterface
             throw new InvalidArgumentException('$name cannot be null when creating version 5 UUIDs');
         }
 
-        /** @var non-empty-string $bytes */
+        /** @psalm-var non-empty-string $bytes */
         $bytes = substr(hash('sha1', $namespace->toBytes() . $name, true), 0, 16);
         $bytes = Util::applyVersionAndVariant($bytes, Version::HashSha1);
 
