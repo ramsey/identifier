@@ -140,11 +140,10 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @return int<0, max> | null
-     *
-     * @psalm-suppress ForbiddenCode
      */
     private function getPosixGid(): ?int
     {
+        /** @psalm-suppress ForbiddenCode */
         $gid = trim((string) shell_exec('id -g'));
 
         /** @var int<0, max> | null */
@@ -153,11 +152,10 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @return int<0, max> | null
-     *
-     * @psalm-suppress ForbiddenCode
      */
     private function getPosixUid(): ?int
     {
+        /** @psalm-suppress ForbiddenCode */
         $uid = trim((string) shell_exec('id -u'));
 
         /** @var int<0, max> | null */
@@ -262,11 +260,10 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
      * @link https://www.windows-commandline.com/list-of-user-groups-command-line/ List of user groups command line
      *
      * @return int<0, max> | null
-     *
-     * @psalm-suppress ForbiddenCode
      */
     private function getWindowsGid(): ?int
     {
+        /** @psalm-suppress ForbiddenCode */
         $response = shell_exec('net user %username% | findstr /b /i "Local Group Memberships"');
 
         if ($response === null || $response === false) {
@@ -282,6 +279,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
             return null; // @codeCoverageIgnore
         }
 
+        /** @psalm-suppress ForbiddenCode */
         $response = shell_exec('wmic group get name,sid | findstr /b /i ' . escapeshellarg($firstGroup));
 
         if ($response === null || $response === false) {
@@ -318,11 +316,10 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
      * @link https://www.windows-commandline.com/get-sid-of-user/ Get SID of user
      *
      * @return int<0, max> | null
-     *
-     * @psalm-suppress ForbiddenCode
      */
     private function getWindowsUid(): ?int
     {
+        /** @psalm-suppress ForbiddenCode */
         $response = shell_exec('whoami /user /fo csv /nh');
 
         if ($response === null) {

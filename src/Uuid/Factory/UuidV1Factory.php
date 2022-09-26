@@ -74,15 +74,12 @@ final class UuidV1Factory implements UuidFactoryInterface
         ?DateTimeInterface $dateTime = null,
         ?int $clockSequence = null,
     ): UuidV1 {
-        /** @psalm-suppress ImpureMethodCall */
         $node = $node !== null
             ? (new StaticNodeService($node))->getNode()
             : $this->nodeService->getNode();
 
-        /** @psalm-suppress ImpureMethodCall */
         $dateTime = $dateTime ?? $this->timeService->getDateTime();
 
-        /** @psalm-suppress ImpureMethodCall */
         $clockSequence = $clockSequence !== null
             ? (new StaticClockSequenceService($clockSequence))->getClockSequence()
             : $this->clockSequenceService->getClockSequence();
@@ -90,7 +87,6 @@ final class UuidV1Factory implements UuidFactoryInterface
         if (PHP_INT_SIZE >= 8) {
             $timeBytes = pack('J*', (int) $dateTime->format('Uu0') + Util::GREGORIAN_OFFSET_INT);
         } else {
-            /** @psalm-suppress ImpureMethodCall */
             $timeBytes = str_pad(
                 BigInteger::of($dateTime->format('Uu0'))->plus(
                     BigInteger::fromBytes(Util::GREGORIAN_OFFSET_BIN),
