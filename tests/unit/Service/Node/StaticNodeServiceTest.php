@@ -8,6 +8,8 @@ use InvalidArgumentException;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Test\Identifier\TestCase;
 
+use const PHP_INT_SIZE;
+
 class StaticNodeServiceTest extends TestCase
 {
     /**
@@ -45,8 +47,8 @@ class StaticNodeServiceTest extends TestCase
                 'expected' => '01000000ffff',
             ],
             [
-                'staticNode' => 0xffff0000,
-                'expected' => '0100ffff0000',
+                'staticNode' => 0x7fff0000,
+                'expected' => '01007fff0000',
             ],
             [
                 'staticNode' => '000000000000',
@@ -117,7 +119,39 @@ class StaticNodeServiceTest extends TestCase
                 'expected' => '3d1239b4f540',
             ],
             [
-                // This test expects a 64-bit build of PHP.
+                'staticNode' => 0x7fffffff,
+                'expected' => '01007fffffff',
+            ],
+        ];
+    }
+
+    /**
+     * @param int<0, max> | non-empty-string $staticNode
+     *
+     * @dataProvider nodeProvider64Bit
+     */
+    public function testGetNode64Bit(int | string $staticNode, string $expected): void
+    {
+        if (PHP_INT_SIZE < 8) {
+            $this->markTestSkipped('Skipping on 32-bit build of PHP');
+        }
+
+        $service = new StaticNodeService($staticNode);
+
+        $this->assertSame($expected, $service->getNode());
+    }
+
+    /**
+     * @return array<array{staticNode: int<0, max> | non-empty-string, expected: string}>
+     */
+    public function nodeProvider64Bit(): array
+    {
+        return [
+            [
+                'staticNode' => 0xffff0000,
+                'expected' => '0100ffff0000',
+            ],
+            [
                 'staticNode' => 66048975238464,
                 'expected' => '3d1239b4f540',
             ],

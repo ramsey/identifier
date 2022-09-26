@@ -29,6 +29,8 @@ use function strspn;
 use function substr;
 use function unpack;
 
+use const PHP_INT_SIZE;
+
 /**
  * A node service that provides a static node value with the multicast bit set
  */
@@ -47,8 +49,16 @@ final class StaticNodeService implements NodeServiceInterface
     public function __construct(int | string $node)
     {
         if (is_int($node)) {
-            /** @var non-empty-string $node */
-            $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), 4);
+            if (PHP_INT_SIZE >= 8) {
+                /** @var non-empty-string $node */
+                $node = substr(bin2hex(pack('J*', $node | 0x010000000000)), 4);
+            } else {
+                /** @var int[] $parts */
+                $parts = unpack('n*', pack('N*', $node));
+
+                /** @var non-empty-string $node */
+                $node = bin2hex(pack('n*', 0x0100, ...$parts));
+            }
         } elseif (strspn($node, Mask::HEX) === strlen($node) && strlen($node) <= 12) {
             /** @var int[] $parts */
             $parts = unpack('n*', (string) hex2bin(sprintf('%012s', $node)));
