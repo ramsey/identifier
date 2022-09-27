@@ -15,7 +15,7 @@ on:
 # Cancels all previous workflow runs for the same branch that have not yet completed.
 concurrency:
   # The concurrency group contains the workflow name and the branch name.
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: "${{ github.workflow }}-${{ github.ref }}"
   cancel-in-progress: true
 
 env:
@@ -25,6 +25,7 @@ jobs:
   coding-standards:
     name: "Coding standards"
     runs-on: "ubuntu-latest"
+
     steps:
       - name: "Checkout repository"
         uses: "actions/checkout@v3.0.2"
@@ -32,7 +33,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "latest"
+          php-version: "8.1"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
@@ -47,6 +48,7 @@ jobs:
   static-analysis:
     name: "Static analysis"
     runs-on: "ubuntu-latest"
+
     steps:
       - name: "Checkout repository"
         uses: "actions/checkout@v3.0.2"
@@ -54,7 +56,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "latest"
+          php-version: "8.1"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
@@ -70,6 +72,7 @@ jobs:
     name: "Security analysis"
     needs: ["coding-standards", "static-analysis"]
     runs-on: "ubuntu-latest"
+
     steps:
       - name: "Checkout repository"
         uses: "actions/checkout@v3.0.2"
@@ -77,7 +80,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "latest"
+          php-version: "8.1"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
@@ -94,15 +97,18 @@ jobs:
   code-coverage:
     name: "Code coverage"
     needs: ["coding-standards", "static-analysis"]
-    runs-on: ${{ matrix.operating-system }}
+    runs-on: "${{ matrix.os }}"
+    container: "${{ matrix.container }}"
 
     strategy:
-      fail-fast: false
       matrix:
-        operating-system:
-          - "macos-latest"
-          - "ubuntu-latest"
-          - "windows-latest"
+        os: ["macos-latest", "windows-latest"]
+        container: [""]
+        include:
+          - os: "ubuntu-latest"
+            container: "shivammathur/node:latest-amd64"
+          - os: "ubuntu-latest"
+            container: "shivammathur/node:latest-i386"
 
     steps:
       - name: "Checkout repository"
@@ -111,7 +117,7 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "latest"
+          php-version: "8.1"
           coverage: "pcov"
           ini-values: "memory_limit=-1"
 
@@ -124,51 +130,28 @@ jobs:
       - name: "Publish coverage report to Codecov"
         uses: "codecov/codecov-action@v3.1.1"
 
-  code-coverage-x86:
-    name: "Code coverage (i386)"
-    needs: ["coding-standards", "static-analysis"]
-    runs-on: "ubuntu-latest"
-    container: "shivammathur/node:latest-i386"
-
-    steps:
-      - name: "Checkout repository"
-        uses: "actions/checkout@v3.0.2"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.21.2"
-        with:
-          php-version: "latest"
-          coverage: "pcov"
-          ini-values: "memory_limit=-1"
-
-      - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.1.0"
-
-      - name: "Run unit tests (PHPUnit)"
-        run: "composer dev:test:coverage:ci"
-
-      - name: "Publish coverage report to Codecov"
-        uses: "codecov/codecov-action@v3.1.0"
-
   benchmark:
     name: "Benchmark"
-    needs: ["coding-standards", "static-analysis"]
+    needs: ["code-coverage"]
     runs-on: "ubuntu-latest"
+    container: "setupphp/node:latest-${{ matrix.arch }}"
 
     strategy:
-      fail-fast: false
       matrix:
-        php-version:
-          - "8.1"
+        php: ["8.1"]
+        arch: ["amd64", "i386"]
 
     steps:
+      - name: "Configure Git"
+        run: "git config --global safe.directory '*'"
+
       - name: "Checkout repository"
         uses: "actions/checkout@v3.0.2"
 
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "${{ matrix.php-version }}"
+          php-version: "${{ matrix.php }}"
           coverage: "none"
           ini-values: "memory_limit=-1"
 
@@ -176,25 +159,27 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Run benchmark (PHPBench)"
-        run: "composer dev:test:benchmark -- --ansi --progress=plain"
+        run: |
+          mkdir -p build/bench/
+          composer dev:test:bench:ci
+
+      - name: "Upload benchmark artifacts"
+        uses: "actions/upload-artifact@v3.1.0"
+        with:
+          name: "Benchmark (PHP ${{ matrix.php }}, ${{ matrix.arch }})"
+          path: "build/bench/"
 
   unit-tests:
     name: "Unit tests"
-    needs: ["code-coverage", "code-coverage-x86", "security-analysis"]
-    runs-on: ${{ matrix.operating-system }}
+    needs: ["code-coverage"]
+    runs-on: "${{ matrix.os }}"
 
     strategy:
       fail-fast: false
       matrix:
-        php-version:
-          - "8.1"
-        operating-system:
-          - "macos-latest"
-          - "ubuntu-latest"
-          - "windows-latest"
-        dependencies:
-          - "lowest"
-          - "highest"
+        php: ["8.1"]
+        os: ["macos-latest", "ubuntu-latest", "windows-latest"]
+        composer-deps: ["lowest", "highest"]
 
     steps:
       - name: "Checkout repository"
@@ -203,13 +188,13 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@2.21.2"
         with:
-          php-version: "${{ matrix.php-version }}"
+          php-version: "${{ matrix.php }}"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@2.1.0"
         with:
-          dependency-versions: "${{ matrix.dependencies }}"
+          dependency-versions: "${{ matrix.composer-deps }}"
 
       - name: "Run unit tests (PHPUnit)"
         run: "composer dev:test:unit"
