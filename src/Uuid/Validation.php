@@ -194,10 +194,11 @@ trait Validation
         $format = explode('-', $uuid);
 
         return count($format) === 5
-            && strspn($format[0], $mask) === 8
-            && strspn($format[1], $mask) === 4
-            && strspn($format[2], $mask) === 4
-            && strspn($format[3], $mask) === 4
-            && strspn($format[4], $mask) === 12;
+            && strlen($format[0]) === 8
+            && strlen($format[1]) === 4
+            && strlen($format[2]) === 4
+            && strlen($format[3]) === 4
+            && strlen($format[4]) === 12
+            && strspn($uuid, "-$mask") === 36;
     }
 }
