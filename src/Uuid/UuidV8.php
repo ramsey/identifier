@@ -47,7 +47,7 @@ final class UuidV8 implements UuidInterface
     {
         $uuid = $this->getFormat(Format::String, $this->uuid);
 
-        return sprintf('%08s%04s', substr($uuid, 0, 8), substr($uuid, 9, 4));
+        return substr($uuid, 0, 8) . substr($uuid, 9, 4);
     }
 
     /**
@@ -55,7 +55,7 @@ final class UuidV8 implements UuidInterface
      */
     public function getCustomFieldB(): string
     {
-        return sprintf('%03s', substr($this->getFormat(Format::String, $this->uuid), 15, 3));
+        return substr($this->getFormat(Format::String, $this->uuid), 15, 3);
     }
 
     /**
@@ -66,7 +66,7 @@ final class UuidV8 implements UuidInterface
         $uuid = $this->getFormat(Format::String, $this->uuid);
         $clockSeqLow = hexdec(substr($uuid, 19, 4)) & 0x3fff;
 
-        return sprintf('%04x%012s', $clockSeqLow, substr($uuid, 24));
+        return sprintf('%04x%012s', $clockSeqLow, substr($uuid, -12));
     }
 
     public function getVersion(): Version
