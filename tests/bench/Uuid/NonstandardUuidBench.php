@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Benchmark\Identifier\Uuid;
+namespace Ramsey\Bench\Identifier\Uuid;
 
-use Identifier\Uuid\UuidInterface;
-use Ramsey\Identifier\Uuid\UuidV4;
+use Ramsey\Identifier\Uuid\NonstandardUuid;
 
-final class UuidToVariousFormatsBench
+final class NonstandardUuidBench
 {
-    private UuidInterface $uuidWithBytes;
-    private UuidInterface $uuidWithHex;
-    private UuidInterface $uuidWithString;
+    private NonstandardUuid $uuidWithBytes;
+    private NonstandardUuid $uuidWithHex;
+    private NonstandardUuid $uuidWithString;
 
     public function __construct()
     {
-        $this->uuidWithBytes = new UuidV4('0ae0cac52a40465c99ed3d331b7cf72a');
-        $this->uuidWithHex = new UuidV4('0ae0cac52a40465c99ed3d331b7cf72a');
-        $this->uuidWithString = new UuidV4('0ae0cac5-2a40-465c-99ed-3d331b7cf72a');
+        $this->uuidWithBytes = new NonstandardUuid("\x0a\xe0\xca\xc5\x2a\x40\x56\x5c\x79\xed\x3d\x33\x1b\x7c\xf7\x2a");
+        $this->uuidWithHex = new NonstandardUuid('0ae0cac52a40565c79ed3d331b7cf72a');
+        $this->uuidWithString = new NonstandardUuid('0ae0cac5-2a40-565c-79ed-3d331b7cf72a');
     }
 
     public function benchToBytesForBytesUuid(): void

@@ -62,7 +62,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Ramsey\\Benchmark\\Identifier\\": "tests/benchmark/",
+            "Ramsey\\Bench\\Identifier\\": "tests/bench/",
             "Ramsey\\Test\\Identifier\\": "tests/unit/"
         }
     },
@@ -102,11 +102,12 @@
         "dev:lint:syntax": "parallel-lint --colors src/ tests/",
         "dev:test": [
             "@dev:lint",
-            "@dev:test:benchmark",
             "@dev:analyze",
             "@dev:test:unit"
         ],
-        "dev:test:benchmark": "phpbench run --report=aggregate",
+        "dev:test:bench": "phpbench run --ansi --progress=dots --report=aggregate",
+        "dev:test:bench:ci": "phpbench run --ansi --progress=none --report=ci --output=artifact-tab --output=artifact-html",
+        "dev:test:bench:html": "phpbench run --ansi --progress=dots --report=ci --output=artifact-html",
         "dev:test:coverage:ci": "phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --coverage-cobertura build/coverage/cobertura.xml --coverage-crap4j build/coverage/crap4j.xml --coverage-xml build/coverage/coverage-xml --log-junit build/junit.xml",
         "dev:test:coverage:html": "phpunit --colors=always --coverage-html build/coverage/coverage-html/",
         "dev:test:unit": "phpunit --colors=always",
@@ -122,6 +123,9 @@
         "dev:lint:style": "Checks for coding standards issues.",
         "dev:lint:syntax": "Checks for syntax errors.",
         "dev:test": "Runs linting, static analysis, and unit tests.",
+        "dev:test:bench": "Runs PHPBench and displays aggregate report to the console.",
+        "dev:test:bench:ci": "Runs PHPBench and generates CI reports.",
+        "dev:test:bench:html": "Runs PHPBench and generates HTML reports.",
         "dev:test:coverage:ci": "Runs unit tests and generates CI coverage reports.",
         "dev:test:coverage:html": "Runs unit tests and generates HTML coverage report.",
         "dev:test:unit": "Runs unit tests.",

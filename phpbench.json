@@ -1,9 +1,26 @@
 {
     "$schema": "./vendor/phpbench/phpbench/phpbench.schema.json",
     "runner.bootstrap": "vendor/autoload.php",
-    "runner.path": "tests/benchmark",
+    "runner.path": "tests/bench",
     "runner.retry_threshold": 5,
     "runner.revs": 10,
     "runner.iterations": 5,
-    "runner.warmup": 2
+    "runner.warmup": 2,
+    "report.generators": {
+        "ci": {
+            "generator": "expression",
+            "break": ["benchmark"]
+        }
+    },
+    "report.outputs": {
+        "artifact-html": {
+            "renderer": "html",
+            "path": "build/bench/phpbench.html",
+            "title": "ramsey/identifier: PHPBench Results"
+        },
+        "artifact-tab": {
+            "renderer": "delimited",
+            "file": "build/bench/phpbench.tab"
+        }
+    }
 }
