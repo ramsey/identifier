@@ -17,14 +17,17 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
+use Brick\Math\RoundingMode;
 use DateTimeInterface;
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 
+use function intdiv;
 use function pack;
 use function str_pad;
 use function strlen;
+use function substr;
 use function unpack;
 
 use const PHP_INT_SIZE;
@@ -110,6 +113,33 @@ final class Util
                 ->plus(BigInteger::fromBytes(self::GREGORIAN_OFFSET_BIN))
                 ->toBytes(false),
             8,
+            "\x00",
+            STR_PAD_LEFT,
+        );
+    }
+
+    /**
+     * Returns a 6-byte string representing the number of milliseconds since the
+     * Unix Epoch, 1970-01-01 00:00:00
+     *
+     * @param DateTimeInterface $dateTime The date-time for which to construct
+     *     a count of milliseconds since the Unix Epoch
+     *
+     * @return non-empty-string
+     */
+    public static function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
+    {
+        if (PHP_INT_SIZE >= 8) {
+            /** @var non-empty-string */
+            return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), 2);
+        }
+
+        /** @var non-empty-string */
+        return str_pad(
+            BigInteger::of($dateTime->format('Uu'))
+                ->dividedBy(1000, RoundingMode::DOWN)
+                ->toBytes(false),
+            6,
             "\x00",
             STR_PAD_LEFT,
         );
