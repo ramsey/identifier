@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
-use Exception;
 use Identifier\Uuid\TimeBasedUuidInterface;
 use Identifier\Uuid\Version;
 
@@ -38,9 +37,6 @@ final class UuidV7 implements TimeBasedUuidInterface
 {
     use TimeBasedUuid;
 
-    /**
-     * @throws Exception When unable to create a DateTimeImmutable instance.
-     */
     public function getDateTime(): DateTimeImmutable
     {
         $unixTimestamp = number_format(hexdec($this->getTimestamp()) / 1000, 6, '.', '');

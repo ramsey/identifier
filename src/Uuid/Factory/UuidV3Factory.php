@@ -32,6 +32,9 @@ final class UuidV3Factory implements UuidFactoryInterface
 {
     use DefaultFactory;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function create(?UuidInterface $namespace = null, ?string $name = null): UuidV3
     {
         if ($namespace === null) {
@@ -49,24 +52,36 @@ final class UuidV3Factory implements UuidFactoryInterface
         return new UuidV3($bytes);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromBytes(string $identifier): UuidV3
     {
         /** @var UuidV3 */
         return $this->createFromBytesInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromHexadecimal(string $identifier): UuidV3
     {
         /** @var UuidV3 */
         return $this->createFromHexadecimalInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromInteger(int | string $identifier): UuidV3
     {
         /** @var UuidV3 */
         return $this->createFromIntegerInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromString(string $identifier): UuidV3
     {
         /** @var UuidV3 */

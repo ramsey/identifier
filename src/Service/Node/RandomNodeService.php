@@ -16,7 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use Exception;
+use Ramsey\Identifier\Exception\RandomSourceException;
+use Throwable;
 
 use function bin2hex;
 use function pack;
@@ -29,11 +30,17 @@ use function unpack;
 final class RandomNodeService implements NodeServiceInterface
 {
     /**
-     * @throws Exception If a suitable source of randomness is not available
+     * @throws RandomSourceException
      */
     public function getNode(): string
     {
-        $nodeBytes = random_bytes(6);
+        try {
+            $nodeBytes = random_bytes(6);
+        // @codeCoverageIgnoreStart
+        } catch (Throwable $exception) {
+            throw new RandomSourceException('Cannot find an appropriate source of randomness', 0, $exception);
+        // @codeCoverageIgnoreEnd
+        }
 
         /** @var int[] $parts */
         $parts = unpack('n*', $nodeBytes);

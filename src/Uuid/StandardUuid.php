@@ -53,6 +53,8 @@ trait StandardUuid
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form
+     *
+     * @throws InvalidArgumentException
      */
     public function __construct(private readonly string $uuid)
     {
@@ -93,6 +95,8 @@ trait StandardUuid
     }
 
     /**
+     * @throws NotComparableException
+     *
      * @psalm-return -1 | 0 | 1
      */
     public function compareTo(mixed $other): int

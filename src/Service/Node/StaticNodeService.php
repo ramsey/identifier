@@ -44,6 +44,8 @@ final class StaticNodeService implements NodeServiceInterface
     /**
      * @param int<0, max> | string $node A 48-bit integer or hexadecimal string
      *
+     * @throws InvalidArgumentException
+     *
      * @psalm-param int<0, max> | non-empty-string $node
      */
     public function __construct(int | string $node)

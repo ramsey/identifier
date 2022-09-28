@@ -78,7 +78,9 @@ final class SystemNodeService implements NodeServiceInterface
     }
 
     /**
-     * @throws NodeNotFoundException when unable to find a node for the system
+     * @throws NodeNotFoundException
+     * @throws CacheException if a problem occurs when fetching data from the
+     *     PSR-16 cache instance, if provided
      */
     public function getNode(): string
     {

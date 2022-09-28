@@ -94,6 +94,8 @@ final class Util
      *
      * @return non-empty-string A 16-byte string with the UUID version and variant applied
      *
+     * @throws InvalidArgumentException
+     *
      * @psalm-pure
      */
     public static function applyVersionAndVariant(
@@ -126,9 +128,15 @@ final class Util
      *     a count of 100-nanosecond intervals since the Gregorian epoch
      *
      * @return non-empty-string
+     *
+     * @throws InvalidArgumentException
      */
     public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
+        if ($dateTime->format('Y-m-d') < '1582-10-15') {
+            throw new InvalidArgumentException('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
+        }
+
         if (PHP_INT_SIZE >= 8) {
             /** @var non-empty-string */
             return pack('J*', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
@@ -153,9 +161,15 @@ final class Util
      *     a count of milliseconds since the Unix Epoch
      *
      * @return non-empty-string
+     *
+     * @throws InvalidArgumentException
      */
     public static function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
     {
+        if ($dateTime->getTimestamp() < 0) {
+            throw new InvalidArgumentException('Unable to get bytes for a timestamp earlier than the Unix Epoch');
+        }
+
         if (PHP_INT_SIZE >= 8) {
             /** @var non-empty-string */
             return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), -6);

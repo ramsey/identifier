@@ -19,7 +19,6 @@ namespace Ramsey\Identifier\Uuid;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeImmutable;
-use Exception;
 
 use function explode;
 use function str_pad;
@@ -42,9 +41,6 @@ trait TimeBasedUuid
      */
     abstract protected function getTimestamp(): string;
 
-    /**
-     * @throws Exception When unable to create a DateTimeImmutable instance.
-     */
     public function getDateTime(): DateTimeImmutable
     {
         $epochNanoseconds = BigInteger::fromBase($this->getTimestamp(), 16)

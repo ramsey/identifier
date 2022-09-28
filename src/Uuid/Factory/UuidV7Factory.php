@@ -17,9 +17,10 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Factory;
 
 use DateTimeInterface;
-use Exception;
 use Identifier\Uuid\UuidFactoryInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\RandomSourceException;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomServiceInterface;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
@@ -44,7 +45,8 @@ final class UuidV7Factory implements UuidFactoryInterface
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws Exception If a suitable source of randomness is not available
+     * @throws InvalidArgumentException
+     * @throws RandomSourceException
      */
     public function create(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -57,24 +59,36 @@ final class UuidV7Factory implements UuidFactoryInterface
         return new UuidV7($bytes);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromBytes(string $identifier): UuidV7
     {
         /** @var UuidV7 */
         return $this->createFromBytesInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromHexadecimal(string $identifier): UuidV7
     {
         /** @var UuidV7 */
         return $this->createFromHexadecimalInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromInteger(int | string $identifier): UuidV7
     {
         /** @var UuidV7 */
         return $this->createFromIntegerInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromString(string $identifier): UuidV7
     {
         /** @var UuidV7 */

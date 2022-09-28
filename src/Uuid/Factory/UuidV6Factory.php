@@ -17,9 +17,11 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Factory;
 
 use DateTimeInterface;
-use Exception;
 use Identifier\Uuid\UuidFactoryInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\RandomSourceException;
 use Ramsey\Identifier\Service\ClockSequence\ClockSequenceServiceInterface;
 use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
@@ -66,7 +68,9 @@ final class UuidV6Factory implements UuidFactoryInterface
      *     avoid duplicates that could arise when the clock is set backwards in
      *     time or if the node ID changes
      *
-     * @throws Exception If a suitable source of randomness is not available
+     * @throws RandomSourceException
+     * @throws InvalidArgumentException
+     * @throws NodeNotFoundException
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -94,24 +98,36 @@ final class UuidV6Factory implements UuidFactoryInterface
         return new UuidV6($bytes);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromBytes(string $identifier): UuidV6
     {
         /** @var UuidV6 */
         return $this->createFromBytesInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromHexadecimal(string $identifier): UuidV6
     {
         /** @var UuidV6 */
         return $this->createFromHexadecimalInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromInteger(int | string $identifier): UuidV6
     {
         /** @var UuidV6 */
         return $this->createFromIntegerInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromString(string $identifier): UuidV6
     {
         /** @var UuidV6 */

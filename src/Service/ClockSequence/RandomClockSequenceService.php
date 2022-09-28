@@ -16,7 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\ClockSequence;
 
-use Exception;
+use Ramsey\Identifier\Exception\RandomSourceException;
+use Throwable;
 
 use function random_int;
 
@@ -34,14 +35,20 @@ final class RandomClockSequenceService implements ClockSequenceServiceInterface
     private static ?int $clockSequence = null;
 
     /**
-     * @throws Exception If a suitable source of randomness is not available
+     * @throws RandomSourceException
      */
     public function getClockSequence(): int
     {
-        $sequence = random_int(0, 0x3fff);
+        try {
+            $sequence = random_int(0, 0x3fff);
 
-        while ($sequence === self::$clockSequence) {
-            $sequence = random_int(0, 0x3fff); // @codeCoverageIgnore
+            while ($sequence === self::$clockSequence) {
+                $sequence = random_int(0, 0x3fff); // @codeCoverageIgnore
+            }
+        // @codeCoverageIgnoreStart
+        } catch (Throwable $exception) {
+            throw new RandomSourceException('Cannot find an appropriate source of randomness', 0, $exception);
+        // @codeCoverageIgnoreEnd
         }
 
         self::$clockSequence = $sequence;

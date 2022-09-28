@@ -22,6 +22,7 @@ use Identifier\Uuid\UuidInterface;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Uuid\Util;
 use Ramsey\Identifier\Uuid\Validation;
+use Throwable;
 
 use function sprintf;
 use function str_pad;
@@ -46,6 +47,9 @@ trait DefaultFactory
      */
     abstract protected function getUuidClass(): string;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function createFromBytesInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 16) {
@@ -56,6 +60,9 @@ trait DefaultFactory
         throw new InvalidArgumentException('Identifier must be a 16-byte string');
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function createFromHexadecimalInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 32 && $this->hasValidFormat($identifier, Util::FORMAT_HEX)) {
@@ -66,6 +73,9 @@ trait DefaultFactory
         throw new InvalidArgumentException('Identifier must be a 32-character hexadecimal string');
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function createFromIntegerInternal(int | string $identifier): UuidInterface
     {
         try {
@@ -76,13 +86,18 @@ trait DefaultFactory
 
         try {
             return $this->createFromBytesInternal(str_pad($bigInteger->toBytes(false), 16, "\x00", STR_PAD_LEFT));
-        } catch (InvalidArgumentException) {
+        } catch (Throwable $exception) {
             throw new InvalidArgumentException(
                 sprintf('Invalid version %d UUID: %s', $this->getVersion()->value, $identifier),
+                0,
+                $exception,
             );
         }
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function createFromStringInternal(string $identifier): UuidInterface
     {
         if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Util::FORMAT_STRING)) {

@@ -31,6 +31,9 @@ final class FallbackNodeService implements NodeServiceInterface
     {
     }
 
+    /**
+     * @throws NodeNotFoundException
+     */
     public function getNode(): string
     {
         $lastProviderException = null;

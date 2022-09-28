@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
+use Ramsey\Identifier\Exception\NodeNotFoundException;
+
 /**
  * Defines a service interface for getting a system node, or MAC address
  *
@@ -33,6 +35,8 @@ interface NodeServiceInterface
      * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.5 Node IDs that Do Not Identify the Host
      *
      * @return non-empty-string
+     *
+     * @throws NodeNotFoundException
      */
     public function getNode(): string;
 }

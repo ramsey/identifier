@@ -16,9 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Factory;
 
-use Exception;
 use Identifier\Uuid\UuidFactoryInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\RandomSourceException;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomServiceInterface;
 use Ramsey\Identifier\Uuid\Util;
@@ -37,7 +38,8 @@ final class UuidV4Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws Exception If a suitable source of randomness is not available
+     * @throws InvalidArgumentException
+     * @throws RandomSourceException
      */
     public function create(): UuidV4
     {
@@ -47,24 +49,36 @@ final class UuidV4Factory implements UuidFactoryInterface
         return new UuidV4($bytes);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromBytes(string $identifier): UuidV4
     {
         /** @var UuidV4 */
         return $this->createFromBytesInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromHexadecimal(string $identifier): UuidV4
     {
         /** @var UuidV4 */
         return $this->createFromHexadecimalInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromInteger(int | string $identifier): UuidV4
     {
         /** @var UuidV4 */
         return $this->createFromIntegerInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromString(string $identifier): UuidV4
     {
         /** @var UuidV4 */

@@ -81,6 +81,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @throws DceSecurityException if unable to obtain a system group ID
+     * @throws CacheException if a problem occurs when fetching data from the
+     *     PSR-16 cache instance, if provided
      */
     public function getGroupIdentifier(): int
     {
@@ -118,6 +120,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @throws DceSecurityException if unable to obtain a system person ID
+     * @throws CacheException if a problem occurs when fetching data from the
+     *     PSR-16 cache instance, if provided
      */
     public function getPersonIdentifier(): int
     {
@@ -179,6 +183,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @return int<0, max> | null
+     *
+     * @throws CacheException
      */
     private function getSystemGidFromCache(): ?int
     {
@@ -222,6 +228,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
 
     /**
      * @return int<0, max> | null
+     *
+     * @throws CacheException
      */
     private function getSystemUidFromCache(): ?int
     {

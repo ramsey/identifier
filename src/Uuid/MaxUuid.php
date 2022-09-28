@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid;
 use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
 use function sprintf;
@@ -37,6 +37,9 @@ final class MaxUuid implements UuidInterface
 {
     use StandardUuid;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(private readonly string $uuid = Uuid::MAX)
     {
         $this->format = strlen($this->uuid);
@@ -53,6 +56,9 @@ final class MaxUuid implements UuidInterface
         return Variant::Rfc4122;
     }
 
+    /**
+     * @throws BadMethodCallException
+     */
     public function getVersion(): never
     {
         throw new BadMethodCallException('Max UUIDs do not have a version field');

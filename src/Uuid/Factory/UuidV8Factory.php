@@ -49,6 +49,8 @@ final class UuidV8Factory implements UuidFactoryInterface
      *     since they are replaced with the variant bits, so don't rely on these
      *     bits to hold any important data; in other words, treat this as a
      *     62-bit value)
+     *
+     * @throws InvalidArgumentException
      */
     public function create(
         ?string $customFieldA = null,
@@ -91,24 +93,36 @@ final class UuidV8Factory implements UuidFactoryInterface
         return new UuidV8($bytes);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromBytes(string $identifier): UuidV8
     {
         /** @var UuidV8 */
         return $this->createFromBytesInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromHexadecimal(string $identifier): UuidV8
     {
         /** @var UuidV8 */
         return $this->createFromHexadecimalInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromInteger(int | string $identifier): UuidV8
     {
         /** @var UuidV8 */
         return $this->createFromIntegerInternal($identifier);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function createFromString(string $identifier): UuidV8
     {
         /** @var UuidV8 */

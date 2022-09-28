@@ -37,6 +37,9 @@ final class NilUuid implements UuidInterface
 {
     use StandardUuid;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(private readonly string $uuid = Uuid::NIL)
     {
         $this->format = strlen($this->uuid);
@@ -53,6 +56,9 @@ final class NilUuid implements UuidInterface
         return Variant::Rfc4122;
     }
 
+    /**
+     * @throws BadMethodCallException
+     */
     public function getVersion(): never
     {
         throw new BadMethodCallException('Nil UUIDs do not have a version field');

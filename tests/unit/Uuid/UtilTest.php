@@ -207,7 +207,6 @@ class UtilTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('$bytes must be a a 16-byte string');
 
-        /** @phpstan-ignore-next-line */
         Util::applyVersionAndVariant('foobar', null);
     }
 
@@ -275,5 +274,25 @@ class UtilTest extends TestCase
                 'expectedBytes' => "\x01\x83\x7a\xee\xec\xeb",
             ],
         ];
+    }
+
+    public function testGetTimeBytesForGregorianEpochThrowsExceptionForEarlyDate(): void
+    {
+        $dateTime = new DateTimeImmutable('1582-10-14 00:00:00');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
+
+        Util::getTimeBytesForGregorianEpoch($dateTime);
+    }
+
+    public function testGetTimeBytesForUnixEpochThrowsExceptionForEarlyDate(): void
+    {
+        $dateTime = new DateTimeImmutable('1969-12-31 23:59:59.999999');
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Unix Epoch');
+
+        Util::getTimeBytesForUnixEpoch($dateTime);
     }
 }

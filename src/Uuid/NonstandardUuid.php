@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid;
 use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 
 use function hexdec;
 use function sprintf;
@@ -41,6 +41,9 @@ final class NonstandardUuid implements UuidInterface
 {
     use StandardUuid;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(private readonly string $uuid)
     {
         $this->format = strlen($this->uuid);
@@ -57,6 +60,9 @@ final class NonstandardUuid implements UuidInterface
         );
     }
 
+    /**
+     * @throws BadMethodCallException
+     */
     public function getVersion(): never
     {
         throw new BadMethodCallException('Nonstandard UUIDs do not have a version field');
