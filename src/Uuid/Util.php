@@ -158,7 +158,7 @@ final class Util
     {
         if (PHP_INT_SIZE >= 8) {
             /** @var non-empty-string */
-            return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), 2);
+            return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), -6);
         }
 
         /** @var non-empty-string */
