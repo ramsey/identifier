@@ -54,16 +54,26 @@ final class Util
     public const FORMAT_HEX = 32;
 
     /**
+     * The number of 100-nanosecond intervals as bytes between the
+     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     */
+    public const GREGORIAN_OFFSET_BIN = "\x01\xb2\x1d\xd2\x13\x81\x40\x00";
+
+    /**
      * The number of 100-nanosecond intervals as a native integer between the
      * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      */
     public const GREGORIAN_OFFSET_INT = 0x01b21dd213814000;
 
     /**
-     * The number of 100-nanosecond intervals as bytes between the
-     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     * A mask used with functions like {@see strspn()} to validate hexadecimal strings
      */
-    public const GREGORIAN_OFFSET_BIN = "\x01\xb2\x1d\xd2\x13\x81\x40\x00";
+    public const MASK_HEX = '0123456789abcdefABCDEF';
+
+    /**
+     * A mask used with functions like {@see strspn()} to validate Max UUID strings
+     */
+    public const MASK_MAX = 'fF';
 
     /**
      * The number of 100-nanosecond intervals in one second.

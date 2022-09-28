@@ -19,7 +19,6 @@ namespace Ramsey\Identifier\Uuid\Factory;
 use Identifier\Uuid\UuidFactoryInterface;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Mask;
 use Ramsey\Identifier\Uuid\Util;
 use Ramsey\Identifier\Uuid\UuidV8;
 
@@ -72,15 +71,15 @@ final class UuidV8Factory implements UuidFactoryInterface
         $customFieldB = sprintf('%03s', $customFieldB);
         $customFieldC = sprintf('%016s', $customFieldC);
 
-        if (strspn($customFieldA, Mask::HEX) !== 12) {
+        if (strspn($customFieldA, Util::MASK_HEX) !== 12) {
             throw new InvalidArgumentException('$customFieldA must be a 48-bit hexadecimal string');
         }
 
-        if (strspn($customFieldB, Mask::HEX) !== 3) {
+        if (strspn($customFieldB, Util::MASK_HEX) !== 3) {
             throw new InvalidArgumentException('$customFieldB must be a 12-bit hexadecimal string');
         }
 
-        if (strspn($customFieldC, Mask::HEX) !== 16) {
+        if (strspn($customFieldC, Util::MASK_HEX) !== 16) {
             throw new InvalidArgumentException('$customFieldC must be a 62-bit hexadecimal string');
         }
 

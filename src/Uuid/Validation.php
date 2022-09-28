@@ -18,7 +18,6 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
-use Ramsey\Identifier\Mask;
 use Ramsey\Identifier\Uuid\Dce\Domain;
 
 use function count;
@@ -136,8 +135,8 @@ trait Validation
     private function hasValidFormat(string $uuid, int $format): bool
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Mask::HEX),
-            Util::FORMAT_HEX => strspn($uuid, Mask::HEX) === 32,
+            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_HEX),
+            Util::FORMAT_HEX => strspn($uuid, Util::MASK_HEX) === 32,
             Util::FORMAT_BYTES => true,
             default => false,
         };
@@ -150,8 +149,8 @@ trait Validation
     private function isMax(string $uuid, int $format): bool
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Mask::MAX),
-            Util::FORMAT_HEX => strspn($uuid, Mask::MAX) === 32,
+            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_MAX),
+            Util::FORMAT_HEX => strspn($uuid, Util::MASK_MAX) === 32,
             Util::FORMAT_BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
