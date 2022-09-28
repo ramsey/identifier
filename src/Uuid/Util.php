@@ -35,6 +35,8 @@ use const STR_PAD_LEFT;
 
 /**
  * Utilities for manipulating and managing UUIDs
+ *
+ * @internal
  */
 final class Util
 {
