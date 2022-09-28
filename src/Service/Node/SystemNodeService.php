@@ -138,25 +138,21 @@ final class SystemNodeService implements NodeServiceInterface
     {
         $disabledFunctions = strtolower((string) ini_get('disable_functions'));
 
-        // @codeCoverageIgnoreStart
-
         if (str_contains($disabledFunctions, 'popen')) {
-            return '';
+            return ''; // @codeCoverageIgnore
         }
 
         $command = match (PHP_OS_FAMILY) {
             'Windows' => 'ipconfig /all 2>&1',
             'Darwin' => 'ifconfig 2>&1',
             'BSD' => 'netstat -i -f link 2>&1',
-            default => 'netstat -ie 2>&1',
+            default => 'netstat -ie 2>&1', // @codeCoverageIgnore
         };
 
         $process = popen($command, 'r');
         if ($process === false) {
-            return '';
+            return ''; // @codeCoverageIgnore
         }
-
-        // @codeCoverageIgnoreEnd
 
         $node = '';
         while (($buffer = fgets($process)) !== false) {

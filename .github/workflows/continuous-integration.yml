@@ -198,3 +198,38 @@ jobs:
 
       - name: "Run unit tests (PHPUnit)"
         run: "composer dev:test:unit"
+
+  code-coverage-freebsd:
+    name: "Code coverage (freebsd)"
+    needs: ["coding-standards", "static-analysis"]
+    runs-on: "macos-12"
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v3.0.2"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@2.21.2"
+        with:
+          php-version: "8.1"
+          coverage: "pcov"
+          ini-values: "memory_limit=-1"
+
+      - name: "Install dependencies (Composer)"
+        uses: "ramsey/composer-install@2.1.0"
+
+      - name: "Run unit tests on FreeBSD (PHPUnit)"
+        uses: "vmactions/freebsd-vm@v0.2.8"
+        with:
+          usesh: true
+          prepare: |
+            pkg update
+            pkg install -y php81 php81-bcmath php81-composer2 php81-dom \
+              php81-gmp php81-pecl-uuid php81-pecl-xdebug php81-simplexml \
+              php81-tokenizer php81-xml php81-xmlreader php81-xmlwriter \
+              php81-zip php81-zlib
+            sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
+          run: "composer dev:test:coverage:ci"
+
+      - name: "Publish coverage report to Codecov"
+        uses: "codecov/codecov-action@v3.1.1"

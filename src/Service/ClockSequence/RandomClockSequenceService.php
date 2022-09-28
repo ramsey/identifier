@@ -41,9 +41,7 @@ final class RandomClockSequenceService implements ClockSequenceServiceInterface
         $sequence = random_int(0, 0x3fff);
 
         while ($sequence === self::$clockSequence) {
-            // @codeCoverageIgnoreStart
-            $sequence = random_int(0, 0x3fff);
-            // @codeCoverageIgnoreEnd
+            $sequence = random_int(0, 0x3fff); // @codeCoverageIgnore
         }
 
         self::$clockSequence = $sequence;
