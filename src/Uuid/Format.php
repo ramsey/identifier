@@ -21,20 +21,20 @@ namespace Ramsey\Identifier\Uuid;
  *
  * @internal
  */
-enum Format
+enum Format: int
 {
     /**
      * String standard representation
      */
-    case String;
+    case String = 36;
 
     /**
      * Hexadecimal representation
      */
-    case Hexadecimal;
+    case Hexadecimal = 32;
 
     /**
      * Bytes representation
      */
-    case Bytes;
+    case Bytes = 16;
 }
