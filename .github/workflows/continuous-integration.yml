@@ -129,19 +129,15 @@ jobs:
         uses: "codecov/codecov-action@v3.1.1"
 
   benchmark:
-    name: "Benchmark (${{ matrix.artifact-name }})"
+    name: "Benchmark"
     needs: ["code-coverage"]
     runs-on: "ubuntu-latest"
-    container: "${{ matrix.container }}"
+    container: "setupphp/node:latest-${{ matrix.arch }}"
 
     strategy:
       matrix:
-        include:
-          - php: "8.1"
-            artifact-name: "8.1, amd64"
-          - php: "8.1"
-            container: "setupphp/node:latest-i386"
-            artifact-name: "8.1, i386"
+        php: ["8.1"]
+        arch: ["amd64", "i386"]
 
     steps:
       - name: "Configure Git"
@@ -168,7 +164,7 @@ jobs:
       - name: "Upload benchmark artifacts"
         uses: "actions/upload-artifact@v3.1.0"
         with:
-          name: "Benchmark (PHP ${{ matrix.artifact-name }})"
+          name: "Benchmark (PHP ${{ matrix.php }}, ${{ matrix.arch }})"
           path: "build/bench/"
 
   unit-tests:
