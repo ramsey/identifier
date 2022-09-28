@@ -76,7 +76,7 @@ trait Validation
             Util::FORMAT_HEX => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
             Util::FORMAT_BYTES => Domain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
-                $parts = unpack('n*', "\x00" . substr($bytes, 9, 1));
+                $parts = unpack('n*', "\x00" . $bytes[9]);
 
                 // If $parts[1] is not set, return an integer that won't
                 // exist in Domain, so that Domain::tryFrom() returns null.
@@ -92,8 +92,8 @@ trait Validation
     private function getVariantFromUuid(string $uuid, int $format): ?Variant
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
-            Util::FORMAT_HEX => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
+            Util::FORMAT_STRING => $this->determineVariant((int) hexdec($uuid[19])),
+            Util::FORMAT_HEX => $this->determineVariant((int) hexdec($uuid[16])),
             Util::FORMAT_BYTES => $this->determineVariant(
                 (
                     function (string $uuid): int {
@@ -116,8 +116,8 @@ trait Validation
     private function getVersionFromUuid(string $uuid, int $format): ?int
     {
         return match ($format) {
-            Util::FORMAT_STRING => (int) hexdec(substr($uuid, 14, 1)),
-            Util::FORMAT_HEX => (int) hexdec(substr($uuid, 12, 1)),
+            Util::FORMAT_STRING => (int) hexdec($uuid[14]),
+            Util::FORMAT_HEX => (int) hexdec($uuid[12]),
             Util::FORMAT_BYTES => (static function (string $uuid): int {
                 /** @var positive-int[] $parts */
                 $parts = unpack('n*', $uuid, 6);
