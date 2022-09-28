@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
-use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
@@ -47,6 +46,8 @@ trait StandardUuid
 {
     use Validation;
 
+    private readonly Format $format;
+
     /**
      * Constructs an {@see \Identifier\UuidInterface} instance
      *
@@ -55,13 +56,19 @@ trait StandardUuid
      */
     public function __construct(private readonly string $uuid)
     {
-        if (!$this->isValid($this->uuid)) {
+        $format = Format::tryFrom(strlen($this->uuid));
+
+        if (!$this->isValid($this->uuid, $format)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
                 $this->uuid,
             ));
         }
+
+        assert($format !== null);
+
+        $this->format = $format;
     }
 
     /**
@@ -74,7 +81,7 @@ trait StandardUuid
 
     public function __toString(): string
     {
-        return $this->getFormat(Format::String, $this->uuid);
+        return $this->getFormat(Format::String);
     }
 
     /**
@@ -95,11 +102,12 @@ trait StandardUuid
     public function compareTo(mixed $other): int
     {
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            if (!$other instanceof UuidInterface && $this->isValid((string) $other)) {
-                $other = $this->getFormat(Format::String, (string) $other);
+            $other = (string) $other;
+            if ($this->isValid($other, Format::tryFrom(strlen($other)))) {
+                $other = $this->getFormat(Format::String, $other);
             }
 
-            $compare = strcasecmp($this->getFormat(Format::String, $this->uuid), (string) $other);
+            $compare = strcasecmp($this->getFormat(Format::String), $other);
 
             return match (true) {
                 $compare < 0 => - 1,
@@ -130,17 +138,17 @@ trait StandardUuid
 
     public function jsonSerialize(): string
     {
-        return $this->getFormat(Format::String, $this->uuid);
+        return $this->getFormat(Format::String);
     }
 
     public function toString(): string
     {
-        return $this->getFormat(Format::String, $this->uuid);
+        return $this->getFormat(Format::String);
     }
 
     public function toBytes(): string
     {
-        return $this->getFormat(Format::Bytes, $this->uuid);
+        return $this->getFormat(Format::Bytes);
     }
 
     /**
@@ -148,7 +156,7 @@ trait StandardUuid
      */
     public function toHexadecimal(): string
     {
-        return $this->getFormat(Format::Hexadecimal, $this->uuid);
+        return $this->getFormat(Format::Hexadecimal);
     }
 
     /**
@@ -157,7 +165,7 @@ trait StandardUuid
     public function toInteger(): int | string
     {
         /** @psalm-var numeric-string */
-        return BigInteger::fromBase($this->getFormat(Format::Hexadecimal, $this->uuid), 16)->__toString();
+        return BigInteger::fromBase($this->getFormat(Format::Hexadecimal), 16)->__toString();
     }
 
     /**
@@ -165,31 +173,34 @@ trait StandardUuid
      */
     public function toUrn(): string
     {
-        return 'urn:uuid:' . $this->getFormat(Format::String, $this->uuid);
+        return 'urn:uuid:' . $this->getFormat(Format::String);
     }
 
     /**
      * @return non-empty-string
      */
-    private function getFormat(Format $format, string $uuid): string
+    private function getFormat(Format $formatToReturn, ?string $uuid = null): string
     {
+        $formatOfUuid = $uuid ? Format::tryFrom(strlen($uuid)) : $this->format;
+        $uuid ??= $this->uuid;
+
         /** @var non-empty-string */
-        return match ($format) {
-            Format::String => match (strlen($uuid)) {
-                36 => strtolower($uuid),
-                32 => $this->toStringFromHex(strtolower($uuid)),
-                16 => $this->toStringFromHex(bin2hex($uuid)),
+        return match ($formatToReturn) {
+            Format::String => match ($formatOfUuid) {
+                Format::String => strtolower($uuid),
+                Format::Hexadecimal => $this->toStringFromHex(strtolower($uuid)),
+                Format::Bytes => $this->toStringFromHex(bin2hex($uuid)),
                 default => $uuid,
             },
-            Format::Hexadecimal => match (strlen($uuid)) {
-                36 => strtolower(str_replace('-', '', $uuid)),
-                32 => strtolower($uuid),
-                16 => bin2hex($uuid),
+            Format::Hexadecimal => match ($formatOfUuid) {
+                Format::String => strtolower(str_replace('-', '', $uuid)),
+                Format::Hexadecimal => strtolower($uuid),
+                Format::Bytes => bin2hex($uuid),
                 default => $uuid,
             },
-            default => match (strlen($uuid)) {
-                36 => hex2bin(str_replace('-', '', $uuid)),
-                32 => hex2bin($uuid),
+            default => match ($formatOfUuid) {
+                Format::String => hex2bin(str_replace('-', '', $uuid)),
+                Format::Hexadecimal => hex2bin($uuid),
                 default => $uuid,
             },
         };

@@ -65,7 +65,7 @@ final class UuidV2 implements NodeBasedUuidInterface
     public function getLocalDomain(): Dce\Domain
     {
         /** @var Dce\Domain */
-        return $this->getLocalDomainFromUuid($this->uuid);
+        return $this->getLocalDomainFromUuid($this->uuid, $this->format);
     }
 
     /**
@@ -79,7 +79,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     public function getLocalIdentifier(): int
     {
-        return (int) hexdec(substr($this->getFormat(Format::String, $this->uuid), 0, 8));
+        return (int) hexdec(substr($this->getFormat(Format::String), 0, 8));
     }
 
     public function getVersion(): Version
@@ -99,7 +99,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Format::String, $this->uuid);
+        $uuid = $this->getFormat(Format::String);
 
         return sprintf(
             '%03x%04s%08s',
@@ -109,8 +109,9 @@ final class UuidV2 implements NodeBasedUuidInterface
         );
     }
 
-    protected function isValid(string $uuid): bool
+    protected function isValid(string $uuid, ?Format $format): bool
     {
-        return $this->primaryIsValid($uuid) && $this->getLocalDomainFromUuid($uuid) !== null;
+        return $this->primaryIsValid($uuid, $format)
+            && $this->getLocalDomainFromUuid($uuid, $format) !== null;
     }
 }

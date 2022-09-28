@@ -70,12 +70,12 @@ trait Validation
      *
      * The domain field is only relevant to version 2 UUIDs.
      */
-    private function getLocalDomainFromUuid(string $uuid): ?Domain
+    private function getLocalDomainFromUuid(string $uuid, ?Format $format): ?Domain
     {
-        return match (strlen($uuid)) {
-            36 => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
-            32 => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
-            16 => Domain::tryFrom((static function (string $bytes): int {
+        return match ($format) {
+            Format::String => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
+            Format::Hexadecimal => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
+            Format::Bytes => Domain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
                 $parts = unpack('n*', "\x00" . substr($bytes, 9, 1));
 
@@ -90,12 +90,12 @@ trait Validation
     /**
      * Returns the UUID variant, if available
      */
-    private function getVariantFromUuid(string $uuid): ?Variant
+    private function getVariantFromUuid(string $uuid, ?Format $format): ?Variant
     {
-        return match (strlen($uuid)) {
-            36 => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
-            32 => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
-            16 => $this->determineVariant(
+        return match ($format) {
+            Format::String => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
+            Format::Hexadecimal => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
+            Format::Bytes => $this->determineVariant(
                 (
                     function (string $uuid): int {
                         /** @var positive-int[] $parts */
@@ -114,12 +114,12 @@ trait Validation
     /**
      * Returns the UUID version, if available
      */
-    private function getVersionFromUuid(string $uuid): ?int
+    private function getVersionFromUuid(string $uuid, ?Format $format): ?int
     {
-        return match (strlen($uuid)) {
-            36 => (int) hexdec(substr($uuid, 14, 1)),
-            32 => (int) hexdec(substr($uuid, 12, 1)),
-            16 => (static function (string $uuid): int {
+        return match ($format) {
+            Format::String => (int) hexdec(substr($uuid, 14, 1)),
+            Format::Hexadecimal => (int) hexdec(substr($uuid, 12, 1)),
+            Format::Bytes => (static function (string $uuid): int {
                 /** @var positive-int[] $parts */
                 $parts = unpack('n*', $uuid, 6);
 
@@ -133,12 +133,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID has a valid format
      */
-    private function hasValidFormat(string $uuid): bool
+    private function hasValidFormat(string $uuid, ?Format $format): bool
     {
-        return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, Mask::HEX),
-            32 => strspn($uuid, Mask::HEX) === 32,
-            16 => true,
+        return match ($format) {
+            Format::String => $this->isValidStringLayout($uuid, Mask::HEX),
+            Format::Hexadecimal => strspn($uuid, Mask::HEX) === 32,
+            Format::Bytes => true,
             default => false,
         };
     }
@@ -147,12 +147,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID is a Max UUID
      */
-    private function isMax(string $uuid): bool
+    private function isMax(string $uuid, ?Format $format): bool
     {
-        return match (strlen($uuid)) {
-            36 => $this->isValidStringLayout($uuid, Mask::MAX),
-            32 => strspn($uuid, Mask::MAX) === 32,
-            16 => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+        return match ($format) {
+            Format::String => $this->isValidStringLayout($uuid, Mask::MAX),
+            Format::Hexadecimal => strspn($uuid, Mask::MAX) === 32,
+            Format::Bytes => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
     }
@@ -161,12 +161,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID is a Nil UUID
      */
-    private function isNil(string $uuid): bool
+    private function isNil(string $uuid, ?Format $format): bool
     {
-        return match (strlen($uuid)) {
-            36 => $uuid === '00000000-0000-0000-0000-000000000000',
-            32 => $uuid === '00000000000000000000000000000000',
-            16 => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+        return match ($format) {
+            Format::String => $uuid === '00000000-0000-0000-0000-000000000000',
+            Format::Hexadecimal => $uuid === '00000000000000000000000000000000',
+            Format::Bytes => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             default => false,
         };
     }
@@ -176,11 +176,11 @@ trait Validation
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
      */
-    private function isValid(string $uuid): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
-        return $this->hasValidFormat($uuid)
-            && $this->getVariantFromUuid($uuid) === Variant::Rfc4122
-            && $this->getVersionFromUuid($uuid) === $this->getVersion()->value;
+        return $this->hasValidFormat($uuid, $format)
+            && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc4122
+            && $this->getVersionFromUuid($uuid, $format) === $this->getVersion()->value;
     }
 
     /**
@@ -198,7 +198,9 @@ trait Validation
             && strlen($format[1]) === 4
             && strlen($format[2]) === 4
             && strlen($format[3]) === 4
-            && strlen($format[4]) === 12
+            // There's no need to count the 5th segment,
+            // since we already know the length of the string.
+            // && strlen($format[4]) === 12
             && strspn($uuid, "-$mask") === 36;
     }
 }

@@ -22,7 +22,9 @@ use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
+use function assert;
 use function sprintf;
+use function strlen;
 
 /**
  * The Max UUID is a special form of UUID that is specified to have all 128
@@ -38,9 +40,15 @@ final class MaxUuid implements UuidInterface
 
     public function __construct(private readonly string $uuid = Uuid::MAX)
     {
-        if (!$this->isValid($this->uuid)) {
+        $format = Format::tryFrom(strlen($this->uuid));
+
+        if (!$this->isValid($this->uuid, $format)) {
             throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $this->uuid));
         }
+
+        assert($format !== null);
+
+        $this->format = $format;
     }
 
     public function getVariant(): Variant
@@ -55,8 +63,8 @@ final class MaxUuid implements UuidInterface
         throw new BadMethodCallException('Max UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
-        return $this->isMax($uuid);
+        return $this->isMax($uuid, $format);
     }
 }

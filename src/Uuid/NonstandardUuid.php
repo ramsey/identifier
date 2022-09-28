@@ -21,8 +21,10 @@ use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 
+use function assert;
 use function hexdec;
 use function sprintf;
+use function strlen;
 use function substr;
 
 /**
@@ -42,17 +44,21 @@ final class NonstandardUuid implements UuidInterface
 
     public function __construct(private readonly string $uuid)
     {
-        if (!$this->isValid($this->uuid)) {
+        $format = Format::tryFrom(strlen($this->uuid));
+
+        if (!$this->isValid($this->uuid, $format)) {
             throw new InvalidArgumentException(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
         }
+
+        assert($format !== null);
+
+        $this->format = $format;
     }
 
     public function getVariant(): Variant
     {
         return $this->determineVariant(
-            (int) hexdec(
-                substr($this->getFormat(Format::String, $this->uuid), 19, 1),
-            ),
+            (int) hexdec(substr($this->getFormat(Format::String), 19, 1)),
         );
     }
 
@@ -61,24 +67,24 @@ final class NonstandardUuid implements UuidInterface
         throw new BadMethodCallException('Nonstandard UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
-        if (!$this->hasValidFormat($uuid)) {
+        if (!$this->hasValidFormat($uuid, $format)) {
             return false;
         }
 
-        if ($this->isMax($uuid) || $this->isNil($uuid)) {
+        if ($this->isMax($uuid, $format) || $this->isNil($uuid, $format)) {
             return false;
         }
 
-        if ($this->getVariantFromUuid($uuid) !== Variant::Rfc4122) {
+        if ($this->getVariantFromUuid($uuid, $format) !== Variant::Rfc4122) {
             return true;
         }
 
-        $version = $this->getVersionFromUuid($uuid);
+        $version = $this->getVersionFromUuid($uuid, $format);
 
         // Version 2 UUIDs that do not have a proper domain are nonstandard.
-        if ($version === 2 && $this->getLocalDomainFromUuid($uuid) === null) {
+        if ($version === 2 && $this->getLocalDomainFromUuid($uuid, $format) === null) {
             return true;
         }
 
