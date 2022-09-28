@@ -36,13 +36,11 @@ final class NilUuid implements UuidInterface
 {
     use StandardUuid;
 
-    public function __construct(string $uuid = Uuid::NIL)
+    public function __construct(private readonly string $uuid = Uuid::NIL)
     {
-        if (!$this->isValid($uuid)) {
-            throw new InvalidArgumentException(sprintf('Invalid Nil UUID: "%s"', $uuid));
+        if (!$this->isValid($this->uuid)) {
+            throw new InvalidArgumentException(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
         }
-
-        $this->uuid = $uuid;
     }
 
     public function getVariant(): Variant

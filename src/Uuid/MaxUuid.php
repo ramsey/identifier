@@ -36,13 +36,11 @@ final class MaxUuid implements UuidInterface
 {
     use StandardUuid;
 
-    public function __construct(string $uuid = Uuid::MAX)
+    public function __construct(private readonly string $uuid = Uuid::MAX)
     {
-        if (!$this->isValid($uuid)) {
-            throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $uuid));
+        if (!$this->isValid($this->uuid)) {
+            throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $this->uuid));
         }
-
-        $this->uuid = $uuid;
     }
 
     public function getVariant(): Variant
