@@ -22,7 +22,6 @@ use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
-use function assert;
 use function sprintf;
 use function strlen;
 
@@ -40,15 +39,11 @@ final class MaxUuid implements UuidInterface
 
     public function __construct(private readonly string $uuid = Uuid::MAX)
     {
-        $format = Format::tryFrom(strlen($this->uuid));
+        $this->format = strlen($this->uuid);
 
-        if (!$this->isValid($this->uuid, $format)) {
+        if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $this->uuid));
         }
-
-        assert($format !== null);
-
-        $this->format = $format;
     }
 
     public function getVariant(): Variant
@@ -63,7 +58,7 @@ final class MaxUuid implements UuidInterface
         throw new BadMethodCallException('Max UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, int $format): bool
     {
         return $this->isMax($uuid, $format);
     }

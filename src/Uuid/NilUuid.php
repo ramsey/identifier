@@ -22,7 +22,6 @@ use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
 
-use function assert;
 use function sprintf;
 use function strlen;
 
@@ -40,15 +39,11 @@ final class NilUuid implements UuidInterface
 
     public function __construct(private readonly string $uuid = Uuid::NIL)
     {
-        $format = Format::tryFrom(strlen($this->uuid));
+        $this->format = strlen($this->uuid);
 
-        if (!$this->isValid($this->uuid, $format)) {
+        if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgumentException(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
         }
-
-        assert($format !== null);
-
-        $this->format = $format;
     }
 
     public function getVariant(): Variant
@@ -63,7 +58,7 @@ final class NilUuid implements UuidInterface
         throw new BadMethodCallException('Nil UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, int $format): bool
     {
         return $this->isNil($uuid, $format);
     }

@@ -17,24 +17,31 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 /**
- * This internal enum identifies a specific format of UUID
+ * This internal class identifies a specific format of UUID
  *
  * @internal
  */
-enum Format: int
+final class Format
 {
     /**
      * String standard representation
      */
-    case String = 36;
+    public const STRING = 36;
 
     /**
      * Hexadecimal representation
      */
-    case Hexadecimal = 32;
+    public const HEX = 32;
 
     /**
      * Bytes representation
      */
-    case Bytes = 16;
+    public const BYTES = 16;
+
+    /**
+     * Disallow public instantiation
+     */
+    private function __construct()
+    {
+    }
 }

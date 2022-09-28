@@ -21,7 +21,6 @@ use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use InvalidArgumentException;
 
-use function assert;
 use function hexdec;
 use function sprintf;
 use function strlen;
@@ -44,21 +43,17 @@ final class NonstandardUuid implements UuidInterface
 
     public function __construct(private readonly string $uuid)
     {
-        $format = Format::tryFrom(strlen($this->uuid));
+        $this->format = strlen($this->uuid);
 
-        if (!$this->isValid($this->uuid, $format)) {
+        if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgumentException(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
         }
-
-        assert($format !== null);
-
-        $this->format = $format;
     }
 
     public function getVariant(): Variant
     {
         return $this->determineVariant(
-            (int) hexdec(substr($this->getFormat(Format::String), 19, 1)),
+            (int) hexdec(substr($this->getFormat(Format::STRING), 19, 1)),
         );
     }
 
@@ -67,7 +62,7 @@ final class NonstandardUuid implements UuidInterface
         throw new BadMethodCallException('Nonstandard UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, int $format): bool
     {
         if (!$this->hasValidFormat($uuid, $format)) {
             return false;

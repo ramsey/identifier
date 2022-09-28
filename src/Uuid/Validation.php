@@ -70,12 +70,12 @@ trait Validation
      *
      * The domain field is only relevant to version 2 UUIDs.
      */
-    private function getLocalDomainFromUuid(string $uuid, ?Format $format): ?Domain
+    private function getLocalDomainFromUuid(string $uuid, int $format): ?Domain
     {
         return match ($format) {
-            Format::String => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
-            Format::Hexadecimal => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
-            Format::Bytes => Domain::tryFrom((static function (string $bytes): int {
+            Format::STRING => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
+            Format::HEX => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
+            Format::BYTES => Domain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
                 $parts = unpack('n*', "\x00" . substr($bytes, 9, 1));
 
@@ -90,12 +90,12 @@ trait Validation
     /**
      * Returns the UUID variant, if available
      */
-    private function getVariantFromUuid(string $uuid, ?Format $format): ?Variant
+    private function getVariantFromUuid(string $uuid, int $format): ?Variant
     {
         return match ($format) {
-            Format::String => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
-            Format::Hexadecimal => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
-            Format::Bytes => $this->determineVariant(
+            Format::STRING => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
+            Format::HEX => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
+            Format::BYTES => $this->determineVariant(
                 (
                     function (string $uuid): int {
                         /** @var positive-int[] $parts */
@@ -114,12 +114,12 @@ trait Validation
     /**
      * Returns the UUID version, if available
      */
-    private function getVersionFromUuid(string $uuid, ?Format $format): ?int
+    private function getVersionFromUuid(string $uuid, int $format): ?int
     {
         return match ($format) {
-            Format::String => (int) hexdec(substr($uuid, 14, 1)),
-            Format::Hexadecimal => (int) hexdec(substr($uuid, 12, 1)),
-            Format::Bytes => (static function (string $uuid): int {
+            Format::STRING => (int) hexdec(substr($uuid, 14, 1)),
+            Format::HEX => (int) hexdec(substr($uuid, 12, 1)),
+            Format::BYTES => (static function (string $uuid): int {
                 /** @var positive-int[] $parts */
                 $parts = unpack('n*', $uuid, 6);
 
@@ -133,12 +133,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID has a valid format
      */
-    private function hasValidFormat(string $uuid, ?Format $format): bool
+    private function hasValidFormat(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::String => $this->isValidStringLayout($uuid, Mask::HEX),
-            Format::Hexadecimal => strspn($uuid, Mask::HEX) === 32,
-            Format::Bytes => true,
+            Format::STRING => $this->isValidStringLayout($uuid, Mask::HEX),
+            Format::HEX => strspn($uuid, Mask::HEX) === 32,
+            Format::BYTES => true,
             default => false,
         };
     }
@@ -147,12 +147,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID is a Max UUID
      */
-    private function isMax(string $uuid, ?Format $format): bool
+    private function isMax(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::String => $this->isValidStringLayout($uuid, Mask::MAX),
-            Format::Hexadecimal => strspn($uuid, Mask::MAX) === 32,
-            Format::Bytes => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+            Format::STRING => $this->isValidStringLayout($uuid, Mask::MAX),
+            Format::HEX => strspn($uuid, Mask::MAX) === 32,
+            Format::BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
     }
@@ -161,12 +161,12 @@ trait Validation
      * Returns true if the given string standard, hexadecimal, or bytes
      * representation of a UUID is a Nil UUID
      */
-    private function isNil(string $uuid, ?Format $format): bool
+    private function isNil(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::String => $uuid === '00000000-0000-0000-0000-000000000000',
-            Format::Hexadecimal => $uuid === '00000000000000000000000000000000',
-            Format::Bytes => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            Format::STRING => $uuid === '00000000-0000-0000-0000-000000000000',
+            Format::HEX => $uuid === '00000000000000000000000000000000',
+            Format::BYTES => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             default => false,
         };
     }
@@ -176,7 +176,7 @@ trait Validation
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
      */
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, int $format): bool
     {
         return $this->hasValidFormat($uuid, $format)
             && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc4122
