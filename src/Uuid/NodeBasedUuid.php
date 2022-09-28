@@ -35,6 +35,6 @@ trait NodeBasedUuid
     public function getNode(): string
     {
         /** @var non-empty-string */
-        return substr($this->getFormat(Format::HEX), -12);
+        return substr($this->getFormat(Util::FORMAT_HEX), -12);
     }
 }

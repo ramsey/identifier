@@ -50,7 +50,7 @@ final class UuidV6 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Format::STRING);
+        $uuid = $this->getFormat(Util::FORMAT_STRING);
 
         return sprintf(
             '%08s%04s%03x',

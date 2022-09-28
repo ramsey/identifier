@@ -79,7 +79,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     public function getLocalIdentifier(): int
     {
-        return (int) hexdec(substr($this->getFormat(Format::STRING), 0, 8));
+        return (int) hexdec(substr($this->getFormat(Util::FORMAT_STRING), 0, 8));
     }
 
     public function getVersion(): Version
@@ -99,7 +99,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Format::STRING);
+        $uuid = $this->getFormat(Util::FORMAT_STRING);
 
         return sprintf(
             '%03x%04s%08s',

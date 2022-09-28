@@ -53,7 +53,7 @@ final class NonstandardUuid implements UuidInterface
     public function getVariant(): Variant
     {
         return $this->determineVariant(
-            (int) hexdec(substr($this->getFormat(Format::STRING), 19, 1)),
+            (int) hexdec(substr($this->getFormat(Util::FORMAT_STRING), 19, 1)),
         );
     }
 

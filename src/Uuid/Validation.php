@@ -73,9 +73,9 @@ trait Validation
     private function getLocalDomainFromUuid(string $uuid, int $format): ?Domain
     {
         return match ($format) {
-            Format::STRING => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
-            Format::HEX => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
-            Format::BYTES => Domain::tryFrom((static function (string $bytes): int {
+            Util::FORMAT_STRING => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
+            Util::FORMAT_HEX => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
+            Util::FORMAT_BYTES => Domain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
                 $parts = unpack('n*', "\x00" . substr($bytes, 9, 1));
 
@@ -93,9 +93,9 @@ trait Validation
     private function getVariantFromUuid(string $uuid, int $format): ?Variant
     {
         return match ($format) {
-            Format::STRING => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
-            Format::HEX => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
-            Format::BYTES => $this->determineVariant(
+            Util::FORMAT_STRING => $this->determineVariant((int) hexdec(substr($uuid, 19, 1))),
+            Util::FORMAT_HEX => $this->determineVariant((int) hexdec(substr($uuid, 16, 1))),
+            Util::FORMAT_BYTES => $this->determineVariant(
                 (
                     function (string $uuid): int {
                         /** @var positive-int[] $parts */
@@ -117,9 +117,9 @@ trait Validation
     private function getVersionFromUuid(string $uuid, int $format): ?int
     {
         return match ($format) {
-            Format::STRING => (int) hexdec(substr($uuid, 14, 1)),
-            Format::HEX => (int) hexdec(substr($uuid, 12, 1)),
-            Format::BYTES => (static function (string $uuid): int {
+            Util::FORMAT_STRING => (int) hexdec(substr($uuid, 14, 1)),
+            Util::FORMAT_HEX => (int) hexdec(substr($uuid, 12, 1)),
+            Util::FORMAT_BYTES => (static function (string $uuid): int {
                 /** @var positive-int[] $parts */
                 $parts = unpack('n*', $uuid, 6);
 
@@ -136,9 +136,9 @@ trait Validation
     private function hasValidFormat(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::STRING => $this->isValidStringLayout($uuid, Mask::HEX),
-            Format::HEX => strspn($uuid, Mask::HEX) === 32,
-            Format::BYTES => true,
+            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Mask::HEX),
+            Util::FORMAT_HEX => strspn($uuid, Mask::HEX) === 32,
+            Util::FORMAT_BYTES => true,
             default => false,
         };
     }
@@ -150,9 +150,9 @@ trait Validation
     private function isMax(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::STRING => $this->isValidStringLayout($uuid, Mask::MAX),
-            Format::HEX => strspn($uuid, Mask::MAX) === 32,
-            Format::BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Mask::MAX),
+            Util::FORMAT_HEX => strspn($uuid, Mask::MAX) === 32,
+            Util::FORMAT_BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
     }
@@ -164,9 +164,9 @@ trait Validation
     private function isNil(string $uuid, int $format): bool
     {
         return match ($format) {
-            Format::STRING => $uuid === '00000000-0000-0000-0000-000000000000',
-            Format::HEX => $uuid === '00000000000000000000000000000000',
-            Format::BYTES => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            Util::FORMAT_STRING => $uuid === '00000000-0000-0000-0000-000000000000',
+            Util::FORMAT_HEX => $uuid === '00000000000000000000000000000000',
+            Util::FORMAT_BYTES => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             default => false,
         };
     }

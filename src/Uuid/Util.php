@@ -39,6 +39,21 @@ use const STR_PAD_LEFT;
 final class Util
 {
     /**
+     * Bytes representation
+     */
+    public const FORMAT_BYTES = 16;
+
+    /**
+     * String standard representation
+     */
+    public const FORMAT_STRING = 36;
+
+    /**
+     * Hexadecimal representation
+     */
+    public const FORMAT_HEX = 32;
+
+    /**
      * The number of 100-nanosecond intervals as a native integer between the
      * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
      */
