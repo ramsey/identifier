@@ -20,7 +20,6 @@ use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Uuid;
 
 use function sprintf;
 use function strlen;
@@ -37,10 +36,12 @@ final class MaxUuid implements UuidInterface
 {
     use StandardUuid;
 
+    private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+
     /**
      * @throws InvalidArgumentException
      */
-    public function __construct(private readonly string $uuid = Uuid::MAX)
+    public function __construct(private readonly string $uuid = self::MAX)
     {
         $this->format = strlen($this->uuid);
 

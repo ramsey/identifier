@@ -119,7 +119,7 @@ class NilUuidTest extends TestCase
     {
         $expected =
             'O:30:"Ramsey\\Identifier\\Uuid\\NilUuid":1:{s:4:"uuid";s:36:"00000000-0000-0000-0000-000000000000";}';
-        $serialized = serialize($this->nilUuid);
+        $serialized = serialize($this->nilUuidWithString);
 
         $this->assertSame($expected, $serialized);
     }
@@ -145,10 +145,10 @@ class NilUuidTest extends TestCase
 
     public function testCastsToString(): void
     {
-        $this->assertSame(Uuid::NIL, (string) $this->nilUuid);
-        $this->assertSame(Uuid::NIL, (string) $this->nilUuidWithString);
-        $this->assertSame(Uuid::NIL, (string) $this->nilUuidWithHex);
-        $this->assertSame(Uuid::NIL, (string) $this->nilUuidWithBytes);
+        $this->assertSame(Uuid::nil()->toString(), (string) $this->nilUuid);
+        $this->assertSame(Uuid::nil()->toString(), (string) $this->nilUuidWithString);
+        $this->assertSame(Uuid::nil()->toString(), (string) $this->nilUuidWithHex);
+        $this->assertSame(Uuid::nil()->toString(), (string) $this->nilUuidWithBytes);
     }
 
     public function testUnserializeForString(): void
@@ -158,7 +158,7 @@ class NilUuidTest extends TestCase
         $nilUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\NilUuid::class, $nilUuid);
-        $this->assertSame(Uuid::NIL, (string) $nilUuid);
+        $this->assertSame(Uuid::nil()->toString(), (string) $nilUuid);
     }
 
     public function testUnserializeForHex(): void
@@ -168,7 +168,7 @@ class NilUuidTest extends TestCase
         $nilUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\NilUuid::class, $nilUuid);
-        $this->assertSame(Uuid::NIL, (string) $nilUuid);
+        $this->assertSame(Uuid::nil()->toString(), (string) $nilUuid);
     }
 
     public function testUnserializeForBytes(): void
@@ -179,7 +179,7 @@ class NilUuidTest extends TestCase
         $nilUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\NilUuid::class, $nilUuid);
-        $this->assertSame(Uuid::NIL, (string) $nilUuid);
+        $this->assertSame(Uuid::nil()->toString(), (string) $nilUuid);
     }
 
     public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
@@ -224,11 +224,11 @@ class NilUuidTest extends TestCase
             'with int' => [123, -1],
             'with float' => [123.456, -1],
             'with string' => ['foobar', -1],
-            'with string Nil UUID' => [Uuid::NIL, 0],
+            'with string Nil UUID' => [Uuid::nil()->toString(), 0],
             'with hex Nil UUID' => ['00000000000000000000000000000000', 0],
             'with bytes Nil UUID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0],
-            'with string Max UUID' => [Uuid::MAX, -1],
-            'with string Max UUID all caps' => [strtoupper(Uuid::MAX), -1],
+            'with string Max UUID' => [Uuid::max()->toString(), -1],
+            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -1],
             'with bool true' => [true, -1],
             'with bool false' => [false, 1],
             'with Stringable class' => [
@@ -289,11 +289,11 @@ class NilUuidTest extends TestCase
             'with int' => [123, false],
             'with float' => [123.456, false],
             'with string' => ['foobar', false],
-            'with string Nil UUID' => [Uuid::NIL, true],
+            'with string Nil UUID' => [Uuid::nil()->toString(), true],
             'with hex Nil UUID' => ['00000000000000000000000000000000', true],
             'with bytes Nil UUID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", true],
-            'with string Max UUID' => [Uuid::MAX, false],
-            'with string Max UUID all caps' => [strtoupper(Uuid::MAX), false],
+            'with string Max UUID' => [Uuid::max()->toString(), false],
+            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), false],
             'with bool true' => [true, false],
             'with bool false' => [false, false],
             'with Stringable class' => [
@@ -344,18 +344,18 @@ class NilUuidTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $this->assertSame('"' . Uuid::NIL . '"', json_encode($this->nilUuid));
-        $this->assertSame('"' . Uuid::NIL . '"', json_encode($this->nilUuidWithString));
-        $this->assertSame('"' . Uuid::NIL . '"', json_encode($this->nilUuidWithHex));
-        $this->assertSame('"' . Uuid::NIL . '"', json_encode($this->nilUuidWithBytes));
+        $this->assertSame('"' . Uuid::nil()->toString() . '"', json_encode($this->nilUuid));
+        $this->assertSame('"' . Uuid::nil()->toString() . '"', json_encode($this->nilUuidWithString));
+        $this->assertSame('"' . Uuid::nil()->toString() . '"', json_encode($this->nilUuidWithHex));
+        $this->assertSame('"' . Uuid::nil()->toString() . '"', json_encode($this->nilUuidWithBytes));
     }
 
     public function testToString(): void
     {
-        $this->assertSame(Uuid::NIL, $this->nilUuid->toString());
-        $this->assertSame(Uuid::NIL, $this->nilUuidWithString->toString());
-        $this->assertSame(Uuid::NIL, $this->nilUuidWithHex->toString());
-        $this->assertSame(Uuid::NIL, $this->nilUuidWithBytes->toString());
+        $this->assertSame(Uuid::nil()->toString(), $this->nilUuid->toString());
+        $this->assertSame(Uuid::nil()->toString(), $this->nilUuidWithString->toString());
+        $this->assertSame(Uuid::nil()->toString(), $this->nilUuidWithHex->toString());
+        $this->assertSame(Uuid::nil()->toString(), $this->nilUuidWithBytes->toString());
     }
 
     public function testToBytes(): void
@@ -388,10 +388,10 @@ class NilUuidTest extends TestCase
 
     public function testToUrn(): void
     {
-        $this->assertSame('urn:uuid:' . Uuid::NIL, $this->nilUuid->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::NIL, $this->nilUuidWithString->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::NIL, $this->nilUuidWithHex->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::NIL, $this->nilUuidWithBytes->toUrn());
+        $this->assertSame('urn:uuid:' . Uuid::nil()->toString(), $this->nilUuid->toUrn());
+        $this->assertSame('urn:uuid:' . Uuid::nil()->toString(), $this->nilUuidWithString->toUrn());
+        $this->assertSame('urn:uuid:' . Uuid::nil()->toString(), $this->nilUuidWithHex->toUrn());
+        $this->assertSame('urn:uuid:' . Uuid::nil()->toString(), $this->nilUuidWithBytes->toUrn());
     }
 
     /**

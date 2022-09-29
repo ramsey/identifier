@@ -136,7 +136,7 @@ trait Validation
     {
         return match ($format) {
             Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_HEX),
-            Util::FORMAT_HEX => strspn($uuid, Util::MASK_HEX) === 32,
+            Util::FORMAT_HEX => strspn($uuid, Util::MASK_HEX) === Util::FORMAT_HEX,
             Util::FORMAT_BYTES => true,
             default => false,
         };
@@ -150,7 +150,7 @@ trait Validation
     {
         return match ($format) {
             Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_MAX),
-            Util::FORMAT_HEX => strspn($uuid, Util::MASK_MAX) === 32,
+            Util::FORMAT_HEX => strspn($uuid, Util::MASK_MAX) === Util::FORMAT_HEX,
             Util::FORMAT_BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
@@ -200,6 +200,6 @@ trait Validation
             // There's no need to count the 5th segment,
             // since we already know the length of the string.
             // && strlen($format[4]) === 12
-            && strspn($uuid, "-$mask") === 36;
+            && strspn($uuid, "-$mask") === Util::FORMAT_STRING;
     }
 }

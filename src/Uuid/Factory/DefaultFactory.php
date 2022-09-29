@@ -52,7 +52,7 @@ trait DefaultFactory
      */
     private function createFromBytesInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === 16) {
+        if (strlen($identifier) === Util::FORMAT_BYTES) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
@@ -65,7 +65,7 @@ trait DefaultFactory
      */
     private function createFromHexadecimalInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === 32 && $this->hasValidFormat($identifier, Util::FORMAT_HEX)) {
+        if (strlen($identifier) === Util::FORMAT_HEX && $this->hasValidFormat($identifier, Util::FORMAT_HEX)) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }

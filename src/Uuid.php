@@ -43,6 +43,22 @@ final class Uuid
     public const MAX = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
 
     /**
+     * Creates a Max UUID with all bits set to one (1)
+     */
+    public static function max(): MaxUuid
+    {
+        return self::getFactory()->max();
+    }
+
+    /**
+     * Creates a Nil UUID with all bits set to zero (0)
+     */
+    public static function nil(): NilUuid
+    {
+        return self::getFactory()->nil();
+    }
+
+    /**
      * Disallow public instantiation
      */
     private function __construct()

@@ -20,7 +20,6 @@ use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Uuid;
 
 use function sprintf;
 use function strlen;
@@ -37,10 +36,12 @@ final class NilUuid implements UuidInterface
 {
     use StandardUuid;
 
+    private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
     /**
      * @throws InvalidArgumentException
      */
-    public function __construct(private readonly string $uuid = Uuid::NIL)
+    public function __construct(private readonly string $uuid = self::NIL)
     {
         $this->format = strlen($this->uuid);
 
