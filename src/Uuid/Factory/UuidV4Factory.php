@@ -32,6 +32,12 @@ final class UuidV4Factory implements UuidFactoryInterface
 {
     use DefaultFactory;
 
+    /**
+     * Constructs a factory for creating version 4, random UUIDs
+     *
+     * @param RandomServiceInterface $randomService A service used to generate
+     *     random bytes; defaults to {@see RandomBytesService}
+     */
     public function __construct(
         private readonly RandomServiceInterface $randomService = new RandomBytesService(),
     ) {

@@ -48,6 +48,18 @@ final class UuidV6Factory implements UuidFactoryInterface
 {
     use DefaultFactory;
 
+    /**
+     * Constructs a factory for creating version 6, reordered time UUIDs
+     *
+     * @param ClockSequenceServiceInterface $clockSequenceService A service used
+     *     to generate a clock sequence; defaults to
+     *     {@see RandomClockSequenceService}
+     * @param NodeServiceInterface $nodeService A service used to provide the
+     *     system node; defaults to {@see FallbackNodeService} with
+     *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
+     * @param TimeServiceInterface $timeService A service used to provide a
+     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     */
     public function __construct(
         private readonly ClockSequenceServiceInterface $clockSequenceService = new RandomClockSequenceService(),
         private readonly NodeServiceInterface $nodeService = new FallbackNodeService([

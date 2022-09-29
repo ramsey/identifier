@@ -29,12 +29,20 @@ use Ramsey\Identifier\Uuid\Util;
 use Ramsey\Identifier\Uuid\UuidV7;
 
 /**
- * A factory for creating version 1, Gregorian time UUIDs
+ * A factory for creating version 7, Unix Epoch time UUIDs
  */
 final class UuidV7Factory implements UuidFactoryInterface
 {
     use DefaultFactory;
 
+    /**
+     * Constructs a factory for creating version 7, Unix Epoch time UUIDs
+     *
+     * @param RandomServiceInterface $randomService A service used to generate
+     *     random bytes; defaults to {@see RandomBytesService}
+     * @param TimeServiceInterface $timeService A service used to provide a
+     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     */
     public function __construct(
         private readonly RandomServiceInterface $randomService = new RandomBytesService(),
         private readonly TimeServiceInterface $timeService = new CurrentDateTimeService(),

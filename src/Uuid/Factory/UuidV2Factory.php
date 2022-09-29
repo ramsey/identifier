@@ -52,6 +52,21 @@ final class UuidV2Factory implements UuidFactoryInterface
 {
     use DefaultFactory;
 
+    /**
+     * Constructs a factory for creating version 2, DCE Security UUIDs
+     *
+     * @param ClockSequenceServiceInterface $clockSequenceService A service used
+     *     to generate a clock sequence; defaults to
+     *     {@see RandomClockSequenceService}
+     * @param DceSecurityServiceInterface $dceSecurityService A service used
+     *     to get local identifiers when creating version 2 UUIDs; defaults to
+     *     {@see SystemDceSecurityService}
+     * @param NodeServiceInterface $nodeService A service used to provide the
+     *     system node; defaults to {@see FallbackNodeService} with
+     *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
+     * @param TimeServiceInterface $timeService A service used to provide a
+     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     */
     public function __construct(
         private readonly ClockSequenceServiceInterface $clockSequenceService = new RandomClockSequenceService(),
         private readonly DceSecurityServiceInterface $dceSecurityService = new SystemDceSecurityService(),
