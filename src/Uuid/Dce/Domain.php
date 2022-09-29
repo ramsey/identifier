@@ -37,4 +37,16 @@ enum Domain: int
      * Organization domain
      */
     case Org = 2;
+
+    /**
+     * Returns the "stringname" value, as defined by DCE
+     */
+    public function dceStringName(): string
+    {
+        return match ($this) {
+            Domain::Person => 'person',
+            Domain::Group => 'group',
+            Domain::Org => 'org',
+        };
+    }
 }

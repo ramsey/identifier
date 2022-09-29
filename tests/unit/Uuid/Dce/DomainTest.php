@@ -37,4 +37,33 @@ class DomainTest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider dceStringNameProvider
+     */
+    public function testDceStringName(Domain $domain, string $expected): void
+    {
+        $this->assertSame($expected, $domain->dceStringName());
+    }
+
+    /**
+     * @return array<array{domain: Domain, expected: string}>
+     */
+    public function dceStringNameProvider(): array
+    {
+        return [
+            [
+                'domain' => Domain::Person,
+                'expected' => 'person',
+            ],
+            [
+                'domain' => Domain::Group,
+                'expected' => 'group',
+            ],
+            [
+                'domain' => Domain::Org,
+                'expected' => 'org',
+            ],
+        ];
+    }
 }
