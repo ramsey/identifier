@@ -26,6 +26,9 @@ use function substr;
 
 use const PHP_INT_MAX;
 
+/**
+ * @runTestsInSeparateProcesses since the factory is stored statically on Uuid
+ */
 class UuidTest extends TestCase
 {
     /**
@@ -115,6 +118,26 @@ class UuidTest extends TestCase
             ['input' => '123.456'],
             ['input' => '340282366920937405648670758612812955647'],
         ];
+    }
+
+    public function testFromDateTimeReturnsVersion7Uuid(): void
+    {
+        $this->assertInstanceOf(UuidV7::class, Uuid::fromDateTime(new DateTimeImmutable('now')));
+    }
+
+    public function testFromDateTimeReturnsVersion6UuidWhenGivenNode(): void
+    {
+        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), 'aabbccdd'));
+    }
+
+    public function testFromDateTimeReturnsVersion6UuidWhenGivenClockSequence(): void
+    {
+        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), clockSequence: 42));
+    }
+
+    public function testFromDateTimeReturnsVersion6UuidWhenGivenNodeAndClockSequence(): void
+    {
+        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), 'aabb', 56));
     }
 
     /**
