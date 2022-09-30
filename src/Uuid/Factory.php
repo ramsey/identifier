@@ -52,6 +52,7 @@ use function strspn;
 use function unpack;
 
 use const PHP_INT_MAX;
+use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
@@ -171,7 +172,7 @@ final class Factory implements FactoryInterface
                 throw new InvalidArgumentException('Unable to create a UUID from a negative integer');
             }
 
-            $bytes = pack('J*', $identifier);
+            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J*' : 'N*', $identifier);
         } else {
             try {
                 $bytes = BigInteger::of($identifier)->toBytes(false);
