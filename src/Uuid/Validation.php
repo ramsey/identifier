@@ -174,6 +174,9 @@ trait Validation
      * Validates a UUID according to the RFC 4122 layout
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
+     *
+     * @psalm-suppress InvalidPropertyFetch We never call this from a context
+     *     where getVersion() returns the `never` type, but Psalm thinks we might.
      */
     private function isValid(string $uuid, int $format): bool
     {

@@ -73,6 +73,11 @@ final class Util
     public const MASK_HEX = '0123456789abcdefABCDEF';
 
     /**
+     * A mask used with functions like {@see strspn()} to validate string integers
+     */
+    public const MASK_INT = '0123456789';
+
+    /**
      * A mask used with functions like {@see strspn()} to validate Max UUID strings
      */
     public const MASK_MAX = 'fF';
