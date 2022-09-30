@@ -61,7 +61,7 @@ interface FactoryInterface extends UuidFactoryInterface
     /**
      * Creates a version 2, DCE Security UUID
      *
-     * @param Dce\Domain $localDomain The local domain to which the local
+     * @param DceDomain $localDomain The local domain to which the local
      *     identifier belongs; this defaults to "Person," and if $localIdentifier
      *     is not provided, the factory will attempt to obtain a suitable local
      *     ID for the domain (e.g., the UID or GID of the user running the script)
@@ -83,7 +83,7 @@ interface FactoryInterface extends UuidFactoryInterface
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function uuid2(
-        Dce\Domain $localDomain = Dce\Domain::Person,
+        DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
         ?int $clockSequence = null,

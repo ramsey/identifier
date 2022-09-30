@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use Ramsey\Identifier\Uuid\Namespaces;
+use Ramsey\Identifier\Uuid\NamespaceId;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Test\Identifier\TestCase;
 
-class NamespacesTest extends TestCase
+class NamespaceIdTest extends TestCase
 {
     /**
      * @dataProvider provideEnumCases
      */
     public function testEnumCases(string $value, string $expectedCase): void
     {
-        $this->assertSame($expectedCase, Namespaces::from($value)->name);
+        $this->assertSame($expectedCase, NamespaceId::from($value)->name);
     }
 
     /**
@@ -46,7 +46,7 @@ class NamespacesTest extends TestCase
     /**
      * @dataProvider uuidProvider
      */
-    public function testUuid(Namespaces $ns, string $expected): void
+    public function testUuid(NamespaceId $ns, string $expected): void
     {
         $uuid = $ns->uuid();
 
@@ -55,25 +55,25 @@ class NamespacesTest extends TestCase
     }
 
     /**
-     * @return array<array{ns: Namespaces, expected: string}>
+     * @return array<array{ns: NamespaceId, expected: string}>
      */
     public function uuidProvider(): array
     {
         return [
             [
-                'ns' => Namespaces::DNS,
+                'ns' => NamespaceId::DNS,
                 'expected' => '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
             ],
             [
-                'ns' => Namespaces::OID,
+                'ns' => NamespaceId::OID,
                 'expected' => '6ba7b812-9dad-11d1-80b4-00c04fd430c8',
             ],
             [
-                'ns' => Namespaces::URL,
+                'ns' => NamespaceId::URL,
                 'expected' => '6ba7b811-9dad-11d1-80b4-00c04fd430c8',
             ],
             [
-                'ns' => Namespaces::X500,
+                'ns' => NamespaceId::X500,
                 'expected' => '6ba7b814-9dad-11d1-80b4-00c04fd430c8',
             ],
         ];

@@ -21,6 +21,7 @@ use Identifier\Exception\InvalidArgumentException;
 use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\TimeBasedUuidInterface;
 use Identifier\Uuid\UuidInterface;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\Factory;
 use Ramsey\Identifier\Uuid\FactoryInterface;
 use Ramsey\Identifier\Uuid\MaxUuid;
@@ -164,7 +165,7 @@ final class Uuid
     /**
      * Creates a version 2, DCE Security UUID
      *
-     * @param Uuid\Dce\Domain $localDomain The local domain to which the local
+     * @param DceDomain $localDomain The local domain to which the local
      *     identifier belongs; this defaults to "Person," and if $localIdentifier
      *     is not provided, the factory will attempt to obtain a suitable local
      *     ID for the domain (e.g., the UID or GID of the user running the script)
@@ -186,7 +187,7 @@ final class Uuid
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public static function uuid2(
-        Uuid\Dce\Domain $localDomain = Uuid\Dce\Domain::Person,
+        DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
         ?int $clockSequence = null,

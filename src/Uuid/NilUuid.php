@@ -20,6 +20,7 @@ use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 use function sprintf;
 use function strlen;

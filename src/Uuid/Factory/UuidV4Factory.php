@@ -22,7 +22,7 @@ use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Exception\RandomSourceException;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomServiceInterface;
-use Ramsey\Identifier\Uuid\Util;
+use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\UuidV4;
 
 /**
@@ -50,7 +50,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     public function create(): UuidV4
     {
         $bytes = $this->randomService->getRandomBytes(16);
-        $bytes = Util::applyVersionAndVariant($bytes, Version::Random);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::Random);
 
         return new UuidV4($bytes);
     }

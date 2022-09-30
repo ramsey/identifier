@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 /**
  * Version 3 UUIDs are named-based, using a combination of a namespace and name

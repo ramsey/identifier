@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Uuid\Dce;
+namespace Ramsey\Test\Identifier\Uuid;
 
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Test\Identifier\TestCase;
 
-class DomainTest extends TestCase
+class DceDomainTest extends TestCase
 {
     /**
      * @dataProvider provideEnumCases
      */
     public function testEnumCases(int $value, string $expectedCase): void
     {
-        $this->assertSame($expectedCase, Domain::from($value)->name);
+        $this->assertSame($expectedCase, DceDomain::from($value)->name);
     }
 
     /**
@@ -41,27 +41,27 @@ class DomainTest extends TestCase
     /**
      * @dataProvider dceStringNameProvider
      */
-    public function testDceStringName(Domain $domain, string $expected): void
+    public function testDceStringName(DceDomain $domain, string $expected): void
     {
         $this->assertSame($expected, $domain->dceStringName());
     }
 
     /**
-     * @return array<array{domain: Domain, expected: string}>
+     * @return array<array{domain: DceDomain, expected: string}>
      */
     public function dceStringNameProvider(): array
     {
         return [
             [
-                'domain' => Domain::Person,
+                'domain' => DceDomain::Person,
                 'expected' => 'person',
             ],
             [
-                'domain' => Domain::Group,
+                'domain' => DceDomain::Group,
                 'expected' => 'group',
             ],
             [
-                'domain' => Domain::Org,
+                'domain' => DceDomain::Org,
                 'expected' => 'org',
             ],
         ];

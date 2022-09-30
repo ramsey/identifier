@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Identifier\Uuid\UuidInterface;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
@@ -438,7 +438,7 @@ class UuidTest extends TestCase
 
     public function testUuid2WithParams(): void
     {
-        $uuid = Uuid::uuid2(Domain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = Uuid::uuid2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame('0000d431-0000-2000-8002-010000000000', $uuid->toString());

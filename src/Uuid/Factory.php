@@ -40,6 +40,8 @@ use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomServiceInterface;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
 use Ramsey\Identifier\Service\Time\TimeServiceInterface;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\Validation;
 
 use function hexdec;
 use function is_int;
@@ -127,13 +129,13 @@ final class Factory implements FactoryInterface
      */
     public function createFromBytes(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === Util::FORMAT_BYTES) {
+        if (strlen($identifier) === Format::FORMAT_BYTES) {
             /** @var int[] $parts */
             $parts = unpack('C', $identifier[6]);
             $version = $parts[1] >> 4;
-            $variant = $this->getVariantFromUuid($identifier, Util::FORMAT_BYTES);
+            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_BYTES);
 
-            return $this->newUuid($identifier, $version, $variant, Util::FORMAT_BYTES);
+            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_BYTES);
         }
 
         throw new InvalidArgumentException('Identifier must be a 16-byte string');
@@ -144,11 +146,11 @@ final class Factory implements FactoryInterface
      */
     public function createFromHexadecimal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === Util::FORMAT_HEX && $this->hasValidFormat($identifier, Util::FORMAT_HEX)) {
-            $variant = $this->getVariantFromUuid($identifier, Util::FORMAT_HEX);
+        if (strlen($identifier) === Format::FORMAT_HEX && $this->hasValidFormat($identifier, Format::FORMAT_HEX)) {
+            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_HEX);
             $version = (int) hexdec($identifier[12]);
 
-            return $this->newUuid($identifier, $version, $variant, Util::FORMAT_HEX);
+            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_HEX);
         }
 
         throw new InvalidArgumentException('Identifier must be a 32-character hexadecimal string');
@@ -161,7 +163,7 @@ final class Factory implements FactoryInterface
     {
         if (
             is_string($identifier)
-            && strspn($identifier, Util::MASK_INT) === strlen($identifier)
+            && strspn($identifier, Format::MASK_INT) === strlen($identifier)
             && $identifier <= (string) PHP_INT_MAX
         ) {
             $identifier = (int) $identifier;
@@ -191,11 +193,11 @@ final class Factory implements FactoryInterface
      */
     public function createFromString(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Util::FORMAT_STRING)) {
-            $variant = $this->getVariantFromUuid($identifier, Util::FORMAT_STRING);
+        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Format::FORMAT_STRING)) {
+            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_STRING);
             $version = (int) hexdec($identifier[14]);
 
-            return $this->newUuid($identifier, $version, $variant, Util::FORMAT_STRING);
+            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_STRING);
         }
 
         throw new InvalidArgumentException('Identifier must be a UUID in string standard representation');
@@ -232,7 +234,7 @@ final class Factory implements FactoryInterface
      * @throws RandomSourceException
      */
     public function uuid2(
-        Dce\Domain $localDomain = Dce\Domain::Person,
+        DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
         ?int $clockSequence = null,
@@ -248,9 +250,9 @@ final class Factory implements FactoryInterface
     {
         if (!$namespace instanceof UuidInterface) {
             $namespace = match (strlen($namespace)) {
-                Util::FORMAT_STRING => $this->createFromString($namespace),
-                Util::FORMAT_HEX => $this->createFromHexadecimal($namespace),
-                Util::FORMAT_BYTES => $this->createFromBytes($namespace),
+                Format::FORMAT_STRING => $this->createFromString($namespace),
+                Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
+                Format::FORMAT_BYTES => $this->createFromBytes($namespace),
                 default => throw new InvalidArgumentException(sprintf('Invalid UUID namespace: "%s"', $namespace)),
             };
         }
@@ -274,9 +276,9 @@ final class Factory implements FactoryInterface
     {
         if (!$namespace instanceof UuidInterface) {
             $namespace = match (strlen($namespace)) {
-                Util::FORMAT_STRING => $this->createFromString($namespace),
-                Util::FORMAT_HEX => $this->createFromHexadecimal($namespace),
-                Util::FORMAT_BYTES => $this->createFromBytes($namespace),
+                Format::FORMAT_STRING => $this->createFromString($namespace),
+                Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
+                Format::FORMAT_BYTES => $this->createFromBytes($namespace),
                 default => throw new InvalidArgumentException(sprintf('Invalid UUID namespace: "%s"', $namespace)),
             };
         }

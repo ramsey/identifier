@@ -18,6 +18,8 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
 
 use function hexdec;
 use function sprintf;
@@ -58,13 +60,13 @@ final class UuidV2 implements NodeBasedUuidInterface
     /**
      * Returns the local domain to which the local identifier belongs
      *
-     * For example, if the local domain is {@see Dce\Domain::Person}, then the
+     * For example, if the local domain is {@see DceDomain::Person}, then the
      * local identifier should indicate the ID of a person's account on the
      * local host. On POSIX systems, this is usually the UID.
      */
-    public function getLocalDomain(): Dce\Domain
+    public function getLocalDomain(): DceDomain
     {
-        /** @var Dce\Domain */
+        /** @var DceDomain */
         return $this->getLocalDomainFromUuid($this->uuid, $this->format);
     }
 
@@ -74,12 +76,12 @@ final class UuidV2 implements NodeBasedUuidInterface
      *
      * The type of this identifier is indicated by the domain returned from
      * {@see self::getLocalDomain()}. For example, if the domain is
-     * {@see Dce\Domain::Group}, this identifier is a group ID on the local
+     * {@see DceDomain::Group}, this identifier is a group ID on the local
      * host. On POSIX systems, this is usually the GID.
      */
     public function getLocalIdentifier(): int
     {
-        return (int) hexdec(substr($this->getFormat(Util::FORMAT_STRING), 0, 8));
+        return (int) hexdec(substr($this->getFormat(Format::FORMAT_STRING), 0, 8));
     }
 
     public function getVersion(): Version
@@ -99,7 +101,7 @@ final class UuidV2 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Util::FORMAT_STRING);
+        $uuid = $this->getFormat(Format::FORMAT_STRING);
 
         return sprintf(
             '%03x%04s%08s',

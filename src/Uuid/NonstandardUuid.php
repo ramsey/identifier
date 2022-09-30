@@ -20,6 +20,8 @@ use BadMethodCallException;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 use function hexdec;
 use function sprintf;
@@ -56,7 +58,7 @@ final class NonstandardUuid implements UuidInterface
     public function getVariant(): Variant
     {
         return $this->determineVariant(
-            (int) hexdec(substr($this->getFormat(Util::FORMAT_STRING), 19, 1)),
+            (int) hexdec(substr($this->getFormat(Format::FORMAT_STRING), 19, 1)),
         );
     }
 

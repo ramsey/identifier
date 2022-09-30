@@ -20,7 +20,7 @@ use Identifier\Uuid\UuidFactoryInterface;
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Uuid\Util;
+use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\UuidV5;
 
 use function hash;
@@ -48,7 +48,7 @@ final class UuidV5Factory implements UuidFactoryInterface
 
         /** @psalm-var non-empty-string $bytes */
         $bytes = substr(hash('sha1', $namespace->toBytes() . $name, true), 0, 16);
-        $bytes = Util::applyVersionAndVariant($bytes, Version::HashSha1);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::HashSha1);
 
         return new UuidV5($bytes);
     }

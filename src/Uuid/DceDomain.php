@@ -14,14 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Dce;
+namespace Ramsey\Identifier\Uuid;
 
 /**
  * DCE local domains for version 2, DCE Security UUIDs
  *
  * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01 DCE 1.1: Auth & Sec, §11.5.1.1
  */
-enum Domain: int
+enum DceDomain: int
 {
     /**
      * Principal domain
@@ -44,9 +44,9 @@ enum Domain: int
     public function dceStringName(): string
     {
         return match ($this) {
-            Domain::Person => 'person',
-            Domain::Group => 'group',
-            Domain::Org => 'org',
+            DceDomain::Person => 'person',
+            DceDomain::Group => 'group',
+            DceDomain::Org => 'org',
         };
     }
 }

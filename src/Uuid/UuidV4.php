@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\UuidInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 /**
  * Random, or version 4, UUIDs are randomly or pseudo-randomly generated 128-bit

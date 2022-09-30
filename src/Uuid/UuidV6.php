@@ -18,6 +18,8 @@ namespace Ramsey\Identifier\Uuid;
 
 use Identifier\Uuid\NodeBasedUuidInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
 
 use function hexdec;
 use function sprintf;
@@ -50,7 +52,7 @@ final class UuidV6 implements NodeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Util::FORMAT_STRING);
+        $uuid = $this->getFormat(Format::FORMAT_STRING);
 
         return sprintf(
             '%08s%04s%03x',

@@ -14,11 +14,11 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid;
+namespace Ramsey\Identifier\Uuid\Utility;
 
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 
 use function count;
 use function explode;
@@ -69,12 +69,12 @@ trait Validation
      *
      * The domain field is only relevant to version 2 UUIDs.
      */
-    private function getLocalDomainFromUuid(string $uuid, int $format): ?Domain
+    private function getLocalDomainFromUuid(string $uuid, int $format): ?DceDomain
     {
         return match ($format) {
-            Util::FORMAT_STRING => Domain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
-            Util::FORMAT_HEX => Domain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
-            Util::FORMAT_BYTES => Domain::tryFrom((static function (string $bytes): int {
+            Format::FORMAT_STRING => DceDomain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
+            Format::FORMAT_HEX => DceDomain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
+            Format::FORMAT_BYTES => DceDomain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
                 $parts = unpack('n*', "\x00" . $bytes[9]);
 
@@ -92,9 +92,9 @@ trait Validation
     private function getVariantFromUuid(string $uuid, int $format): ?Variant
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->determineVariant((int) hexdec($uuid[19])),
-            Util::FORMAT_HEX => $this->determineVariant((int) hexdec($uuid[16])),
-            Util::FORMAT_BYTES => $this->determineVariant(
+            Format::FORMAT_STRING => $this->determineVariant((int) hexdec($uuid[19])),
+            Format::FORMAT_HEX => $this->determineVariant((int) hexdec($uuid[16])),
+            Format::FORMAT_BYTES => $this->determineVariant(
                 (
                     function (string $uuid): int {
                         /** @var positive-int[] $parts */
@@ -116,9 +116,9 @@ trait Validation
     private function getVersionFromUuid(string $uuid, int $format): ?int
     {
         return match ($format) {
-            Util::FORMAT_STRING => (int) hexdec($uuid[14]),
-            Util::FORMAT_HEX => (int) hexdec($uuid[12]),
-            Util::FORMAT_BYTES => (static function (string $uuid): int {
+            Format::FORMAT_STRING => (int) hexdec($uuid[14]),
+            Format::FORMAT_HEX => (int) hexdec($uuid[12]),
+            Format::FORMAT_BYTES => (static function (string $uuid): int {
                 /** @var positive-int[] $parts */
                 $parts = unpack('n*', $uuid, 6);
 
@@ -135,9 +135,9 @@ trait Validation
     private function hasValidFormat(string $uuid, int $format): bool
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_HEX),
-            Util::FORMAT_HEX => strspn($uuid, Util::MASK_HEX) === Util::FORMAT_HEX,
-            Util::FORMAT_BYTES => true,
+            Format::FORMAT_STRING => $this->isValidStringLayout($uuid, Format::MASK_HEX),
+            Format::FORMAT_HEX => strspn($uuid, Format::MASK_HEX) === Format::FORMAT_HEX,
+            Format::FORMAT_BYTES => true,
             default => false,
         };
     }
@@ -149,9 +149,9 @@ trait Validation
     private function isMax(string $uuid, int $format): bool
     {
         return match ($format) {
-            Util::FORMAT_STRING => $this->isValidStringLayout($uuid, Util::MASK_MAX),
-            Util::FORMAT_HEX => strspn($uuid, Util::MASK_MAX) === Util::FORMAT_HEX,
-            Util::FORMAT_BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+            Format::FORMAT_STRING => $this->isValidStringLayout($uuid, Format::MASK_MAX),
+            Format::FORMAT_HEX => strspn($uuid, Format::MASK_MAX) === Format::FORMAT_HEX,
+            Format::FORMAT_BYTES => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             default => false,
         };
     }
@@ -163,9 +163,9 @@ trait Validation
     private function isNil(string $uuid, int $format): bool
     {
         return match ($format) {
-            Util::FORMAT_STRING => $uuid === '00000000-0000-0000-0000-000000000000',
-            Util::FORMAT_HEX => $uuid === '00000000000000000000000000000000',
-            Util::FORMAT_BYTES => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+            Format::FORMAT_STRING => $uuid === '00000000-0000-0000-0000-000000000000',
+            Format::FORMAT_HEX => $uuid === '00000000000000000000000000000000',
+            Format::FORMAT_BYTES => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             default => false,
         };
     }
@@ -203,6 +203,6 @@ trait Validation
             // There's no need to count the 5th segment,
             // since we already know the length of the string.
             // && strlen($format[4]) === 12
-            && strspn($uuid, "-$mask") === Util::FORMAT_STRING;
+            && strspn($uuid, "-$mask") === Format::FORMAT_STRING;
     }
 }

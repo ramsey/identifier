@@ -12,7 +12,7 @@ use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Random\StaticBytesService;
 use Ramsey\Identifier\Service\Time\StaticDateTimeService;
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\Factory;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
@@ -456,7 +456,7 @@ class FactoryTest extends TestCase
 
     public function testUuid2WithParams(): void
     {
-        $uuid = $this->factory->uuid2(Domain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = $this->factory->uuid2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame('0000d431-0000-2000-8002-010000000000', $uuid->toString());
@@ -569,8 +569,8 @@ class FactoryTest extends TestCase
 
         $this->assertSame('175d43ea-405b-11ed-8001-010000000005', $factory->uuid1()->toString());
         $this->assertSame('00000002-405b-21ed-8100-010000000005', $factory->uuid2()->toString());
-        $this->assertSame('00000003-405b-21ed-8101-010000000005', $factory->uuid2(Domain::Group)->toString());
-        $this->assertSame('00000004-405b-21ed-8102-010000000005', $factory->uuid2(Domain::Org)->toString());
+        $this->assertSame('00000003-405b-21ed-8101-010000000005', $factory->uuid2(DceDomain::Group)->toString());
+        $this->assertSame('00000004-405b-21ed-8102-010000000005', $factory->uuid2(DceDomain::Org)->toString());
         $this->assertSame('00112233-4455-4677-8899-aabbccddeeff', $factory->uuid4()->toString());
         $this->assertSame('1ed405b1-75d4-63ea-8001-010000000005', $factory->uuid6()->toString());
         $this->assertSame('01838be7-85d6-7011-a233-445566778899', $factory->uuid7()->toString());

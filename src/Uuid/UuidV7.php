@@ -19,6 +19,8 @@ namespace Ramsey\Identifier\Uuid;
 use DateTimeImmutable;
 use Identifier\Uuid\TimeBasedUuidInterface;
 use Identifier\Uuid\Version;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
 
 use function hexdec;
 use function number_format;
@@ -55,7 +57,7 @@ final class UuidV7 implements TimeBasedUuidInterface
      */
     protected function getTimestamp(): string
     {
-        $uuid = $this->getFormat(Util::FORMAT_STRING);
+        $uuid = $this->getFormat(Format::FORMAT_STRING);
 
         return sprintf('%08s%04s', substr($uuid, 0, 8), substr($uuid, 9, 4));
     }

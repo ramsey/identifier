@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid;
+namespace Ramsey\Identifier\Uuid\Utility;
 
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
@@ -44,10 +44,10 @@ trait TimeBasedUuid
     public function getDateTime(): DateTimeImmutable
     {
         $epochNanoseconds = BigInteger::fromBase($this->getTimestamp(), 16)
-            ->minus(Util::GREGORIAN_OFFSET_INT);
+            ->minus(Time::GREGORIAN_OFFSET_INT);
 
         $unixTimestamp = $epochNanoseconds->dividedBy(
-            Util::NANOSECOND_INTERVALS,
+            Time::NANOSECOND_INTERVALS,
             RoundingMode::HALF_UP,
         );
 

@@ -25,7 +25,8 @@ use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomServiceInterface;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
 use Ramsey\Identifier\Service\Time\TimeServiceInterface;
-use Ramsey\Identifier\Uuid\Util;
+use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Identifier\Uuid\UuidV7;
 
 /**
@@ -60,9 +61,9 @@ final class UuidV7Factory implements UuidFactoryInterface
     {
         $dateTime = $dateTime ?? $this->timeService->getDateTime();
 
-        $bytes = Util::getTimeBytesForUnixEpoch($dateTime)
+        $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
             . $this->randomService->getRandomBytes(10);
-        $bytes = Util::applyVersionAndVariant($bytes, Version::UnixTime);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::UnixTime);
 
         return new UuidV7($bytes);
     }

@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid;
+namespace Ramsey\Identifier\Uuid\Utility;
 
 use Brick\Math\BigInteger;
 use Identifier\Uuid\Variant;
@@ -79,7 +79,7 @@ trait StandardUuid
 
     public function __toString(): string
     {
-        return $this->getFormat(Util::FORMAT_STRING);
+        return $this->getFormat(Format::FORMAT_STRING);
     }
 
     /**
@@ -104,10 +104,10 @@ trait StandardUuid
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
             if ($this->isValid($other, strlen($other))) {
-                $other = $this->getFormat(Util::FORMAT_STRING, $other);
+                $other = $this->getFormat(Format::FORMAT_STRING, $other);
             }
 
-            $compare = strcasecmp($this->getFormat(Util::FORMAT_STRING), $other);
+            $compare = strcasecmp($this->getFormat(Format::FORMAT_STRING), $other);
 
             return match (true) {
                 $compare < 0 => - 1,
@@ -138,17 +138,17 @@ trait StandardUuid
 
     public function jsonSerialize(): string
     {
-        return $this->getFormat(Util::FORMAT_STRING);
+        return $this->getFormat(Format::FORMAT_STRING);
     }
 
     public function toString(): string
     {
-        return $this->getFormat(Util::FORMAT_STRING);
+        return $this->getFormat(Format::FORMAT_STRING);
     }
 
     public function toBytes(): string
     {
-        return $this->getFormat(Util::FORMAT_BYTES);
+        return $this->getFormat(Format::FORMAT_BYTES);
     }
 
     /**
@@ -156,7 +156,7 @@ trait StandardUuid
      */
     public function toHexadecimal(): string
     {
-        return $this->getFormat(Util::FORMAT_HEX);
+        return $this->getFormat(Format::FORMAT_HEX);
     }
 
     /**
@@ -165,7 +165,7 @@ trait StandardUuid
     public function toInteger(): int | string
     {
         /** @psalm-var numeric-string */
-        return BigInteger::fromBase($this->getFormat(Util::FORMAT_HEX), 16)->__toString();
+        return BigInteger::fromBase($this->getFormat(Format::FORMAT_HEX), 16)->__toString();
     }
 
     /**
@@ -173,7 +173,7 @@ trait StandardUuid
      */
     public function toUrn(): string
     {
-        return 'urn:uuid:' . $this->getFormat(Util::FORMAT_STRING);
+        return 'urn:uuid:' . $this->getFormat(Format::FORMAT_STRING);
     }
 
     /**
@@ -186,21 +186,21 @@ trait StandardUuid
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
-            Util::FORMAT_STRING => match ($formatOfUuid) {
-                Util::FORMAT_STRING => strtolower($uuid),
-                Util::FORMAT_HEX => $this->toStringFromHex(strtolower($uuid)),
-                Util::FORMAT_BYTES => $this->toStringFromHex(bin2hex($uuid)),
+            Format::FORMAT_STRING => match ($formatOfUuid) {
+                Format::FORMAT_STRING => strtolower($uuid),
+                Format::FORMAT_HEX => $this->toStringFromHex(strtolower($uuid)),
+                Format::FORMAT_BYTES => $this->toStringFromHex(bin2hex($uuid)),
                 default => $uuid,
             },
-            Util::FORMAT_HEX => match ($formatOfUuid) {
-                Util::FORMAT_STRING => strtolower(str_replace('-', '', $uuid)),
-                Util::FORMAT_HEX => strtolower($uuid),
-                Util::FORMAT_BYTES => bin2hex($uuid),
+            Format::FORMAT_HEX => match ($formatOfUuid) {
+                Format::FORMAT_STRING => strtolower(str_replace('-', '', $uuid)),
+                Format::FORMAT_HEX => strtolower($uuid),
+                Format::FORMAT_BYTES => bin2hex($uuid),
                 default => $uuid,
             },
             default => match ($formatOfUuid) {
-                Util::FORMAT_STRING => hex2bin(str_replace('-', '', $uuid)),
-                Util::FORMAT_HEX => hex2bin($uuid),
+                Format::FORMAT_STRING => hex2bin(str_replace('-', '', $uuid)),
+                Format::FORMAT_HEX => hex2bin($uuid),
                 default => $uuid,
             },
         };

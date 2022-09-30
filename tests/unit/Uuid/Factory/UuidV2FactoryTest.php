@@ -10,7 +10,7 @@ use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
 use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Time\StaticDateTimeService;
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\Factory\UuidV2Factory;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Test\Identifier\TestCase;
@@ -51,11 +51,11 @@ class UuidV2FactoryTest extends TestCase
 
     public function testCreateWithLocalDomain(): void
     {
-        $uuid = $this->factory->create(localDomain: Domain::Group);
+        $uuid = $this->factory->create(localDomain: DceDomain::Group);
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame(1, hexdec(substr($uuid->toString(), 21, 2)));
-        $this->assertSame(Domain::Group, $uuid->getLocalDomain());
+        $this->assertSame(DceDomain::Group, $uuid->getLocalDomain());
     }
 
     public function testCreateWithLocalIdentifier(): void
@@ -100,7 +100,7 @@ class UuidV2FactoryTest extends TestCase
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
         $uuid = $this->factory->create(
-            Domain::Org,
+            DceDomain::Org,
             2147483647,
             '3c1239b4f540',
             0x3f,

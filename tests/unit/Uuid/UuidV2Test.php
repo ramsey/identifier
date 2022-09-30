@@ -10,7 +10,7 @@ use Identifier\Uuid\Version;
 use InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Dce\Domain;
+use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -463,9 +463,9 @@ class UuidV2Test extends TestCase
 
     public function testGetLocalDomain(): void
     {
-        $this->assertSame(Domain::Person, $this->uuidWithString->getLocalDomain());
-        $this->assertSame(Domain::Person, $this->uuidWithHex->getLocalDomain());
-        $this->assertSame(Domain::Person, $this->uuidWithBytes->getLocalDomain());
+        $this->assertSame(DceDomain::Person, $this->uuidWithString->getLocalDomain());
+        $this->assertSame(DceDomain::Person, $this->uuidWithHex->getLocalDomain());
+        $this->assertSame(DceDomain::Person, $this->uuidWithBytes->getLocalDomain());
     }
 
     public function testGetLocalIdentifier(): void

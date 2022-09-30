@@ -14,7 +14,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid;
+namespace Ramsey\Identifier\Uuid\Utility;
 
 use function substr;
 
@@ -35,6 +35,6 @@ trait NodeBasedUuid
     public function getNode(): string
     {
         /** @var non-empty-string */
-        return substr($this->getFormat(Util::FORMAT_HEX), -12);
+        return substr($this->getFormat(Format::FORMAT_HEX), -12);
     }
 }

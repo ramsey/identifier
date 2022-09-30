@@ -28,7 +28,7 @@ use Identifier\Uuid\UuidInterface;
  * intended to limit other, specialized name space IDs for different
  * applications.
  */
-enum Namespaces: string
+enum NamespaceId: string
 {
     /**
      * Name string is a fully-qualified domain name

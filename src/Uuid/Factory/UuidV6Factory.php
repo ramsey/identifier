@@ -32,7 +32,8 @@ use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
 use Ramsey\Identifier\Service\Time\TimeServiceInterface;
-use Ramsey\Identifier\Uuid\Util;
+use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Identifier\Uuid\UuidV6;
 
 use function bin2hex;
@@ -97,7 +98,7 @@ final class UuidV6Factory implements UuidFactoryInterface
             : (new StaticClockSequenceService($clockSequence))->getClockSequence();
         $node = $node === null ? $this->nodeService->getNode() : (new StaticNodeService($node))->getNode();
 
-        $timeBytes = Util::getTimeBytesForGregorianEpoch($dateTime);
+        $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
         $timeHex = bin2hex($timeBytes);
 
         /** @psalm-var non-empty-string $bytes */
@@ -105,7 +106,7 @@ final class UuidV6Factory implements UuidFactoryInterface
             . pack('n*', $clockSequence)
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = Util::applyVersionAndVariant($bytes, Version::ReorderedGregorianTime);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::ReorderedGregorianTime);
 
         return new UuidV6($bytes);
     }

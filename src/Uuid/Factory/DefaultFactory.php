@@ -20,8 +20,8 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
 use Identifier\Uuid\UuidInterface;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Uuid\Util;
-use Ramsey\Identifier\Uuid\Validation;
+use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\Validation;
 use Throwable;
 
 use function sprintf;
@@ -52,7 +52,7 @@ trait DefaultFactory
      */
     private function createFromBytesInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === Util::FORMAT_BYTES) {
+        if (strlen($identifier) === Format::FORMAT_BYTES) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
@@ -65,7 +65,7 @@ trait DefaultFactory
      */
     private function createFromHexadecimalInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === Util::FORMAT_HEX && $this->hasValidFormat($identifier, Util::FORMAT_HEX)) {
+        if (strlen($identifier) === Format::FORMAT_HEX && $this->hasValidFormat($identifier, Format::FORMAT_HEX)) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }
@@ -104,7 +104,7 @@ trait DefaultFactory
      */
     private function createFromStringInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Util::FORMAT_STRING)) {
+        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Format::FORMAT_STRING)) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }

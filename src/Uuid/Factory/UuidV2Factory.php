@@ -36,8 +36,9 @@ use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
 use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
 use Ramsey\Identifier\Service\Time\TimeServiceInterface;
-use Ramsey\Identifier\Uuid\Dce\Domain;
-use Ramsey\Identifier\Uuid\Util;
+use Ramsey\Identifier\Uuid\DceDomain;
+use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Identifier\Uuid\UuidV2;
 
 use function hex2bin;
@@ -79,7 +80,7 @@ final class UuidV2Factory implements UuidFactoryInterface
     }
 
     /**
-     * @param Domain $localDomain The local domain to which the local identifier
+     * @param DceDomain $localDomain The local domain to which the local identifier
      *     belongs; this defaults to "Person," and if $localIdentifier is not
      *     provided, the factory will attempt to obtain a suitable local ID for
      *     the domain (e.g., the UID or GID of the user running the script)
@@ -105,7 +106,7 @@ final class UuidV2Factory implements UuidFactoryInterface
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function create(
-        Domain $localDomain = Domain::Person,
+        DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
         ?int $clockSequence = null,
@@ -118,12 +119,12 @@ final class UuidV2Factory implements UuidFactoryInterface
             : (new StaticClockSequenceService($clockSequence))->getClockSequence();
 
         $localIdentifier = $localIdentifier ?? match ($localDomain) {
-            Domain::Person => $this->dceSecurityService->getPersonIdentifier(),
-            Domain::Group => $this->dceSecurityService->getGroupIdentifier(),
+            DceDomain::Person => $this->dceSecurityService->getPersonIdentifier(),
+            DceDomain::Group => $this->dceSecurityService->getGroupIdentifier(),
             default => $this->dceSecurityService->getOrgIdentifier(),
         };
 
-        $timeBytes = Util::getTimeBytesForGregorianEpoch($dateTime);
+        $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
 
         $bytes = pack('N', $localIdentifier)
             . substr($timeBytes, 2, 2)
@@ -132,7 +133,7 @@ final class UuidV2Factory implements UuidFactoryInterface
             . pack('n', $localDomain->value)[1]
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = Util::applyVersionAndVariant($bytes, Version::DceSecurity);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::DceSecurity);
 
         return new UuidV2($bytes);
     }
