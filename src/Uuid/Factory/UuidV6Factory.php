@@ -74,11 +74,11 @@ final class UuidV6Factory implements UuidFactoryInterface
      * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
      *     string representing the hardware address of the machine where this
      *     identifier was generated
-     * @param DateTimeInterface | null $dateTime A date-time to use when
-     *     creating the identifier
      * @param int<0, 16383> | null $clockSequence A 14-bit number used to help
      *     avoid duplicates that could arise when the clock is set backwards in
      *     time or if the node ID changes
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
      *
      * @throws RandomSourceException
      * @throws InvalidArgumentException
@@ -88,8 +88,8 @@ final class UuidV6Factory implements UuidFactoryInterface
      */
     public function create(
         int | string | null $node = null,
-        ?DateTimeInterface $dateTime = null,
         ?int $clockSequence = null,
+        ?DateTimeInterface $dateTime = null,
     ): UuidV6 {
         $dateTime = $dateTime ?? $this->timeService->getDateTime();
         $clockSequence = $clockSequence === null

@@ -75,7 +75,7 @@ class UuidV6FactoryTest extends TestCase
     public function testCreateWithMethodDeterministicValues(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
-        $uuid = $this->factory->create('3c1239b4f540', $dateTime, 0x3321);
+        $uuid = $this->factory->create('3c1239b4f540', 0x3321, $dateTime);
 
         $this->assertInstanceOf(UuidV6::class, $uuid);
         $this->assertSame('1ed3cf7f-d24f-6600-b321-3d1239b4f540', $uuid->toString());

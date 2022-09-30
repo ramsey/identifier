@@ -90,11 +90,11 @@ final class UuidV2Factory implements UuidFactoryInterface
      * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
      *     string representing the hardware address of the machine where this
      *     identifier was generated
-     * @param DateTimeInterface | null $dateTime A date-time to use when
-     *     creating the identifier
      * @param int<0, 63> | null $clockSequence A 6-bit number used to help
      *     avoid duplicates that could arise when the clock is set backwards in
      *     time or if the node ID changes
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
      *
      * @throws CacheException
      * @throws DceSecurityException
@@ -108,8 +108,8 @@ final class UuidV2Factory implements UuidFactoryInterface
         Domain $localDomain = Domain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
-        ?DateTimeInterface $dateTime = null,
         ?int $clockSequence = null,
+        ?DateTimeInterface $dateTime = null,
     ): UuidV2 {
         $node = $node === null ? $this->nodeService->getNode() : (new StaticNodeService($node))->getNode();
         $dateTime = $dateTime ?? $this->timeService->getDateTime();

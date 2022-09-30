@@ -103,8 +103,8 @@ class UuidV2FactoryTest extends TestCase
             Domain::Org,
             2147483647,
             '3c1239b4f540',
-            $dateTime,
             0x3f,
+            $dateTime,
         );
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
