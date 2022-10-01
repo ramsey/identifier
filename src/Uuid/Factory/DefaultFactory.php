@@ -104,7 +104,10 @@ trait DefaultFactory
      */
     private function createFromStringInternal(string $identifier): UuidInterface
     {
-        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Format::FORMAT_STRING)) {
+        if (
+            strlen($identifier) === Format::FORMAT_STRING
+            && $this->hasValidFormat($identifier, Format::FORMAT_STRING)
+        ) {
             /** @var UuidInterface */
             return new ($this->getUuidClass())($identifier);
         }

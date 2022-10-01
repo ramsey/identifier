@@ -49,7 +49,7 @@ trait StandardUuid
     private readonly int $format;
 
     /**
-     * Constructs an {@see \Identifier\UuidInterface} instance
+     * Constructs a {@see \Identifier\Uuid\UuidInterface} instance
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form
@@ -77,6 +77,9 @@ trait StandardUuid
         return ['uuid' => $this->uuid];
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function __toString(): string
     {
         return $this->getFormat(Format::FORMAT_STRING);
@@ -136,16 +139,17 @@ trait StandardUuid
         return Variant::Rfc4122;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function jsonSerialize(): string
     {
         return $this->getFormat(Format::FORMAT_STRING);
     }
 
-    public function toString(): string
-    {
-        return $this->getFormat(Format::FORMAT_STRING);
-    }
-
+    /**
+     * @return non-empty-string
+     */
     public function toBytes(): string
     {
         return $this->getFormat(Format::FORMAT_BYTES);
@@ -171,6 +175,14 @@ trait StandardUuid
     /**
      * @return non-empty-string
      */
+    public function toString(): string
+    {
+        return $this->getFormat(Format::FORMAT_STRING);
+    }
+
+    /**
+     * @return non-empty-string
+     */
     public function toUrn(): string
     {
         return 'urn:uuid:' . $this->getFormat(Format::FORMAT_STRING);
@@ -178,9 +190,12 @@ trait StandardUuid
 
     /**
      * @return non-empty-string
+     *
+     * @psalm-param 36 | 32 | 16 $formatToReturn
      */
     private function getFormat(int $formatToReturn, ?string $uuid = null): string
     {
+        /** @psalm-var 36 | 32 | 16 $formatOfUuid */
         $formatOfUuid = $uuid ? strlen($uuid) : $this->format;
         $uuid ??= $this->uuid;
 
@@ -190,18 +205,16 @@ trait StandardUuid
                 Format::FORMAT_STRING => strtolower($uuid),
                 Format::FORMAT_HEX => $this->toStringFromHex(strtolower($uuid)),
                 Format::FORMAT_BYTES => $this->toStringFromHex(bin2hex($uuid)),
-                default => $uuid,
             },
             Format::FORMAT_HEX => match ($formatOfUuid) {
                 Format::FORMAT_STRING => strtolower(str_replace('-', '', $uuid)),
                 Format::FORMAT_HEX => strtolower($uuid),
                 Format::FORMAT_BYTES => bin2hex($uuid),
-                default => $uuid,
             },
-            default => match ($formatOfUuid) {
+            Format::FORMAT_BYTES => match ($formatOfUuid) {
                 Format::FORMAT_STRING => hex2bin(str_replace('-', '', $uuid)),
                 Format::FORMAT_HEX => hex2bin($uuid),
-                default => $uuid,
+                Format::FORMAT_BYTES => $uuid,
             },
         };
     }
