@@ -7,7 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Identifier\Uuid\Variant;
 use Identifier\Uuid\Version;
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Exception\NotComparableException;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;

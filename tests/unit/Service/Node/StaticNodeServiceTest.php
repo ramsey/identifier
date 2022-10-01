@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Node;
 
-use InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgumentException;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Test\Identifier\TestCase;
 
