@@ -453,12 +453,12 @@ class UuidTest extends TestCase
 
     public function testUuid1(): void
     {
-        $this->assertInstanceOf(UuidV1::class, Uuid::uuid1());
+        $this->assertInstanceOf(UuidV1::class, Uuid::v1());
     }
 
     public function testUuid1WithParams(): void
     {
-        $uuid = Uuid::uuid1('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = Uuid::v1('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('00000000-0000-1000-8000-010000000000', $uuid->toString());
@@ -466,12 +466,12 @@ class UuidTest extends TestCase
 
     public function testUuid2(): void
     {
-        $this->assertInstanceOf(UuidV2::class, Uuid::uuid2());
+        $this->assertInstanceOf(UuidV2::class, Uuid::v2());
     }
 
     public function testUuid2WithParams(): void
     {
-        $uuid = Uuid::uuid2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = Uuid::v2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame('0000d431-0000-2000-8002-010000000000', $uuid->toString());
@@ -481,10 +481,10 @@ class UuidTest extends TestCase
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-        $u1 = Uuid::uuid3('0000000000001000a000000000000000', $name);
-        $u2 = Uuid::uuid3('00000000-0000-1000-a000-000000000000', $name);
-        $u3 = Uuid::uuid3("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
-        $u4 = Uuid::uuid3(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
+        $u1 = Uuid::v3('0000000000001000a000000000000000', $name);
+        $u2 = Uuid::v3('00000000-0000-1000-a000-000000000000', $name);
+        $u3 = Uuid::v3("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
+        $u4 = Uuid::v3(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
 
         $this->assertInstanceOf(UuidV3::class, $u1);
         $this->assertInstanceOf(UuidV3::class, $u2);
@@ -502,22 +502,22 @@ class UuidTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
-        Uuid::uuid3('foobar', '');
+        Uuid::v3('foobar', '');
     }
 
     public function testUuid4(): void
     {
-        $this->assertInstanceOf(UuidV4::class, Uuid::uuid4());
+        $this->assertInstanceOf(UuidV4::class, Uuid::v4());
     }
 
     public function testUuid5(): void
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-        $u1 = Uuid::uuid5('0000000000001000a000000000000000', $name);
-        $u2 = Uuid::uuid5('00000000-0000-1000-a000-000000000000', $name);
-        $u3 = Uuid::uuid5("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
-        $u4 = Uuid::uuid5(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
+        $u1 = Uuid::v5('0000000000001000a000000000000000', $name);
+        $u2 = Uuid::v5('00000000-0000-1000-a000-000000000000', $name);
+        $u3 = Uuid::v5("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
+        $u4 = Uuid::v5(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
 
         $this->assertInstanceOf(UuidV5::class, $u1);
         $this->assertInstanceOf(UuidV5::class, $u2);
@@ -535,17 +535,17 @@ class UuidTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
-        Uuid::uuid5('foobar', '');
+        Uuid::v5('foobar', '');
     }
 
     public function testUuid6(): void
     {
-        $this->assertInstanceOf(UuidV6::class, Uuid::uuid6());
+        $this->assertInstanceOf(UuidV6::class, Uuid::v6());
     }
 
     public function testUuid6WithParams(): void
     {
-        $uuid = Uuid::uuid6('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = Uuid::v6('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV6::class, $uuid);
         $this->assertSame('00000000-0000-6000-8000-010000000000', $uuid->toString());
@@ -553,12 +553,12 @@ class UuidTest extends TestCase
 
     public function testUuid7(): void
     {
-        $this->assertInstanceOf(UuidV7::class, Uuid::uuid7());
+        $this->assertInstanceOf(UuidV7::class, Uuid::v7());
     }
 
     public function testUuid7WithParams(): void
     {
-        $uuid = Uuid::uuid7(new DateTimeImmutable('1970-01-01 00:00:00'));
+        $uuid = Uuid::v7(new DateTimeImmutable('1970-01-01 00:00:00'));
 
         $this->assertInstanceOf(UuidV7::class, $uuid);
         $this->assertSame('00000000-0000-7', substr($uuid->toString(), 0, 15));
@@ -566,7 +566,7 @@ class UuidTest extends TestCase
 
     public function testUuid8(): void
     {
-        $uuid = Uuid::uuid8('0', '0', '0');
+        $uuid = Uuid::v8('0', '0', '0');
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());

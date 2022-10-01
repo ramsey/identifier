@@ -154,7 +154,7 @@ final class Uuid
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
-    public static function uuid1(
+    public static function v1(
         int | string | null $node = null,
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
@@ -186,7 +186,7 @@ final class Uuid
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
-    public static function uuid2(
+    public static function v2(
         DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
         int | string | null $node = null,
@@ -203,7 +203,7 @@ final class Uuid
      *
      * @throws InvalidArgumentException
      */
-    public static function uuid3(string | UuidInterface $namespace, string $name): UuidV3
+    public static function v3(string | UuidInterface $namespace, string $name): UuidV3
     {
         return self::getFactory()->uuid3($namespace, $name);
     }
@@ -211,7 +211,7 @@ final class Uuid
     /**
      * Creates a version 4, random UUID
      */
-    public static function uuid4(): UuidV4
+    public static function v4(): UuidV4
     {
         return self::getFactory()->uuid4();
     }
@@ -223,7 +223,7 @@ final class Uuid
      *
      * @throws InvalidArgumentException
      */
-    public static function uuid5(string | UuidInterface $namespace, string $name): UuidV5
+    public static function v5(string | UuidInterface $namespace, string $name): UuidV5
     {
         return self::getFactory()->uuid5($namespace, $name);
     }
@@ -244,7 +244,7 @@ final class Uuid
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
-    public static function uuid6(
+    public static function v6(
         int | string | null $node = null,
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
@@ -260,7 +260,7 @@ final class Uuid
      *
      * @throws InvalidArgumentException
      */
-    public static function uuid7(?DateTimeInterface $dateTime = null): UuidV7
+    public static function v7(?DateTimeInterface $dateTime = null): UuidV7
     {
         return self::getFactory()->uuid7($dateTime);
     }
@@ -284,7 +284,7 @@ final class Uuid
      *
      * @throws InvalidArgumentException
      */
-    public static function uuid8(string $customFieldA, string $customFieldB, string $customFieldC): UuidV8
+    public static function v8(string $customFieldA, string $customFieldB, string $customFieldC): UuidV8
     {
         return self::getFactory()->uuid8($customFieldA, $customFieldB, $customFieldC);
     }
