@@ -17,6 +17,7 @@ use Ramsey\Identifier\Uuid\Factory;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
+use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -53,7 +54,10 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromBytes(string $bytes, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, $this->factory->createFromBytes($bytes));
+        $uuid = $this->factory->createFromBytes($bytes);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -142,7 +146,10 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromHexadecimal(string $hexadecimal, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, $this->factory->createFromHexadecimal($hexadecimal));
+        $uuid = $this->factory->createFromHexadecimal($hexadecimal);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -220,7 +227,6 @@ class FactoryTest extends TestCase
             ['input' => '123.456'],
             ['input' => '340282366920937405648670758612812955647'],
             ['input' => 'fffffffffffffffffffffffffffffffff'],
-            ['input' => 'fffffffffffffffffffffffffffffffg'],
         ];
     }
 
@@ -275,7 +281,8 @@ class FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger($value);
 
-        $this->assertInstanceOf($expectedType, $uuid);
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -346,7 +353,10 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromString(string $value, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, $this->factory->createFromString($value));
+        $uuid = $this->factory->createFromString($value);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**

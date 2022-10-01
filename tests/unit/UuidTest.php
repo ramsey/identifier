@@ -12,6 +12,7 @@ use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
+use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -38,7 +39,10 @@ class UuidTest extends TestCase
      */
     public function testFromBytes(string $bytes, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, Uuid::fromBytes($bytes));
+        $uuid = Uuid::fromBytes($bytes);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -147,7 +151,10 @@ class UuidTest extends TestCase
      */
     public function testFromHexadecimal(string $hexadecimal, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, Uuid::fromHexadecimal($hexadecimal));
+        $uuid = Uuid::fromHexadecimal($hexadecimal);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -225,7 +232,6 @@ class UuidTest extends TestCase
             ['input' => '123.456'],
             ['input' => '340282366920937405648670758612812955647'],
             ['input' => 'fffffffffffffffffffffffffffffffff'],
-            ['input' => 'fffffffffffffffffffffffffffffffg'],
         ];
     }
 
@@ -280,7 +286,8 @@ class UuidTest extends TestCase
     {
         $uuid = Uuid::fromInteger($value);
 
-        $this->assertInstanceOf($expectedType, $uuid);
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
@@ -351,7 +358,10 @@ class UuidTest extends TestCase
      */
     public function testFromString(string $value, string $expectedType): void
     {
-        $this->assertInstanceOf($expectedType, Uuid::fromString($value));
+        $uuid = Uuid::fromString($value);
+
+        $this->assertInstanceOf(UntypedUuid::class, $uuid);
+        $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**

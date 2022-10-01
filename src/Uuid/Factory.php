@@ -22,7 +22,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Variant;
 use Ramsey\Identifier\Exception\CacheException;
 use Ramsey\Identifier\Exception\DceSecurityException;
 use Ramsey\Identifier\Exception\InvalidArgumentException;
@@ -43,7 +42,6 @@ use Ramsey\Identifier\Service\Time\TimeServiceInterface;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
 
-use function hexdec;
 use function is_int;
 use function is_string;
 use function pack;
@@ -51,7 +49,6 @@ use function sprintf;
 use function str_pad;
 use function strlen;
 use function strspn;
-use function unpack;
 
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
@@ -127,15 +124,10 @@ final class Factory implements FactoryInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function createFromBytes(string $identifier): UuidInterface
+    public function createFromBytes(string $identifier): UntypedUuid
     {
         if (strlen($identifier) === Format::FORMAT_BYTES) {
-            /** @var int[] $parts */
-            $parts = unpack('C', $identifier[6]);
-            $version = $parts[1] >> 4;
-            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_BYTES);
-
-            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_BYTES);
+            return new UntypedUuid($identifier);
         }
 
         throw new InvalidArgumentException('Identifier must be a 16-byte string');
@@ -144,13 +136,10 @@ final class Factory implements FactoryInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function createFromHexadecimal(string $identifier): UuidInterface
+    public function createFromHexadecimal(string $identifier): UntypedUuid
     {
-        if (strlen($identifier) === Format::FORMAT_HEX && $this->hasValidFormat($identifier, Format::FORMAT_HEX)) {
-            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_HEX);
-            $version = (int) hexdec($identifier[12]);
-
-            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_HEX);
+        if (strlen($identifier) === Format::FORMAT_HEX) {
+            return new UntypedUuid($identifier);
         }
 
         throw new InvalidArgumentException('Identifier must be a 32-character hexadecimal string');
@@ -159,7 +148,7 @@ final class Factory implements FactoryInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function createFromInteger(int | string $identifier): UuidInterface
+    public function createFromInteger(int | string $identifier): UntypedUuid
     {
         if (
             is_string($identifier)
@@ -191,13 +180,10 @@ final class Factory implements FactoryInterface
     /**
      * @throws InvalidArgumentException
      */
-    public function createFromString(string $identifier): UuidInterface
+    public function createFromString(string $identifier): UntypedUuid
     {
-        if (strlen($identifier) === 36 && $this->hasValidFormat($identifier, Format::FORMAT_STRING)) {
-            $variant = $this->getVariantFromUuid($identifier, Format::FORMAT_STRING);
-            $version = (int) hexdec($identifier[14]);
-
-            return $this->newUuid($identifier, $version, $variant, Format::FORMAT_STRING);
+        if (strlen($identifier) === 36) {
+            return new UntypedUuid($identifier);
         }
 
         throw new InvalidArgumentException('Identifier must be a UUID in string standard representation');
@@ -324,27 +310,5 @@ final class Factory implements FactoryInterface
     protected function getVersion(): never
     {
         throw new BadMethodCallException('Unable to call getVersion() on UuidFactory'); // @codeCoverageIgnore
-    }
-
-    /**
-     * Returns a new instance of a UuidInterface for the given identifier
-     *
-     * @throws InvalidArgumentException
-     */
-    private function newUuid(string $identifier, int $version, ?Variant $variant, int $format): UuidInterface
-    {
-        return match (true) {
-            $version === 1 && $variant === Variant::Rfc4122 => new UuidV1($identifier),
-            $version === 2 && $variant === Variant::Rfc4122 => new UuidV2($identifier),
-            $version === 3 && $variant === Variant::Rfc4122 => new UuidV3($identifier),
-            $version === 4 && $variant === Variant::Rfc4122 => new UuidV4($identifier),
-            $version === 5 && $variant === Variant::Rfc4122 => new UuidV5($identifier),
-            $version === 6 && $variant === Variant::Rfc4122 => new UuidV6($identifier),
-            $version === 7 && $variant === Variant::Rfc4122 => new UuidV7($identifier),
-            $version === 8 && $variant === Variant::Rfc4122 => new UuidV8($identifier),
-            $this->isMax($identifier, $format) => new MaxUuid(),
-            $this->isNil($identifier, $format) => new NilUuid(),
-            default => new NonstandardUuid($identifier),
-        };
     }
 }
