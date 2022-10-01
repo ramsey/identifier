@@ -32,6 +32,11 @@ use const PHP_INT_MAX;
  */
 class UuidTest extends TestCase
 {
+    public function testCreate(): void
+    {
+        $this->assertInstanceOf(UuidV4::class, Uuid::create());
+    }
+
     /**
      * @param class-string<UuidInterface> $expectedType
      *

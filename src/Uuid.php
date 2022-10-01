@@ -43,6 +43,14 @@ final class Uuid
     private static ?FactoryInterface $factory = null;
 
     /**
+     * Creates a UUID
+     */
+    public static function create(): UuidInterface
+    {
+        return self::getFactory()->create();
+    }
+
+    /**
      * Creates a UUID from a byte string
      *
      * @param string $bytes A binary string
