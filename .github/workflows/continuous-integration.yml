@@ -217,7 +217,7 @@ jobs:
         uses: "ramsey/composer-install@2.1.0"
 
       - name: "Run unit tests on FreeBSD (PHPUnit)"
-        uses: "vmactions/freebsd-vm@v0.2.8"
+        uses: "vmactions/freebsd-vm@v0.2.9"
         with:
           usesh: true
           prepare: |
