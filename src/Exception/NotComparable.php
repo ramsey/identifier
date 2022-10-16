@@ -14,18 +14,17 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier\Exception;
 
-use Identifier\BinaryIdentifier;
-use Identifier\DateTimeIdentifier;
-use Identifier\IntegerIdentifier;
-use JsonSerializable;
-use Ramsey\Identifier\Ulid\Utility\StandardUlid;
+use Identifier\Exception\NotComparable as IdentifierNotComparable;
+use RuntimeException;
 
 /**
- * @psalm-immutable
+ * Thrown when unable to compare values, e.g. because the other value is not of
+ * the proper type, etc.
  */
-final class Ulid implements BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier, JsonSerializable
+class NotComparable extends RuntimeException implements
+    IdentifierException,
+    IdentifierNotComparable
 {
-    use StandardUlid;
 }

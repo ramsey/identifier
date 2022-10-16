@@ -17,10 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
-use Identifier\Uuid\TimeBasedUuidInterface;
-use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid as TimeBaseUuidUtility;
 
 use function hexdec;
 use function number_format;
@@ -35,9 +33,9 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV7 implements TimeBasedUuidInterface
+final class UuidV7 implements TimeBasedUuid
 {
-    use TimeBasedUuid;
+    use TimeBaseUuidUtility;
 
     public function getDateTime(): DateTimeImmutable
     {

@@ -16,12 +16,14 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Factory;
 
-use Identifier\Uuid\UuidFactoryInterface;
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Uuid;
 use Ramsey\Identifier\Uuid\UuidV5;
+use Ramsey\Identifier\Uuid\Version;
 
 use function hash;
 use function substr;
@@ -29,21 +31,21 @@ use function substr;
 /**
  * A factory for creating version 5, name-based (SHA-1) UUIDs
  */
-final class UuidV5Factory implements UuidFactoryInterface
+final class UuidV5Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
     use DefaultFactory;
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    public function create(?UuidInterface $namespace = null, ?string $name = null): UuidV5
+    public function create(?Uuid $namespace = null, ?string $name = null): UuidV5
     {
         if ($namespace === null) {
-            throw new InvalidArgumentException('$namespace cannot be null when creating version 5 UUIDs');
+            throw new InvalidArgument('$namespace cannot be null when creating version 5 UUIDs');
         }
 
         if ($name === null) {
-            throw new InvalidArgumentException('$name cannot be null when creating version 5 UUIDs');
+            throw new InvalidArgument('$name cannot be null when creating version 5 UUIDs');
         }
 
         /** @psalm-var non-empty-string $bytes */
@@ -54,7 +56,7 @@ final class UuidV5Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): UuidV5
     {
@@ -63,7 +65,7 @@ final class UuidV5Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromHexadecimal(string $identifier): UuidV5
     {
@@ -72,7 +74,7 @@ final class UuidV5Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): UuidV5
     {
@@ -81,7 +83,7 @@ final class UuidV5Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromString(string $identifier): UuidV5
     {

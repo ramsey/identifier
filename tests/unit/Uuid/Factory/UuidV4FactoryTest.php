@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid\Factory;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Factory\UuidV4Factory;
 use Ramsey\Identifier\Uuid\UuidV4;
 use Ramsey\Test\Identifier\TestCase;
@@ -35,7 +35,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromBytesThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 16-byte string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x4f\xff\x8f\xff\xff\xff\xff\xff\xff");
@@ -43,7 +43,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromBytesThrowsExceptionForNonVersion4Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
             "Invalid version 4 UUID: \"\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff\"",
         );
@@ -61,7 +61,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('ffffffffffff4fff8ffffffffffffffff');
@@ -69,7 +69,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForNonHexadecimal(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('ffffffffffff4fff8ffffffffffffffg');
@@ -77,7 +77,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForNonVersion4Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 4 UUID: "ffffffffffff1fff8fffffffffffffff"');
 
         $this->factory->createFromHexadecimal('ffffffffffff1fff8fffffffffffffff');
@@ -101,7 +101,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid integer: "foobar"');
 
         /** @phpstan-ignore-next-line */
@@ -110,7 +110,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNonVersion4Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 4 UUID: 0');
 
         $this->factory->createFromInteger(0);
@@ -126,7 +126,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString('ffffffff-ffff-4fff-8fff-fffffffffffff');
@@ -134,7 +134,7 @@ class UuidV4FactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString('ffff-ffffffff-4fff-8fff-ffffffffffff');

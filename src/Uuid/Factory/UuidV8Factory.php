@@ -16,12 +16,14 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Factory;
 
-use Identifier\Uuid\UuidFactoryInterface;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\UuidV8;
+use Ramsey\Identifier\Uuid\Version;
 
 use function hex2bin;
 use function sprintf;
@@ -30,7 +32,7 @@ use function strspn;
 /**
  * A factory for creating version 8, custom UUIDs
  */
-final class UuidV8Factory implements UuidFactoryInterface
+final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
     use DefaultFactory;
 
@@ -51,7 +53,7 @@ final class UuidV8Factory implements UuidFactoryInterface
      *     bits to hold any important data; in other words, treat this as a
      *     62-bit value)
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function create(
         ?string $customFieldA = null,
@@ -59,15 +61,15 @@ final class UuidV8Factory implements UuidFactoryInterface
         ?string $customFieldC = null,
     ): UuidV8 {
         if ($customFieldA === null) {
-            throw new InvalidArgumentException('$customFieldA cannot be null when creating version 8 UUIDs');
+            throw new InvalidArgument('$customFieldA cannot be null when creating version 8 UUIDs');
         }
 
         if ($customFieldB === null) {
-            throw new InvalidArgumentException('$customFieldB cannot be null when creating version 8 UUIDs');
+            throw new InvalidArgument('$customFieldB cannot be null when creating version 8 UUIDs');
         }
 
         if ($customFieldC === null) {
-            throw new InvalidArgumentException('$customFieldC cannot be null when creating version 8 UUIDs');
+            throw new InvalidArgument('$customFieldC cannot be null when creating version 8 UUIDs');
         }
 
         $customFieldA = sprintf('%012s', $customFieldA);
@@ -75,15 +77,15 @@ final class UuidV8Factory implements UuidFactoryInterface
         $customFieldC = sprintf('%016s', $customFieldC);
 
         if (strspn($customFieldA, Format::MASK_HEX) !== 12) {
-            throw new InvalidArgumentException('$customFieldA must be a 48-bit hexadecimal string');
+            throw new InvalidArgument('$customFieldA must be a 48-bit hexadecimal string');
         }
 
         if (strspn($customFieldB, Format::MASK_HEX) !== 3) {
-            throw new InvalidArgumentException('$customFieldB must be a 12-bit hexadecimal string');
+            throw new InvalidArgument('$customFieldB must be a 12-bit hexadecimal string');
         }
 
         if (strspn($customFieldC, Format::MASK_HEX) !== 16) {
-            throw new InvalidArgumentException('$customFieldC must be a 62-bit hexadecimal string');
+            throw new InvalidArgument('$customFieldC must be a 62-bit hexadecimal string');
         }
 
         /** @psalm-var non-empty-string $bytes */
@@ -95,7 +97,7 @@ final class UuidV8Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): UuidV8
     {
@@ -104,7 +106,7 @@ final class UuidV8Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromHexadecimal(string $identifier): UuidV8
     {
@@ -113,7 +115,7 @@ final class UuidV8Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): UuidV8
     {
@@ -122,7 +124,7 @@ final class UuidV8Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromString(string $identifier): UuidV8
     {

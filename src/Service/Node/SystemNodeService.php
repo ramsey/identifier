@@ -18,8 +18,8 @@ namespace Ramsey\Identifier\Service\Node;
 
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\CacheException;
-use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\InvalidCacheKey;
+use Ramsey\Identifier\Exception\NodeNotFound;
 
 use function fgets;
 use function file_get_contents;
@@ -44,7 +44,7 @@ use const PHP_OS_FAMILY;
  * The system node ID, or host ID, is often the same as the MAC address for a
  * network interface on the host.
  */
-final class SystemNodeService implements NodeServiceInterface
+final class SystemNodeService implements NodeService
 {
     /**
      * Pattern to match nodes in ifconfig and ipconfig output
@@ -78,8 +78,8 @@ final class SystemNodeService implements NodeServiceInterface
     }
 
     /**
-     * @throws NodeNotFoundException
-     * @throws CacheException if a problem occurs when fetching data from the
+     * @throws NodeNotFound
+     * @throws InvalidCacheKey if a problem occurs when fetching data from the
      *     PSR-16 cache instance, if provided
      */
     public function getNode(): string
@@ -89,14 +89,14 @@ final class SystemNodeService implements NodeServiceInterface
         }
 
         if (self::$node === '') {
-            throw new NodeNotFoundException('Unable to fetch a node for this system');
+            throw new NodeNotFound('Unable to fetch a node for this system');
         }
 
         return self::$node;
     }
 
     /**
-     * @throws CacheException when a problem occurs with the cache key
+     * @throws InvalidCacheKey when a problem occurs with the cache key
      */
     private function getNodeFromCache(): string
     {
@@ -109,7 +109,7 @@ final class SystemNodeService implements NodeServiceInterface
                 $this->cache?->set(self::CACHE_KEY, $node);
             }
         } catch (CacheInvalidArgumentException $exception) {
-            throw new CacheException(
+            throw new InvalidCacheKey(
                 sprintf('A problem occurred when attempting to use the cache key "%s"', self::CACHE_KEY),
                 $exception->getCode(),
                 $exception,

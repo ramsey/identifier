@@ -7,15 +7,14 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Variant;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\UntypedUuidException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\CannotDetermineVersion;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
+use Ramsey\Identifier\Uuid\Uuid;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -24,6 +23,8 @@ use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV6;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV8;
+use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 use Throwable;
 
@@ -36,7 +37,7 @@ class UntypedUuidTest extends TestCase
 {
     /**
      * @param non-empty-string $value
-     * @param array{type: class-string<UuidInterface>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)} $expected
+     * @param array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)} $expected
      *
      * @dataProvider provideValidUuids
      */
@@ -106,36 +107,36 @@ class UntypedUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: array{type: class-string<UuidInterface>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)}}>
+     * @return array<array{value: string, expected: array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)}}>
      */
     public function provideValidUuids(): array
     {
         $expectedMax = [
             'type' => MaxUuid::class,
             'variant' => Variant::Rfc4122,
-            'version' => UntypedUuidException::class,
+            'version' => CannotDetermineVersion::class,
             'json' => '"ffffffff-ffff-ffff-ffff-ffffffffffff"',
             'string' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
             'bytes' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             'hex' => 'ffffffffffffffffffffffffffffffff',
             'int' => '340282366920938463463374607431768211455',
             'urn' => 'urn:uuid:ffffffff-ffff-ffff-ffff-ffffffffffff',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedNil = [
             'type' => NilUuid::class,
             'variant' => Variant::Rfc4122,
-            'version' => UntypedUuidException::class,
+            'version' => CannotDetermineVersion::class,
             'json' => '"00000000-0000-0000-0000-000000000000"',
             'string' => '00000000-0000-0000-0000-000000000000',
             'bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             'hex' => '00000000000000000000000000000000',
             'int' => '0',
             'urn' => 'urn:uuid:00000000-0000-0000-0000-000000000000',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedV1 = [
@@ -176,8 +177,8 @@ class UntypedUuidTest extends TestCase
             'hex' => '0d7f3039f255332ab43261905e2d036d',
             'int' => '17940363792902440749691632624822190957',
             'urn' => 'urn:uuid:0d7f3039-f255-332a-b432-61905e2d036d',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedV4 = [
@@ -190,8 +191,8 @@ class UntypedUuidTest extends TestCase
             'hex' => '0b94395a000249cf8fcfaf141d60af90',
             'int' => '15391131116582029933200135300944277392',
             'urn' => 'urn:uuid:0b94395a-0002-49cf-8fcf-af141d60af90',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedV5 = [
@@ -204,8 +205,8 @@ class UntypedUuidTest extends TestCase
             'hex' => '0d7f3039f255532ab43261905e2d036d',
             'int' => '17940363792902591865419084453469029229',
             'urn' => 'urn:uuid:0d7f3039-f255-532a-b432-61905e2d036d',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedV6 = [
@@ -232,7 +233,7 @@ class UntypedUuidTest extends TestCase
             'hex' => '01839050b19871edb8780242ac120002',
             'int' => '2012345944452046749472145290585833474',
             'urn' => 'urn:uuid:01839050-b198-71ed-b878-0242ac120002',
-            'node' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
             'date' => new DateTimeImmutable('2022-09-30T21:32:31+00:00'),
         ];
 
@@ -246,22 +247,22 @@ class UntypedUuidTest extends TestCase
             'hex' => '0b94395a000289cf8fcfaf141d60af90',
             'int' => '15391131116582332164655038958237953936',
             'urn' => 'urn:uuid:0b94395a-0002-89cf-8fcf-af141d60af90',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         $expectedNonstandard = [
             'type' => NonstandardUuid::class,
             'variant' => Variant::ReservedNcs,
-            'version' => UntypedUuidException::class,
+            'version' => CannotDetermineVersion::class,
             'json' => '"88b46f48-2fc8-3ce3-1056-b1b6a94e4207"',
             'string' => '88b46f48-2fc8-3ce3-1056-b1b6a94e4207',
             'bytes' => "\x88\xb4\x6f\x48\x2f\xc8\x3c\xe3\x10\x56\xb1\xb6\xa9\x4e\x42\x07",
             'hex' => '88b46f482fc83ce31056b1b6a94e4207',
             'int' => '181711877927966402206605959143917240839',
             'urn' => 'urn:uuid:88b46f48-2fc8-3ce3-1056-b1b6a94e4207',
-            'node' => UntypedUuidException::class,
-            'date' => UntypedUuidException::class,
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
         ];
 
         return [
@@ -303,7 +304,7 @@ class UntypedUuidTest extends TestCase
 
     public function testUntypedUuidThrowsExceptionForInvalidValue(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid UUID: "foobar"');
 
         new UntypedUuid('foobar');
@@ -313,7 +314,7 @@ class UntypedUuidTest extends TestCase
     {
         $uuid = new UntypedUuid('81daa361-8088-499a-adbd-71e4a45ae25c');
 
-        $this->expectException(UntypedUuidException::class);
+        $this->expectException(BadMethodCall::class);
         $this->expectExceptionMessage(
             'Cannot call getDateTime() on untyped UUID "81daa361-8088-499a-adbd-71e4a45ae25c"',
         );
@@ -325,7 +326,7 @@ class UntypedUuidTest extends TestCase
     {
         $uuid = new UntypedUuid('81daa361-8088-499a-adbd-71e4a45ae25c');
 
-        $this->expectException(UntypedUuidException::class);
+        $this->expectException(BadMethodCall::class);
         $this->expectExceptionMessage(
             'Cannot call getNode() on untyped UUID "81daa361-8088-499a-adbd-71e4a45ae25c"',
         );
@@ -337,7 +338,7 @@ class UntypedUuidTest extends TestCase
     {
         $uuid = new UntypedUuid('81daa361-8088-499a-cdbd-71e4a45ae25c');
 
-        $this->expectException(UntypedUuidException::class);
+        $this->expectException(CannotDetermineVersion::class);
         $this->expectExceptionMessage(
             'Unable to determine version of untyped UUID "81daa361-8088-499a-cdbd-71e4a45ae25c"',
         );

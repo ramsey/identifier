@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid\Factory;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Factory\UuidV8Factory;
 use Ramsey\Identifier\Uuid\UuidV8;
 use Ramsey\Test\Identifier\TestCase;
@@ -36,7 +36,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithoutCustomFieldAThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldA cannot be null when creating version 8 UUIDs');
 
         $this->factory->create();
@@ -44,7 +44,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithoutCustomFieldBThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldB cannot be null when creating version 8 UUIDs');
 
         $this->factory->create('000000000000');
@@ -52,7 +52,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithoutCustomFieldCThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldC cannot be null when creating version 8 UUIDs');
 
         $this->factory->create('000000000000', '000');
@@ -60,7 +60,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithInvalidCustomFieldAThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldA must be a 48-bit hexadecimal string');
 
         $this->factory->create('foobar', '0', '0');
@@ -68,7 +68,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithInvalidCustomFieldBThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldB must be a 12-bit hexadecimal string');
 
         $this->factory->create('0', 'foobar', '0');
@@ -76,7 +76,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithInvalidCustomFieldCThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$customFieldC must be a 62-bit hexadecimal string');
 
         $this->factory->create('0', '0', 'foobar');
@@ -92,7 +92,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromBytesThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 16-byte string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x8f\xff\x8f\xff\xff\xff\xff\xff\xff");
@@ -100,7 +100,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromBytesThrowsExceptionForNonVersion8Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
             "Invalid version 8 UUID: \"\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff\"",
         );
@@ -118,7 +118,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('ffffffffffff8fff8ffffffffffffffff');
@@ -126,7 +126,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForNonHexadecimal(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('ffffffffffff8fff8ffffffffffffffg');
@@ -134,7 +134,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForNonVersion8Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 8 UUID: "ffffffffffff1fff8fffffffffffffff"');
 
         $this->factory->createFromHexadecimal('ffffffffffff1fff8fffffffffffffff');
@@ -158,7 +158,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid integer: "foobar"');
 
         /** @phpstan-ignore-next-line */
@@ -167,7 +167,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNonVersion8Uuid(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 8 UUID: 0');
 
         $this->factory->createFromInteger(0);
@@ -183,7 +183,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString('ffffffff-ffff-8fff-8fff-fffffffffffff');
@@ -191,7 +191,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString('ffff-ffffffff-8fff-8fff-ffffffffffff');

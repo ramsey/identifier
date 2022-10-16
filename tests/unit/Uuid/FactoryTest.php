@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
-use Identifier\Uuid\UuidInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
+use Ramsey\Identifier\Service\DateTime\StaticDateTimeService;
 use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Random\StaticBytesService;
-use Ramsey\Identifier\Service\Time\StaticDateTimeService;
 use Ramsey\Identifier\Uuid\DceDomain;
-use Ramsey\Identifier\Uuid\Factory;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
+use Ramsey\Identifier\Uuid\Uuid;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -35,11 +35,11 @@ use const PHP_INT_MAX;
 
 class FactoryTest extends TestCase
 {
-    private Factory $factory;
+    private UuidFactory $factory;
 
     protected function setUp(): void
     {
-        $this->factory = new Factory();
+        $this->factory = new UuidFactory();
     }
 
     public function testCreate(): void
@@ -48,7 +48,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromBytesProvider
      */
@@ -61,7 +61,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{bytes: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromBytesProvider(): array
     {
@@ -118,7 +118,7 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromBytesThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 16-byte string');
 
         $this->factory->createFromBytes($input);
@@ -140,7 +140,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromHexadecimalProvider
      */
@@ -153,7 +153,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromHexadecimalProvider(): array
     {
@@ -210,7 +210,7 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromHexadecimalThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal($input);
@@ -232,7 +232,7 @@ class FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNegativeNativeInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
         $this->factory->createFromInteger(-1);
@@ -240,7 +240,7 @@ class FactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
         $this->factory->createFromInteger('-9223372036854775809');
@@ -251,7 +251,7 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid integer: "%s"', $input));
 
         /** @phpstan-ignore-next-line */
@@ -273,7 +273,7 @@ class FactoryTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromIntegerProvider
      */
@@ -286,7 +286,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{value: int | numeric-string, expectedType: class-string<Uuid>}>
      */
     public function createFromIntegerProvider(): array
     {
@@ -347,7 +347,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromStringProvider
      */
@@ -360,7 +360,7 @@ class FactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{value: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromStringProvider(): array
     {
@@ -417,7 +417,7 @@ class FactoryTest extends TestCase
      */
     public function testCreateFromStringThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString($input);
@@ -494,7 +494,7 @@ class FactoryTest extends TestCase
 
     public function testUuid3ThrowsExceptionForInvalidNamespace(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
         $this->factory->uuid3('foobar', '');
@@ -527,7 +527,7 @@ class FactoryTest extends TestCase
 
     public function testUuid5ThrowsExceptionForInvalidNamespace(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
         $this->factory->uuid5('foobar', '');
@@ -575,7 +575,13 @@ class FactoryTest extends TestCase
         $randomService = new StaticBytesService("\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff");
         $timeService = new StaticDateTimeService(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
 
-        $factory = new Factory($clockSequenceService, $dceSecurityService, $nodeService, $randomService, $timeService);
+        $factory = new UuidFactory(
+            $clockSequenceService,
+            $dceSecurityService,
+            $nodeService,
+            $randomService,
+            $timeService,
+        );
 
         $this->assertSame('175d43ea-405b-11ed-8001-010000000005', $factory->uuid1()->toString());
         $this->assertSame('00000002-405b-21ed-8100-010000000005', $factory->uuid2()->toString());

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\NodeNotFound;
 use Ramsey\Identifier\Service\Node\FallbackNodeService;
-use Ramsey\Identifier\Service\Node\NodeServiceInterface;
+use Ramsey\Identifier\Service\Node\NodeService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -14,11 +14,11 @@ class FallbackNodeServiceTest extends TestCase
 {
     public function testGetNodeStepsThroughNodeServicesToReturnNode(): void
     {
-        $service1 = $this->mockery(NodeServiceInterface::class);
-        $service1->allows()->getNode()->andThrows(new NodeNotFoundException('could not find node'));
+        $service1 = $this->mockery(NodeService::class);
+        $service1->allows()->getNode()->andThrows(new NodeNotFound('could not find node'));
 
-        $service2 = $this->mockery(NodeServiceInterface::class);
-        $service2->allows()->getNode()->andThrows(new NodeNotFoundException('could not find node'));
+        $service2 = $this->mockery(NodeService::class);
+        $service2->allows()->getNode()->andThrows(new NodeNotFound('could not find node'));
 
         $service3 = new StaticNodeService('aabbcc001122');
 
@@ -34,7 +34,7 @@ class FallbackNodeServiceTest extends TestCase
     {
         $service = new FallbackNodeService([]);
 
-        $this->expectException(NodeNotFoundException::class);
+        $this->expectException(NodeNotFound::class);
         $this->expectExceptionMessage('Unable to find a suitable node service');
 
         $service->getNode();
@@ -42,15 +42,15 @@ class FallbackNodeServiceTest extends TestCase
 
     public function testGetNodeCannotObtainASuitableNode(): void
     {
-        $service1 = $this->mockery(NodeServiceInterface::class);
-        $service1->expects()->getNode()->andThrows(new NodeNotFoundException('could not find node'));
+        $service1 = $this->mockery(NodeService::class);
+        $service1->expects()->getNode()->andThrows(new NodeNotFound('could not find node'));
 
-        $service2 = $this->mockery(NodeServiceInterface::class);
-        $service2->expects()->getNode()->andThrows(new NodeNotFoundException('could not find node'));
+        $service2 = $this->mockery(NodeService::class);
+        $service2->expects()->getNode()->andThrows(new NodeNotFound('could not find node'));
 
         $service = new FallbackNodeService([$service1, $service2]);
 
-        $this->expectException(NodeNotFoundException::class);
+        $this->expectException(NodeNotFound::class);
         $this->expectExceptionMessage('Unable to find a suitable node service');
 
         $service->getNode();

@@ -14,18 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier\Exception;
 
-use Identifier\BinaryIdentifier;
-use Identifier\DateTimeIdentifier;
-use Identifier\IntegerIdentifier;
-use JsonSerializable;
-use Ramsey\Identifier\Ulid\Utility\StandardUlid;
+use BadMethodCallException;
 
 /**
- * @psalm-immutable
+ * Thrown when attempting to call a method from an unsupported context (e.g.,
+ * calling `getVersion()` on a {@see \Ramsey\Identifier\Uuid\MaxUuid})
  */
-final class Ulid implements BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier, JsonSerializable
+class BadMethodCall extends BadMethodCallException implements IdentifierException
 {
-    use StandardUlid;
 }

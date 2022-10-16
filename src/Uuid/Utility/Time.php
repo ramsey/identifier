@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function intdiv;
 use function pack;
@@ -60,12 +60,12 @@ final class Time
      *
      * @return non-empty-string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
         if ($dateTime->format('Y-m-d') < '1582-10-15') {
-            throw new InvalidArgumentException('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
+            throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
         }
 
         if (PHP_INT_SIZE >= 8) {
@@ -93,12 +93,12 @@ final class Time
      *
      * @return non-empty-string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
     {
         if ($dateTime->getTimestamp() < 0) {
-            throw new InvalidArgumentException('Unable to get bytes for a timestamp earlier than the Unix Epoch');
+            throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Unix Epoch');
         }
 
         if (PHP_INT_SIZE >= 8) {

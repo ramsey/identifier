@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid\Utility;
 
-use Identifier\Uuid\Variant;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
 use function bin2hex;
@@ -202,7 +202,7 @@ class BinaryTest extends TestCase
 
     public function testApplyVersionAndVariantThrowsExceptionWhenBytesAreWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('$bytes must be a a 16-byte string');
 
         Binary::applyVersionAndVariant('foobar', null);

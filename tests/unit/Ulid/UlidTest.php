@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Ulid;
 
 use DateTimeImmutable;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid as StaticUlid;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
@@ -42,7 +42,7 @@ class UlidTest extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid ULID: "%s"', $value));
 
         new Ulid($value);
@@ -146,7 +146,7 @@ class UlidTest extends TestCase
     {
         $serialized = 'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid ULID: ""');
 
         unserialize($serialized);
@@ -157,7 +157,7 @@ class UlidTest extends TestCase
         $serialized =
             'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid ULID: "a6a011d2-7433-9d43-9161-1550863792c9"');
 
         unserialize($serialized);
@@ -179,20 +179,20 @@ class UlidTest extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
+            'with null' => [null, 26],
             'with int' => [123, -1],
             'with float' => [123.456, -1],
-            'with string' => ['foobar', -1],
+            'with string' => ['foobar', -54],
             'with string Nil ULID' => [StaticUlid::nil()->toString(), 1],
             'with same string ULID' => [self::ULID_STRING, 0],
             'with same string ULID all lowercase' => [strtoupper(self::ULID_STRING), 0],
             'with same hex ULID' => [self::ULID_HEX, 0],
             'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), 0],
             'with same bytes ULID' => [self::ULID_BYTES, 0],
-            'with string Max ULID' => [StaticUlid::max()->toString(), -1],
-            'with string Max ULID all lowercase' => [strtolower(StaticUlid::max()->toString()), -1],
+            'with string Max ULID' => [StaticUlid::max()->toString(), -7],
+            'with string Max ULID all lowercase' => [strtolower(StaticUlid::max()->toString()), -7],
             'with bool true' => [true, -1],
-            'with bool false' => [false, 1],
+            'with bool false' => [false, 26],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -200,7 +200,7 @@ class UlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -54,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class (self::ULID_BYTES) {
@@ -219,13 +219,13 @@ class UlidTest extends TestCase
             'with Ulid from string' => [new Ulid(self::ULID_STRING), 0],
             'with Ulid from hex' => [new Ulid(self::ULID_HEX), 0],
             'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), 0],
-            'with MaxUlid' => [new MaxUlid(), -1],
+            'with MaxUlid' => [new MaxUlid(), -7],
         ];
     }
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->ulidWithString->compareTo([]);

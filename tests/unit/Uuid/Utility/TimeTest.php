@@ -6,7 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid\Utility;
 
 use DateTimeImmutable;
 use DateTimeInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -85,7 +85,7 @@ class TimeTest extends TestCase
     {
         $dateTime = new DateTimeImmutable('1582-10-14 00:00:00');
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
 
         Time::getTimeBytesForGregorianEpoch($dateTime);
@@ -95,7 +95,7 @@ class TimeTest extends TestCase
     {
         $dateTime = new DateTimeImmutable('1969-12-31 23:59:59.999999');
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Unix Epoch');
 
         Time::getTimeBytesForUnixEpoch($dateTime);

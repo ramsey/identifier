@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use BadMethodCallException;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -39,7 +39,7 @@ class NonstandardUuidTest extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid nonstandard UUID: "%s"', $value));
 
         new Uuid\NonstandardUuid($value);
@@ -242,7 +242,7 @@ class NonstandardUuidTest extends TestCase
     {
         $serialized = 'O:38:"Ramsey\\Identifier\\Uuid\\NonstandardUuid":1:{s:4:"uuid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid nonstandard UUID: ""');
 
         unserialize($serialized);
@@ -253,7 +253,7 @@ class NonstandardUuidTest extends TestCase
         $serialized = 'O:38:"Ramsey\\Identifier\\Uuid\\NonstandardUuid":1:'
             . '{s:4:"uuid";s:36:"27433d43-011d-4a6a-a161-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid nonstandard UUID: "27433d43-011d-4a6a-a161-1550863792c9"');
 
         unserialize($serialized);
@@ -275,20 +275,20 @@ class NonstandardUuidTest extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
+            'with null' => [null, 36],
             'with int' => [123, 1],
             'with float' => [123.456, 1],
-            'with string' => ['foobar', -1],
-            'with string Nil UUID' => [Uuid::nil()->toString(), 1],
+            'with string' => ['foobar', -52],
+            'with string Nil UUID' => [Uuid::nil()->toString(), 2],
             'with same string UUID' => [self::UUID_NONSTANDARD_STRING, 0],
             'with same string UUID all caps' => [strtoupper(self::UUID_NONSTANDARD_STRING), 0],
             'with same hex UUID' => [self::UUID_NONSTANDARD_HEX, 0],
             'with same hex UUID all caps' => [strtoupper(self::UUID_NONSTANDARD_HEX), 0],
             'with same bytes UUID' => [self::UUID_NONSTANDARD_BYTES, 0],
-            'with string Max UUID' => [Uuid::max()->toString(), -1],
-            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -1],
+            'with string Max UUID' => [Uuid::max()->toString(), -52],
+            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -52],
             'with bool true' => [true, 1],
-            'with bool false' => [false, 1],
+            'with bool false' => [false, 36],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -296,7 +296,7 @@ class NonstandardUuidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -52,
             ],
             'with Stringable class returning UUID bytes' => [
                 new class (self::UUID_NONSTANDARD_BYTES) {
@@ -311,17 +311,17 @@ class NonstandardUuidTest extends TestCase
                 },
                 0,
             ],
-            'with NilUuid' => [new Uuid\NilUuid(), 1],
+            'with NilUuid' => [new Uuid\NilUuid(), 2],
             'with NonstandardUuid from string' => [new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_STRING), 0],
             'with NonstandardUuid from hex' => [new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_HEX), 0],
             'with NonstandardUuid from bytes' => [new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_BYTES), 0],
-            'with MaxUuid' => [new Uuid\MaxUuid(), -1],
+            'with MaxUuid' => [new Uuid\MaxUuid(), -52],
         ];
     }
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->uuidWithString->compareTo([]);
@@ -397,7 +397,7 @@ class NonstandardUuidTest extends TestCase
 
     public function testGetVersionThrowsException(): void
     {
-        $this->expectException(BadMethodCallException::class);
+        $this->expectException(BadMethodCall::class);
         $this->expectExceptionMessage('Nonstandard UUIDs do not have a version field');
 
         $this->uuidWithString->getVersion();
@@ -615,7 +615,7 @@ class NonstandardUuidTest extends TestCase
      */
     public function testInvalidNonstandard(string $uuid): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage("Invalid nonstandard UUID: \"$uuid\"");
 
         new Uuid\NonstandardUuid($uuid);

@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use Identifier\Exception\IdentifierException;
+use RuntimeException;
 
 /**
- * Describes a common interface for all exceptions thrown by ramsey/identifier
+ * Thrown when unable to find a suitable DCE Security identifier
  */
-interface IdentifierExceptionInterface extends IdentifierException
+class DceSecurityIdentifierNotFound extends RuntimeException implements IdentifierException
 {
 }

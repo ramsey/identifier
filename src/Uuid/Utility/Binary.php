@@ -16,9 +16,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Utility;
 
-use Identifier\Uuid\Variant;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Identifier\Uuid\Version;
 
 use function pack;
 use function strlen;
@@ -41,7 +41,7 @@ final class Binary
      *
      * @return non-empty-string A 16-byte string with the UUID version and variant applied
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      *
      * @psalm-pure
      */
@@ -51,7 +51,7 @@ final class Binary
         Variant $variant = Variant::Rfc4122,
     ): string {
         if (strlen($bytes) !== 16) {
-            throw new InvalidArgumentException('$bytes must be a a 16-byte string');
+            throw new InvalidArgument('$bytes must be a a 16-byte string');
         }
 
         /** @var int[] $parts */

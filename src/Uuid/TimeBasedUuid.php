@@ -14,17 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\Time;
+namespace Ramsey\Identifier\Uuid;
 
-use DateTimeImmutable;
+use Identifier\DateTimeIdentifier;
 
 /**
- * Defines a service interface for getting a date-time instance
+ * Describes the interface of a time-based UUID
  */
-interface TimeServiceInterface
+interface TimeBasedUuid extends DateTimeIdentifier, Uuid
 {
-    /**
-     * Returns a date-time instance
-     */
-    public function getDateTime(): DateTimeImmutable;
 }

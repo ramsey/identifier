@@ -14,13 +14,19 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
-
-use LogicException;
+namespace Ramsey\Identifier\Service\ClockSequence;
 
 /**
- * Thrown when unable to find an appropriate source of randomness
+ * Defines a service interface for obtaining a clock sequence used with version
+ * 1 and 6 UUIDs
  */
-class RandomSourceException extends LogicException implements IdentifierExceptionInterface
+interface ClockSequenceService
 {
+    /**
+     * Returns a clock sequence used to help avoid duplicates/collisions that
+     * could occur if the clock is set backwards or if the node changes
+     *
+     * @return int<0, 16383>
+     */
+    public function getClockSequence(): int;
 }

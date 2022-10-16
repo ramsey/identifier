@@ -20,7 +20,7 @@ namespace Ramsey\Identifier\Service\ClockSequence;
  * A clock sequence service that provides a static integer, primarily for
  * deterministic testing purposes
  */
-final class StaticClockSequenceService implements ClockSequenceServiceInterface
+final class StaticClockSequenceService implements ClockSequenceService
 {
     /**
      * @param int<0, 16383> $clockSequence

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -145,7 +145,7 @@ class StaticNodeServiceTest extends TestCase
      */
     public function testGetNodeThrowsException(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Node must be a 48-bit integer or hexadecimal string');
 
         new StaticNodeService($value);

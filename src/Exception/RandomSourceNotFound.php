@@ -16,15 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use Identifier\Exception\NotComparableException as IdentifierNotComparableException;
-use RuntimeException;
+use LogicException;
 
 /**
- * Thrown when unable to compare values, e.g. because the other value is not of
- * the proper type, etc.
+ * Thrown when unable to find an appropriate source of randomness
  */
-class NotComparableException extends RuntimeException implements
-    IdentifierExceptionInterface,
-    IdentifierNotComparableException
+class RandomSourceNotFound extends LogicException implements IdentifierException
 {
 }

@@ -17,9 +17,9 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Utility;
 
 use Brick\Math\BigInteger;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Uuid\Variant;
 use Stringable;
 
 use function assert;
@@ -27,7 +27,6 @@ use function bin2hex;
 use function gettype;
 use function hex2bin;
 use function is_scalar;
-use function is_string;
 use function sprintf;
 use function str_replace;
 use function strcasecmp;
@@ -49,19 +48,19 @@ trait StandardUuid
     private readonly int $format;
 
     /**
-     * Constructs a {@see \Identifier\Uuid\UuidInterface} instance
+     * Constructs a {@see \Ramsey\Identifier\Uuid\Uuid} instance
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid)
     {
         $this->format = strlen($this->uuid);
 
         if (!$this->isValid($this->uuid, $this->format)) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgument(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
                 $this->uuid,
@@ -70,7 +69,7 @@ trait StandardUuid
     }
 
     /**
-     * @inheritDoc
+     * @return array{uuid: string}
      */
     public function __serialize(): array
     {
@@ -86,21 +85,20 @@ trait StandardUuid
     }
 
     /**
-     * @inheritDoc
+     * @param array{uuid: string} $data
+     *
+     * @throws InvalidArgument
      */
     public function __unserialize(array $data): void
     {
         assert(isset($data['uuid']), "'uuid' is not set in serialized data");
-        assert(is_string($data['uuid']), "'uuid' in serialized data is not a string");
 
         /** @psalm-suppress UnusedMethodCall */
         $this->__construct($data['uuid']);
     }
 
     /**
-     * @throws NotComparableException
-     *
-     * @psalm-return -1 | 0 | 1
+     * @throws NotComparable
      */
     public function compareTo(mixed $other): int
     {
@@ -110,16 +108,10 @@ trait StandardUuid
                 $other = $this->getFormat(Format::FORMAT_STRING, $other);
             }
 
-            $compare = strcasecmp($this->getFormat(Format::FORMAT_STRING), $other);
-
-            return match (true) {
-                $compare < 0 => - 1,
-                $compare > 0 => 1,
-                default => 0,
-            };
+            return strcasecmp($this->getFormat(Format::FORMAT_STRING), $other);
         }
 
-        throw new NotComparableException(sprintf(
+        throw new NotComparable(sprintf(
             'Comparison with values of type "%s" is not supported',
             gettype($other),
         ));
@@ -129,7 +121,7 @@ trait StandardUuid
     {
         try {
             return $this->compareTo($other) === 0;
-        } catch (NotComparableException) {
+        } catch (NotComparable) {
             return false;
         }
     }

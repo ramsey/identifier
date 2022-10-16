@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
@@ -38,7 +36,7 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV8 implements UuidInterface
+final class UuidV8 implements Uuid
 {
     use StandardUuid;
 

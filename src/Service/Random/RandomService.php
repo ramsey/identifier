@@ -20,7 +20,7 @@ namespace Ramsey\Identifier\Service\Random;
  * Defines a service interface for getting cryptographically secure random or
  * pseudorandom bytes
  */
-interface RandomServiceInterface
+interface RandomService
 {
     /**
      * Generates an n-length string of cryptographically-secure random bytes

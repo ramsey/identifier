@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -35,7 +35,7 @@ class MaxUlidTest extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Max ULID: "%s"', $value));
 
         new Ulid\MaxUlid($value);
@@ -152,7 +152,7 @@ class MaxUlidTest extends TestCase
     {
         $serialized = 'O:30:"Ramsey\\Identifier\\Ulid\\MaxUlid":1:{s:4:"ulid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Max ULID: ""');
 
         unserialize($serialized);
@@ -163,7 +163,7 @@ class MaxUlidTest extends TestCase
         $serialized =
             'O:30:"Ramsey\\Identifier\\Ulid\\MaxUlid":1:{s:4:"ulid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Max ULID: "a6a011d2-7433-9d43-9161-1550863792c9"');
 
         unserialize($serialized);
@@ -186,18 +186,18 @@ class MaxUlidTest extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
-            'with int' => [123, 1],
-            'with float' => [123.456, 1],
-            'with string' => ['foobar', -1],
-            'with string Nil ULID' => [Ulid::nil()->toString(), 1],
+            'with null' => [null, 26],
+            'with int' => [123, 6],
+            'with float' => [123.456, 6],
+            'with string' => ['foobar', -47],
+            'with string Nil ULID' => [Ulid::nil()->toString(), 7],
             'with string Max ULID' => [Ulid::max()->toString(), 0],
             'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), 0],
             'with hex Max ULID' => ['ffffffffffffffffffffffffffffffff', 0],
             'with hex Max ULID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 0],
             'with bytes Max ULID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0],
-            'with bool true' => [true, 1],
-            'with bool false' => [false, 1],
+            'with bool true' => [true, 6],
+            'with bool false' => [false, 26],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -205,7 +205,7 @@ class MaxUlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -47,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class {
@@ -216,7 +216,7 @@ class MaxUlidTest extends TestCase
                 },
                 0,
             ],
-            'with NilUlid' => [new Ulid\NilUlid(), 1],
+            'with NilUlid' => [new Ulid\NilUlid(), 7],
             'with MaxUlid' => [new Ulid\MaxUlid(), 0],
             'with MaxUlid from string' => [new Ulid\MaxUlid('7ZZZZZZZZZZZZZZZZZZZZZZZZZ'), 0],
             'with MaxUlid from hex' => [new Ulid\MaxUlid('ffffffffffffffffffffffffffffffff'), 0],
@@ -229,7 +229,7 @@ class MaxUlidTest extends TestCase
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->maxUlid->compareTo([]);

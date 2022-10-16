@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Service\Time;
+namespace Ramsey\Test\Identifier\Service\DateTime;
 
 use DateTimeImmutable;
-use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
+use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
 use Ramsey\Test\Identifier\TestCase;
 
 class CurrentDateTimeServiceTest extends TestCase

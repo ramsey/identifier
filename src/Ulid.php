@@ -17,24 +17,27 @@ declare(strict_types=1);
 namespace Ramsey\Identifier;
 
 use DateTimeInterface;
-use Identifier\Exception\InvalidArgumentException;
-use Identifier\Ulid\UlidFactoryInterface;
-use Identifier\Ulid\UlidInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Ulid\Factory\UlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
+use Ramsey\Identifier\Ulid\Ulid as StandardUlid;
 
 /**
  * Ulid provides constants and static methods for working with and generating ULIDs
  */
 final class Ulid
 {
-    private static ?UlidFactoryInterface $factory = null;
+    private static ?UlidFactory $factory = null;
 
     /**
      * Creates a ULID
+     *
+     * @throws InvalidArgument
+     * @throws RandomSourceNotFound
      */
-    public static function create(): UlidInterface
+    public static function create(): StandardUlid
     {
         return self::getFactory()->create();
     }
@@ -44,9 +47,9 @@ final class Ulid
      *
      * @param string $bytes A binary string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    public static function fromBytes(string $bytes): UlidInterface
+    public static function fromBytes(string $bytes): StandardUlid | MaxUlid | NilUlid
     {
         return self::getFactory()->createFromBytes($bytes);
     }
@@ -56,9 +59,9 @@ final class Ulid
      *
      * @param string $uuid A string representation of a ULID
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    public static function fromString(string $uuid): UlidInterface
+    public static function fromString(string $uuid): StandardUlid | MaxUlid | NilUlid
     {
         return self::getFactory()->createFromString($uuid);
     }
@@ -69,9 +72,10 @@ final class Ulid
      * @param DateTimeInterface $dateTime A date-time to use when creating the
      *     identifier
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws RandomSourceNotFound
      */
-    public static function fromDateTime(DateTimeInterface $dateTime): UlidInterface
+    public static function fromDateTime(DateTimeInterface $dateTime): StandardUlid
     {
         return self::getFactory()->createFromDateTime($dateTime);
     }
@@ -79,9 +83,9 @@ final class Ulid
     /**
      * Creates a ULID from a 32-character hexadecimal string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    public static function fromHexadecimal(string $hexadecimal): UlidInterface
+    public static function fromHexadecimal(string $hexadecimal): StandardUlid | MaxUlid | NilUlid
     {
         return self::getFactory()->createFromHexadecimal($hexadecimal);
     }
@@ -94,9 +98,9 @@ final class Ulid
      *     it is outside this range, it must be a string representation of the
      *     integer
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    public static function fromInteger(int | string $integer): UlidInterface
+    public static function fromInteger(int | string $integer): StandardUlid | MaxUlid | NilUlid
     {
         return self::getFactory()->createFromInteger($integer);
     }
@@ -117,7 +121,7 @@ final class Ulid
         return new NilUlid();
     }
 
-    private static function getFactory(): UlidFactoryInterface
+    private static function getFactory(): UlidFactory
     {
         if (self::$factory === null) {
             self::$factory = new UlidFactory();

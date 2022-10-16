@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use BadMethodCallException;
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 use function sprintf;
@@ -33,21 +31,21 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NilUuid implements UuidInterface
+final class NilUuid implements Uuid
 {
     use StandardUuid;
 
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid = self::NIL)
     {
         $this->format = strlen($this->uuid);
 
         if (!$this->isValid($this->uuid, $this->format)) {
-            throw new InvalidArgumentException(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
+            throw new InvalidArgument(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
         }
     }
 
@@ -59,11 +57,11 @@ final class NilUuid implements UuidInterface
     }
 
     /**
-     * @throws BadMethodCallException
+     * @throws BadMethodCall
      */
     public function getVersion(): never
     {
-        throw new BadMethodCallException('Nil UUIDs do not have a version field');
+        throw new BadMethodCall('Nil UUIDs do not have a version field');
     }
 
     private function isValid(string $uuid, int $format): bool

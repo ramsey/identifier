@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Exception;
 use RuntimeException;
 
 /**
- * Thrown when a problem occurs with a cache instance
+ * Thrown when unable to find a system node (MAC address)
  */
-class CacheException extends RuntimeException implements IdentifierExceptionInterface
+class NodeNotFound extends RuntimeException implements IdentifierException
 {
 }

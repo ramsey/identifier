@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\RandomSourceException;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Throwable;
 
 use function bin2hex;
@@ -27,10 +27,10 @@ use function unpack;
 /**
  * A node service that generates a random node and sets the multicast bit
  */
-final class RandomNodeService implements NodeServiceInterface
+final class RandomNodeService implements NodeService
 {
     /**
-     * @throws RandomSourceException
+     * @throws RandomSourceNotFound
      */
     public function getNode(): string
     {
@@ -38,7 +38,7 @@ final class RandomNodeService implements NodeServiceInterface
             $nodeBytes = random_bytes(6);
         // @codeCoverageIgnoreStart
         } catch (Throwable $exception) {
-            throw new RandomSourceException('Cannot find an appropriate source of randomness', 0, $exception);
+            throw new RandomSourceNotFound('Cannot find an appropriate source of randomness', 0, $exception);
         // @codeCoverageIgnoreEnd
         }
 

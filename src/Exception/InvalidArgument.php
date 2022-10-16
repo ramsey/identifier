@@ -16,11 +16,15 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use LogicException;
+use Identifier\Exception\InvalidArgument as IdentifierInvalidArgument;
+use InvalidArgumentException;
 
 /**
- * Thrown when attempting to use an untyped UUID in a way that's not supported
+ * Thrown when a method or function argument does not conform to
+ * validation requirements
  */
-class UntypedUuidException extends LogicException implements IdentifierExceptionInterface
+class InvalidArgument extends InvalidArgumentException implements
+    IdentifierException,
+    IdentifierInvalidArgument
 {
 }

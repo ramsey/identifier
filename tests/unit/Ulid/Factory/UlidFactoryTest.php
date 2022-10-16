@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Ulid\Factory;
 
 use DateTimeImmutable;
-use Identifier\Ulid\UlidInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\DateTime\StaticDateTimeService;
 use Ramsey\Identifier\Service\Random\StaticBytesService;
-use Ramsey\Identifier\Service\Time\StaticDateTimeService;
 use Ramsey\Identifier\Ulid\Factory\UlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
@@ -86,7 +85,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromBytesThrowsException(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 16-byte string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
@@ -118,7 +117,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('fffffffffffffffffffffffffffffffff');
@@ -126,7 +125,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromHexadecimalThrowsExceptionForNonHexadecimal(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('fffffffffffffffffffffffffffffffg');
@@ -134,7 +133,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForOutOfBoundsInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid ULID: 340282366920938463463374607431768211456');
 
         $this->factory->createFromInteger('340282366920938463463374607431768211456');
@@ -142,7 +141,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNegativeNativeInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a ULID from a negative integer');
 
         $this->factory->createFromInteger(-1);
@@ -150,7 +149,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a ULID from a negative integer');
 
         $this->factory->createFromInteger('-9223372036854775809');
@@ -161,7 +160,7 @@ class UlidFactoryTest extends TestCase
      */
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid integer: "%s"', $input));
 
         /** @phpstan-ignore-next-line */
@@ -184,7 +183,7 @@ class UlidFactoryTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     * @param class-string<UlidInterface> $expectedType
+     * @param class-string $expectedType
      *
      * @dataProvider createFromIntegerProvider
      */
@@ -196,7 +195,7 @@ class UlidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string<UlidInterface>}>
+     * @return array<array{value: int | numeric-string, expectedType: class-string}>
      */
     public function createFromIntegerProvider(): array
     {
@@ -254,7 +253,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a valid ULID string representation');
 
         $this->factory->createFromString('01BX5ZZKBKACTAV9WEVGEMMVR');
@@ -262,7 +261,7 @@ class UlidFactoryTest extends TestCase
 
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a valid ULID string representation');
 
         $this->factory->createFromString('ffffffff-ffff-7fff-8fff-fffffffffffff');

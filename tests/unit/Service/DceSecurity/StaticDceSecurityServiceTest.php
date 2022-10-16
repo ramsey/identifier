@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\DceSecurity;
 
-use Ramsey\Identifier\Exception\DceSecurityException;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
 use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -35,7 +35,7 @@ class StaticDceSecurityServiceTest extends TestCase
     {
         $service = new StaticDceSecurityService();
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'To use the person identifier, you must set $personId when instantiating '
             . StaticDceSecurityService::class,
@@ -48,7 +48,7 @@ class StaticDceSecurityServiceTest extends TestCase
     {
         $service = new StaticDceSecurityService();
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'To use the group identifier, you must set $groupId when instantiating '
             . StaticDceSecurityService::class,
@@ -61,7 +61,7 @@ class StaticDceSecurityServiceTest extends TestCase
     {
         $service = new StaticDceSecurityService();
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'To use the org identifier, you must set $orgId when instantiating '
             . StaticDceSecurityService::class,

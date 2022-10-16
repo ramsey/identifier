@@ -14,17 +14,17 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
+namespace Ramsey\Identifier\Service\DateTime;
 
-use Identifier\Exception\InvalidArgumentException as IdentifierInvalidArgumentException;
-use InvalidArgumentException as PhpInvalidArgumentException;
+use DateTimeImmutable;
 
 /**
- * Thrown when a method or function argument does not conform to
- * validation requirements
+ * Defines a service interface for getting a date-time instance
  */
-class InvalidArgumentException extends PhpInvalidArgumentException implements
-    IdentifierExceptionInterface,
-    IdentifierInvalidArgumentException
+interface DateTimeService
 {
+    /**
+     * Returns a date-time instance
+     */
+    public function getDateTime(): DateTimeImmutable;
 }

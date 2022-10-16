@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Ulid\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\IntegerOverflowException;
 use DateTimeImmutable;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Stringable;
 
@@ -29,7 +29,6 @@ use function gettype;
 use function hex2bin;
 use function hexdec;
 use function is_scalar;
-use function is_string;
 use function number_format;
 use function sprintf;
 use function str_pad;
@@ -60,19 +59,19 @@ trait StandardUlid
      * @param string $ulid A representation of the ULID in either Crockford
      *     base 32 or bytes form
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $ulid)
     {
         $this->format = strlen($this->ulid);
 
         if (!$this->isValid($this->ulid, $this->format)) {
-            throw new InvalidArgumentException(sprintf('Invalid ULID: "%s"', $this->ulid));
+            throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $this->ulid));
         }
     }
 
     /**
-     * @inheritDoc
+     * @return array{ulid: string}
      */
     public function __serialize(): array
     {
@@ -88,21 +87,20 @@ trait StandardUlid
     }
 
     /**
-     * @inheritDoc
+     * @param array{ulid: string} $data
+     *
+     * @throws InvalidArgument
      */
     public function __unserialize(array $data): void
     {
         assert(isset($data['ulid']), "'ulid' is not set in serialized data");
-        assert(is_string($data['ulid']), "'ulid' in serialized data is not a string");
 
         /** @psalm-suppress UnusedMethodCall */
         $this->__construct($data['ulid']);
     }
 
     /**
-     * @throws NotComparableException
-     *
-     * @psalm-return -1 | 0 | 1
+     * @throws NotComparable
      */
     public function compareTo(mixed $other): int
     {
@@ -112,16 +110,10 @@ trait StandardUlid
                 $other = $this->getFormat(Format::FORMAT_ULID, $other);
             }
 
-            $compare = strcasecmp($this->getFormat(Format::FORMAT_ULID), $other);
-
-            return match (true) {
-                $compare < 0 => - 1,
-                $compare > 0 => 1,
-                default => 0,
-            };
+            return strcasecmp($this->getFormat(Format::FORMAT_ULID), $other);
         }
 
-        throw new NotComparableException(sprintf(
+        throw new NotComparable(sprintf(
             'Comparison with values of type "%s" is not supported',
             gettype($other),
         ));
@@ -131,7 +123,7 @@ trait StandardUlid
     {
         try {
             return $this->compareTo($other) === 0;
-        } catch (NotComparableException) {
+        } catch (NotComparable) {
             return false;
         }
     }

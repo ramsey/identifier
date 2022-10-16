@@ -16,21 +16,21 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\DceSecurity;
 
-use Ramsey\Identifier\Exception\DceSecurityException;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
 
 use function sprintf;
 
 /**
  * A service that provides static person, group, and organization IDs
  */
-final class StaticDceSecurityService implements DceSecurityServiceInterface
+final class StaticDceSecurityService implements DceSecurityService
 {
     /**
      * Constructs a static DCE Security service
      *
      * Each parameter is optional, so you may only provide the one you intend
      * to use. However, when attempting to use a method for a property not
-     * provided, this class will throw a {@see DceSecurityException}.
+     * provided, this class will throw a {@see DceSecurityIdentifierNotFound}.
      *
      * @param int<0, max> | null $personId An optional person identifier, or UID
      * @param int<0, max> | null $groupId An optional group identifier, or GID
@@ -44,12 +44,12 @@ final class StaticDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if a group identifier was not provided upon instantiation
+     * @throws DceSecurityIdentifierNotFound if a group identifier was not provided upon instantiation
      */
     public function getGroupIdentifier(): int
     {
         if ($this->groupId === null) {
-            throw new DceSecurityException(sprintf(
+            throw new DceSecurityIdentifierNotFound(sprintf(
                 'To use the group identifier, you must set $groupId when instantiating %s',
                 self::class,
             ));
@@ -59,12 +59,12 @@ final class StaticDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if an org identifier was not provided upon instantiation
+     * @throws DceSecurityIdentifierNotFound if an org identifier was not provided upon instantiation
      */
     public function getOrgIdentifier(): int
     {
         if ($this->orgId === null) {
-            throw new DceSecurityException(sprintf(
+            throw new DceSecurityIdentifierNotFound(sprintf(
                 'To use the org identifier, you must set $orgId when instantiating %s',
                 self::class,
             ));
@@ -74,12 +74,12 @@ final class StaticDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if a person identifier was not provided upon instantiation
+     * @throws DceSecurityIdentifierNotFound if a person identifier was not provided upon instantiation
      */
     public function getPersonIdentifier(): int
     {
         if ($this->personId === null) {
-            throw new DceSecurityException(sprintf(
+            throw new DceSecurityIdentifierNotFound(sprintf(
                 'To use the person identifier, you must set $personId when instantiating %s',
                 self::class,
             ));

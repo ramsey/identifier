@@ -23,7 +23,7 @@ use function substr;
  * A not-so-random service that provides a static byte string, primarily for
  * deterministic testing purposes
  */
-final class StaticBytesService implements RandomServiceInterface
+final class StaticBytesService implements RandomService
 {
     /**
      * @param non-empty-string $bytes

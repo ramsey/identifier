@@ -14,19 +14,20 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\ClockSequence;
+namespace Ramsey\Identifier\Service\DateTime;
+
+use DateTimeImmutable;
 
 /**
- * Defines a service interface for obtaining a clock sequence used with version
- * 1 and 6 UUIDs
+ * A date-time service that always returns the current date-time
  */
-interface ClockSequenceServiceInterface
+final class CurrentDateTimeService implements DateTimeService
 {
     /**
-     * Returns a clock sequence used to help avoid duplicates/collisions that
-     * could occur if the clock is set backwards or if the node changes
-     *
-     * @return int<0, 16383>
+     * Returns the current date-time
      */
-    public function getClockSequence(): int;
+    public function getDateTime(): DateTimeImmutable
+    {
+        return new DateTimeImmutable('now');
+    }
 }

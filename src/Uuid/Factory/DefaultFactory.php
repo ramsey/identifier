@@ -18,10 +18,10 @@ namespace Ramsey\Identifier\Uuid\Factory;
 
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
-use Identifier\Uuid\UuidInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
+use Ramsey\Identifier\Uuid\Uuid;
 use Throwable;
 
 use function sprintf;
@@ -43,34 +43,34 @@ trait DefaultFactory
      * Returns the name of the UUID class to use when instantiating UUID
      * instances from this trait
      *
-     * @return class-string<UuidInterface>
+     * @return class-string<Uuid>
      */
     abstract protected function getUuidClass(): string;
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    private function createFromBytesInternal(string $identifier): UuidInterface
+    private function createFromBytesInternal(string $identifier): Uuid
     {
         if (strlen($identifier) === Format::FORMAT_BYTES) {
-            /** @var UuidInterface */
+            /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgumentException('Identifier must be a 16-byte string');
+        throw new InvalidArgument('Identifier must be a 16-byte string');
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    private function createFromHexadecimalInternal(string $identifier): UuidInterface
+    private function createFromHexadecimalInternal(string $identifier): Uuid
     {
         if (strlen($identifier) === Format::FORMAT_HEX && $this->hasValidFormat($identifier, Format::FORMAT_HEX)) {
-            /** @var UuidInterface */
+            /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgumentException('Identifier must be a 32-character hexadecimal string');
+        throw new InvalidArgument('Identifier must be a 32-character hexadecimal string');
     }
 
     /**
@@ -78,20 +78,20 @@ trait DefaultFactory
      * As such, there's no need to use better performing math for integers less
      * than PHP_INT_MAX, since those integers can never be valid RFC 4122 UUIDs.
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    private function createFromIntegerInternal(int | string $identifier): UuidInterface
+    private function createFromIntegerInternal(int | string $identifier): Uuid
     {
         try {
             $bigInteger = BigInteger::of($identifier);
         } catch (MathException $exception) {
-            throw new InvalidArgumentException(sprintf('Invalid integer: "%s"', $identifier), 0, $exception);
+            throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier), 0, $exception);
         }
 
         try {
             return $this->createFromBytesInternal(str_pad($bigInteger->toBytes(false), 16, "\x00", STR_PAD_LEFT));
         } catch (Throwable $exception) {
-            throw new InvalidArgumentException(
+            throw new InvalidArgument(
                 sprintf('Invalid version %d UUID: %s', $this->getVersion()->value, $identifier),
                 0,
                 $exception,
@@ -100,18 +100,18 @@ trait DefaultFactory
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
-    private function createFromStringInternal(string $identifier): UuidInterface
+    private function createFromStringInternal(string $identifier): Uuid
     {
         if (
             strlen($identifier) === Format::FORMAT_STRING
             && $this->hasValidFormat($identifier, Format::FORMAT_STRING)
         ) {
-            /** @var UuidInterface */
+            /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgumentException('Identifier must be a UUID in string standard representation');
+        throw new InvalidArgument('Identifier must be a UUID in string standard representation');
     }
 }

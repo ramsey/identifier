@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\ClockSequence;
 
-use Ramsey\Identifier\Exception\RandomSourceException;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Throwable;
 
 use function random_int;
@@ -27,7 +27,7 @@ use function random_int;
  *
  * @link https://www.php.net/random_int random_int()
  */
-final class RandomClockSequenceService implements ClockSequenceServiceInterface
+final class RandomClockSequenceService implements ClockSequenceService
 {
     /**
      * @var int<0, 16383> | null
@@ -35,7 +35,7 @@ final class RandomClockSequenceService implements ClockSequenceServiceInterface
     private static ?int $clockSequence = null;
 
     /**
-     * @throws RandomSourceException
+     * @throws RandomSourceNotFound
      */
     public function getClockSequence(): int
     {
@@ -47,7 +47,7 @@ final class RandomClockSequenceService implements ClockSequenceServiceInterface
             }
         // @codeCoverageIgnoreStart
         } catch (Throwable $exception) {
-            throw new RandomSourceException('Cannot find an appropriate source of randomness', 0, $exception);
+            throw new RandomSourceNotFound('Cannot find an appropriate source of randomness', 0, $exception);
         // @codeCoverageIgnoreEnd
         }
 

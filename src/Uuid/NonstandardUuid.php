@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use BadMethodCallException;
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
@@ -39,19 +37,19 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class NonstandardUuid implements UuidInterface
+final class NonstandardUuid implements Uuid
 {
     use StandardUuid;
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid)
     {
         $this->format = strlen($this->uuid);
 
         if (!$this->isValid($this->uuid, $this->format)) {
-            throw new InvalidArgumentException(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
+            throw new InvalidArgument(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
         }
     }
 
@@ -63,11 +61,11 @@ final class NonstandardUuid implements UuidInterface
     }
 
     /**
-     * @throws BadMethodCallException
+     * @throws BadMethodCall
      */
     public function getVersion(): never
     {
-        throw new BadMethodCallException('Nonstandard UUIDs do not have a version field');
+        throw new BadMethodCall('Nonstandard UUIDs do not have a version field');
     }
 
     private function isValid(string $uuid, int $format): bool

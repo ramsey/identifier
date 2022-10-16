@@ -8,8 +8,8 @@ use InvalidArgumentException as PhpInvalidArgumentException;
 use Mockery;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\CacheException;
-use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\InvalidCacheKey;
+use Ramsey\Identifier\Exception\NodeNotFound;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Test\Identifier\TestCase;
@@ -95,7 +95,7 @@ class SystemNodeServiceTest extends TestCase
 
         $service = new SystemNodeService($cache);
 
-        $this->expectException(CacheException::class);
+        $this->expectException(InvalidCacheKey::class);
         $this->expectExceptionMessage(sprintf(
             'A problem occurred when attempting to use the cache key "%s"',
             SystemNodeService::class . '::$node',
@@ -115,7 +115,7 @@ class SystemNodeServiceTest extends TestCase
 
         $service = new SystemNodeService($cache);
 
-        $this->expectException(NodeNotFoundException::class);
+        $this->expectException(NodeNotFound::class);
         $this->expectExceptionMessage('Unable to fetch a node for this system');
 
         $service->getNode();

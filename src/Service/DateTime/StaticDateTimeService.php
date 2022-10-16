@@ -14,14 +14,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\Time;
+namespace Ramsey\Identifier\Service\DateTime;
 
 use DateTimeImmutable;
 
 /**
  * A date-time service that always returns a pre-defined date-time
  */
-final class StaticDateTimeService implements TimeServiceInterface
+final class StaticDateTimeService implements DateTimeService
 {
     /**
      * @param DateTimeImmutable $dateTime The date-time instance this service

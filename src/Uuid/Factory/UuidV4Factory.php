@@ -16,36 +16,37 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Factory;
 
-use Identifier\Uuid\UuidFactoryInterface;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\RandomSourceException;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomServiceInterface;
+use Ramsey\Identifier\Service\Random\RandomService;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\UuidV4;
+use Ramsey\Identifier\Uuid\Version;
 
 /**
  * A factory for creating version 4, random UUIDs
  */
-final class UuidV4Factory implements UuidFactoryInterface
+final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
     use DefaultFactory;
 
     /**
      * Constructs a factory for creating version 4, random UUIDs
      *
-     * @param RandomServiceInterface $randomService A service used to generate
+     * @param RandomService $randomService A service used to generate
      *     random bytes; defaults to {@see RandomBytesService}
      */
     public function __construct(
-        private readonly RandomServiceInterface $randomService = new RandomBytesService(),
+        private readonly RandomService $randomService = new RandomBytesService(),
     ) {
     }
 
     /**
-     * @throws InvalidArgumentException
-     * @throws RandomSourceException
+     * @throws RandomSourceNotFound
      */
     public function create(): UuidV4
     {
@@ -56,7 +57,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): UuidV4
     {
@@ -65,7 +66,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromHexadecimal(string $identifier): UuidV4
     {
@@ -74,7 +75,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): UuidV4
     {
@@ -83,7 +84,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromString(string $identifier): UuidV4
     {

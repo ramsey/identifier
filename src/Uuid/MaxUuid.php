@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use BadMethodCallException;
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 use function sprintf;
@@ -33,21 +31,21 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class MaxUuid implements UuidInterface
+final class MaxUuid implements Uuid
 {
     use StandardUuid;
 
     private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid = self::MAX)
     {
         $this->format = strlen($this->uuid);
 
         if (!$this->isValid($this->uuid, $this->format)) {
-            throw new InvalidArgumentException(sprintf('Invalid Max UUID: "%s"', $this->uuid));
+            throw new InvalidArgument(sprintf('Invalid Max UUID: "%s"', $this->uuid));
         }
     }
 
@@ -59,11 +57,11 @@ final class MaxUuid implements UuidInterface
     }
 
     /**
-     * @throws BadMethodCallException
+     * @throws BadMethodCall
      */
     public function getVersion(): never
     {
-        throw new BadMethodCallException('Max UUIDs do not have a version field');
+        throw new BadMethodCall('Max UUIDs do not have a version field');
     }
 
     private function isValid(string $uuid, int $format): bool

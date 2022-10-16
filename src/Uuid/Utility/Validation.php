@@ -16,9 +16,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Utility;
 
-use Identifier\Uuid\Variant;
-use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\DceDomain;
+use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Identifier\Uuid\Version;
 
 use function count;
 use function explode;

@@ -16,23 +16,23 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\NodeNotFound;
 
 /**
  * A node service that retrieves a node by stepping through a list of node
  * services until it obtains a node ID
  */
-final class FallbackNodeService implements NodeServiceInterface
+final class FallbackNodeService implements NodeService
 {
     /**
-     * @param iterable<NodeServiceInterface> $providers List of node services
+     * @param iterable<NodeService> $providers List of node services
      */
     public function __construct(private readonly iterable $providers)
     {
     }
 
     /**
-     * @throws NodeNotFoundException
+     * @throws NodeNotFound
      */
     public function getNode(): string
     {
@@ -41,14 +41,14 @@ final class FallbackNodeService implements NodeServiceInterface
         foreach ($this->providers as $provider) {
             try {
                 return $provider->getNode();
-            } catch (NodeNotFoundException $exception) {
+            } catch (NodeNotFound $exception) {
                 $lastProviderException = $exception;
 
                 continue;
             }
         }
 
-        throw new NodeNotFoundException(
+        throw new NodeNotFound(
             'Unable to find a suitable node service',
             0,
             $lastProviderException,

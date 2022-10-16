@@ -16,10 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\Uuid\NodeBasedUuidInterface;
-use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid as NodeBasedUuidUtility;
 
 use function hexdec;
 use function sprintf;
@@ -33,9 +31,9 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV1 implements NodeBasedUuidInterface
+final class UuidV1 implements NodeBasedUuid, TimeBasedUuid
 {
-    use NodeBasedUuid;
+    use NodeBasedUuidUtility;
 
     public function getVersion(): Version
     {

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
-use Identifier\Uuid\Variant;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
+use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -41,7 +41,7 @@ class UuidV2Test extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid version 2 UUID: "%s"', $value));
 
         new Uuid\UuidV2($value);
@@ -220,7 +220,7 @@ class UuidV2Test extends TestCase
     {
         $serialized = 'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 2 UUID: ""');
 
         unserialize($serialized);
@@ -231,7 +231,7 @@ class UuidV2Test extends TestCase
         $serialized =
             'O:29:"Ramsey\\Identifier\\Uuid\\UuidV2":1:{s:4:"uuid";s:36:"27433d43-011d-9a6a-9100-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 2 UUID: "27433d43-011d-9a6a-9100-1550863792c9"');
 
         unserialize($serialized);
@@ -253,20 +253,20 @@ class UuidV2Test extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
+            'with null' => [null, 36],
             'with int' => [123, 1],
             'with float' => [123.456, 1],
-            'with string' => ['foobar', -1],
-            'with string Nil UUID' => [Uuid::nil()->toString(), 1],
+            'with string' => ['foobar', -52],
+            'with string Nil UUID' => [Uuid::nil()->toString(), 2],
             'with same string UUID' => [self::UUID_V2_STRING, 0],
             'with same string UUID all caps' => [strtoupper(self::UUID_V2_STRING), 0],
             'with same hex UUID' => [self::UUID_V2_HEX, 0],
             'with same hex UUID all caps' => [strtoupper(self::UUID_V2_HEX), 0],
             'with same bytes UUID' => [self::UUID_V2_BYTES, 0],
-            'with string Max UUID' => [Uuid::max()->toString(), -1],
-            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -1],
+            'with string Max UUID' => [Uuid::max()->toString(), -52],
+            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -52],
             'with bool true' => [true, 1],
-            'with bool false' => [false, 1],
+            'with bool false' => [false, 36],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -274,7 +274,7 @@ class UuidV2Test extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -52,
             ],
             'with Stringable class returning UUID bytes' => [
                 new class (self::UUID_V2_BYTES) {
@@ -289,17 +289,17 @@ class UuidV2Test extends TestCase
                 },
                 0,
             ],
-            'with NilUuid' => [new Uuid\NilUuid(), 1],
+            'with NilUuid' => [new Uuid\NilUuid(), 2],
             'with UuidV2 from string' => [new Uuid\UuidV2(self::UUID_V2_STRING), 0],
             'with UuidV2 from hex' => [new Uuid\UuidV2(self::UUID_V2_HEX), 0],
             'with UuidV2 from bytes' => [new Uuid\UuidV2(self::UUID_V2_BYTES), 0],
-            'with MaxUuid' => [new Uuid\MaxUuid(), -1],
+            'with MaxUuid' => [new Uuid\MaxUuid(), -52],
         ];
     }
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->uuidWithString->compareTo([]);

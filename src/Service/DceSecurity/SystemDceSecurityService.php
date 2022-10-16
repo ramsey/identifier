@@ -18,8 +18,8 @@ namespace Ramsey\Identifier\Service\DceSecurity;
 
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\CacheException;
-use Ramsey\Identifier\Exception\DceSecurityException;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidCacheKey;
 
 use function escapeshellarg;
 use function ini_get;
@@ -42,7 +42,7 @@ use const PREG_SPLIT_NO_EMPTY;
  * Organization IDs cannot be retrieved from the system. If using these, you
  * must provide a custom organization ID upon instantiation.
  */
-final class SystemDceSecurityService implements DceSecurityServiceInterface
+final class SystemDceSecurityService implements DceSecurityService
 {
     /**
      * Key to use when caching the GID value in a PSR-16 cache instance
@@ -80,8 +80,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if unable to obtain a system group ID
-     * @throws CacheException if a problem occurs when fetching data from the
+     * @throws DceSecurityIdentifierNotFound if unable to obtain a system group ID
+     * @throws InvalidCacheKey if a problem occurs when fetching data from the
      *     PSR-16 cache instance, if provided
      */
     public function getGroupIdentifier(): int
@@ -90,7 +90,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
             $groupId = $this->getSystemGidFromCache();
 
             if ($groupId === null) {
-                throw new DceSecurityException(
+                throw new DceSecurityIdentifierNotFound(
                     'Unable to get a group identifier using the system DCE '
                     . 'Security service; please provide a custom identifier or use '
                     . 'a different DCE service class',
@@ -104,12 +104,12 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if an org identifier was not provided upon instantiation
+     * @throws DceSecurityIdentifierNotFound if an org identifier was not provided upon instantiation
      */
     public function getOrgIdentifier(): int
     {
         if ($this->orgId === null) {
-            throw new DceSecurityException(sprintf(
+            throw new DceSecurityIdentifierNotFound(sprintf(
                 'To use the org identifier, you must set $orgId when instantiating %s',
                 self::class,
             ));
@@ -119,8 +119,8 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
     }
 
     /**
-     * @throws DceSecurityException if unable to obtain a system person ID
-     * @throws CacheException if a problem occurs when fetching data from the
+     * @throws DceSecurityIdentifierNotFound if unable to obtain a system person ID
+     * @throws InvalidCacheKey if a problem occurs when fetching data from the
      *     PSR-16 cache instance, if provided
      */
     public function getPersonIdentifier(): int
@@ -129,7 +129,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
             $personId = $this->getSystemUidFromCache();
 
             if ($personId === null) {
-                throw new DceSecurityException(
+                throw new DceSecurityIdentifierNotFound(
                     'Unable to get a person identifier using the system DCE '
                     . 'Security service; please provide a custom identifier or use '
                     . 'a different DCE service class',
@@ -184,7 +184,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
     /**
      * @return int<0, max> | null
      *
-     * @throws CacheException
+     * @throws InvalidCacheKey
      */
     private function getSystemGidFromCache(): ?int
     {
@@ -201,7 +201,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
                 $this->cache?->set(self::GID_CACHE_KEY, $gid);
             }
         } catch (CacheInvalidArgumentException $exception) {
-            throw new CacheException(
+            throw new InvalidCacheKey(
                 sprintf('A problem occurred when attempting to use the cache key "%s"', self::GID_CACHE_KEY),
                 $exception->getCode(),
                 $exception,
@@ -229,7 +229,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
     /**
      * @return int<0, max> | null
      *
-     * @throws CacheException
+     * @throws InvalidCacheKey
      */
     private function getSystemUidFromCache(): ?int
     {
@@ -246,7 +246,7 @@ final class SystemDceSecurityService implements DceSecurityServiceInterface
                 $this->cache?->set(self::UID_CACHE_KEY, $uid);
             }
         } catch (CacheInvalidArgumentException $exception) {
-            throw new CacheException(
+            throw new InvalidCacheKey(
                 sprintf('A problem occurred when attempting to use the cache key "%s"', self::UID_CACHE_KEY),
                 $exception->getCode(),
                 $exception,

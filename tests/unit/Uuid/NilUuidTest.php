@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use BadMethodCallException;
-use Identifier\Uuid\Variant;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\BadMethodCall;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -37,7 +37,7 @@ class NilUuidTest extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Nil UUID: "%s"', $value));
 
         new Uuid\NilUuid($value);
@@ -186,7 +186,7 @@ class NilUuidTest extends TestCase
     {
         $serialized = 'O:30:"Ramsey\\Identifier\\Uuid\\NilUuid":1:{s:4:"uuid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Nil UUID: ""');
 
         unserialize($serialized);
@@ -197,7 +197,7 @@ class NilUuidTest extends TestCase
         $serialized =
             'O:30:"Ramsey\\Identifier\\Uuid\\NilUuid":1:{s:4:"uuid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Nil UUID: "a6a011d2-7433-9d43-9161-1550863792c9"');
 
         unserialize($serialized);
@@ -220,17 +220,17 @@ class NilUuidTest extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
+            'with null' => [null, 36],
             'with int' => [123, -1],
             'with float' => [123.456, -1],
-            'with string' => ['foobar', -1],
+            'with string' => ['foobar', -54],
             'with string Nil UUID' => [Uuid::nil()->toString(), 0],
             'with hex Nil UUID' => ['00000000000000000000000000000000', 0],
             'with bytes Nil UUID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0],
-            'with string Max UUID' => [Uuid::max()->toString(), -1],
-            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -1],
+            'with string Max UUID' => [Uuid::max()->toString(), -54],
+            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), -54],
             'with bool true' => [true, -1],
-            'with bool false' => [false, 1],
+            'with bool false' => [false, 36],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -238,7 +238,7 @@ class NilUuidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -54,
             ],
             'with Stringable class returning UUID bytes' => [
                 new class {
@@ -256,13 +256,13 @@ class NilUuidTest extends TestCase
                 new Uuid\NilUuid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
                 0,
             ],
-            'with MaxUuid' => [new Uuid\MaxUuid(), -1],
+            'with MaxUuid' => [new Uuid\MaxUuid(), -54],
         ];
     }
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->nilUuid->compareTo([]);
@@ -336,7 +336,7 @@ class NilUuidTest extends TestCase
 
     public function testGetVersionThrowsException(): void
     {
-        $this->expectException(BadMethodCallException::class);
+        $this->expectException(BadMethodCall::class);
         $this->expectExceptionMessage('Nil UUIDs do not have a version field');
 
         $this->nilUuid->getVersion();

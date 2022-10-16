@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Format;
 
 use function bin2hex;
@@ -34,7 +34,7 @@ use const PHP_INT_SIZE;
 /**
  * A node service that provides a static node value with the multicast bit set
  */
-final class StaticNodeService implements NodeServiceInterface
+final class StaticNodeService implements NodeService
 {
     /**
      * @var non-empty-string
@@ -44,7 +44,7 @@ final class StaticNodeService implements NodeServiceInterface
     /**
      * @param int<0, max> | string $node A 48-bit integer or hexadecimal string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      *
      * @psalm-param int<0, max> | non-empty-string $node
      */
@@ -68,7 +68,7 @@ final class StaticNodeService implements NodeServiceInterface
             /** @var non-empty-string $node */
             $node = bin2hex(pack('n*', $parts[1] | 0x0100, $parts[2], $parts[3]));
         } else {
-            throw new InvalidArgumentException(
+            throw new InvalidArgument(
                 'Node must be a 48-bit integer or hexadecimal string',
             );
         }

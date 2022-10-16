@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\Uuid\UuidInterface;
-use Identifier\Uuid\Version;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
 /**
@@ -28,7 +26,7 @@ use Ramsey\Identifier\Uuid\Utility\StandardUuid;
  *
  * @psalm-immutable
  */
-final class UuidV4 implements UuidInterface
+final class UuidV4 implements Uuid
 {
     use StandardUuid;
 

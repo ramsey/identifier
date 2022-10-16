@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Exception;
 use RuntimeException;
 
 /**
- * Thrown when unable to generate a suitable DCE Security identifier
+ * Thrown when unable to fetch a value from a cache due to an invalid key
  */
-class DceSecurityException extends RuntimeException implements IdentifierExceptionInterface
+class InvalidCacheKey extends RuntimeException implements IdentifierException
 {
 }

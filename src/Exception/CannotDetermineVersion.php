@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Exception;
 
-use RuntimeException;
+use LogicException;
 
 /**
- * Thrown when unable to find a system node (MAC address)
+ * Thrown when unable to determine the version of an untyped UUID
  */
-class NodeNotFoundException extends RuntimeException implements IdentifierExceptionInterface
+class CannotDetermineVersion extends LogicException implements IdentifierException
 {
 }

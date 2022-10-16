@@ -8,8 +8,8 @@ use Hamcrest\Type\IsInteger;
 use InvalidArgumentException as PhpInvalidArgumentException;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\CacheException;
-use Ramsey\Identifier\Exception\DceSecurityException;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Service\DceSecurity\SystemDceSecurityService;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -28,7 +28,7 @@ class SystemDceSecurityServiceTest extends TestCase
     {
         $service = new SystemDceSecurityService();
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'To use the org identifier, you must set $orgId when instantiating ' . SystemDceSecurityService::class,
         );
@@ -78,7 +78,7 @@ class SystemDceSecurityServiceTest extends TestCase
 
         $service = new SystemDceSecurityService(cache: $cache);
 
-        $this->expectException(CacheException::class);
+        $this->expectException(InvalidCacheKey::class);
         $this->expectExceptionMessage(sprintf(
             'A problem occurred when attempting to use the cache key "%s"',
             SystemDceSecurityService::class . '::$groupId',
@@ -117,7 +117,7 @@ class SystemDceSecurityServiceTest extends TestCase
 
         $service = new SystemDceSecurityService(cache: $cache);
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'Unable to get a group identifier using the system DCE '
             . 'Security service; please provide a custom identifier or use '
@@ -169,7 +169,7 @@ class SystemDceSecurityServiceTest extends TestCase
 
         $service = new SystemDceSecurityService(cache: $cache);
 
-        $this->expectException(CacheException::class);
+        $this->expectException(InvalidCacheKey::class);
         $this->expectExceptionMessage(sprintf(
             'A problem occurred when attempting to use the cache key "%s"',
             SystemDceSecurityService::class . '::$personId',
@@ -208,7 +208,7 @@ class SystemDceSecurityServiceTest extends TestCase
 
         $service = new SystemDceSecurityService(cache: $cache);
 
-        $this->expectException(DceSecurityException::class);
+        $this->expectException(DceSecurityIdentifierNotFound::class);
         $this->expectExceptionMessage(
             'Unable to get a person identifier using the system DCE '
             . 'Security service; please provide a custom identifier or use '

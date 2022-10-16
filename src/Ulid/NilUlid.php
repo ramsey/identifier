@@ -16,8 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Ulid;
 
-use Identifier\Ulid\UlidInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
+use Identifier\BinaryIdentifier;
+use Identifier\DateTimeIdentifier;
+use Identifier\IntegerIdentifier;
+use JsonSerializable;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid\Utility\StandardUlid;
 
 use function sprintf;
@@ -26,21 +29,21 @@ use function strlen;
 /**
  * @psalm-immutable
  */
-final class NilUlid implements UlidInterface
+final class NilUlid implements BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier, JsonSerializable
 {
     use StandardUlid;
 
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function __construct(private readonly string $ulid = self::NIL)
     {
         $this->format = strlen($this->ulid);
 
         if (!$this->isValid($this->ulid, $this->format)) {
-            throw new InvalidArgumentException(sprintf('Invalid Nil ULID: "%s"', $this->ulid));
+            throw new InvalidArgument(sprintf('Invalid Nil ULID: "%s"', $this->ulid));
         }
     }
 

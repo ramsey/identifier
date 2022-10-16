@@ -16,14 +16,14 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Node;
 
-use Ramsey\Identifier\Exception\NodeNotFoundException;
+use Ramsey\Identifier\Exception\NodeNotFound;
 
 /**
  * Defines a service interface for getting a system node, or MAC address
  *
  * @link https://en.wikipedia.org/wiki/MAC_address MAC address
  */
-interface NodeServiceInterface
+interface NodeService
 {
     /**
      * Returns a system node as a 12-character hexadecimal string
@@ -36,7 +36,7 @@ interface NodeServiceInterface
      *
      * @return non-empty-string
      *
-     * @throws NodeNotFoundException
+     * @throws NodeNotFound
      */
     public function getNode(): string;
 }

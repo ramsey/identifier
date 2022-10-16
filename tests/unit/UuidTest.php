@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier;
 
 use DateTimeImmutable;
-use Identifier\Uuid\UuidInterface;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid as StaticUuid;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
+use Ramsey\Identifier\Uuid\Uuid;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -34,24 +34,24 @@ class UuidTest extends TestCase
 {
     public function testCreate(): void
     {
-        $this->assertInstanceOf(UuidV4::class, Uuid::create());
+        $this->assertInstanceOf(UuidV4::class, StaticUuid::create());
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider fromBytesProvider
      */
     public function testFromBytes(string $bytes, string $expectedType): void
     {
-        $uuid = Uuid::fromBytes($bytes);
+        $uuid = StaticUuid::fromBytes($bytes);
 
         $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{bytes: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function fromBytesProvider(): array
     {
@@ -108,10 +108,10 @@ class UuidTest extends TestCase
      */
     public function testFromBytesThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 16-byte string');
 
-        Uuid::fromBytes($input);
+        StaticUuid::fromBytes($input);
     }
 
     /**
@@ -131,39 +131,42 @@ class UuidTest extends TestCase
 
     public function testFromDateTimeReturnsVersion7Uuid(): void
     {
-        $this->assertInstanceOf(UuidV7::class, Uuid::fromDateTime(new DateTimeImmutable('now')));
+        $this->assertInstanceOf(UuidV7::class, StaticUuid::fromDateTime(new DateTimeImmutable('now')));
     }
 
     public function testFromDateTimeReturnsVersion6UuidWhenGivenNode(): void
     {
-        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), 'aabbccdd'));
+        $this->assertInstanceOf(UuidV6::class, StaticUuid::fromDateTime(new DateTimeImmutable('now'), 'aabbccdd'));
     }
 
     public function testFromDateTimeReturnsVersion6UuidWhenGivenClockSequence(): void
     {
-        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), clockSequence: 42));
+        $this->assertInstanceOf(
+            UuidV6::class,
+            StaticUuid::fromDateTime(new DateTimeImmutable('now'), clockSequence: 42),
+        );
     }
 
     public function testFromDateTimeReturnsVersion6UuidWhenGivenNodeAndClockSequence(): void
     {
-        $this->assertInstanceOf(UuidV6::class, Uuid::fromDateTime(new DateTimeImmutable('now'), 'aabb', 56));
+        $this->assertInstanceOf(UuidV6::class, StaticUuid::fromDateTime(new DateTimeImmutable('now'), 'aabb', 56));
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider fromHexadecimalProvider
      */
     public function testFromHexadecimal(string $hexadecimal, string $expectedType): void
     {
-        $uuid = Uuid::fromHexadecimal($hexadecimal);
+        $uuid = StaticUuid::fromHexadecimal($hexadecimal);
 
         $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function fromHexadecimalProvider(): array
     {
@@ -220,10 +223,10 @@ class UuidTest extends TestCase
      */
     public function testFromHexadecimalThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
 
-        Uuid::fromHexadecimal($input);
+        StaticUuid::fromHexadecimal($input);
     }
 
     /**
@@ -242,18 +245,18 @@ class UuidTest extends TestCase
 
     public function testFromIntegerThrowsExceptionForNegativeNativeInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
-        Uuid::fromInteger(-1);
+        StaticUuid::fromInteger(-1);
     }
 
     public function testFromIntegerThrowsExceptionForNegativeStringInteger(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
-        Uuid::fromInteger('-9223372036854775809');
+        StaticUuid::fromInteger('-9223372036854775809');
     }
 
     /**
@@ -261,11 +264,11 @@ class UuidTest extends TestCase
      */
     public function testFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid integer: "%s"', $input));
 
         /** @phpstan-ignore-next-line */
-        Uuid::fromInteger($input);
+        StaticUuid::fromInteger($input);
     }
 
     /**
@@ -283,20 +286,20 @@ class UuidTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider fromIntegerProvider
      */
     public function testFromInteger(int | string $value, string $expectedType): void
     {
-        $uuid = Uuid::fromInteger($value);
+        $uuid = StaticUuid::fromInteger($value);
 
         $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{value: int | numeric-string, expectedType: class-string<Uuid>}>
      */
     public function fromIntegerProvider(): array
     {
@@ -357,20 +360,20 @@ class UuidTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidInterface> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider fromStringProvider
      */
     public function testFromString(string $value, string $expectedType): void
     {
-        $uuid = Uuid::fromString($value);
+        $uuid = StaticUuid::fromString($value);
 
         $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{value: non-empty-string, expectedType: class-string<UuidInterface>}>
+     * @return array<array{value: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function fromStringProvider(): array
     {
@@ -427,10 +430,10 @@ class UuidTest extends TestCase
      */
     public function testFromStringThrowsExceptionForInvalidInput(string $input): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
-        Uuid::fromString($input);
+        StaticUuid::fromString($input);
     }
 
     /**
@@ -448,22 +451,22 @@ class UuidTest extends TestCase
 
     public function testMax(): void
     {
-        $this->assertInstanceOf(MaxUuid::class, Uuid::max());
+        $this->assertInstanceOf(MaxUuid::class, StaticUuid::max());
     }
 
     public function testNil(): void
     {
-        $this->assertInstanceOf(NilUuid::class, Uuid::nil());
+        $this->assertInstanceOf(NilUuid::class, StaticUuid::nil());
     }
 
     public function testUuid1(): void
     {
-        $this->assertInstanceOf(UuidV1::class, Uuid::v1());
+        $this->assertInstanceOf(UuidV1::class, StaticUuid::v1());
     }
 
     public function testUuid1WithParams(): void
     {
-        $uuid = Uuid::v1('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = StaticUuid::v1('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('00000000-0000-1000-8000-010000000000', $uuid->toString());
@@ -471,12 +474,12 @@ class UuidTest extends TestCase
 
     public function testUuid2(): void
     {
-        $this->assertInstanceOf(UuidV2::class, Uuid::v2());
+        $this->assertInstanceOf(UuidV2::class, StaticUuid::v2());
     }
 
     public function testUuid2WithParams(): void
     {
-        $uuid = Uuid::v2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = StaticUuid::v2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame('0000d431-0000-2000-8002-010000000000', $uuid->toString());
@@ -486,10 +489,10 @@ class UuidTest extends TestCase
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-        $u1 = Uuid::v3('0000000000001000a000000000000000', $name);
-        $u2 = Uuid::v3('00000000-0000-1000-a000-000000000000', $name);
-        $u3 = Uuid::v3("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
-        $u4 = Uuid::v3(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
+        $u1 = StaticUuid::v3('0000000000001000a000000000000000', $name);
+        $u2 = StaticUuid::v3('00000000-0000-1000-a000-000000000000', $name);
+        $u3 = StaticUuid::v3("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
+        $u4 = StaticUuid::v3(StaticUuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
 
         $this->assertInstanceOf(UuidV3::class, $u1);
         $this->assertInstanceOf(UuidV3::class, $u2);
@@ -504,25 +507,25 @@ class UuidTest extends TestCase
 
     public function testUuid3ThrowsExceptionForInvalidNamespace(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
-        Uuid::v3('foobar', '');
+        StaticUuid::v3('foobar', '');
     }
 
     public function testUuid4(): void
     {
-        $this->assertInstanceOf(UuidV4::class, Uuid::v4());
+        $this->assertInstanceOf(UuidV4::class, StaticUuid::v4());
     }
 
     public function testUuid5(): void
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
 
-        $u1 = Uuid::v5('0000000000001000a000000000000000', $name);
-        $u2 = Uuid::v5('00000000-0000-1000-a000-000000000000', $name);
-        $u3 = Uuid::v5("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
-        $u4 = Uuid::v5(Uuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
+        $u1 = StaticUuid::v5('0000000000001000a000000000000000', $name);
+        $u2 = StaticUuid::v5('00000000-0000-1000-a000-000000000000', $name);
+        $u3 = StaticUuid::v5("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
+        $u4 = StaticUuid::v5(StaticUuid::fromString('00000000-0000-1000-a000-000000000000'), $name);
 
         $this->assertInstanceOf(UuidV5::class, $u1);
         $this->assertInstanceOf(UuidV5::class, $u2);
@@ -537,20 +540,20 @@ class UuidTest extends TestCase
 
     public function testUuid5ThrowsExceptionForInvalidNamespace(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
-        Uuid::v5('foobar', '');
+        StaticUuid::v5('foobar', '');
     }
 
     public function testUuid6(): void
     {
-        $this->assertInstanceOf(UuidV6::class, Uuid::v6());
+        $this->assertInstanceOf(UuidV6::class, StaticUuid::v6());
     }
 
     public function testUuid6WithParams(): void
     {
-        $uuid = Uuid::v6('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
+        $uuid = StaticUuid::v6('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
         $this->assertInstanceOf(UuidV6::class, $uuid);
         $this->assertSame('00000000-0000-6000-8000-010000000000', $uuid->toString());
@@ -558,12 +561,12 @@ class UuidTest extends TestCase
 
     public function testUuid7(): void
     {
-        $this->assertInstanceOf(UuidV7::class, Uuid::v7());
+        $this->assertInstanceOf(UuidV7::class, StaticUuid::v7());
     }
 
     public function testUuid7WithParams(): void
     {
-        $uuid = Uuid::v7(new DateTimeImmutable('1970-01-01 00:00:00'));
+        $uuid = StaticUuid::v7(new DateTimeImmutable('1970-01-01 00:00:00'));
 
         $this->assertInstanceOf(UuidV7::class, $uuid);
         $this->assertSame('00000000-0000-7', substr($uuid->toString(), 0, 15));
@@ -571,7 +574,7 @@ class UuidTest extends TestCase
 
     public function testUuid8(): void
     {
-        $uuid = Uuid::v8('0', '0', '0');
+        $uuid = StaticUuid::v8('0', '0', '0');
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());

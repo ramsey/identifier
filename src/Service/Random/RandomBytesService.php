@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Random;
 
-use Ramsey\Identifier\Exception\RandomSourceException;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Throwable;
 
 use function random_bytes;
@@ -27,10 +27,10 @@ use function random_bytes;
  *
  * @link https://www.php.net/random_bytes random_bytes()
  */
-final class RandomBytesService implements RandomServiceInterface
+final class RandomBytesService implements RandomService
 {
     /**
-     * @throws RandomSourceException
+     * @throws RandomSourceNotFound
      */
     public function getRandomBytes(int $length): string
     {
@@ -38,7 +38,7 @@ final class RandomBytesService implements RandomServiceInterface
             return random_bytes($length);
         // @codeCoverageIgnoreStart
         } catch (Throwable $exception) {
-            throw new RandomSourceException('Cannot find an appropriate source of randomness', 0, $exception);
+            throw new RandomSourceNotFound('Cannot find an appropriate source of randomness', 0, $exception);
         // @codeCoverageIgnoreEnd
         }
     }

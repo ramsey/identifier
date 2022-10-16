@@ -17,24 +17,27 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Factory;
 
 use DateTimeInterface;
-use Identifier\Uuid\UuidFactoryInterface;
-use Identifier\Uuid\Version;
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NodeNotFoundException;
-use Ramsey\Identifier\Exception\RandomSourceException;
-use Ramsey\Identifier\Service\ClockSequence\ClockSequenceServiceInterface;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\DateTimeIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NodeNotFound;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
+use Ramsey\Identifier\Service\ClockSequence\ClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
+use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
+use Ramsey\Identifier\Service\DateTime\DateTimeService;
 use Ramsey\Identifier\Service\Node\FallbackNodeService;
-use Ramsey\Identifier\Service\Node\NodeServiceInterface;
+use Ramsey\Identifier\Service\Node\NodeService;
 use Ramsey\Identifier\Service\Node\RandomNodeService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Node\SystemNodeService;
-use Ramsey\Identifier\Service\Time\CurrentDateTimeService;
-use Ramsey\Identifier\Service\Time\TimeServiceInterface;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Identifier\Uuid\UuidV6;
+use Ramsey\Identifier\Uuid\Version;
 
 use function bin2hex;
 use function hex2bin;
@@ -45,29 +48,33 @@ use function substr;
 /**
  * A factory for creating version 6, reordered time UUIDs
  */
-final class UuidV6Factory implements UuidFactoryInterface
+final class UuidV6Factory implements
+    BinaryIdentifierFactory,
+    DateTimeIdentifierFactory,
+    IntegerIdentifierFactory,
+    StringIdentifierFactory
 {
     use DefaultFactory;
 
     /**
      * Constructs a factory for creating version 6, reordered time UUIDs
      *
-     * @param ClockSequenceServiceInterface $clockSequenceService A service used
+     * @param ClockSequenceService $clockSequenceService A service used
      *     to generate a clock sequence; defaults to
      *     {@see RandomClockSequenceService}
-     * @param NodeServiceInterface $nodeService A service used to provide the
+     * @param NodeService $nodeService A service used to provide the
      *     system node; defaults to {@see FallbackNodeService} with
      *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
-     * @param TimeServiceInterface $timeService A service used to provide a
+     * @param DateTimeService $timeService A service used to provide a
      *     date-time instance; defaults to {@see CurrentDateTimeService}
      */
     public function __construct(
-        private readonly ClockSequenceServiceInterface $clockSequenceService = new RandomClockSequenceService(),
-        private readonly NodeServiceInterface $nodeService = new FallbackNodeService([
+        private readonly ClockSequenceService $clockSequenceService = new RandomClockSequenceService(),
+        private readonly NodeService $nodeService = new FallbackNodeService([
             new SystemNodeService(),
             new RandomNodeService(),
         ]),
-        private readonly TimeServiceInterface $timeService = new CurrentDateTimeService(),
+        private readonly DateTimeService $timeService = new CurrentDateTimeService(),
     ) {
     }
 
@@ -81,9 +88,9 @@ final class UuidV6Factory implements UuidFactoryInterface
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws RandomSourceException
-     * @throws InvalidArgumentException
-     * @throws NodeNotFoundException
+     * @throws RandomSourceNotFound
+     * @throws InvalidArgument
+     * @throws NodeNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -112,7 +119,7 @@ final class UuidV6Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): UuidV6
     {
@@ -121,7 +128,17 @@ final class UuidV6Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws NodeNotFound
+     * @throws RandomSourceNotFound
+     */
+    public function createFromDateTime(DateTimeInterface $dateTime): UuidV6
+    {
+        return $this->create(dateTime: $dateTime);
+    }
+
+    /**
+     * @throws InvalidArgument
      */
     public function createFromHexadecimal(string $identifier): UuidV6
     {
@@ -130,7 +147,7 @@ final class UuidV6Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): UuidV6
     {
@@ -139,7 +156,7 @@ final class UuidV6Factory implements UuidFactoryInterface
     }
 
     /**
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public function createFromString(string $identifier): UuidV6
     {

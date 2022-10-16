@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\DceSecurity;
 
-use Ramsey\Identifier\Exception\DceSecurityException;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
 use Ramsey\Identifier\Uuid\UuidV2;
 
 /**
@@ -25,7 +25,7 @@ use Ramsey\Identifier\Uuid\UuidV2;
  *
  * @see UuidV2
  */
-interface DceSecurityServiceInterface
+interface DceSecurityService
 {
     /**
      * Returns a group identifier for the system
@@ -34,7 +34,7 @@ interface DceSecurityServiceInterface
      *
      * @return int<0, max>
      *
-     * @throws DceSecurityException when unable to find a group identifier
+     * @throws DceSecurityIdentifierNotFound when unable to find a group identifier
      */
     public function getGroupIdentifier(): int;
 
@@ -43,7 +43,7 @@ interface DceSecurityServiceInterface
      *
      * @return int<0, max>
      *
-     * @throws DceSecurityException when unable to find an organization identifier
+     * @throws DceSecurityIdentifierNotFound when unable to find an organization identifier
      */
     public function getOrgIdentifier(): int;
 
@@ -54,7 +54,7 @@ interface DceSecurityServiceInterface
      *
      * @return int<0, max>
      *
-     * @throws DceSecurityException when unable to find a person/user identifier
+     * @throws DceSecurityIdentifierNotFound when unable to find a person/user identifier
      */
     public function getPersonIdentifier(): int;
 }

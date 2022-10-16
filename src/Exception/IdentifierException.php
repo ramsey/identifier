@@ -14,20 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\Time;
+namespace Ramsey\Identifier\Exception;
 
-use DateTimeImmutable;
+use Identifier\Exception\IdentifierException as BaseIdentifierException;
 
 /**
- * A date-time service that always returns the current date-time
+ * Describes a common interface for all exceptions thrown by ramsey/identifier
  */
-final class CurrentDateTimeService implements TimeServiceInterface
+interface IdentifierException extends BaseIdentifierException
 {
-    /**
-     * Returns the current date-time
-     */
-    public function getDateTime(): DateTimeImmutable
-    {
-        return new DateTimeImmutable('now');
-    }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
-use Ramsey\Identifier\Exception\InvalidArgumentException;
-use Ramsey\Identifier\Exception\NotComparableException;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -35,7 +35,7 @@ class NilUlidTest extends TestCase
      */
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Nil ULID: "%s"', $value));
 
         new Ulid\NilUlid($value);
@@ -152,7 +152,7 @@ class NilUlidTest extends TestCase
     {
         $serialized = 'O:30:"Ramsey\\Identifier\\Ulid\\NilUlid":1:{s:4:"ulid";s:0:"";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Nil ULID: ""');
 
         unserialize($serialized);
@@ -163,7 +163,7 @@ class NilUlidTest extends TestCase
         $serialized =
             'O:30:"Ramsey\\Identifier\\Ulid\\NilUlid":1:{s:4:"ulid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Nil ULID: "a6a011d2-7433-9d43-9161-1550863792c9"');
 
         unserialize($serialized);
@@ -186,17 +186,17 @@ class NilUlidTest extends TestCase
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 1],
+            'with null' => [null, 26],
             'with int' => [123, -1],
             'with float' => [123.456, -1],
-            'with string' => ['foobar', -1],
+            'with string' => ['foobar', -54],
             'with string Nil ULID' => [Ulid::nil()->toString(), 0],
-            'with string Max ULID' => [Ulid::max()->toString(), -1],
-            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), -1],
+            'with string Max ULID' => [Ulid::max()->toString(), -7],
+            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), -7],
             'with hex Nil ULID' => ['00000000000000000000000000000000', 0],
             'with bytes Nil ULID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0],
             'with bool true' => [true, -1],
-            'with bool false' => [false, 1],
+            'with bool false' => [false, 26],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -204,7 +204,7 @@ class NilUlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -1,
+                -54,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class {
@@ -216,7 +216,7 @@ class NilUlidTest extends TestCase
                 0,
             ],
             'with NilUlid' => [new Ulid\NilUlid(), 0],
-            'with MaxUlid' => [new Ulid\MaxUlid(), -1],
+            'with MaxUlid' => [new Ulid\MaxUlid(), -7],
             'with NilUlid from string' => [new Ulid\NilUlid('00000000000000000000000000'), 0],
             'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), 0],
             'with NilUlid from bytes' => [
@@ -228,7 +228,7 @@ class NilUlidTest extends TestCase
 
     public function testCompareToThrowsExceptionWhenNotComparable(): void
     {
-        $this->expectException(NotComparableException::class);
+        $this->expectException(NotComparable::class);
         $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
 
         $this->nilUlid->compareTo([]);

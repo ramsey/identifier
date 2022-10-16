@@ -17,15 +17,17 @@ declare(strict_types=1);
 namespace Ramsey\Identifier;
 
 use DateTimeInterface;
-use Identifier\Exception\InvalidArgumentException;
-use Identifier\Uuid\NodeBasedUuidInterface;
-use Identifier\Uuid\TimeBasedUuidInterface;
-use Identifier\Uuid\UuidInterface;
+use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\InvalidCacheKey;
+use Ramsey\Identifier\Exception\NodeNotFound;
+use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Uuid\DceDomain;
-use Ramsey\Identifier\Uuid\Factory;
-use Ramsey\Identifier\Uuid\FactoryInterface;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
+use Ramsey\Identifier\Uuid\TimeBasedUuid;
+use Ramsey\Identifier\Uuid\Uuid as UuidInterface;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -40,10 +42,12 @@ use Ramsey\Identifier\Uuid\UuidV8;
  */
 final class Uuid
 {
-    private static ?FactoryInterface $factory = null;
+    private static ?UuidFactory $factory = null;
 
     /**
      * Creates a UUID
+     *
+     * @throws RandomSourceNotFound
      */
     public static function create(): UuidInterface
     {
@@ -55,7 +59,7 @@ final class Uuid
      *
      * @param string $bytes A binary string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function fromBytes(string $bytes): UuidInterface
     {
@@ -67,7 +71,7 @@ final class Uuid
      *
      * @param string $uuid A string standard representation of a UUID
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function fromString(string $uuid): UuidInterface
     {
@@ -91,13 +95,15 @@ final class Uuid
      *     avoid duplicates that could arise when the clock is set backwards in
      *     time or if the node ID changes
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws NodeNotFound
+     * @throws RandomSourceNotFound
      */
     public static function fromDateTime(
         DateTimeInterface $dateTime,
         int | string | null $node = null,
         ?int $clockSequence = null,
-    ): NodeBasedUuidInterface | TimeBasedUuidInterface {
+    ): TimeBasedUuid {
         if ($node !== null || $clockSequence !== null) {
             return self::getFactory()->uuid6($node, $clockSequence, $dateTime);
         }
@@ -108,7 +114,7 @@ final class Uuid
     /**
      * Creates a UUID from a 32-character hexadecimal string
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function fromHexadecimal(string $hexadecimal): UuidInterface
     {
@@ -123,7 +129,7 @@ final class Uuid
      *     it is outside this range, it must be a string representation of the
      *     integer
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function fromInteger(int | string $integer): UuidInterface
     {
@@ -158,7 +164,9 @@ final class Uuid
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws NodeNotFound
+     * @throws RandomSourceNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -190,7 +198,11 @@ final class Uuid
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidCacheKey
+     * @throws DceSecurityIdentifierNotFound
+     * @throws InvalidArgument
+     * @throws NodeNotFound
+     * @throws RandomSourceNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -209,7 +221,7 @@ final class Uuid
      *
      * @param non-empty-string | UuidInterface $namespace
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function v3(string | UuidInterface $namespace, string $name): UuidV3
     {
@@ -218,6 +230,8 @@ final class Uuid
 
     /**
      * Creates a version 4, random UUID
+     *
+     * @throws RandomSourceNotFound
      */
     public static function v4(): UuidV4
     {
@@ -229,7 +243,7 @@ final class Uuid
      *
      * @param non-empty-string | UuidInterface $namespace
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function v5(string | UuidInterface $namespace, string $name): UuidV5
     {
@@ -248,7 +262,9 @@ final class Uuid
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws NodeNotFound
+     * @throws RandomSourceNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -266,7 +282,8 @@ final class Uuid
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
+     * @throws RandomSourceNotFound
      */
     public static function v7(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -290,17 +307,17 @@ final class Uuid
      *     bits to hold any important data; in other words, treat this as a
      *     62-bit value)
      *
-     * @throws InvalidArgumentException
+     * @throws InvalidArgument
      */
     public static function v8(string $customFieldA, string $customFieldB, string $customFieldC): UuidV8
     {
         return self::getFactory()->uuid8($customFieldA, $customFieldB, $customFieldC);
     }
 
-    private static function getFactory(): FactoryInterface
+    private static function getFactory(): UuidFactory
     {
         if (self::$factory === null) {
-            self::$factory = new Factory();
+            self::$factory = new UuidFactory();
         }
 
         return self::$factory;
