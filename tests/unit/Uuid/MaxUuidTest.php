@@ -19,6 +19,8 @@ use function unserialize;
 
 class MaxUuidTest extends TestCase
 {
+    private const MAX_UUID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+
     private Uuid\MaxUuid $maxUuid;
     private Uuid\MaxUuid $maxUuidWithString;
     private Uuid\MaxUuid $maxUuidWithHex;
@@ -27,7 +29,7 @@ class MaxUuidTest extends TestCase
     protected function setUp(): void
     {
         $this->maxUuid = new Uuid\MaxUuid();
-        $this->maxUuidWithString = new Uuid\MaxUuid('ffffffff-ffff-ffff-ffff-ffffffffffff');
+        $this->maxUuidWithString = new Uuid\MaxUuid(self::MAX_UUID);
         $this->maxUuidWithHex = new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff');
         $this->maxUuidWithBytes = new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
     }
@@ -145,10 +147,10 @@ class MaxUuidTest extends TestCase
 
     public function testCastsToString(): void
     {
-        $this->assertSame(Uuid::max()->toString(), (string) $this->maxUuid);
-        $this->assertSame(Uuid::max()->toString(), (string) $this->maxUuidWithString);
-        $this->assertSame(Uuid::max()->toString(), (string) $this->maxUuidWithHex);
-        $this->assertSame(Uuid::max()->toString(), (string) $this->maxUuidWithBytes);
+        $this->assertSame(self::MAX_UUID, (string) $this->maxUuid);
+        $this->assertSame(self::MAX_UUID, (string) $this->maxUuidWithString);
+        $this->assertSame(self::MAX_UUID, (string) $this->maxUuidWithHex);
+        $this->assertSame(self::MAX_UUID, (string) $this->maxUuidWithBytes);
     }
 
     public function testUnserializeForString(): void
@@ -158,7 +160,7 @@ class MaxUuidTest extends TestCase
         $maxUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\MaxUuid::class, $maxUuid);
-        $this->assertSame(Uuid::max()->toString(), (string) $maxUuid);
+        $this->assertSame(self::MAX_UUID, (string) $maxUuid);
     }
 
     public function testUnserializeForHex(): void
@@ -168,7 +170,7 @@ class MaxUuidTest extends TestCase
         $maxUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\MaxUuid::class, $maxUuid);
-        $this->assertSame(Uuid::max()->toString(), (string) $maxUuid);
+        $this->assertSame(self::MAX_UUID, (string) $maxUuid);
     }
 
     public function testUnserializeForBytes(): void
@@ -179,7 +181,7 @@ class MaxUuidTest extends TestCase
         $maxUuid = unserialize($serialized);
 
         $this->assertInstanceOf(Uuid\MaxUuid::class, $maxUuid);
-        $this->assertSame(Uuid::max()->toString(), (string) $maxUuid);
+        $this->assertSame(self::MAX_UUID, (string) $maxUuid);
     }
 
     public function testUnserializeFailsWhenUuidIsAnEmptyString(): void
@@ -224,9 +226,9 @@ class MaxUuidTest extends TestCase
             'with int' => [123, 53],
             'with float' => [123.456, 53],
             'with string' => ['foobar', -9],
-            'with string Nil UUID' => [Uuid::nil()->toString(), 54],
-            'with string Max UUID' => [Uuid::max()->toString(), 0],
-            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), 0],
+            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', 54],
+            'with string Max UUID' => [self::MAX_UUID, 0],
+            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), 0],
             'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', 0],
             'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 0],
             'with bytes Max UUID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0],
@@ -252,7 +254,7 @@ class MaxUuidTest extends TestCase
             ],
             'with NilUuid' => [new Uuid\NilUuid(), 54],
             'with MaxUuid' => [new Uuid\MaxUuid(), 0],
-            'with MaxUuid from string' => [new Uuid\MaxUuid('ffffffff-ffff-ffff-ffff-ffffffffffff'), 0],
+            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), 0],
             'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), 0],
             'with MaxUuid from bytes' => [
                 new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
@@ -290,9 +292,9 @@ class MaxUuidTest extends TestCase
             'with int' => [123, false],
             'with float' => [123.456, false],
             'with string' => ['foobar', false],
-            'with string Nil UUID' => [Uuid::nil()->toString(), false],
-            'with string Max UUID' => [Uuid::max()->toString(), true],
-            'with string Max UUID all caps' => [strtoupper(Uuid::max()->toString()), true],
+            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', false],
+            'with string Max UUID' => [self::MAX_UUID, true],
+            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), true],
             'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', true],
             'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', true],
             'with bytes Max UUID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", true],
@@ -318,7 +320,7 @@ class MaxUuidTest extends TestCase
             ],
             'with NilUuid' => [new Uuid\NilUuid(), false],
             'with MaxUuid' => [new Uuid\MaxUuid(), true],
-            'with MaxUuid from string' => [new Uuid\MaxUuid('ffffffff-ffff-ffff-ffff-ffffffffffff'), true],
+            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), true],
             'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), true],
             'with MaxUuid from bytes' => [
                 new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
@@ -346,18 +348,18 @@ class MaxUuidTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $this->assertSame('"' . Uuid::max()->toString() . '"', json_encode($this->maxUuid));
-        $this->assertSame('"' . Uuid::max()->toString() . '"', json_encode($this->maxUuidWithString));
-        $this->assertSame('"' . Uuid::max()->toString() . '"', json_encode($this->maxUuidWithHex));
-        $this->assertSame('"' . Uuid::max()->toString() . '"', json_encode($this->maxUuidWithBytes));
+        $this->assertSame('"' . self::MAX_UUID . '"', json_encode($this->maxUuid));
+        $this->assertSame('"' . self::MAX_UUID . '"', json_encode($this->maxUuidWithString));
+        $this->assertSame('"' . self::MAX_UUID . '"', json_encode($this->maxUuidWithHex));
+        $this->assertSame('"' . self::MAX_UUID . '"', json_encode($this->maxUuidWithBytes));
     }
 
     public function testToString(): void
     {
-        $this->assertSame(Uuid::max()->toString(), $this->maxUuid->toString());
-        $this->assertSame(Uuid::max()->toString(), $this->maxUuidWithString->toString());
-        $this->assertSame(Uuid::max()->toString(), $this->maxUuidWithHex->toString());
-        $this->assertSame(Uuid::max()->toString(), $this->maxUuidWithBytes->toString());
+        $this->assertSame(self::MAX_UUID, $this->maxUuid->toString());
+        $this->assertSame(self::MAX_UUID, $this->maxUuidWithString->toString());
+        $this->assertSame(self::MAX_UUID, $this->maxUuidWithHex->toString());
+        $this->assertSame(self::MAX_UUID, $this->maxUuidWithBytes->toString());
     }
 
     public function testToBytes(): void
@@ -392,10 +394,10 @@ class MaxUuidTest extends TestCase
 
     public function testToUrn(): void
     {
-        $this->assertSame('urn:uuid:' . Uuid::max()->toString(), $this->maxUuid->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::max()->toString(), $this->maxUuidWithString->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::max()->toString(), $this->maxUuidWithHex->toUrn());
-        $this->assertSame('urn:uuid:' . Uuid::max()->toString(), $this->maxUuidWithBytes->toUrn());
+        $this->assertSame('urn:uuid:' . self::MAX_UUID, $this->maxUuid->toUrn());
+        $this->assertSame('urn:uuid:' . self::MAX_UUID, $this->maxUuidWithString->toUrn());
+        $this->assertSame('urn:uuid:' . self::MAX_UUID, $this->maxUuidWithHex->toUrn());
+        $this->assertSame('urn:uuid:' . self::MAX_UUID, $this->maxUuidWithBytes->toUrn());
     }
 
     /**
@@ -417,15 +419,15 @@ class MaxUuidTest extends TestCase
         return [
             [
                 'value' => 'FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF',
-                'expected' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+                'expected' => self::MAX_UUID,
             ],
             [
                 'value' => 'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
-                'expected' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+                'expected' => self::MAX_UUID,
             ],
             [
                 'value' => "\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF",
-                'expected' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+                'expected' => self::MAX_UUID,
             ],
         ];
     }

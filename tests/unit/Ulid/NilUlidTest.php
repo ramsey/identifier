@@ -12,11 +12,12 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
-use function strtoupper;
 use function unserialize;
 
 class NilUlidTest extends TestCase
 {
+    private const NIL_ULID = '00000000000000000000000000';
+
     private Ulid\NilUlid $nilUlid;
     private Ulid\NilUlid $nilUlidWithString;
     private Ulid\NilUlid $nilUlidWithHex;
@@ -25,7 +26,7 @@ class NilUlidTest extends TestCase
     protected function setUp(): void
     {
         $this->nilUlid = new Ulid\NilUlid();
-        $this->nilUlidWithString = new Ulid\NilUlid('00000000000000000000000000');
+        $this->nilUlidWithString = new Ulid\NilUlid(self::NIL_ULID);
         $this->nilUlidWithHex = new Ulid\NilUlid('00000000000000000000000000000000');
         $this->nilUlidWithBytes = new Ulid\NilUlid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
     }
@@ -111,10 +112,10 @@ class NilUlidTest extends TestCase
 
     public function testCastsToString(): void
     {
-        $this->assertSame(Ulid::nil()->toString(), (string) $this->nilUlid);
-        $this->assertSame(Ulid::nil()->toString(), (string) $this->nilUlidWithString);
-        $this->assertSame(Ulid::nil()->toString(), (string) $this->nilUlidWithHex);
-        $this->assertSame(Ulid::nil()->toString(), (string) $this->nilUlidWithBytes);
+        $this->assertSame(self::NIL_ULID, (string) $this->nilUlid);
+        $this->assertSame(self::NIL_ULID, (string) $this->nilUlidWithString);
+        $this->assertSame(self::NIL_ULID, (string) $this->nilUlidWithHex);
+        $this->assertSame(self::NIL_ULID, (string) $this->nilUlidWithBytes);
     }
 
     public function testUnserializeForString(): void
@@ -124,7 +125,7 @@ class NilUlidTest extends TestCase
         $nilUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\NilUlid::class, $nilUlid);
-        $this->assertSame(Ulid::nil()->toString(), (string) $nilUlid);
+        $this->assertSame(self::NIL_ULID, (string) $nilUlid);
     }
 
     public function testUnserializeForHex(): void
@@ -134,7 +135,7 @@ class NilUlidTest extends TestCase
         $nilUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\NilUlid::class, $nilUlid);
-        $this->assertSame(Ulid::nil()->toString(), (string) $nilUlid);
+        $this->assertSame(self::NIL_ULID, (string) $nilUlid);
     }
 
     public function testUnserializeForBytes(): void
@@ -145,7 +146,7 @@ class NilUlidTest extends TestCase
         $nilUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\NilUlid::class, $nilUlid);
-        $this->assertSame(Ulid::nil()->toString(), (string) $nilUlid);
+        $this->assertSame(self::NIL_ULID, (string) $nilUlid);
     }
 
     public function testUnserializeFailsWhenUlidIsAnEmptyString(): void
@@ -190,9 +191,9 @@ class NilUlidTest extends TestCase
             'with int' => [123, -1],
             'with float' => [123.456, -1],
             'with string' => ['foobar', -54],
-            'with string Nil ULID' => [Ulid::nil()->toString(), 0],
-            'with string Max ULID' => [Ulid::max()->toString(), -7],
-            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), -7],
+            'with string Nil ULID' => [self::NIL_ULID, 0],
+            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', -7],
+            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', -7],
             'with hex Nil ULID' => ['00000000000000000000000000000000', 0],
             'with bytes Nil ULID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0],
             'with bool true' => [true, -1],
@@ -217,7 +218,7 @@ class NilUlidTest extends TestCase
             ],
             'with NilUlid' => [new Ulid\NilUlid(), 0],
             'with MaxUlid' => [new Ulid\MaxUlid(), -7],
-            'with NilUlid from string' => [new Ulid\NilUlid('00000000000000000000000000'), 0],
+            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), 0],
             'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), 0],
             'with NilUlid from bytes' => [
                 new Ulid\NilUlid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
@@ -255,9 +256,9 @@ class NilUlidTest extends TestCase
             'with int' => [123, false],
             'with float' => [123.456, false],
             'with string' => ['foobar', false],
-            'with string Nil ULID' => [Ulid::nil()->toString(), true],
-            'with string Max ULID' => [Ulid::max()->toString(), false],
-            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), false],
+            'with string Nil ULID' => [self::NIL_ULID, true],
+            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', false],
+            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', false],
             'with hex Nil ULID' => ['00000000000000000000000000000000', true],
             'with bytes Nil ULID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", true],
             'with bool true' => [true, false],
@@ -282,7 +283,7 @@ class NilUlidTest extends TestCase
             ],
             'with NilUlid' => [new Ulid\NilUlid(), true],
             'with MaxUlid' => [new Ulid\MaxUlid(), false],
-            'with NilUlid from string' => [new Ulid\NilUlid('00000000000000000000000000'), true],
+            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), true],
             'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), true],
             'with NilUlid from bytes' => [
                 new Ulid\NilUlid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
@@ -293,18 +294,18 @@ class NilUlidTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $this->assertSame('"' . Ulid::nil()->toString() . '"', json_encode($this->nilUlid));
-        $this->assertSame('"' . Ulid::nil()->toString() . '"', json_encode($this->nilUlidWithString));
-        $this->assertSame('"' . Ulid::nil()->toString() . '"', json_encode($this->nilUlidWithHex));
-        $this->assertSame('"' . Ulid::nil()->toString() . '"', json_encode($this->nilUlidWithBytes));
+        $this->assertSame('"' . self::NIL_ULID . '"', json_encode($this->nilUlid));
+        $this->assertSame('"' . self::NIL_ULID . '"', json_encode($this->nilUlidWithString));
+        $this->assertSame('"' . self::NIL_ULID . '"', json_encode($this->nilUlidWithHex));
+        $this->assertSame('"' . self::NIL_ULID . '"', json_encode($this->nilUlidWithBytes));
     }
 
     public function testToString(): void
     {
-        $this->assertSame(Ulid::nil()->toString(), $this->nilUlid->toString());
-        $this->assertSame(Ulid::nil()->toString(), $this->nilUlidWithString->toString());
-        $this->assertSame(Ulid::nil()->toString(), $this->nilUlidWithHex->toString());
-        $this->assertSame(Ulid::nil()->toString(), $this->nilUlidWithBytes->toString());
+        $this->assertSame(self::NIL_ULID, $this->nilUlid->toString());
+        $this->assertSame(self::NIL_ULID, $this->nilUlidWithString->toString());
+        $this->assertSame(self::NIL_ULID, $this->nilUlidWithHex->toString());
+        $this->assertSame(self::NIL_ULID, $this->nilUlidWithBytes->toString());
     }
 
     public function testToBytes(): void

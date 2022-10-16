@@ -7,7 +7,7 @@ namespace Ramsey\Test\Identifier\Ulid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Ulid as StaticUlid;
+use Ramsey\Identifier\Ulid\Factory\UlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
@@ -178,19 +178,21 @@ class UlidTest extends TestCase
      */
     public function compareToProvider(): array
     {
+        $factory = new UlidFactory();
+
         return [
             'with null' => [null, 26],
             'with int' => [123, -1],
             'with float' => [123.456, -1],
             'with string' => ['foobar', -54],
-            'with string Nil ULID' => [StaticUlid::nil()->toString(), 1],
+            'with string Nil ULID' => [$factory->nil()->toString(), 1],
             'with same string ULID' => [self::ULID_STRING, 0],
             'with same string ULID all lowercase' => [strtoupper(self::ULID_STRING), 0],
             'with same hex ULID' => [self::ULID_HEX, 0],
             'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), 0],
             'with same bytes ULID' => [self::ULID_BYTES, 0],
-            'with string Max ULID' => [StaticUlid::max()->toString(), -7],
-            'with string Max ULID all lowercase' => [strtolower(StaticUlid::max()->toString()), -7],
+            'with string Max ULID' => [$factory->max()->toString(), -7],
+            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), -7],
             'with bool true' => [true, -1],
             'with bool false' => [false, 26],
             'with Stringable class' => [
@@ -246,19 +248,21 @@ class UlidTest extends TestCase
      */
     public function equalsProvider(): array
     {
+        $factory = new UlidFactory();
+
         return [
             'with null' => [null, false],
             'with int' => [123, false],
             'with float' => [123.456, false],
             'with string' => ['foobar', false],
-            'with string Nil ULID' => [StaticUlid::nil()->toString(), false],
+            'with string Nil ULID' => [$factory->nil()->toString(), false],
             'with same string ULID' => [self::ULID_STRING, true],
             'with same string ULID all lowercase' => [strtolower(self::ULID_STRING), true],
             'with same hex ULID' => [self::ULID_HEX, true],
             'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), true],
             'with same bytes ULID' => [self::ULID_BYTES, true],
-            'with string Max ULID' => [StaticUlid::max()->toString(), false],
-            'with string Max ULID all lowercase' => [strtolower(StaticUlid::max()->toString()), false],
+            'with string Max ULID' => [$factory->max()->toString(), false],
+            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), false],
             'with bool true' => [true, false],
             'with bool false' => [false, false],
             'with Stringable class' => [

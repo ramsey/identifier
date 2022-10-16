@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Ramsey\Bench\Identifier\Uuid\Factory;
 
-use Identifier\Uuid\UuidInterface;
 use Ramsey\Identifier\Uuid\Factory\UuidV4Factory;
 use Ramsey\Identifier\Uuid\Factory\UuidV5Factory;
+use Ramsey\Identifier\Uuid\Uuid;
 
 final class UuidV5FactoryBench
 {
     private UuidV5Factory $factory;
-    private UuidInterface $namespace;
+    private Uuid $namespace;
 
     public function __construct()
     {

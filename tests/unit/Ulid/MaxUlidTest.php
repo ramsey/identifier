@@ -12,11 +12,13 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
-use function strtoupper;
+use function strtolower;
 use function unserialize;
 
 class MaxUlidTest extends TestCase
 {
+    private const MAX_ULID = '7ZZZZZZZZZZZZZZZZZZZZZZZZZ';
+
     private Ulid\MaxUlid $maxUlid;
     private Ulid\MaxUlid $maxUlidWithString;
     private Ulid\MaxUlid $maxUlidWithHex;
@@ -25,7 +27,7 @@ class MaxUlidTest extends TestCase
     protected function setUp(): void
     {
         $this->maxUlid = new Ulid\MaxUlid();
-        $this->maxUlidWithString = new Ulid\MaxUlid('7ZZZZZZZZZZZZZZZZZZZZZZZZZ');
+        $this->maxUlidWithString = new Ulid\MaxUlid(self::MAX_ULID);
         $this->maxUlidWithHex = new Ulid\MaxUlid('ffffffffffffffffffffffffffffffff');
         $this->maxUlidWithBytes = new Ulid\MaxUlid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
     }
@@ -111,10 +113,10 @@ class MaxUlidTest extends TestCase
 
     public function testCastsToString(): void
     {
-        $this->assertSame(Ulid::max()->toString(), (string) $this->maxUlid);
-        $this->assertSame(Ulid::max()->toString(), (string) $this->maxUlidWithString);
-        $this->assertSame(Ulid::max()->toString(), (string) $this->maxUlidWithHex);
-        $this->assertSame(Ulid::max()->toString(), (string) $this->maxUlidWithBytes);
+        $this->assertSame(self::MAX_ULID, (string) $this->maxUlid);
+        $this->assertSame(self::MAX_ULID, (string) $this->maxUlidWithString);
+        $this->assertSame(self::MAX_ULID, (string) $this->maxUlidWithHex);
+        $this->assertSame(self::MAX_ULID, (string) $this->maxUlidWithBytes);
     }
 
     public function testUnserializeForString(): void
@@ -124,7 +126,7 @@ class MaxUlidTest extends TestCase
         $maxUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\MaxUlid::class, $maxUlid);
-        $this->assertSame(Ulid::max()->toString(), (string) $maxUlid);
+        $this->assertSame(self::MAX_ULID, (string) $maxUlid);
     }
 
     public function testUnserializeForHex(): void
@@ -134,7 +136,7 @@ class MaxUlidTest extends TestCase
         $maxUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\MaxUlid::class, $maxUlid);
-        $this->assertSame(Ulid::max()->toString(), (string) $maxUlid);
+        $this->assertSame(self::MAX_ULID, (string) $maxUlid);
     }
 
     public function testUnserializeForBytes(): void
@@ -145,7 +147,7 @@ class MaxUlidTest extends TestCase
         $maxUlid = unserialize($serialized);
 
         $this->assertInstanceOf(Ulid\MaxUlid::class, $maxUlid);
-        $this->assertSame(Ulid::max()->toString(), (string) $maxUlid);
+        $this->assertSame(self::MAX_ULID, (string) $maxUlid);
     }
 
     public function testUnserializeFailsWhenUlidIsAnEmptyString(): void
@@ -190,9 +192,9 @@ class MaxUlidTest extends TestCase
             'with int' => [123, 6],
             'with float' => [123.456, 6],
             'with string' => ['foobar', -47],
-            'with string Nil ULID' => [Ulid::nil()->toString(), 7],
-            'with string Max ULID' => [Ulid::max()->toString(), 0],
-            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), 0],
+            'with string Nil ULID' => ['00000000000000000000000000', 7],
+            'with string Max ULID' => [self::MAX_ULID, 0],
+            'with string Max ULID all lower' => [strtolower(self::MAX_ULID), 0],
             'with hex Max ULID' => ['ffffffffffffffffffffffffffffffff', 0],
             'with hex Max ULID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 0],
             'with bytes Max ULID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0],
@@ -218,7 +220,7 @@ class MaxUlidTest extends TestCase
             ],
             'with NilUlid' => [new Ulid\NilUlid(), 7],
             'with MaxUlid' => [new Ulid\MaxUlid(), 0],
-            'with MaxUlid from string' => [new Ulid\MaxUlid('7ZZZZZZZZZZZZZZZZZZZZZZZZZ'), 0],
+            'with MaxUlid from string' => [new Ulid\MaxUlid(self::MAX_ULID), 0],
             'with MaxUlid from hex' => [new Ulid\MaxUlid('ffffffffffffffffffffffffffffffff'), 0],
             'with MaxUlid from bytes' => [
                 new Ulid\MaxUlid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
@@ -256,9 +258,9 @@ class MaxUlidTest extends TestCase
             'with int' => [123, false],
             'with float' => [123.456, false],
             'with string' => ['foobar', false],
-            'with string Nil ULID' => [Ulid::nil()->toString(), false],
-            'with string Max ULID' => [Ulid::max()->toString(), true],
-            'with string Max ULID all caps' => [strtoupper(Ulid::max()->toString()), true],
+            'with string Nil ULID' => ['00000000000000000000000000', false],
+            'with string Max ULID' => [self::MAX_ULID, true],
+            'with string Max ULID all lower' => [strtolower(self::MAX_ULID), true],
             'with hex Max ULID' => ['ffffffffffffffffffffffffffffffff', true],
             'with hex Max ULID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', true],
             'with bytes Max ULID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", true],
@@ -284,7 +286,7 @@ class MaxUlidTest extends TestCase
             ],
             'with NilUlid' => [new Ulid\NilUlid(), false],
             'with MaxUlid' => [new Ulid\MaxUlid(), true],
-            'with MaxUlid from string' => [new Ulid\MaxUlid('7ZZZZZZZZZZZZZZZZZZZZZZZZZ'), true],
+            'with MaxUlid from string' => [new Ulid\MaxUlid(self::MAX_ULID), true],
             'with MaxUlid from hex' => [new Ulid\MaxUlid('ffffffffffffffffffffffffffffffff'), true],
             'with MaxUlid from bytes' => [
                 new Ulid\MaxUlid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
@@ -296,18 +298,18 @@ class MaxUlidTest extends TestCase
 
     public function testJsonSerialize(): void
     {
-        $this->assertSame('"' . Ulid::max()->toString() . '"', json_encode($this->maxUlid));
-        $this->assertSame('"' . Ulid::max()->toString() . '"', json_encode($this->maxUlidWithString));
-        $this->assertSame('"' . Ulid::max()->toString() . '"', json_encode($this->maxUlidWithHex));
-        $this->assertSame('"' . Ulid::max()->toString() . '"', json_encode($this->maxUlidWithBytes));
+        $this->assertSame('"' . self::MAX_ULID . '"', json_encode($this->maxUlid));
+        $this->assertSame('"' . self::MAX_ULID . '"', json_encode($this->maxUlidWithString));
+        $this->assertSame('"' . self::MAX_ULID . '"', json_encode($this->maxUlidWithHex));
+        $this->assertSame('"' . self::MAX_ULID . '"', json_encode($this->maxUlidWithBytes));
     }
 
     public function testToString(): void
     {
-        $this->assertSame(Ulid::max()->toString(), $this->maxUlid->toString());
-        $this->assertSame(Ulid::max()->toString(), $this->maxUlidWithString->toString());
-        $this->assertSame(Ulid::max()->toString(), $this->maxUlidWithHex->toString());
-        $this->assertSame(Ulid::max()->toString(), $this->maxUlidWithBytes->toString());
+        $this->assertSame(self::MAX_ULID, $this->maxUlid->toString());
+        $this->assertSame(self::MAX_ULID, $this->maxUlidWithString->toString());
+        $this->assertSame(self::MAX_ULID, $this->maxUlidWithHex->toString());
+        $this->assertSame(self::MAX_ULID, $this->maxUlidWithBytes->toString());
     }
 
     public function testToBytes(): void
@@ -359,15 +361,15 @@ class MaxUlidTest extends TestCase
         return [
             [
                 'value' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-                'expected' => '7ZZZZZZZZZZZZZZZZZZZZZZZZZ',
+                'expected' => self::MAX_ULID,
             ],
             [
                 'value' => '7zzzzzzzzzzzzzzzzzzzzzzzzz',
-                'expected' => '7ZZZZZZZZZZZZZZZZZZZZZZZZZ',
+                'expected' => self::MAX_ULID,
             ],
             [
                 'value' => 'ffffffffffffffffffffffffffffffff',
-                'expected' => '7ZZZZZZZZZZZZZZZZZZZZZZZZZ',
+                'expected' => self::MAX_ULID,
             ],
         ];
     }

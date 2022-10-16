@@ -191,4 +191,20 @@ final class UlidFactory implements
 
         throw new InvalidArgument('Identifier must be a valid ULID string representation');
     }
+
+    /**
+     * Creates a Max ULID with all bits set to one (1)
+     */
+    public function max(): MaxUlid
+    {
+        return new MaxUlid();
+    }
+
+    /**
+     * Creates a Nil ULID with all bits set to zero (0)
+     */
+    public function nil(): NilUlid
+    {
+        return new NilUlid();
+    }
 }
