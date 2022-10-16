@@ -17,9 +17,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
+use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\NodeBasedUuidIdentifier;
+use Ramsey\Identifier\TimeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 
@@ -44,7 +47,7 @@ use function strspn;
  *
  * @psalm-external-mutation-free
  */
-final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
+final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier, TimeBasedUuidIdentifier
 {
     use StandardUuid;
 
@@ -75,7 +78,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     {
         $uuid = $this->toTypedUuid();
 
-        if ($uuid instanceof TimeBasedUuid) {
+        if ($uuid instanceof TimeBasedUuidIdentifier) {
             /** @psalm-suppress ImpureMethodCall */
             return $uuid->getDateTime();
         }
@@ -93,7 +96,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     {
         $uuid = $this->toTypedUuid();
 
-        if ($uuid instanceof NodeBasedUuid) {
+        if ($uuid instanceof NodeBasedUuidIdentifier) {
             /** @psalm-suppress ImpureMethodCall */
             return $uuid->getNode();
         }

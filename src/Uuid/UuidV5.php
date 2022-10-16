@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use JsonSerializable;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
+use Ramsey\Identifier\UuidIdentifier;
 
 /**
  * Version 5 UUIDs are named-based, using a combination of a namespace and name
@@ -27,7 +29,7 @@ use Ramsey\Identifier\Uuid\Utility\StandardUuid;
  *
  * @psalm-immutable
  */
-final class UuidV5 implements Uuid
+final class UuidV5 implements JsonSerializable, UuidIdentifier
 {
     use StandardUuid;
 

@@ -16,8 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use JsonSerializable;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
+use Ramsey\Identifier\UuidIdentifier;
 
 use function hexdec;
 use function sprintf;
@@ -36,7 +38,7 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV8 implements Uuid
+final class UuidV8 implements JsonSerializable, UuidIdentifier
 {
     use StandardUuid;
 

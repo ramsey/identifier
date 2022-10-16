@@ -48,7 +48,7 @@ trait StandardUuid
     private readonly int $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\Uuid\Uuid} instance
+     * Constructs a {@see \Ramsey\Identifier\UuidIdentifier} instance
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form
@@ -93,7 +93,6 @@ trait StandardUuid
     {
         assert(isset($data['uuid']), "'uuid' is not set in serialized data");
 
-        /** @psalm-suppress UnusedMethodCall */
         $this->__construct($data['uuid']);
     }
 

@@ -14,16 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier;
 
-use JsonSerializable;
-use Ramsey\Identifier\Ulid\Utility\StandardUlid;
-use Ramsey\Identifier\UlidIdentifier;
+use Identifier\DateTimeIdentifier;
 
 /**
- * @psalm-immutable
+ * Describes the interface of a time-based UUID
  */
-final class Ulid implements JsonSerializable, UlidIdentifier
+interface TimeBasedUuidIdentifier extends DateTimeIdentifier, UuidIdentifier
 {
-    use StandardUlid;
 }

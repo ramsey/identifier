@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Ramsey\Identifier\UuidIdentifier;
+
 /**
  * Version 3 and 5 UUIDs use name space IDs to ensure uniqueness of name-based
  * identifiers within a unique name space
@@ -51,7 +53,7 @@ enum NamespaceId: string
     /**
      * Returns a UUID instance of the namespace
      */
-    public function uuid(): Uuid
+    public function uuid(): UuidIdentifier
     {
         return new UuidV1($this->value);
     }

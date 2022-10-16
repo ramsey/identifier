@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
+use JsonSerializable;
+use Ramsey\Identifier\TimeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid as TimeBaseUuidUtility;
 
@@ -33,7 +35,7 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV7 implements TimeBasedUuid
+final class UuidV7 implements JsonSerializable, TimeBasedUuidIdentifier
 {
     use TimeBaseUuidUtility;
 

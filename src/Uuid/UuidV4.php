@@ -16,7 +16,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use JsonSerializable;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
+use Ramsey\Identifier\UuidIdentifier;
 
 /**
  * Random, or version 4, UUIDs are randomly or pseudo-randomly generated 128-bit
@@ -26,7 +28,7 @@ use Ramsey\Identifier\Uuid\Utility\StandardUuid;
  *
  * @psalm-immutable
  */
-final class UuidV4 implements Uuid
+final class UuidV4 implements JsonSerializable, UuidIdentifier
 {
     use StandardUuid;
 

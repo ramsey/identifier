@@ -16,12 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Ulid;
 
-use Identifier\BinaryIdentifier;
-use Identifier\DateTimeIdentifier;
-use Identifier\IntegerIdentifier;
 use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid\Utility\StandardUlid;
+use Ramsey\Identifier\UlidIdentifier;
 
 use function sprintf;
 use function strlen;
@@ -29,7 +27,7 @@ use function strlen;
 /**
  * @psalm-immutable
  */
-final class NilUlid implements BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier, JsonSerializable
+final class NilUlid implements JsonSerializable, UlidIdentifier
 {
     use StandardUlid;
 

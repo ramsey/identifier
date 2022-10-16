@@ -95,7 +95,6 @@ trait StandardUlid
     {
         assert(isset($data['ulid']), "'ulid' is not set in serialized data");
 
-        /** @psalm-suppress UnusedMethodCall */
         $this->__construct($data['ulid']);
     }
 

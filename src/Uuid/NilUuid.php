@@ -16,9 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
+use Ramsey\Identifier\UuidIdentifier;
 
 use function sprintf;
 use function strlen;
@@ -31,7 +33,7 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NilUuid implements Uuid
+final class NilUuid implements JsonSerializable, UuidIdentifier
 {
     use StandardUuid;
 

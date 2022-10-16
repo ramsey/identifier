@@ -16,8 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use JsonSerializable;
+use Ramsey\Identifier\NodeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid as NodeBasedUuidUtility;
+use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
 
 use function hexdec;
 use function sprintf;
@@ -49,9 +51,9 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV2 implements NodeBasedUuid, TimeBasedUuid
+final class UuidV2 implements JsonSerializable, NodeBasedUuidIdentifier
 {
-    use NodeBasedUuidUtility {
+    use NodeBasedUuid {
         isValid as private primaryIsValid;
     }
 

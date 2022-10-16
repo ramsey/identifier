@@ -14,7 +14,6 @@ use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
-use Ramsey\Identifier\Uuid\Uuid;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -25,6 +24,7 @@ use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV8;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
+use Ramsey\Identifier\UuidIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 use Throwable;
 
@@ -37,7 +37,7 @@ class UntypedUuidTest extends TestCase
 {
     /**
      * @param non-empty-string $value
-     * @param array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)} $expected
+     * @param array{type: class-string<UuidIdentifier>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)} $expected
      *
      * @dataProvider provideValidUuids
      */
@@ -107,7 +107,7 @@ class UntypedUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)}}>
+     * @return array<array{value: string, expected: array{type: class-string<UuidIdentifier>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)}}>
      */
     public function provideValidUuids(): array
     {
