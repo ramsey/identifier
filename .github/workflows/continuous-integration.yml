@@ -132,12 +132,10 @@ jobs:
     name: "Benchmark"
     needs: ["code-coverage"]
     runs-on: "ubuntu-latest"
-    container: "setupphp/node:latest-${{ matrix.arch }}"
 
     strategy:
       matrix:
         php: ["8.1"]
-        arch: ["amd64", "i386"]
 
     steps:
       - name: "Configure Git"
@@ -164,7 +162,7 @@ jobs:
       - name: "Upload benchmark artifacts"
         uses: "actions/upload-artifact@v3.1.0"
         with:
-          name: "Benchmark (PHP ${{ matrix.php }}, ${{ matrix.arch }})"
+          name: "Benchmark (PHP ${{ matrix.php }})"
           path: "build/bench/"
 
   unit-tests:
