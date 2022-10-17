@@ -107,6 +107,17 @@ class UuidV1FactoryTest extends TestCase
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x2f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
     }
 
+    public function testCreateFromDateTime(): void
+    {
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
+        $uuid = $this->factory->createFromDateTime($dateTime);
+
+        $this->assertInstanceOf(UuidV1::class, $uuid);
+        $this->assertNotSame($dateTime, $uuid->getDateTime());
+        $this->assertSame('2022-09-25T17:32:12+00:00', $uuid->getDateTime()->format('c'));
+        $this->assertSame('fd24f600-3cf7-11ed', substr($uuid->toString(), 0, 18));
+    }
+
     public function testCreateFromHexadecimal(): void
     {
         $uuid = $this->factory->createFromHexadecimal('ffffffffffff1fff8fffffffffffffff');

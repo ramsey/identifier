@@ -267,4 +267,14 @@ class DefaultUlidFactoryTest extends TestCase
 
         $this->factory->createFromString('ffffffff-ffff-7fff-8fff-fffffffffffff');
     }
+
+    public function testMax(): void
+    {
+        $this->assertInstanceOf(MaxUlid::class, $this->factory->max());
+    }
+
+    public function testNil(): void
+    {
+        $this->assertInstanceOf(NilUlid::class, $this->factory->nil());
+    }
 }

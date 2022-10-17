@@ -47,7 +47,7 @@ use function strspn;
  *
  * @psalm-external-mutation-free
  */
-final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier, TimeBasedUuidIdentifier
+final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
 {
     use StandardUuid;
 
