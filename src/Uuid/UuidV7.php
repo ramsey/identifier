@@ -20,7 +20,7 @@ use DateTimeImmutable;
 use JsonSerializable;
 use Ramsey\Identifier\TimeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid as TimeBaseUuidUtility;
+use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
 
 use function hexdec;
 use function number_format;
@@ -37,7 +37,7 @@ use function substr;
  */
 final class UuidV7 implements JsonSerializable, TimeBasedUuidIdentifier
 {
-    use TimeBaseUuidUtility;
+    use TimeBasedUuid;
 
     public function getDateTime(): DateTimeImmutable
     {

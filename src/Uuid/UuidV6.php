@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid;
 use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid as NodeBasedUuidUtility;
+use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
 
 use function hexdec;
 use function sprintf;
@@ -35,7 +35,7 @@ use function substr;
  */
 final class UuidV6 implements JsonSerializable, NodeBasedUuidIdentifier
 {
-    use NodeBasedUuidUtility;
+    use NodeBasedUuid;
 
     public function getVersion(): Version
     {
