@@ -79,7 +79,12 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
         $uuid = $this->toTypedUuid();
 
         if ($uuid instanceof TimeBasedUuidIdentifier) {
-            /** @psalm-suppress ImpureMethodCall */
+            /**
+             * @psalm-suppress ImpureMethodCall We know that everything returned
+             *     from toTypedUuid() is immutable, but Psalm sees we're checking
+             *     for instances of TimeBasedUuidIdentifier, and it can't verify
+             *     that these instances are immutable.
+             */
             return $uuid->getDateTime();
         }
 
@@ -97,7 +102,12 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
         $uuid = $this->toTypedUuid();
 
         if ($uuid instanceof NodeBasedUuidIdentifier) {
-            /** @psalm-suppress ImpureMethodCall */
+            /**
+             * @psalm-suppress ImpureMethodCall We know that everything returned
+             *     from toTypedUuid() is immutable, but Psalm sees we're checking
+             *     for instances of NodeBasedUuidIdentifier, and it can't verify
+             *     that these instances are immutable.
+             */
             return $uuid->getNode();
         }
 

@@ -190,7 +190,9 @@ trait StandardUlid
      * @return non-empty-string
      *
      * @psalm-param 32 | 26 | 16 $formatToReturn
-     * @psalm-suppress ImpureMethodCall
+     * @psalm-suppress ImpureMethodCall Psalm sees the static calls to
+     *     BigInteger and cannot verify whether these mutate state, so it
+     *     complains about impure method calls.
      */
     private function getFormat(int $formatToReturn, ?string $ulid = null): string
     {
