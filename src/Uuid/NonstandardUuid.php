@@ -19,14 +19,12 @@ namespace Ramsey\Identifier\Uuid;
 use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuid;
 use Ramsey\Identifier\UuidIdentifier;
 
-use function hexdec;
+use function assert;
 use function sprintf;
 use function strlen;
-use function substr;
 
 /**
  * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
@@ -34,7 +32,7 @@ use function substr;
  *
  * It is possible a nonstandard UUID was generated according to RFC 4122 but had
  * its bits rearranged for reasons such as sortability. Without knowing which
- * rearrangement algorithm was used, it is impossible to determine to UUID's
+ * rearrangement algorithm was used, it is impossible to determine the UUID's
  * original layout, so we treat it as a "nonstandard" UUID.
  *
  * @psalm-immutable
@@ -43,12 +41,15 @@ final class NonstandardUuid implements JsonSerializable, UuidIdentifier
 {
     use StandardUuid;
 
+    private readonly ?Variant $variant;
+
     /**
      * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid)
     {
         $this->format = strlen($this->uuid);
+        $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
 
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
@@ -57,9 +58,9 @@ final class NonstandardUuid implements JsonSerializable, UuidIdentifier
 
     public function getVariant(): Variant
     {
-        return $this->determineVariant(
-            (int) hexdec(substr($this->getFormat(Format::FORMAT_STRING), 19, 1)),
-        );
+        assert($this->variant !== null);
+
+        return $this->variant;
     }
 
     /**
@@ -80,11 +81,11 @@ final class NonstandardUuid implements JsonSerializable, UuidIdentifier
             return false;
         }
 
-        if ($this->getVariantFromUuid($uuid, $format) !== Variant::Rfc4122) {
+        if ($this->variant !== Variant::Rfc4122 && $this->variant !== Variant::ReservedMicrosoft) {
             return true;
         }
 
-        $version = $this->getVersionFromUuid($uuid, $format);
+        $version = $this->getVersionFromUuid($uuid, $format, $this->variant === Variant::ReservedMicrosoft);
 
         // Version 2 UUIDs that do not have a proper domain are nonstandard.
         if ($version === 2 && $this->getLocalDomainFromUuid($uuid, $format) === null) {

@@ -18,12 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuidIdentifier;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
-
-use function hexdec;
-use function sprintf;
-use function substr;
 
 /**
  * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node
@@ -40,17 +35,5 @@ final class UuidV1 implements JsonSerializable, NodeBasedUuidIdentifier
     public function getVersion(): Version
     {
         return Version::GregorianTime;
-    }
-
-    protected function getTimestamp(): string
-    {
-        $uuid = $this->getFormat(Format::FORMAT_STRING);
-
-        return sprintf(
-            '%03x%04s%08s',
-            hexdec(substr($uuid, 14, 4)) & 0x0fff,
-            substr($uuid, 9, 4),
-            substr($uuid, 0, 8),
-        );
     }
 }

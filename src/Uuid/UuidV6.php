@@ -18,12 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuidIdentifier;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
-
-use function hexdec;
-use function sprintf;
-use function substr;
 
 /**
  * Reordered time, or version 6, UUIDs include timestamp, clock sequence, and
@@ -40,25 +35,5 @@ final class UuidV6 implements JsonSerializable, NodeBasedUuidIdentifier
     public function getVersion(): Version
     {
         return Version::ReorderedGregorianTime;
-    }
-
-    /**
-     * Returns the full 60-bit timestamp as a hexadecimal string, without the version
-     *
-     * For version 6 UUIDs, the timestamp order is reversed from the typical RFC
-     * 4122 order (the time bits are in the correct bit order, so that it is
-     * monotonically increasing). In returning the timestamp value, we put the
-     * bits in the order: time_low + time_mid + time_hi.
-     */
-    protected function getTimestamp(): string
-    {
-        $uuid = $this->getFormat(Format::FORMAT_STRING);
-
-        return sprintf(
-            '%08s%04s%03x',
-            substr($uuid, 0, 8),
-            substr($uuid, 9, 4),
-            hexdec(substr($uuid, 14, 4)) & 0x0fff,
-        );
     }
 }

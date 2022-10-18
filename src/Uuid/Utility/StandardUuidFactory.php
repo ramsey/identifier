@@ -89,6 +89,7 @@ trait StandardUuidFactory
         try {
             return $this->createFromBytesInternal(str_pad($bigInteger->toBytes(false), 16, "\x00", STR_PAD_LEFT));
         } catch (Throwable $exception) {
+            /** @psalm-suppress InvalidPropertyFetch,MixedArgument */
             throw new InvalidArgument(
                 sprintf('Invalid version %d UUID: %s', $this->getVersion()->value, $identifier),
                 0,

@@ -113,17 +113,17 @@ trait Validation
     /**
      * Returns the UUID version, if available
      */
-    private function getVersionFromUuid(string $uuid, int $format): ?int
+    private function getVersionFromUuid(string $uuid, int $format, bool $guid = false): ?int
     {
         return match ($format) {
             Format::FORMAT_STRING => (int) hexdec($uuid[14]),
             Format::FORMAT_HEX => (int) hexdec($uuid[12]),
-            Format::FORMAT_BYTES => (static function (string $uuid): int {
+            Format::FORMAT_BYTES => (static function (string $uuid, bool $guid): int {
                 /** @var positive-int[] $parts */
-                $parts = unpack('n*', $uuid, 6);
+                $parts = unpack('n*', $uuid, $guid ? 7 : 6);
 
                 return ($parts[1] & 0xf000) >> 12;
-            })($uuid),
+            })($uuid, $guid),
             default => null,
         };
     }

@@ -57,7 +57,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
     private ?Version $version = null;
 
     // phpcs:ignore
-    private MaxUuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null;
+    private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null;
 
     /**
      * @throws InvalidArgument
@@ -127,8 +127,12 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
      */
     public function getVersion(): Version
     {
-        if ($this->version === null && $this->getVariant() === Variant::Rfc4122) {
-            $this->version = Version::tryFrom((int) $this->getVersionFromUuid($this->uuid, $this->format));
+        $variant = $this->getVariant();
+
+        if ($this->version === null && ($variant === Variant::Rfc4122 || $variant === Variant::ReservedMicrosoft)) {
+            $this->version = Version::tryFrom(
+                (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::ReservedMicrosoft),
+            );
         }
 
         return $this->version
@@ -142,7 +146,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
      * Returns a typed version of this UUID
      */
     // phpcs:ignore
-    public function toTypedUuid(): MaxUuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
+    public function toTypedUuid(): MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
         if ($this->typedUuid === null) {
             try {
@@ -162,6 +166,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
                 $version === Version::V6 && $variant === Variant::Rfc4122 => new UuidV6($this->uuid),
                 $version === Version::V7 && $variant === Variant::Rfc4122 => new UuidV7($this->uuid),
                 $version === Version::V8 && $variant === Variant::Rfc4122 => new UuidV8($this->uuid),
+                $version !== null && $variant === Variant::ReservedMicrosoft => new MicrosoftGuid($this->uuid),
                 $this->isMax($this->uuid, $this->format) => new MaxUuid(),
                 $this->isNil($this->uuid, $this->format) => new NilUuid(),
                 default => new NonstandardUuid($this->uuid),

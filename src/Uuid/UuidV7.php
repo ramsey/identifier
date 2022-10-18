@@ -16,20 +16,15 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use DateTimeImmutable;
 use JsonSerializable;
 use Ramsey\Identifier\TimeBasedUuidIdentifier;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
 
-use function hexdec;
-use function number_format;
-use function sprintf;
-use function substr;
-
 /**
- * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node
- * values that are combined into a 128-bit unsigned integer
+ * Unix Epoch time, or version 7, UUIDs include a timestamp in milliseconds
+ * since the Unix Epoch
+ *
+ * Version 7 UUIDs are designed to be monotonically increasing and sortable.
  *
  * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.2 UUID Version 7
  *
@@ -39,26 +34,8 @@ final class UuidV7 implements JsonSerializable, TimeBasedUuidIdentifier
 {
     use TimeBasedUuid;
 
-    public function getDateTime(): DateTimeImmutable
-    {
-        $unixTimestamp = number_format(hexdec($this->getTimestamp()) / 1000, 6, '.', '');
-
-        return new DateTimeImmutable('@' . $unixTimestamp);
-    }
-
     public function getVersion(): Version
     {
         return Version::UnixTime;
-    }
-
-    /**
-     * Returns a 48-bit timestamp as a hexadecimal string representing the Unix
-     * Epoch in milliseconds
-     */
-    protected function getTimestamp(): string
-    {
-        $uuid = $this->getFormat(Format::FORMAT_STRING);
-
-        return sprintf('%08s%04s', substr($uuid, 0, 8), substr($uuid, 9, 4));
     }
 }

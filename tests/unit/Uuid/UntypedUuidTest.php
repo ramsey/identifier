@@ -336,11 +336,11 @@ class UntypedUuidTest extends TestCase
 
     public function testGetVersionThrowsExceptionWhenUnableToDetermineVersion(): void
     {
-        $uuid = new UntypedUuid('81daa361-8088-499a-cdbd-71e4a45ae25c');
+        $uuid = new UntypedUuid('81daa361-8088-499a-edbd-71e4a45ae25c');
 
         $this->expectException(CannotDetermineVersion::class);
         $this->expectExceptionMessage(
-            'Unable to determine version of untyped UUID "81daa361-8088-499a-cdbd-71e4a45ae25c"',
+            'Unable to determine version of untyped UUID "81daa361-8088-499a-edbd-71e4a45ae25c"',
         );
 
         $uuid->getVersion();

@@ -22,7 +22,6 @@ use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
 
 use function hexdec;
-use function sprintf;
 use function substr;
 
 /**
@@ -54,7 +53,7 @@ use function substr;
 final class UuidV2 implements JsonSerializable, NodeBasedUuidIdentifier
 {
     use NodeBasedUuid {
-        isValid as private primaryIsValid;
+        isValid as private baseIsValid;
     }
 
     /**
@@ -89,31 +88,9 @@ final class UuidV2 implements JsonSerializable, NodeBasedUuidIdentifier
         return Version::DceSecurity;
     }
 
-    /**
-     * Returns the full 60-bit timestamp as a hexadecimal string, without the version
-     *
-     * For version 2 UUIDs, the time_low field is the local identifier and
-     * should not be returned as part of the time. For this reason, we set the
-     * bottom 32 bits of the timestamp to 0's. As a result, there is some loss
-     * of fidelity of the timestamp, for version 2 UUIDs. The timestamp can be
-     * off by a range of 0 to 429.4967295 seconds (or 7 minutes, 9 seconds, and
-     * 496730 microseconds).
-     */
-    protected function getTimestamp(): string
-    {
-        $uuid = $this->getFormat(Format::FORMAT_STRING);
-
-        return sprintf(
-            '%03x%04s%08s',
-            hexdec(substr($uuid, 14, 4)) & 0x0fff,
-            substr($uuid, 9, 4),
-            '',
-        );
-    }
-
     protected function isValid(string $uuid, int $format): bool
     {
-        return $this->primaryIsValid($uuid, $format)
+        return $this->baseIsValid($uuid, $format)
             && $this->getLocalDomainFromUuid($uuid, $format) !== null;
     }
 }
