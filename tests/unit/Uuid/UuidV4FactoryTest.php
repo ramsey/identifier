@@ -51,38 +51,6 @@ class UuidV4FactoryTest extends TestCase
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
     }
 
-    public function testCreateFromHexadecimal(): void
-    {
-        $uuid = $this->factory->createFromHexadecimal('ffffffffffff4fff8fffffffffffffff');
-
-        $this->assertInstanceOf(UuidV4::class, $uuid);
-        $this->assertSame('ffffffff-ffff-4fff-8fff-ffffffffffff', $uuid->toString());
-    }
-
-    public function testCreateFromHexadecimalThrowsExceptionForWrongLength(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
-
-        $this->factory->createFromHexadecimal('ffffffffffff4fff8ffffffffffffffff');
-    }
-
-    public function testCreateFromHexadecimalThrowsExceptionForNonHexadecimal(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
-
-        $this->factory->createFromHexadecimal('ffffffffffff4fff8ffffffffffffffg');
-    }
-
-    public function testCreateFromHexadecimalThrowsExceptionForNonVersion4Uuid(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid version 4 UUID: "ffffffffffff1fff8fffffffffffffff"');
-
-        $this->factory->createFromHexadecimal('ffffffffffff1fff8fffffffffffffff');
-    }
-
     public function testCreateFromIntegerWithMaxInteger(): void
     {
         $uuid = $this->factory->createFromInteger('340282366920937632322261936355783213055');

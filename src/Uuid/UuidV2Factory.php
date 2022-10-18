@@ -167,15 +167,6 @@ final class UuidV2Factory implements
     /**
      * @throws InvalidArgument
      */
-    public function createFromHexadecimal(string $identifier): UuidV2
-    {
-        /** @var UuidV2 */
-        return $this->createFromHexadecimalInternal($identifier);
-    }
-
-    /**
-     * @throws InvalidArgument
-     */
     public function createFromInteger(int | string $identifier): UuidV2
     {
         /** @var UuidV2 */

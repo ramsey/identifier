@@ -107,15 +107,6 @@ final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     /**
      * @throws InvalidArgument
      */
-    public function createFromHexadecimal(string $identifier): UuidV8
-    {
-        /** @var UuidV8 */
-        return $this->createFromHexadecimalInternal($identifier);
-    }
-
-    /**
-     * @throws InvalidArgument
-     */
     public function createFromInteger(int | string $identifier): UuidV8
     {
         /** @var UuidV8 */
