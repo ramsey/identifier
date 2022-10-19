@@ -24,8 +24,8 @@ use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomService;
+use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
+use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
@@ -45,14 +45,14 @@ final class UuidV7Factory implements
     /**
      * Constructs a factory for creating version 7, Unix Epoch time UUIDs
      *
-     * @param RandomService $randomService A service used to generate
-     *     random bytes; defaults to {@see RandomBytesService}
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
+     * @param RandomGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
     public function __construct(
-        private readonly RandomService $randomService = new RandomBytesService(),
         private readonly Clock $clock = new SystemClock(),
+        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
     }
 
@@ -68,7 +68,7 @@ final class UuidV7Factory implements
         $dateTime = $dateTime ?? $this->clock->now();
 
         $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
-            . $this->randomService->getRandomBytes(10);
+            . $this->randomGenerator->bytes(10);
         $bytes = Binary::applyVersionAndVariant($bytes, Version::UnixTime);
 
         return new UuidV7($bytes);

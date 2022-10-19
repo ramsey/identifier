@@ -7,10 +7,10 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
-use Ramsey\Identifier\Service\Node\StaticNodeService;
-use Ramsey\Identifier\Service\Random\StaticBytesService;
+use Ramsey\Identifier\Service\Counter\FrozenCounter;
+use Ramsey\Identifier\Service\Dce\StaticDce;
+use Ramsey\Identifier\Service\Nic\StaticNic;
+use Ramsey\Identifier\Service\RandomGenerator\FrozenRandomGenerator;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\MaxUuid;
@@ -569,19 +569,15 @@ class DefaultUuidFactoryTest extends TestCase
 
     public function testFactoryWithDeterministicServices(): void
     {
-        $clockSequenceService = new StaticClockSequenceService(1);
-        $dceSecurityService = new StaticDceSecurityService(2, 3, 4);
-        $nodeService = new StaticNodeService(5);
-        $randomService = new StaticBytesService("\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff");
-        $timeService = new FrozenClock(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
-
-        $factory = new DefaultUuidFactory(
-            $clockSequenceService,
-            $dceSecurityService,
-            $nodeService,
-            $randomService,
-            $timeService,
+        $counter = new FrozenCounter(1);
+        $dce = new StaticDce(2, 3, 4);
+        $nic = new StaticNic(5);
+        $randomGenerator = new FrozenRandomGenerator(
+            "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff",
         );
+        $clock = new FrozenClock(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
+
+        $factory = new DefaultUuidFactory($clock, $counter, $dce, $nic, $randomGenerator);
 
         $this->assertSame('175d43ea-405b-11ed-8001-010000000005', $factory->v1()->toString());
         $this->assertSame('00000002-405b-21ed-8100-010000000005', $factory->v2()->toString());

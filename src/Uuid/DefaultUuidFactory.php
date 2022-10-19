@@ -21,22 +21,22 @@ use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\BadMethodCall;
-use Ramsey\Identifier\Exception\DceSecurityIdentifierNotFound;
+use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
-use Ramsey\Identifier\Exception\NodeNotFound;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\ClockSequence\ClockSequenceService;
-use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
-use Ramsey\Identifier\Service\DceSecurity\DceSecurityService;
-use Ramsey\Identifier\Service\DceSecurity\SystemDceSecurityService;
-use Ramsey\Identifier\Service\Node\FallbackNodeService;
-use Ramsey\Identifier\Service\Node\NodeService;
-use Ramsey\Identifier\Service\Node\RandomNodeService;
-use Ramsey\Identifier\Service\Node\SystemNodeService;
-use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomService;
+use Ramsey\Identifier\Service\Counter\Counter;
+use Ramsey\Identifier\Service\Counter\RandomCounter;
+use Ramsey\Identifier\Service\Dce\Dce;
+use Ramsey\Identifier\Service\Dce\SystemDce;
+use Ramsey\Identifier\Service\Nic\FallbackNic;
+use Ramsey\Identifier\Service\Nic\Nic;
+use Ramsey\Identifier\Service\Nic\RandomNic;
+use Ramsey\Identifier\Service\Nic\SystemNic;
+use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
+use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
 use Ramsey\Identifier\UuidFactory;
@@ -74,42 +74,33 @@ final class DefaultUuidFactory implements UuidFactory
     /**
      * Constructs a default factory for creating UUIDs
      *
-     * @param ClockSequenceService $clockSequenceService A service used
-     *     to generate a clock sequence; defaults to
-     *     {@see RandomClockSequenceService}
-     * @param DceSecurityService $dceSecurityService A service used
-     *     to get local identifiers when creating version 2 UUIDs; defaults to
-     *     {@see SystemDceSecurityService}
-     * @param NodeService $nodeService A service used to provide the
-     *     system node; defaults to {@see FallbackNodeService} with
-     *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
-     * @param RandomService $randomService A service used to generate
-     *     random bytes; defaults to {@see RandomBytesService}
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
+     * @param Counter $counter A counter that provides the next value in a
+     *     sequence to prevent collisions in versions 1, 2, and 6 UUIDs;
+     *     defaults to {@see RandomCounter}
+     * @param Dce $dce A service that provides local identifiers when creating
+     *     version 2 UUIDs; defaults to {@see SystemDce}
+     * @param Nic $nic A NIC that provides the system MAC address value for
+     *     versions 1, 2, and 6 UUIDs; defaults to {@see FallbackNic}, with
+     *     {@see SystemNic} and {@see RandomNic} as fallbacks
+     * @param RandomGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
     public function __construct(
-        ClockSequenceService $clockSequenceService = new RandomClockSequenceService(),
-        DceSecurityService $dceSecurityService = new SystemDceSecurityService(),
-        NodeService $nodeService = new FallbackNodeService([
-            new SystemNodeService(),
-            new RandomNodeService(),
-        ]),
-        RandomService $randomService = new RandomBytesService(),
         Clock $clock = new SystemClock(),
+        Counter $counter = new RandomCounter(),
+        Dce $dce = new SystemDce(),
+        Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
+        RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
-        $this->uuidV1Factory = new UuidV1Factory($clockSequenceService, $nodeService, $clock);
-        $this->uuidV2Factory = new UuidV2Factory(
-            $clockSequenceService,
-            $dceSecurityService,
-            $nodeService,
-            $clock,
-        );
+        $this->uuidV1Factory = new UuidV1Factory($clock, $counter, $nic);
+        $this->uuidV2Factory = new UuidV2Factory($clock, $counter, $dce, $nic);
         $this->uuidV3Factory = new UuidV3Factory();
-        $this->uuidV4Factory = new UuidV4Factory($randomService);
+        $this->uuidV4Factory = new UuidV4Factory($randomGenerator);
         $this->uuidV5Factory = new UuidV5Factory();
-        $this->uuidV6Factory = new UuidV6Factory($clockSequenceService, $nodeService, $clock);
-        $this->uuidV7Factory = new UuidV7Factory($randomService, $clock);
+        $this->uuidV6Factory = new UuidV6Factory($clock, $counter, $nic);
+        $this->uuidV7Factory = new UuidV7Factory($clock, $randomGenerator);
         $this->uuidV8Factory = new UuidV8Factory();
     }
 
@@ -201,7 +192,7 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws NodeNotFound
+     * @throws MacAddressNotFound
      * @throws RandomSourceNotFound
      */
     public function v1(
@@ -214,9 +205,9 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidCacheKey
-     * @throws DceSecurityIdentifierNotFound
+     * @throws DceIdentifierNotFound
      * @throws InvalidArgument
-     * @throws NodeNotFound
+     * @throws MacAddressNotFound
      * @throws RandomSourceNotFound
      */
     public function v2(
@@ -273,7 +264,7 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws NodeNotFound
+     * @throws MacAddressNotFound
      * @throws RandomSourceNotFound
      */
     public function v6(

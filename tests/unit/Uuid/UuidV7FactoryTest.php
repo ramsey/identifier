@@ -7,7 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Random\StaticBytesService;
+use Ramsey\Identifier\Service\RandomGenerator\FrozenRandomGenerator;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV7Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -33,8 +33,8 @@ class UuidV7FactoryTest extends TestCase
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new UuidV7Factory(
-            new StaticBytesService("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
             new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00')),
+            new FrozenRandomGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
         );
 
         $uuid = $factory->create();

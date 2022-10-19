@@ -23,8 +23,8 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomService;
+use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
+use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Ulid\Utility\Validation;
 use Ramsey\Identifier\UlidFactory;
 use Ramsey\Identifier\UlidIdentifier;
@@ -54,14 +54,14 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * Constructs a factory for creating ULIDs
      *
-     * @param RandomService $randomService A service used to generate
-     *     random bytes; defaults to {@see RandomBytesService}
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
+     * @param RandomGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
     public function __construct(
-        private readonly RandomService $randomService = new RandomBytesService(),
         private readonly Clock $clock = new SystemClock(),
+        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
     }
 
@@ -73,7 +73,7 @@ final class DefaultUlidFactory implements UlidFactory
     {
         $dateTime = $this->clock->now();
         $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
-            . $this->randomService->getRandomBytes(10);
+            . $this->randomGenerator->bytes(10);
 
         return new Ulid($bytes);
     }
@@ -105,7 +105,7 @@ final class DefaultUlidFactory implements UlidFactory
     public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
     {
         $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
-            . $this->randomService->getRandomBytes(10);
+            . $this->randomGenerator->bytes(10);
 
         return new Ulid($bytes);
     }

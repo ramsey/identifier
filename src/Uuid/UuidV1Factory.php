@@ -22,17 +22,16 @@ use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NodeNotFound;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\ClockSequence\ClockSequenceService;
-use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
-use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\Node\FallbackNodeService;
-use Ramsey\Identifier\Service\Node\NodeService;
-use Ramsey\Identifier\Service\Node\RandomNodeService;
-use Ramsey\Identifier\Service\Node\StaticNodeService;
-use Ramsey\Identifier\Service\Node\SystemNodeService;
+use Ramsey\Identifier\Service\Counter\Counter;
+use Ramsey\Identifier\Service\Counter\RandomCounter;
+use Ramsey\Identifier\Service\Nic\FallbackNic;
+use Ramsey\Identifier\Service\Nic\Nic;
+use Ramsey\Identifier\Service\Nic\RandomNic;
+use Ramsey\Identifier\Service\Nic\StaticNic;
+use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
@@ -57,22 +56,18 @@ final class UuidV1Factory implements
     /**
      * Constructs a factory for creating version 1, Gregorian time UUIDs
      *
-     * @param ClockSequenceService $clockSequenceService A service used
-     *     to generate a clock sequence; defaults to
-     *     {@see RandomClockSequenceService}
-     * @param NodeService $nodeService A service used to provide the
-     *     system node; defaults to {@see FallbackNodeService} with
-     *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
+     * @param Counter $counter A counter that provides the next value in a
+     *     sequence to prevent collisions; defaults to {@see RandomCounter}
+     * @param Nic $nic A NIC that provides the system MAC address value;
+     *     defaults to {@see FallbackNic}, with {@see SystemNic} and
+     *     {@see RandomNic} as fallbacks
      */
     public function __construct(
-        private readonly ClockSequenceService $clockSequenceService = new RandomClockSequenceService(),
-        private readonly NodeService $nodeService = new FallbackNodeService([
-            new SystemNodeService(),
-            new RandomNodeService(),
-        ]),
         private readonly Clock $clock = new SystemClock(),
+        private readonly Counter $counter = new RandomCounter(),
+        private readonly Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
     ) {
     }
 
@@ -87,7 +82,7 @@ final class UuidV1Factory implements
      *     creating the identifier
      *
      * @throws InvalidArgument
-     * @throws NodeNotFound
+     * @throws MacAddressNotFound
      * @throws RandomSourceNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
@@ -97,11 +92,9 @@ final class UuidV1Factory implements
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
     ): UuidV1 {
-        $node = $node === null ? $this->nodeService->getNode() : (new StaticNodeService($node))->getNode();
+        $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
+        $clockSequence = ($clockSequence ?? $this->counter->next()) % 16384;
         $dateTime = $dateTime ?? $this->clock->now();
-        $clockSequence = $clockSequence === null
-            ? $this->clockSequenceService->getClockSequence()
-            : (new StaticClockSequenceService($clockSequence))->getClockSequence();
 
         $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
 
@@ -128,7 +121,7 @@ final class UuidV1Factory implements
 
     /**
      * @throws InvalidArgument
-     * @throws NodeNotFound
+     * @throws MacAddressNotFound
      * @throws RandomSourceNotFound
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV1

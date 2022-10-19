@@ -21,8 +21,8 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomService;
+use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
+use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 
@@ -36,11 +36,11 @@ final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     /**
      * Constructs a factory for creating version 4, random UUIDs
      *
-     * @param RandomService $randomService A service used to generate
-     *     random bytes; defaults to {@see RandomBytesService}
+     * @param RandomGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
     public function __construct(
-        private readonly RandomService $randomService = new RandomBytesService(),
+        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
     }
 
@@ -49,7 +49,7 @@ final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierF
      */
     public function create(): UuidV4
     {
-        $bytes = $this->randomService->getRandomBytes(16);
+        $bytes = $this->randomGenerator->bytes(16);
         $bytes = Binary::applyVersionAndVariant($bytes, Version::Random);
 
         return new UuidV4($bytes);

@@ -7,9 +7,9 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
-use Ramsey\Identifier\Service\Node\StaticNodeService;
+use Ramsey\Identifier\Service\Counter\FrozenCounter;
+use Ramsey\Identifier\Service\Dce\StaticDce;
+use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV2Factory;
@@ -37,10 +37,10 @@ class UuidV2FactoryTest extends TestCase
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new UuidV2Factory(
-            new StaticClockSequenceService(0),
-            new StaticDceSecurityService(501),
-            new StaticNodeService(0),
             new FrozenClock(new DateTimeImmutable('1582-10-15 00:00:00')),
+            new FrozenCounter(0),
+            new StaticDce(501),
+            new StaticNic(0),
         );
 
         $uuid = $factory->create();

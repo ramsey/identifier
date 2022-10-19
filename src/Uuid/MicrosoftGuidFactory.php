@@ -24,8 +24,8 @@ use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Ramsey\Identifier\Service\Random\RandomBytesService;
-use Ramsey\Identifier\Service\Random\RandomService;
+use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
+use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Throwable;
@@ -53,11 +53,11 @@ final class MicrosoftGuidFactory implements
     /**
      * Constructs a factory for creating Microsoft GUIDs
      *
-     * @param RandomService $randomService A service used to generate
-     *     random bytes; defaults to {@see RandomBytesService}
+     * @param RandomGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
     public function __construct(
-        private readonly RandomService $randomService = new RandomBytesService(),
+        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
     }
 
@@ -66,7 +66,7 @@ final class MicrosoftGuidFactory implements
      */
     public function create(): MicrosoftGuid
     {
-        $bytes = $this->randomService->getRandomBytes(16);
+        $bytes = $this->randomGenerator->bytes(16);
         $bytes = Binary::applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));
