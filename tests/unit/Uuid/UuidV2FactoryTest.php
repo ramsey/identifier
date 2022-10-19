@@ -6,8 +6,8 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\DateTime\StaticDateTimeService;
 use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Uuid\DceDomain;
@@ -40,7 +40,7 @@ class UuidV2FactoryTest extends TestCase
             new StaticClockSequenceService(0),
             new StaticDceSecurityService(501),
             new StaticNodeService(0),
-            new StaticDateTimeService(new DateTimeImmutable('1582-10-15 00:00:00')),
+            new FrozenClock(new DateTimeImmutable('1582-10-15 00:00:00')),
         );
 
         $uuid = $factory->create();

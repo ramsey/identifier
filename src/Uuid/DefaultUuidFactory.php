@@ -26,10 +26,9 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Exception\NodeNotFound;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
+use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\ClockSequence\ClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
-use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
-use Ramsey\Identifier\Service\DateTime\DateTimeService;
 use Ramsey\Identifier\Service\DceSecurity\DceSecurityService;
 use Ramsey\Identifier\Service\DceSecurity\SystemDceSecurityService;
 use Ramsey\Identifier\Service\Node\FallbackNodeService;
@@ -42,6 +41,7 @@ use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
 use Ramsey\Identifier\UuidFactory;
 use Ramsey\Identifier\UuidIdentifier;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 use function is_int;
 use function is_string;
@@ -85,8 +85,8 @@ final class DefaultUuidFactory implements UuidFactory
      *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
      * @param RandomService $randomService A service used to generate
      *     random bytes; defaults to {@see RandomBytesService}
-     * @param DateTimeService $timeService A service used to provide a
-     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
      */
     public function __construct(
         ClockSequenceService $clockSequenceService = new RandomClockSequenceService(),
@@ -96,20 +96,20 @@ final class DefaultUuidFactory implements UuidFactory
             new RandomNodeService(),
         ]),
         RandomService $randomService = new RandomBytesService(),
-        DateTimeService $timeService = new CurrentDateTimeService(),
+        Clock $clock = new SystemClock(),
     ) {
-        $this->uuidV1Factory = new UuidV1Factory($clockSequenceService, $nodeService, $timeService);
+        $this->uuidV1Factory = new UuidV1Factory($clockSequenceService, $nodeService, $clock);
         $this->uuidV2Factory = new UuidV2Factory(
             $clockSequenceService,
             $dceSecurityService,
             $nodeService,
-            $timeService,
+            $clock,
         );
         $this->uuidV3Factory = new UuidV3Factory();
         $this->uuidV4Factory = new UuidV4Factory($randomService);
         $this->uuidV5Factory = new UuidV5Factory();
-        $this->uuidV6Factory = new UuidV6Factory($clockSequenceService, $nodeService, $timeService);
-        $this->uuidV7Factory = new UuidV7Factory($randomService, $timeService);
+        $this->uuidV6Factory = new UuidV6Factory($clockSequenceService, $nodeService, $clock);
+        $this->uuidV7Factory = new UuidV7Factory($randomService, $clock);
         $this->uuidV8Factory = new UuidV8Factory();
     }
 

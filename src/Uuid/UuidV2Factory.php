@@ -26,11 +26,10 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Exception\NodeNotFound;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
+use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\ClockSequence\ClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\RandomClockSequenceService;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
-use Ramsey\Identifier\Service\DateTime\DateTimeService;
 use Ramsey\Identifier\Service\DceSecurity\DceSecurityService;
 use Ramsey\Identifier\Service\DceSecurity\SystemDceSecurityService;
 use Ramsey\Identifier\Service\Node\FallbackNodeService;
@@ -41,6 +40,7 @@ use Ramsey\Identifier\Service\Node\SystemNodeService;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 use function hex2bin;
 use function pack;
@@ -70,8 +70,8 @@ final class UuidV2Factory implements
      * @param NodeService $nodeService A service used to provide the
      *     system node; defaults to {@see FallbackNodeService} with
      *     {@see SystemNodeService} and {@see RandomNodeService}, as a fallback
-     * @param DateTimeService $timeService A service used to provide a
-     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
      */
     public function __construct(
         private readonly ClockSequenceService $clockSequenceService = new RandomClockSequenceService(),
@@ -80,7 +80,7 @@ final class UuidV2Factory implements
             new SystemNodeService(),
             new RandomNodeService(),
         ]),
-        private readonly DateTimeService $timeService = new CurrentDateTimeService(),
+        private readonly Clock $clock = new SystemClock(),
     ) {
     }
 
@@ -118,7 +118,7 @@ final class UuidV2Factory implements
         ?DateTimeInterface $dateTime = null,
     ): UuidV2 {
         $node = $node === null ? $this->nodeService->getNode() : (new StaticNodeService($node))->getNode();
-        $dateTime = $dateTime ?? $this->timeService->getDateTime();
+        $dateTime = $dateTime ?? $this->clock->now();
         $clockSequence = $clockSequence === null
             ? $this->clockSequenceService->getClockSequence()
             : (new StaticClockSequenceService($clockSequence))->getClockSequence();

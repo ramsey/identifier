@@ -14,19 +14,17 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\DateTime;
+namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 /**
- * A date-time service that always returns the current date-time
+ * A clock that always returns the current system time
  */
-final class CurrentDateTimeService implements DateTimeService
+final class SystemClock implements Clock
 {
-    /**
-     * Returns the current date-time
-     */
-    public function getDateTime(): DateTimeImmutable
+    public function now(): DateTimeImmutable
     {
         return new DateTimeImmutable('now');
     }

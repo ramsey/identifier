@@ -22,8 +22,7 @@ use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
-use Ramsey\Identifier\Service\DateTime\DateTimeService;
+use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomService;
 use Ramsey\Identifier\Ulid\Utility\Validation;
@@ -31,6 +30,7 @@ use Ramsey\Identifier\UlidFactory;
 use Ramsey\Identifier\UlidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Time;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 use function is_int;
 use function is_string;
@@ -56,12 +56,12 @@ final class DefaultUlidFactory implements UlidFactory
      *
      * @param RandomService $randomService A service used to generate
      *     random bytes; defaults to {@see RandomBytesService}
-     * @param DateTimeService $timeService A service used to provide a
-     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
      */
     public function __construct(
         private readonly RandomService $randomService = new RandomBytesService(),
-        private readonly DateTimeService $timeService = new CurrentDateTimeService(),
+        private readonly Clock $clock = new SystemClock(),
     ) {
     }
 
@@ -71,7 +71,7 @@ final class DefaultUlidFactory implements UlidFactory
      */
     public function create(): UlidIdentifier
     {
-        $dateTime = $this->timeService->getDateTime();
+        $dateTime = $this->clock->now();
         $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
             . $this->randomService->getRandomBytes(10);
 

@@ -14,14 +14,15 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\DateTime;
+namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 /**
- * A date-time service that always returns a pre-defined date-time
+ * A clock that always returns a pre-defined date-time
  */
-final class StaticDateTimeService implements DateTimeService
+final class FrozenClock implements Clock
 {
     /**
      * @param DateTimeImmutable $dateTime The date-time instance this service
@@ -31,10 +32,7 @@ final class StaticDateTimeService implements DateTimeService
     {
     }
 
-    /**
-     * Returns a pre-defined, static date-time
-     */
-    public function getDateTime(): DateTimeImmutable
+    public function now(): DateTimeImmutable
     {
         return $this->dateTime;
     }

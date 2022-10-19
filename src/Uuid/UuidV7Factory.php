@@ -23,13 +23,13 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Ramsey\Identifier\Service\DateTime\CurrentDateTimeService;
-use Ramsey\Identifier\Service\DateTime\DateTimeService;
+use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Random\RandomBytesService;
 use Ramsey\Identifier\Service\Random\RandomService;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
+use StellaMaris\Clock\ClockInterface as Clock;
 
 /**
  * A factory for creating version 7, Unix Epoch time UUIDs
@@ -47,12 +47,12 @@ final class UuidV7Factory implements
      *
      * @param RandomService $randomService A service used to generate
      *     random bytes; defaults to {@see RandomBytesService}
-     * @param DateTimeService $timeService A service used to provide a
-     *     date-time instance; defaults to {@see CurrentDateTimeService}
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
      */
     public function __construct(
         private readonly RandomService $randomService = new RandomBytesService(),
-        private readonly DateTimeService $timeService = new CurrentDateTimeService(),
+        private readonly Clock $clock = new SystemClock(),
     ) {
     }
 
@@ -65,7 +65,7 @@ final class UuidV7Factory implements
      */
     public function create(?DateTimeInterface $dateTime = null): UuidV7
     {
-        $dateTime = $dateTime ?? $this->timeService->getDateTime();
+        $dateTime = $dateTime ?? $this->clock->now();
 
         $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
             . $this->randomService->getRandomBytes(10);

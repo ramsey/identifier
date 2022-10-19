@@ -6,8 +6,8 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\ClockSequence\StaticClockSequenceService;
-use Ramsey\Identifier\Service\DateTime\StaticDateTimeService;
 use Ramsey\Identifier\Service\DceSecurity\StaticDceSecurityService;
 use Ramsey\Identifier\Service\Node\StaticNodeService;
 use Ramsey\Identifier\Service\Random\StaticBytesService;
@@ -573,7 +573,7 @@ class DefaultUuidFactoryTest extends TestCase
         $dceSecurityService = new StaticDceSecurityService(2, 3, 4);
         $nodeService = new StaticNodeService(5);
         $randomService = new StaticBytesService("\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff");
-        $timeService = new StaticDateTimeService(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
+        $timeService = new FrozenClock(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
 
         $factory = new DefaultUuidFactory(
             $clockSequenceService,
