@@ -45,7 +45,7 @@ final class SystemNic implements Nic
     /**
      * Key to use when caching the address value in a PSR-16 cache instance
      */
-    private const CACHE_KEY = '__ramsey_identifier_64f4';
+    private const CACHE_KEY = '__ramsey_id_system_addr';
 
     /**
      * The system address, stored statically for better performance
