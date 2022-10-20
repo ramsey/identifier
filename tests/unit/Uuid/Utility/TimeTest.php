@@ -20,7 +20,7 @@ class TimeTest extends TestCase
      */
     public function testGetTimeBytesForGregorianEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
-        $bytes = Time::getTimeBytesForGregorianEpoch($dateTime);
+        $bytes = (new Time())->getTimeBytesForGregorianEpoch($dateTime);
 
         $this->assertSame(
             $expectedBytes,
@@ -55,7 +55,7 @@ class TimeTest extends TestCase
      */
     public function testGetTimeBytesForUnixEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
-        $bytes = Time::getTimeBytesForUnixEpoch($dateTime);
+        $bytes = (new Time())->getTimeBytesForUnixEpoch($dateTime);
 
         $this->assertSame(
             $expectedBytes,
@@ -88,7 +88,7 @@ class TimeTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
 
-        Time::getTimeBytesForGregorianEpoch($dateTime);
+        (new Time())->getTimeBytesForGregorianEpoch($dateTime);
     }
 
     public function testGetTimeBytesForUnixEpochThrowsExceptionForEarlyDate(): void
@@ -98,6 +98,6 @@ class TimeTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Unix Epoch');
 
-        Time::getTimeBytesForUnixEpoch($dateTime);
+        (new Time())->getTimeBytesForUnixEpoch($dateTime);
     }
 }

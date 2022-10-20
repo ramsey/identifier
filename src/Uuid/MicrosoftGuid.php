@@ -71,6 +71,7 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
         getNode as private baseGetNode;
     }
 
+    private readonly Binary $binary;
     private readonly ?Variant $variant;
     private readonly ?Version $version;
 
@@ -86,6 +87,8 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid Microsoft GUID: "%s"', $this->uuid));
         }
+
+        $this->binary = new Binary();
     }
 
     /**
@@ -204,7 +207,7 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
     public function toRfc4122(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
         $bytes = $this->swapBytes($this->toBytes());
-        $bytes = Binary::applyVersionAndVariant($bytes, $this->getVersion());
+        $bytes = $this->binary->applyVersionAndVariant($bytes, $this->getVersion());
 
         return match ($this->getVersion()) {
             Version::V1 => new UuidV1($bytes),

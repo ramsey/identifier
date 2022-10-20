@@ -57,6 +57,9 @@ final class UuidV2Factory implements
 {
     use StandardUuidFactory;
 
+    private readonly Binary $binary;
+    private readonly Time $time;
+
     /**
      * Constructs a factory for creating version 2, DCE Security UUIDs
      *
@@ -76,6 +79,8 @@ final class UuidV2Factory implements
         private readonly Dce $dce = new SystemDce(),
         private readonly Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
     ) {
+        $this->binary = new Binary();
+        $this->time = new Time();
     }
 
     /**
@@ -121,7 +126,7 @@ final class UuidV2Factory implements
         $clockSequence = ($clockSequence ?? $this->counter->next()) % 16384;
         $dateTime = $dateTime ?? $this->clock->now();
 
-        $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
+        $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
 
         $bytes = pack('N', $localIdentifier)
             . substr($timeBytes, 2, 2)
@@ -130,7 +135,7 @@ final class UuidV2Factory implements
             . pack('n', $localDomain->value)[1]
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::DceSecurity);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::DceSecurity);
 
         return new UuidV2($bytes);
     }

@@ -50,6 +50,8 @@ final class MicrosoftGuidFactory implements
 {
     use StandardUuidFactory;
 
+    private readonly Binary $binary;
+
     /**
      * Constructs a factory for creating Microsoft GUIDs
      *
@@ -59,6 +61,7 @@ final class MicrosoftGuidFactory implements
     public function __construct(
         private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
+        $this->binary = new Binary();
     }
 
     /**
@@ -67,7 +70,7 @@ final class MicrosoftGuidFactory implements
     public function create(): MicrosoftGuid
     {
         $bytes = $this->randomGenerator->bytes(16);
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));
     }
@@ -118,7 +121,11 @@ final class MicrosoftGuidFactory implements
     // @phpcs:ignore
     public function createFromRfc4122(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid
     {
-        $bytes = Binary::applyVersionAndVariant($uuid->toBytes(), $uuid->getVersion(), Variant::ReservedMicrosoft);
+        $bytes = $this->binary->applyVersionAndVariant(
+            $uuid->toBytes(),
+            $uuid->getVersion(),
+            Variant::ReservedMicrosoft,
+        );
 
         return new MicrosoftGuid($this->swapBytes($bytes));
     }

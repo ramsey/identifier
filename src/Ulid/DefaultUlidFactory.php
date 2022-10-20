@@ -51,6 +51,8 @@ final class DefaultUlidFactory implements UlidFactory
 {
     use Validation;
 
+    private readonly Time $time;
+
     /**
      * Constructs a factory for creating ULIDs
      *
@@ -63,6 +65,7 @@ final class DefaultUlidFactory implements UlidFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
+        $this->time = new Time();
     }
 
     /**
@@ -72,7 +75,7 @@ final class DefaultUlidFactory implements UlidFactory
     public function create(): UlidIdentifier
     {
         $dateTime = $this->clock->now();
-        $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
+        $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
             . $this->randomGenerator->bytes(10);
 
         return new Ulid($bytes);
@@ -104,7 +107,7 @@ final class DefaultUlidFactory implements UlidFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
     {
-        $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
+        $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
             . $this->randomGenerator->bytes(10);
 
         return new Ulid($bytes);

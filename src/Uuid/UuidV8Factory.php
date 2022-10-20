@@ -35,6 +35,13 @@ final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierF
 {
     use StandardUuidFactory;
 
+    private readonly Binary $binary;
+
+    public function __construct()
+    {
+        $this->binary = new Binary();
+    }
+
     /**
      * Creates a new instance of an identifier
      *
@@ -90,7 +97,7 @@ final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierF
         /** @psalm-var non-empty-string $bytes */
         $bytes = hex2bin($customFieldA . '0' . $customFieldB . $customFieldC);
 
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::Custom);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Custom);
 
         return new UuidV8($bytes);
     }

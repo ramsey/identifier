@@ -45,7 +45,7 @@ final class Binary
      *
      * @psalm-pure
      */
-    public static function applyVersionAndVariant(
+    public function applyVersionAndVariant(
         string $bytes,
         ?Version $version,
         Variant $variant = Variant::Rfc4122,
@@ -58,63 +58,18 @@ final class Binary
         $parts = unpack('n*', $bytes);
 
         if ($version !== null) {
-            $parts[4] = self::applyVersion($parts[4], $version);
+            $parts[4] = $parts[4] & 0x0fff;
+            $parts[4] |= $version->value << 12;
         }
 
-        $parts[5] = self::applyVariant($parts[5], $variant);
+        $parts[5] = match ($variant) {
+            Variant::ReservedNcs => $parts[5] & 0x7fff,
+            Variant::Rfc4122 => $parts[5] & 0x3fff | 0x8000,
+            Variant::ReservedMicrosoft => $parts[5] & 0x1fff | 0xc000,
+            Variant::ReservedFuture => $parts[5] & 0x1fff | 0xe000,
+        };
 
         /** @var non-empty-string */
         return pack('n*', ...$parts);
-    }
-
-    /**
-     * Applies the RFC 4122 variant field to the 16-bit clock sequence
-     *
-     * @link http://tools.ietf.org/html/rfc4122#section-4.1.1 RFC 4122, § 4.1.1: Variant
-     *
-     * @param int $clockSeq The 16-bit clock sequence value before the RFC 4122
-     *     variant is applied
-     *
-     * @return int The 16-bit clock sequence multiplexed with the UUID variant
-     *
-     * @psalm-pure
-     */
-    private static function applyVariant(int $clockSeq, Variant $variant): int
-    {
-        return match ($variant) {
-            Variant::ReservedNcs => $clockSeq & 0x7fff,
-            Variant::Rfc4122 => $clockSeq & 0x3fff | 0x8000,
-            Variant::ReservedMicrosoft => $clockSeq & 0x1fff | 0xc000,
-            Variant::ReservedFuture => $clockSeq & 0x1fff | 0xe000,
-        };
-    }
-
-    /**
-     * Applies the RFC 4122 version number to the 16-bit `time_hi_and_version` field
-     *
-     * @link http://tools.ietf.org/html/rfc4122#section-4.1.3 RFC 4122, § 4.1.3: Version
-     *
-     * @param int $timeHi The value of the 16-bit `time_hi_and_version` field
-     *     before the RFC 4122 version is applied
-     * @param Version $version The RFC 4122 version to apply to the `time_hi` field
-     *
-     * @return int The 16-bit time_hi field of the timestamp multiplexed with
-     *     the UUID version number
-     *
-     * @psalm-pure
-     */
-    private static function applyVersion(int $timeHi, Version $version): int
-    {
-        $timeHi = $timeHi & 0x0fff;
-        $timeHi |= $version->value << 12;
-
-        return $timeHi;
-    }
-
-    /**
-     * Disallow public instantiation
-     */
-    private function __construct()
-    {
     }
 }

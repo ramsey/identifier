@@ -42,6 +42,9 @@ final class UuidV7Factory implements
 {
     use StandardUuidFactory;
 
+    private readonly Binary $binary;
+    private readonly Time $time;
+
     /**
      * Constructs a factory for creating version 7, Unix Epoch time UUIDs
      *
@@ -54,6 +57,8 @@ final class UuidV7Factory implements
         private readonly Clock $clock = new SystemClock(),
         private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
+        $this->binary = new Binary();
+        $this->time = new Time();
     }
 
     /**
@@ -67,9 +72,9 @@ final class UuidV7Factory implements
     {
         $dateTime = $dateTime ?? $this->clock->now();
 
-        $bytes = Time::getTimeBytesForUnixEpoch($dateTime)
+        $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
             . $this->randomGenerator->bytes(10);
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::UnixTime);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::UnixTime);
 
         return new UuidV7($bytes);
     }

@@ -62,7 +62,7 @@ final class Time
      *
      * @throws InvalidArgument
      */
-    public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
+    public function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
         if ($dateTime->format('Y-m-d') < '1582-10-15') {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
@@ -95,7 +95,7 @@ final class Time
      *
      * @throws InvalidArgument
      */
-    public static function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
+    public function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
     {
         if ($dateTime->getTimestamp() < 0) {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Unix Epoch');
@@ -115,12 +115,5 @@ final class Time
             "\x00",
             STR_PAD_LEFT,
         );
-    }
-
-    /**
-     * Disallow public instantiation
-     */
-    private function __construct()
-    {
     }
 }

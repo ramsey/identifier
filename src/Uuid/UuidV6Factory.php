@@ -54,6 +54,9 @@ final class UuidV6Factory implements
 {
     use StandardUuidFactory;
 
+    private readonly Binary $binary;
+    private readonly Time $time;
+
     /**
      * Constructs a factory for creating version 6, reordered time UUIDs
      *
@@ -70,6 +73,8 @@ final class UuidV6Factory implements
         private readonly Counter $counter = new RandomCounter(),
         private readonly Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
     ) {
+        $this->binary = new Binary();
+        $this->time = new Time();
     }
 
     /**
@@ -97,7 +102,7 @@ final class UuidV6Factory implements
         $clockSequence = ($clockSequence ?? $this->counter->next()) % 16384;
         $dateTime = $dateTime ?? $this->clock->now();
 
-        $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
+        $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
         $timeHex = bin2hex($timeBytes);
 
         /** @psalm-var non-empty-string $bytes */
@@ -105,7 +110,7 @@ final class UuidV6Factory implements
             . pack('n*', $clockSequence)
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::ReorderedGregorianTime);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::ReorderedGregorianTime);
 
         return new UuidV6($bytes);
     }
