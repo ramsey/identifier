@@ -15,10 +15,10 @@ class FallbackNicTest extends TestCase
     public function testAddressStepsThroughNicsToReturnAddress(): void
     {
         $nic1 = $this->mockery(Nic::class);
-        $nic1->allows()->address()->andThrows(new MacAddressNotFound('could not find address'));
+        $nic1->expects('address')->twice()->andThrows(new MacAddressNotFound('could not find address'));
 
         $nic2 = $this->mockery(Nic::class);
-        $nic2->allows()->address()->andThrows(new MacAddressNotFound('could not find address'));
+        $nic2->expects('address')->twice()->andThrows(new MacAddressNotFound('could not find address'));
 
         $nic3 = new StaticNic('aabbcc001122');
 
@@ -43,10 +43,10 @@ class FallbackNicTest extends TestCase
     public function testAddressCannotObtainASuitableAddress(): void
     {
         $nic1 = $this->mockery(Nic::class);
-        $nic1->expects()->address()->andThrows(new MacAddressNotFound('could not find address'));
+        $nic1->expects('address')->andThrows(new MacAddressNotFound('could not find address'));
 
         $nic2 = $this->mockery(Nic::class);
-        $nic2->expects()->address()->andThrows(new MacAddressNotFound('could not find address'));
+        $nic2->expects('address')->andThrows(new MacAddressNotFound('could not find address'));
 
         $fallbackNic = new FallbackNic([$nic1, $nic2]);
 

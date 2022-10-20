@@ -6,11 +6,13 @@ namespace Ramsey\Test\Identifier\Service\Dce;
 
 use Hamcrest\Type\IsInteger;
 use InvalidArgumentException as PhpInvalidArgumentException;
+use Mockery;
 use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Service\Dce\SystemDce;
+use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
 
 use function sprintf;
@@ -54,7 +56,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$groupId')->andReturns(5001);
+        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturn(5001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -71,7 +73,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCacheThrowsExceptionForBadCacheKey(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$groupId')->andThrows(
+        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andThrows(
             new class extends PhpInvalidArgumentException implements CacheInvalidArgumentException {
             },
         );
@@ -94,8 +96,8 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$groupId')->andReturns(null);
-        $cache->expects()->set(SystemDce::class . '::$groupId', new IsInteger())->andReturns(true);
+        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturnNull();
+        $cache->expects('set')->with(SystemDce::class . '::$groupId', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $groupId = $dce->groupId();
@@ -113,7 +115,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$groupId')->andReturns(-1);
+        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -125,6 +127,143 @@ class SystemDceTest extends TestCase
         );
 
         $dce->groupId();
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     */
+    public function testGroupIdPosix(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -g')->andReturn('42');
+
+        $dce = new SystemDce(os: $os);
+
+        $this->assertSame(42, $dce->groupId());
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     */
+    public function testGroupIdNotFoundPosix(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -g')->andReturn('');
+
+        $dce = new SystemDce(os: $os);
+
+        $this->expectException(DceIdentifierNotFound::class);
+        $this->expectExceptionMessage(
+            'Unable to get a group identifier using the system DCE '
+            . 'service; please provide a custom identifier or use '
+            . 'a different DCE service class',
+        );
+
+        $dce->groupId();
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     * @dataProvider provideWindowsGroupValues
+     */
+    public function testGroupIdWindows(
+        string $netUserResponse,
+        ?string $wmicGroupResponse = null,
+        ?string $expectedGroup = null,
+        ?int $expectedId = null,
+    ): void {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Windows');
+
+        $os->expects('run')
+            ->with('net user %username% | findstr /b /i "Local Group Memberships"')
+            ->andReturn($netUserResponse);
+
+        if ($wmicGroupResponse === null) {
+            $os->expects('run')
+                ->with(Mockery::pattern('/^wmic group get name,sid \| findstr \/b \/i .*$/'))
+                ->never();
+        } else {
+            $os->expects('run')
+                ->with(Mockery::pattern("/^wmic group get name,sid \| findstr \/b \/i (\"|\')$expectedGroup(\"|\')$/"))
+                ->andReturn($wmicGroupResponse);
+        }
+
+        $dce = new SystemDce(os: $os);
+
+        if ($expectedId === null) {
+            $this->expectException(DceIdentifierNotFound::class);
+            $this->expectExceptionMessage(
+                'Unable to get a group identifier using the system DCE '
+                . 'service; please provide a custom identifier or use '
+                . 'a different DCE service class',
+            );
+
+            $dce->groupId();
+        } else {
+            $this->assertSame($expectedId, $dce->groupId());
+        }
+    }
+
+    /**
+     * @return array<array{netUserResponse: string, wmicGroupResponse?: string, expectedGroup?: string, expectedId?: int}>
+     */
+    public function provideWindowsGroupValues(): array
+    {
+        return [
+            [
+                'netUserResponse' => 'Local Group Memberships    *Administrators  *Users',
+                'wmicGroupResponse' => 'Administrators  S-1-5-32-544',
+                'expectedGroup' => 'Administrators',
+                'expectedId' => 544,
+            ],
+            [
+                'netUserResponse' => 'Local Group Memberships    Users',
+                'wmicGroupResponse' => 'Users  S-1-5-32-545',
+                'expectedGroup' => 'Users',
+                'expectedId' => 545,
+            ],
+            [
+                'netUserResponse' => 'Local Group Memberships    Guests  Nobody',
+                'wmicGroupResponse' => 'Guests  S-1-5-32-546',
+                'expectedGroup' => 'Guests',
+                'expectedId' => 546,
+            ],
+            [
+                'netUserResponse' => 'Local Group Memberships   Some Group  Another Group',
+                'wmicGroupResponse' => 'Some Group    S-1-5-80-19088743-1985229328-4294967295-1324',
+                'expectedGroup' => 'Some Group',
+                'expectedId' => 1324,
+            ],
+
+            // These should all fail with an exception:
+            ['netUserResponse' => ''],
+            ['netUserResponse' => 'foobar'],
+            ['netUserResponse' => 'foo,bar,baz'],
+            ['netUserResponse' => '1234'],
+            ['netUserResponse' => 'Local Group Memberships'],
+            ['netUserResponse' => 'Local Group Memberships    ****  Foo'],
+            [
+                'netUserResponse' => 'Local Group Memberships    Users',
+                'wmicGroupResponse' => '',
+                'expectedGroup' => 'Users',
+            ],
+            [
+                'netUserResponse' => 'Local Group Memberships    Users',
+                'wmicGroupResponse' => 'Users  Not a valid SID string',
+                'expectedGroup' => 'Users',
+            ],
+            [
+                'netUserResponse' => 'Local Group Memberships    Users',
+                'wmicGroupResponse' => 'Users  344aab9758bb0d018b93739e7893fb3a',
+                'expectedGroup' => 'Users',
+            ],
+        ];
     }
 
     /**
@@ -145,7 +284,7 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$userId')->andReturns(6001);
+        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturn(6001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -162,7 +301,7 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCacheThrowsExceptionForBadCacheKey(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$userId')->andThrows(
+        $cache->expects('get')->with(SystemDce::class . '::$userId')->andThrows(
             new class extends PhpInvalidArgumentException implements CacheInvalidArgumentException {
             },
         );
@@ -185,8 +324,8 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$userId')->andReturns(null);
-        $cache->expects()->set(SystemDce::class . '::$userId', new IsInteger())->andReturns(true);
+        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturnNull();
+        $cache->expects('set')->with(SystemDce::class . '::$userId', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $userId = $dce->userId();
@@ -204,7 +343,7 @@ class SystemDceTest extends TestCase
     public function testUserIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects()->get(SystemDce::class . '::$userId')->andReturns(-1);
+        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -216,5 +355,99 @@ class SystemDceTest extends TestCase
         );
 
         $dce->userId();
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     */
+    public function testUserIdPosix(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -u')->andReturn('142');
+
+        $dce = new SystemDce(os: $os);
+
+        $this->assertSame(142, $dce->userId());
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     */
+    public function testUserIdNotFoundPosix(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -u')->andReturn('');
+
+        $dce = new SystemDce(os: $os);
+
+        $this->expectException(DceIdentifierNotFound::class);
+        $this->expectExceptionMessage(
+            'Unable to get a user identifier using the system DCE '
+            . 'service; please provide a custom identifier or use '
+            . 'a different DCE service class',
+        );
+
+        $dce->userId();
+    }
+
+    /**
+     * @runInSeparateProcess since the identifier is stored statically on the class
+     * @preserveGlobalState disabled
+     * @dataProvider provideWindowsUserValues
+     */
+    public function testUserIdWindows(
+        string $whoamiResponse,
+        ?int $expectedId = null,
+    ): void {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Windows');
+
+        $os->expects('run')
+            ->with('whoami /user /fo csv /nh')
+            ->andReturn($whoamiResponse);
+
+        $dce = new SystemDce(os: $os);
+
+        if ($expectedId === null) {
+            $this->expectException(DceIdentifierNotFound::class);
+            $this->expectExceptionMessage(
+                'Unable to get a user identifier using the system DCE '
+                . 'service; please provide a custom identifier or use '
+                . 'a different DCE service class',
+            );
+
+            $dce->userId();
+        } else {
+            $this->assertSame($expectedId, $dce->userId());
+        }
+    }
+
+    /**
+     * @return array<array{whoamiResponse: string, expectedId?: int}>
+     */
+    public function provideWindowsUserValues(): array
+    {
+        return [
+            [
+                'whoamiResponse' => '"Melilot Sackville","S-1-5-21-7375663-6890924511-1272660413-2944159"',
+                'expectedId' => 2944159,
+            ],
+            [
+                'whoamiResponse' => '"Brutus Sandheaver","S-1-3-12-1234525106-3567804255-30012867-1437"',
+                'expectedId' => 1437,
+            ],
+            [
+                'whoamiResponse' => '"Cora Rumble","S-345"',
+                'expectedId' => 345,
+            ],
+
+            // These should all fail with an exception:
+            ['whoamiResponse' => ''],
+            ['whoamiResponse' => '"Cora Rumble","345"'],
+        ];
     }
 }

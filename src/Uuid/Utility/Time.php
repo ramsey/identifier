@@ -20,13 +20,14 @@ use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Os\Os;
+use Ramsey\Identifier\Service\Os\PhpOs;
 
 use function intdiv;
 use function pack;
 use function str_pad;
 use function substr;
 
-use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
@@ -51,6 +52,10 @@ final class Time
      */
     public const NANOSECOND_INTERVALS = 10000000;
 
+    public function __construct(private readonly Os $os = new PhpOs())
+    {
+    }
+
     /**
      * Returns an 8-byte string representing a count of 100-nanosecond intervals
      * since the Gregorian epoch, 1582-10-15 00:00:00
@@ -68,7 +73,7 @@ final class Time
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
         }
 
-        if (PHP_INT_SIZE >= 8) {
+        if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
             return pack('J*', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
         }
@@ -101,7 +106,7 @@ final class Time
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Unix Epoch');
         }
 
-        if (PHP_INT_SIZE >= 8) {
+        if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
             return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), -6);
         }

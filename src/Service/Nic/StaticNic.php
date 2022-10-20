@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Os\Os;
+use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Uuid\Utility\Format;
 
 use function bin2hex;
@@ -28,8 +30,6 @@ use function strlen;
 use function strspn;
 use function substr;
 use function unpack;
-
-use const PHP_INT_SIZE;
 
 /**
  * A NIC that provides a pre-determined MAC address and sets the multicast bit,
@@ -51,10 +51,10 @@ final class StaticNic implements Nic
      *
      * @psalm-param int<0, max> | non-empty-string $address
      */
-    public function __construct(int | string $address)
+    public function __construct(int | string $address, private readonly Os $os = new PhpOs())
     {
         if (is_int($address)) {
-            if (PHP_INT_SIZE >= 8) {
+            if ($this->os->getIntSize() >= 8) {
                 /** @var non-empty-string $address */
                 $address = substr(bin2hex(pack('J*', $address | 0x010000000000)), -12);
             } else {

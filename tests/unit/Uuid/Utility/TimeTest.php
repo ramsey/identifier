@@ -7,6 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid\Utility;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -21,6 +22,25 @@ class TimeTest extends TestCase
     public function testGetTimeBytesForGregorianEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
         $bytes = (new Time())->getTimeBytesForGregorianEpoch($dateTime);
+
+        $this->assertSame(
+            $expectedBytes,
+            $bytes,
+            sprintf('Expected "%s", received "%s"', bin2hex($expectedBytes), bin2hex($bytes)),
+        );
+    }
+
+    /**
+     * @dataProvider timeBytesForGregorianEpochProvider
+     */
+    public function testGetTimeBytesForGregorianEpochOn32Bit(DateTimeInterface $dateTime, string $expectedBytes): void
+    {
+        // Force the 32-bit code path.
+        $os = $this->mockery(Os::class, [
+            'getIntSize' => 4,
+        ]);
+
+        $bytes = (new Time($os))->getTimeBytesForGregorianEpoch($dateTime);
 
         $this->assertSame(
             $expectedBytes,
@@ -56,6 +76,25 @@ class TimeTest extends TestCase
     public function testGetTimeBytesForUnixEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
         $bytes = (new Time())->getTimeBytesForUnixEpoch($dateTime);
+
+        $this->assertSame(
+            $expectedBytes,
+            $bytes,
+            sprintf('Expected "%s", received "%s"', bin2hex($expectedBytes), bin2hex($bytes)),
+        );
+    }
+
+    /**
+     * @dataProvider timeBytesForUnixEpochProvider
+     */
+    public function testGetTimeBytesForUnixEpochOn32Bit(DateTimeInterface $dateTime, string $expectedBytes): void
+    {
+        // Force the 32-bit code path.
+        $os = $this->mockery(Os::class, [
+            'getIntSize' => 4,
+        ]);
+
+        $bytes = (new Time($os))->getTimeBytesForUnixEpoch($dateTime);
 
         $this->assertSame(
             $expectedBytes,

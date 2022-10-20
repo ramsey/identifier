@@ -20,20 +20,17 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
+use Ramsey\Identifier\Service\Os\Os;
+use Ramsey\Identifier\Service\Os\PhpOs;
 
 use function escapeshellarg;
-use function ini_get;
 use function preg_split;
-use function shell_exec;
 use function sprintf;
-use function str_contains;
 use function str_getcsv;
 use function strrpos;
-use function strtolower;
 use function substr;
 use function trim;
 
-use const PHP_OS_FAMILY;
 use const PREG_SPLIT_NO_EMPTY;
 
 /**
@@ -77,6 +74,7 @@ final class SystemDce implements Dce
     public function __construct(
         private readonly ?int $orgId = null,
         private readonly ?CacheInterface $cache = null,
+        private readonly Os $os = new PhpOs(),
     ) {
     }
 
@@ -148,8 +146,7 @@ final class SystemDce implements Dce
      */
     private function getPosixGid(): ?int
     {
-        /** @psalm-suppress ForbiddenCode */
-        $gid = trim((string) shell_exec('id -g'));
+        $gid = trim($this->os->run('id -g'));
 
         /** @var int<0, max> | null */
         return $gid === '' ? null : (int) $gid;
@@ -160,8 +157,7 @@ final class SystemDce implements Dce
      */
     private function getPosixUid(): ?int
     {
-        /** @psalm-suppress ForbiddenCode */
-        $uid = trim((string) shell_exec('id -u'));
+        $uid = trim($this->os->run('id -u'));
 
         /** @var int<0, max> | null */
         return $uid === '' ? null : (int) $uid;
@@ -172,11 +168,7 @@ final class SystemDce implements Dce
      */
     private function getSystemGid(): ?int
     {
-        if (!$this->hasShellExec()) {
-            return null; // @codeCoverageIgnore
-        }
-
-        return match (PHP_OS_FAMILY) {
+        return match ($this->os->getOsFamily()) {
             'Windows' => $this->getWindowsGid(),
             default => $this->getPosixGid(),
         };
@@ -217,11 +209,7 @@ final class SystemDce implements Dce
      */
     private function getSystemUid(): ?int
     {
-        if (!$this->hasShellExec()) {
-            return null; // @codeCoverageIgnore
-        }
-
-        return match (PHP_OS_FAMILY) {
+        return match ($this->os->getOsFamily()) {
             'Windows' => $this->getWindowsUid(),
             default => $this->getPosixUid(),
         };
@@ -272,11 +260,10 @@ final class SystemDce implements Dce
      */
     private function getWindowsGid(): ?int
     {
-        /** @psalm-suppress ForbiddenCode */
-        $response = shell_exec('net user %username% | findstr /b /i "Local Group Memberships"');
+        $response = $this->os->run('net user %username% | findstr /b /i "Local Group Memberships"');
 
-        if ($response === null || $response === false) {
-            return null; // @codeCoverageIgnore
+        if ($response === '') {
+            return null;
         }
 
         /** @var string[] $userGroups */
@@ -285,14 +272,13 @@ final class SystemDce implements Dce
         $firstGroup = trim($userGroups[1] ?? '', "* \t\n\r\0\x0B");
 
         if ($firstGroup === '') {
-            return null; // @codeCoverageIgnore
+            return null;
         }
 
-        /** @psalm-suppress ForbiddenCode */
-        $response = shell_exec('wmic group get name,sid | findstr /b /i ' . escapeshellarg($firstGroup));
+        $response = $this->os->run('wmic group get name,sid | findstr /b /i ' . escapeshellarg($firstGroup));
 
-        if ($response === null || $response === false) {
-            return null; // @codeCoverageIgnore
+        if ($response === '') {
+            return null;
         }
 
         /** @var string[] $userGroup */
@@ -301,7 +287,7 @@ final class SystemDce implements Dce
         $sid = $userGroup[1] ?? '';
 
         if (($lastHyphen = strrpos($sid, '-')) === false) {
-            return null; // @codeCoverageIgnore
+            return null;
         }
 
         /** @var int<0, max> */
@@ -328,30 +314,19 @@ final class SystemDce implements Dce
      */
     private function getWindowsUid(): ?int
     {
-        /** @psalm-suppress ForbiddenCode */
-        $response = shell_exec('whoami /user /fo csv /nh');
+        $response = $this->os->run('whoami /user /fo csv /nh');
 
-        if ($response === null) {
-            return null; // @codeCoverageIgnore
+        if ($response === '') {
+            return null;
         }
 
-        $sid = str_getcsv(trim((string) $response))[1] ?? '';
+        $sid = str_getcsv(trim($response))[1] ?? '';
 
         if (($lastHyphen = strrpos($sid, '-')) === false) {
-            return null; // @codeCoverageIgnore
+            return null;
         }
 
         /** @var int<0, max> */
         return (int) trim(substr($sid, $lastHyphen + 1));
-    }
-
-    /**
-     * Returns true if shell_exec() is available for use
-     */
-    private function hasShellExec(): bool
-    {
-        $disabledFunctions = strtolower((string) ini_get('disable_functions'));
-
-        return !str_contains($disabledFunctions, 'shell_exec');
     }
 }

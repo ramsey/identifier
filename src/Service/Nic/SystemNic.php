@@ -20,23 +20,16 @@ use Psr\SimpleCache\CacheInterface;
 use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Exception\MacAddressNotFound;
+use Ramsey\Identifier\Service\Os\Os;
+use Ramsey\Identifier\Service\Os\PhpOs;
 
-use function fgets;
-use function file_get_contents;
-use function glob;
-use function ini_get;
-use function is_readable;
-use function pclose;
-use function popen;
 use function preg_match;
+use function preg_match_all;
 use function sprintf;
-use function str_contains;
 use function str_replace;
-use function strtolower;
 use function trim;
 
-use const GLOB_NOSORT;
-use const PHP_OS_FAMILY;
+use const PREG_PATTERN_ORDER;
 
 /**
  * A NIC that attempts to retrieve a MAC address from the system
@@ -70,8 +63,10 @@ final class SystemNic implements Nic
      *     use machine-specific addresses. If you wish for machine-specific
      *     addresses, use of a machine-local cache, such as APCu, is preferable.
      */
-    public function __construct(private readonly ?CacheInterface $cache = null)
-    {
+    public function __construct(
+        private readonly ?CacheInterface $cache = null,
+        private readonly Os $os = new PhpOs(),
+    ) {
     }
 
     /**
@@ -135,36 +130,23 @@ final class SystemNic implements Nic
      */
     private function getIfconfig(): string
     {
-        $disabledFunctions = strtolower((string) ini_get('disable_functions'));
-
-        if (str_contains($disabledFunctions, 'popen')) {
-            return ''; // @codeCoverageIgnore
-        }
-
-        $command = match (PHP_OS_FAMILY) {
-            'Windows' => 'ipconfig /all 2>&1',
-            'Darwin' => 'ifconfig 2>&1',
-            'BSD' => 'netstat -i -f link 2>&1',
-            default => 'netstat -ie 2>&1', // @codeCoverageIgnore
+        $command = match ($this->os->getOsFamily()) {
+            'Windows' => 'ipconfig /all',
+            'Darwin' => 'ifconfig',
+            'BSD' => 'netstat -i -f link',
+            default => 'netstat -ie',
         };
 
-        $process = popen($command, 'r');
-        if ($process === false) {
-            return ''; // @codeCoverageIgnore
-        }
+        $ifconfig = $this->os->run($command);
+        preg_match_all(self::IFCONFIG_PATTERN, $ifconfig, $matches, PREG_PATTERN_ORDER);
 
-        $address = '';
-        while (($buffer = fgets($process)) !== false) {
-            if (preg_match(self::IFCONFIG_PATTERN, $buffer, $matches)) {
-                $address = $matches[1];
-
-                break;
+        foreach ($matches[1] as $address) {
+            if ($address !== '00:00:00:00:00:00' && $address !== '00-00-00-00-00-00') {
+                return $address;
             }
         }
 
-        pclose($process);
-
-        return $address;
+        return '';
     }
 
     /**
@@ -172,24 +154,19 @@ final class SystemNic implements Nic
      */
     private function getSysfs(): string
     {
-        if (PHP_OS_FAMILY !== 'Linux') {
+        if ($this->os->getOsFamily() !== 'Linux') {
             return '';
         }
 
-        $paths = glob('/sys/class/net/*/address', GLOB_NOSORT) ?: [];
-
-        /** @var string[] $macs */
-        $macs = [];
-
-        foreach ($paths as $path) {
-            if (is_readable($path)) {
-                $address = trim((string) file_get_contents($path));
+        foreach ($this->os->glob('/sys/class/net/*/address') as $path) {
+            if ($this->os->isReadable($path)) {
+                $address = trim($this->os->fileGetContents($path));
                 if ($address !== '00:00:00:00:00:00' && preg_match(self::SYSFS_PATTERN, $address)) {
-                    $macs[] = $address;
+                    return $address;
                 }
             }
         }
 
-        return $macs[0] ?? '';
+        return '';
     }
 }
