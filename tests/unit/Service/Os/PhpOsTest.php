@@ -11,6 +11,7 @@ use function file_get_contents;
 use function str_repeat;
 use function trim;
 
+use const DIRECTORY_SEPARATOR;
 use const PHP_INT_SIZE;
 use const PHP_OS_FAMILY;
 
@@ -46,7 +47,7 @@ class PhpOsTest extends TestCase
             [
                 __FILE__,
             ],
-            $this->os->glob(__DIR__ . '/*.php'),
+            $this->os->glob(__DIR__ . DIRECTORY_SEPARATOR . '*.php'),
         );
     }
 
@@ -67,6 +68,11 @@ class PhpOsTest extends TestCase
 
     public function testRun(): void
     {
-        $this->assertSame('foo bar', trim($this->os->run('echo "foo bar"')));
+        $expected = match (PHP_OS_FAMILY) {
+            'Windows' => '"foo bar"',
+            default => 'foo bar',
+        };
+
+        $this->assertSame($expected, trim($this->os->run('echo "foo bar"')));
     }
 }
