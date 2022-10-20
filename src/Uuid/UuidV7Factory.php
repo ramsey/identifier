@@ -22,7 +22,6 @@ use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
 use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
@@ -66,7 +65,6 @@ final class UuidV7Factory implements
      *     creating the identifier
      *
      * @throws InvalidArgument
-     * @throws RandomSourceNotFound
      */
     public function create(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -90,7 +88,6 @@ final class UuidV7Factory implements
 
     /**
      * @throws InvalidArgument
-     * @throws RandomSourceNotFound
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV7
     {

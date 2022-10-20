@@ -22,16 +22,12 @@ use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Counter\Counter;
 use Ramsey\Identifier\Service\Counter\RandomCounter;
-use Ramsey\Identifier\Service\Nic\FallbackNic;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
-use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
@@ -65,13 +61,12 @@ final class UuidV6Factory implements
      * @param Counter $counter A counter that provides the next value in a
      *     sequence to prevent collisions; defaults to {@see RandomCounter}
      * @param Nic $nic A NIC that provides the system MAC address value;
-     *     defaults to {@see FallbackNic}, with {@see SystemNic} and
-     *     {@see RandomNic} as fallbacks
+     *     defaults to {@see RandomNic}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
         private readonly Counter $counter = new RandomCounter(),
-        private readonly Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
+        private readonly Nic $nic = new RandomNic(),
     ) {
         $this->binary = new Binary();
         $this->time = new Time();
@@ -87,9 +82,7 @@ final class UuidV6Factory implements
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws RandomSourceNotFound
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -107,7 +100,7 @@ final class UuidV6Factory implements
 
         /** @psalm-var non-empty-string $bytes */
         $bytes = hex2bin(substr($timeHex, 1, 12) . '0' . substr($timeHex, -3))
-            . pack('n*', $clockSequence)
+            . pack('n', $clockSequence)
             . hex2bin(sprintf('%012s', $node));
 
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::ReorderedGregorianTime);
@@ -126,8 +119,6 @@ final class UuidV6Factory implements
 
     /**
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV6
     {

@@ -76,7 +76,7 @@ trait Validation
             Format::FORMAT_HEX => DceDomain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
             Format::FORMAT_BYTES => DceDomain::tryFrom((static function (string $bytes): int {
                 /** @var int[] $parts */
-                $parts = unpack('n*', "\x00" . $bytes[9]);
+                $parts = unpack('n', "\x00" . $bytes[9]);
 
                 // If $parts[1] is not set, return an integer that won't
                 // exist in Domain, so that Domain::tryFrom() returns null.
@@ -98,7 +98,7 @@ trait Validation
                 (
                     function (string $uuid): int {
                         /** @var positive-int[] $parts */
-                        $parts = unpack('n*', $uuid, 8);
+                        $parts = unpack('n4', $uuid, 8);
 
                         return $parts[1] >> 12;
                     }

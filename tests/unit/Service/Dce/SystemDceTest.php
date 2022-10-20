@@ -5,17 +5,12 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Dce;
 
 use Hamcrest\Type\IsInteger;
-use InvalidArgumentException as PhpInvalidArgumentException;
 use Mockery;
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
-
-use function sprintf;
 
 class SystemDceTest extends TestCase
 {
@@ -56,7 +51,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturn(5001);
+        $cache->expects('get')->with('__ramsey_identifier_27a5')->andReturn(5001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -70,34 +65,11 @@ class SystemDceTest extends TestCase
      * @runInSeparateProcess since the identifier is stored statically on the class
      * @preserveGlobalState disabled
      */
-    public function testGroupIdFromCacheThrowsExceptionForBadCacheKey(): void
-    {
-        $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andThrows(
-            new class extends PhpInvalidArgumentException implements CacheInvalidArgumentException {
-            },
-        );
-
-        $dce = new SystemDce(cache: $cache);
-
-        $this->expectException(InvalidCacheKey::class);
-        $this->expectExceptionMessage(sprintf(
-            'A problem occurred when attempting to use the cache key "%s"',
-            SystemDce::class . '::$groupId',
-        ));
-
-        $dce->groupId();
-    }
-
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testGroupIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturnNull();
-        $cache->expects('set')->with(SystemDce::class . '::$groupId', new IsInteger())->andReturnTrue();
+        $cache->expects('get')->with('__ramsey_identifier_27a5')->andReturnNull();
+        $cache->expects('set')->with('__ramsey_identifier_27a5', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $groupId = $dce->groupId();
@@ -115,7 +87,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$groupId')->andReturn(-1);
+        $cache->expects('get')->with('__ramsey_identifier_27a5')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -284,7 +256,7 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturn(6001);
+        $cache->expects('get')->with('__ramsey_identifier_690f')->andReturn(6001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -298,34 +270,11 @@ class SystemDceTest extends TestCase
      * @runInSeparateProcess since the identifier is stored statically on the class
      * @preserveGlobalState disabled
      */
-    public function testUserIdFromCacheThrowsExceptionForBadCacheKey(): void
-    {
-        $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$userId')->andThrows(
-            new class extends PhpInvalidArgumentException implements CacheInvalidArgumentException {
-            },
-        );
-
-        $dce = new SystemDce(cache: $cache);
-
-        $this->expectException(InvalidCacheKey::class);
-        $this->expectExceptionMessage(sprintf(
-            'A problem occurred when attempting to use the cache key "%s"',
-            SystemDce::class . '::$userId',
-        ));
-
-        $dce->userId();
-    }
-
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testUserIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturnNull();
-        $cache->expects('set')->with(SystemDce::class . '::$userId', new IsInteger())->andReturnTrue();
+        $cache->expects('get')->with('__ramsey_identifier_690f')->andReturnNull();
+        $cache->expects('set')->with('__ramsey_identifier_690f', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $userId = $dce->userId();
@@ -343,7 +292,7 @@ class SystemDceTest extends TestCase
     public function testUserIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemDce::class . '::$userId')->andReturn(-1);
+        $cache->expects('get')->with('__ramsey_identifier_690f')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 

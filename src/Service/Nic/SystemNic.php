@@ -17,15 +17,11 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
 use function preg_match;
 use function preg_match_all;
-use function sprintf;
 use function str_replace;
 use function trim;
 
@@ -49,10 +45,12 @@ final class SystemNic implements Nic
     /**
      * Key to use when caching the address value in a PSR-16 cache instance
      */
-    private const CACHE_KEY = self::class . '::$address';
+    private const CACHE_KEY = '__ramsey_identifier_64f4';
 
     /**
      * The system address, stored statically for better performance
+     *
+     * @var non-empty-string | null
      */
     private static ?string $address = null;
 
@@ -69,43 +67,26 @@ final class SystemNic implements Nic
     ) {
     }
 
-    /**
-     * @throws MacAddressNotFound
-     * @throws InvalidCacheKey if a problem occurs when fetching data from the
-     *     PSR-16 cache instance, if provided
-     */
     public function address(): string
     {
         if (self::$address === null) {
             self::$address = $this->getAddressFromCache();
         }
 
-        if (self::$address === '') {
-            throw new MacAddressNotFound('Unable to fetch an address for this system');
-        }
-
         return self::$address;
     }
 
     /**
-     * @throws InvalidCacheKey when a problem occurs with the cache key
+     * @return non-empty-string
      */
     private function getAddressFromCache(): string
     {
-        try {
-            /** @var string | null $address */
-            $address = $this->cache?->get(self::CACHE_KEY);
+        /** @var string | null $address */
+        $address = $this->cache?->get(self::CACHE_KEY);
 
-            if ($address === null) {
-                $address = $this->getAddressFromSystem();
-                $this->cache?->set(self::CACHE_KEY, $address);
-            }
-        } catch (CacheInvalidArgumentException $exception) {
-            throw new InvalidCacheKey(
-                sprintf('A problem occurred when attempting to use the cache key "%s"', self::CACHE_KEY),
-                $exception->getCode(),
-                $exception,
-            );
+        if ($address === null || $address === '') {
+            $address = $this->getAddressFromSystem();
+            $this->cache?->set(self::CACHE_KEY, $address);
         }
 
         return $address;
@@ -113,6 +94,8 @@ final class SystemNic implements Nic
 
     /**
      * Returns the system address, if it can find it
+     *
+     * @return non-empty-string
      */
     private function getAddressFromSystem(): string
     {
@@ -122,6 +105,12 @@ final class SystemNic implements Nic
             $address = $this->getIfconfig();
         }
 
+        if ($address === '') {
+            // If all else fails, generate a random MAC address.
+            $address = (new RandomNic())->address();
+        }
+
+        /** @var non-empty-string */
         return str_replace([':', '-'], '', $address);
     }
 

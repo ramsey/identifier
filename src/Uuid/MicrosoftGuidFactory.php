@@ -23,7 +23,6 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
 use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
@@ -64,9 +63,6 @@ final class MicrosoftGuidFactory implements
         $this->binary = new Binary();
     }
 
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function create(): MicrosoftGuid
     {
         $bytes = $this->randomGenerator->bytes(16);

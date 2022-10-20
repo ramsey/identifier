@@ -23,18 +23,13 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Counter\Counter;
 use Ramsey\Identifier\Service\Counter\RandomCounter;
 use Ramsey\Identifier\Service\Dce\Dce;
 use Ramsey\Identifier\Service\Dce\SystemDce;
-use Ramsey\Identifier\Service\Nic\FallbackNic;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
-use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
 use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Format;
@@ -82,8 +77,7 @@ final class DefaultUuidFactory implements UuidFactory
      * @param Dce $dce A service that provides local identifiers when creating
      *     version 2 UUIDs; defaults to {@see SystemDce}
      * @param Nic $nic A NIC that provides the system MAC address value for
-     *     versions 1, 2, and 6 UUIDs; defaults to {@see FallbackNic}, with
-     *     {@see SystemNic} and {@see RandomNic} as fallbacks
+     *     versions 1, 2, and 6 UUIDs; defaults to {@see RandomNic}
      * @param RandomGenerator $randomGenerator A random generator used to
      *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
@@ -91,7 +85,7 @@ final class DefaultUuidFactory implements UuidFactory
         Clock $clock = new SystemClock(),
         Counter $counter = new RandomCounter(),
         Dce $dce = new SystemDce(),
-        Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
+        Nic $nic = new RandomNic(),
         RandomGenerator $randomGenerator = new PhpRandomGenerator(),
     ) {
         $this->uuidV1Factory = new UuidV1Factory($clock, $counter, $nic);
@@ -104,9 +98,6 @@ final class DefaultUuidFactory implements UuidFactory
         $this->uuidV8Factory = new UuidV8Factory();
     }
 
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function create(): UuidV4
     {
         return $this->uuidV4Factory->create();
@@ -154,7 +145,7 @@ final class DefaultUuidFactory implements UuidFactory
                 throw new InvalidArgument('Unable to create a UUID from a negative integer');
             }
 
-            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J*' : 'N*', $identifier);
+            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J' : 'N', $identifier);
         } else {
             try {
                 $bytes = BigInteger::of($identifier)->toBytes(false);
@@ -192,8 +183,6 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      */
     public function v1(
         int | string | null $node = null,
@@ -204,11 +193,8 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws InvalidCacheKey
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      */
     public function v2(
         DceDomain $localDomain = DceDomain::Person,
@@ -237,9 +223,6 @@ final class DefaultUuidFactory implements UuidFactory
         return $this->uuidV3Factory->create($namespace, $name);
     }
 
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function v4(): UuidV4
     {
         return $this->uuidV4Factory->create();
@@ -264,8 +247,6 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      */
     public function v6(
         int | string | null $node = null,
@@ -277,7 +258,6 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws RandomSourceNotFound
      */
     public function v7(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -293,8 +273,6 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws BadMethodCall
-     *
      * @psalm-mutation-free
      */
     protected function getVersion(): never

@@ -55,7 +55,7 @@ final class Binary
         }
 
         /** @var int[] $parts */
-        $parts = unpack('n*', $bytes);
+        $parts = unpack('n8', $bytes);
 
         if ($version !== null) {
             $parts[4] = $parts[4] & 0x0fff;
@@ -70,6 +70,6 @@ final class Binary
         };
 
         /** @var non-empty-string */
-        return pack('n*', ...$parts);
+        return pack('n8', ...$parts);
     }
 }

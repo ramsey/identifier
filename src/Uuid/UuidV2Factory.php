@@ -23,17 +23,12 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Counter\Counter;
 use Ramsey\Identifier\Service\Counter\RandomCounter;
 use Ramsey\Identifier\Service\Dce\Dce;
 use Ramsey\Identifier\Service\Dce\SystemDce;
-use Ramsey\Identifier\Service\Nic\FallbackNic;
 use Ramsey\Identifier\Service\Nic\Nic;
-use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Uuid\Utility\Binary;
@@ -70,14 +65,13 @@ final class UuidV2Factory implements
      * @param Dce $dce A service that provides local identifiers when creating
      *     version 2 UUIDs; defaults to {@see SystemDce}
      * @param Nic $nic A NIC that provides the system MAC address value;
-     *     defaults to {@see FallbackNic}, with {@see SystemNic} and
-     *     {@see RandomNic} as fallbacks
+     *     defaults to {@see SystemNic}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
         private readonly Counter $counter = new RandomCounter(),
         private readonly Dce $dce = new SystemDce(),
-        private readonly Nic $nic = new FallbackNic([new SystemNic(), new RandomNic()]),
+        private readonly Nic $nic = new SystemNic(),
     ) {
         $this->binary = new Binary();
         $this->time = new Time();
@@ -101,11 +95,8 @@ final class UuidV2Factory implements
      * @param DateTimeInterface | null $dateTime A date-time to use when
      *     creating the identifier
      *
-     * @throws InvalidCacheKey
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      *
      * @psalm-param int<0, max> | non-empty-string | null $node
      */
@@ -150,11 +141,8 @@ final class UuidV2Factory implements
     }
 
     /**
-     * @throws InvalidCacheKey
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
-     * @throws MacAddressNotFound
-     * @throws RandomSourceNotFound
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV2
     {

@@ -16,13 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Nic;
 
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Throwable;
-
-use function bin2hex;
-use function pack;
-use function random_bytes;
-use function unpack;
+use function random_int;
+use function sprintf;
 
 /**
  * A NIC that generates a random MAC address and sets the multicast bit,
@@ -32,23 +27,9 @@ use function unpack;
  */
 final class RandomNic implements Nic
 {
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function address(): string
     {
-        try {
-            $bytes = random_bytes(6);
-        // @codeCoverageIgnoreStart
-        } catch (Throwable $exception) {
-            throw new RandomSourceNotFound('Unable to find an appropriate source of randomness', 0, $exception);
-        // @codeCoverageIgnoreEnd
-        }
-
-        /** @var int[] $parts */
-        $parts = unpack('n*', $bytes);
-
         /** @var non-empty-string */
-        return bin2hex(pack('n*', $parts[1] | 0x0100, $parts[2], $parts[3]));
+        return sprintf('%06x%06x', random_int(0, 0xffffff) | 0x010000, random_int(0, 0xffffff));
     }
 }

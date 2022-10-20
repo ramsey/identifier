@@ -21,7 +21,6 @@ use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
 use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
@@ -70,7 +69,6 @@ final class DefaultUlidFactory implements UlidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws RandomSourceNotFound
      */
     public function create(): UlidIdentifier
     {
@@ -103,7 +101,6 @@ final class DefaultUlidFactory implements UlidFactory
 
     /**
      * @throws InvalidArgument
-     * @throws RandomSourceNotFound
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
     {
@@ -151,7 +148,7 @@ final class DefaultUlidFactory implements UlidFactory
                 throw new InvalidArgument('Unable to create a ULID from a negative integer');
             }
 
-            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J*' : 'N*', $identifier);
+            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J' : 'N', $identifier);
         } else {
             try {
                 $bytes = BigInteger::of($identifier)->toBytes(false);

@@ -17,9 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Dce;
 
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
@@ -45,12 +43,12 @@ final class SystemDce implements Dce
     /**
      * Key to use when caching the GID value in a PSR-16 cache instance
      */
-    private const GID_CACHE_KEY = self::class . '::$groupId';
+    private const GID_CACHE_KEY = '__ramsey_identifier_27a5';
 
     /**
      * Key to use when caching the UID value in a PSR-16 cache instance
      */
-    private const UID_CACHE_KEY = self::class . '::$userId';
+    private const UID_CACHE_KEY = '__ramsey_identifier_690f';
 
     /**
      * @var int<0, max> | null
@@ -80,8 +78,6 @@ final class SystemDce implements Dce
 
     /**
      * @throws DceIdentifierNotFound if unable to obtain a system group ID
-     * @throws InvalidCacheKey if a problem occurs when fetching data from the
-     *     PSR-16 cache instance, if provided
      */
     public function groupId(): int
     {
@@ -119,8 +115,6 @@ final class SystemDce implements Dce
 
     /**
      * @throws DceIdentifierNotFound if unable to obtain a system user ID
-     * @throws InvalidCacheKey if a problem occurs when fetching data from the
-     *     PSR-16 cache instance, if provided
      */
     public function userId(): int
     {
@@ -176,29 +170,19 @@ final class SystemDce implements Dce
 
     /**
      * @return int<0, max> | null
-     *
-     * @throws InvalidCacheKey
      */
     private function getSystemGidFromCache(): ?int
     {
-        try {
-            /**
-             * The return value of -1 is useful for testing purposes.
-             *
-             * @var int<-1, max> | null $gid
-             */
-            $gid = $this->cache?->get(self::GID_CACHE_KEY);
+        /**
+         * The return value of -1 is useful for testing purposes.
+         *
+         * @var int<-1, max> | null $gid
+         */
+        $gid = $this->cache?->get(self::GID_CACHE_KEY);
 
-            if ($gid === null) {
-                $gid = $this->getSystemGid();
-                $this->cache?->set(self::GID_CACHE_KEY, $gid);
-            }
-        } catch (CacheInvalidArgumentException $exception) {
-            throw new InvalidCacheKey(
-                sprintf('A problem occurred when attempting to use the cache key "%s"', self::GID_CACHE_KEY),
-                $exception->getCode(),
-                $exception,
-            );
+        if ($gid === null) {
+            $gid = $this->getSystemGid();
+            $this->cache?->set(self::GID_CACHE_KEY, $gid);
         }
 
         return $gid >= 0 ? $gid : null;
@@ -217,29 +201,19 @@ final class SystemDce implements Dce
 
     /**
      * @return int<0, max> | null
-     *
-     * @throws InvalidCacheKey
      */
     private function getSystemUidFromCache(): ?int
     {
-        try {
-            /**
-             * The return value of -1 is useful for testing purposes.
-             *
-             * @var int<-1, max> | null $uid
-             */
-            $uid = $this->cache?->get(self::UID_CACHE_KEY);
+        /**
+         * The return value of -1 is useful for testing purposes.
+         *
+         * @var int<-1, max> | null $uid
+         */
+        $uid = $this->cache?->get(self::UID_CACHE_KEY);
 
-            if ($uid === null) {
-                $uid = $this->getSystemUid();
-                $this->cache?->set(self::UID_CACHE_KEY, $uid);
-            }
-        } catch (CacheInvalidArgumentException $exception) {
-            throw new InvalidCacheKey(
-                sprintf('A problem occurred when attempting to use the cache key "%s"', self::UID_CACHE_KEY),
-                $exception->getCode(),
-                $exception,
-            );
+        if ($uid === null) {
+            $uid = $this->getSystemUid();
+            $this->cache?->set(self::UID_CACHE_KEY, $uid);
         }
 
         return $uid >= 0 ? $uid : null;

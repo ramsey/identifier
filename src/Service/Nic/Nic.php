@@ -16,8 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Nic;
 
-use Ramsey\Identifier\Exception\MacAddressNotFound;
-
 /**
  * Defines a network interface controller (NIC) for obtaining a MAC address
  *
@@ -35,8 +33,6 @@ interface Nic
      * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.5 Node IDs that Do Not Identify the Host
      *
      * @return non-empty-string
-     *
-     * @throws MacAddressNotFound MUST throw if a MAC address is not available
      */
     public function address(): string;
 }

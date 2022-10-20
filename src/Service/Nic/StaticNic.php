@@ -56,20 +56,20 @@ final class StaticNic implements Nic
         if (is_int($address)) {
             if ($this->os->getIntSize() >= 8) {
                 /** @var non-empty-string $address */
-                $address = substr(bin2hex(pack('J*', $address | 0x010000000000)), -12);
+                $address = substr(bin2hex(pack('J', $address | 0x010000000000)), -12);
             } else {
                 /** @var int[] $parts */
-                $parts = unpack('n*', pack('N*', $address));
+                $parts = unpack('n2', pack('N', $address));
 
                 /** @var non-empty-string $address */
-                $address = bin2hex(pack('n*', 0x0100, ...$parts));
+                $address = bin2hex(pack('n3', 0x0100, ...$parts));
             }
         } elseif (strspn($address, Format::MASK_HEX) === strlen($address) && strlen($address) <= 12) {
             /** @var int[] $parts */
-            $parts = unpack('n*', (string) hex2bin(sprintf('%012s', $address)));
+            $parts = unpack('n3', (string) hex2bin(sprintf('%012s', $address)));
 
             /** @var non-empty-string $address */
-            $address = bin2hex(pack('n*', $parts[1] | 0x0100, $parts[2], $parts[3]));
+            $address = bin2hex(pack('n3', $parts[1] | 0x0100, $parts[2], $parts[3]));
         } else {
             throw new InvalidArgument(
                 'Address must be a 48-bit integer or hexadecimal string',

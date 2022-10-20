@@ -16,9 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Counter;
 
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
-use Throwable;
-
 use function random_int;
 
 use const PHP_INT_MAX;
@@ -31,17 +28,8 @@ use const PHP_INT_MAX;
  */
 final class RandomCounter implements Counter
 {
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function next(): int
     {
-        try {
-            return random_int(0, PHP_INT_MAX);
-        // @codeCoverageIgnoreStart
-        } catch (Throwable $exception) {
-            throw new RandomSourceNotFound('Cannot find an appropriate source of randomness', 0, $exception);
-        // @codeCoverageIgnoreEnd
-        }
+        return random_int(0, PHP_INT_MAX);
     }
 }

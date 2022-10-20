@@ -75,7 +75,7 @@ final class Time
 
         if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
-            return pack('J*', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
+            return pack('J', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
         }
 
         /** @var non-empty-string */
@@ -108,7 +108,7 @@ final class Time
 
         if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
-            return substr(pack('J*', intdiv((int) $dateTime->format('Uu'), 1000)), -6);
+            return substr(pack('J', intdiv((int) $dateTime->format('Uu'), 1000)), -6);
         }
 
         /** @var non-empty-string */

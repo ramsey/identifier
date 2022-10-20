@@ -20,7 +20,6 @@ use Identifier\BinaryIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\RandomSourceNotFound;
 use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
 use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
@@ -47,9 +46,6 @@ final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierF
         $this->binary = new Binary();
     }
 
-    /**
-     * @throws RandomSourceNotFound
-     */
     public function create(): UuidV4
     {
         $bytes = $this->randomGenerator->bytes(16);

@@ -4,21 +4,14 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Nic;
 
-use InvalidArgumentException as PhpInvalidArgumentException;
 use Mockery;
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException as CacheInvalidArgumentException;
-use Ramsey\Identifier\Exception\InvalidCacheKey;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Test\Identifier\TestCase;
 
 use function hexdec;
-use function sprintf;
 use function strlen;
-use function strspn;
 use function substr;
 
 class SystemNicTest extends TestCase
@@ -37,6 +30,9 @@ class SystemNicTest extends TestCase
 
         // Assert the multicast bit is not set.
         $this->assertSame(0, hexdec($firstOctet) & 0x01);
+
+        // Called again returns the same MAC address.
+        $this->assertSame($address, $nic->address());
     }
 
     /**
@@ -46,7 +42,7 @@ class SystemNicTest extends TestCase
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemNic::class . '::$address')->andReturn('aabbccddeeff');
+        $cache->expects('get')->with('__ramsey_identifier_64f4')->andReturn('aabbccddeeff');
 
         $nic = new SystemNic($cache);
 
@@ -63,13 +59,10 @@ class SystemNicTest extends TestCase
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemNic::class . '::$address')->andReturnNull();
+        $cache->expects('get')->with('__ramsey_identifier_64f4')->andReturnNull();
         $cache
             ->expects('set')
-            ->with(
-                SystemNic::class . '::$address',
-                Mockery::on(fn (string $value): bool => strspn($value, Format::MASK_HEX) === 12),
-            )
+            ->with('__ramsey_identifier_64f4', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new SystemNic($cache);
@@ -80,46 +73,6 @@ class SystemNicTest extends TestCase
         // This second assertion tests that the cache get() and set() methods
         // are not called again, and that we still get the same address.
         $this->assertSame($address, $nic->address());
-    }
-
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testAddressFromCacheThrowsCacheException(): void
-    {
-        $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemNic::class . '::$address')->andThrows(
-            new class extends PhpInvalidArgumentException implements CacheInvalidArgumentException {
-            },
-        );
-
-        $nic = new SystemNic($cache);
-
-        $this->expectException(InvalidCacheKey::class);
-        $this->expectExceptionMessage(sprintf(
-            'A problem occurred when attempting to use the cache key "%s"',
-            SystemNic::class . '::$address',
-        ));
-
-        $nic->address();
-    }
-
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testAddressThrowsExceptionForEmptyStringAddress(): void
-    {
-        $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with(SystemNic::class . '::$address')->andReturn('');
-
-        $nic = new SystemNic($cache);
-
-        $this->expectException(MacAddressNotFound::class);
-        $this->expectExceptionMessage('Unable to fetch an address for this system');
-
-        $nic->address();
     }
 
     /**
@@ -171,6 +124,9 @@ class SystemNicTest extends TestCase
 
         $nic = new SystemNic(os: $os);
 
+        $this->assertSame('080027B842C6', $nic->address());
+
+        // Called again returns the same MAC address.
         $this->assertSame('080027B842C6', $nic->address());
     }
 
@@ -247,6 +203,9 @@ class SystemNicTest extends TestCase
         $nic = new SystemNic(os: $os);
 
         $this->assertSame('080027d060a0', $nic->address());
+
+        // Called again returns the same MAC address.
+        $this->assertSame('080027d060a0', $nic->address());
     }
 
     /**
@@ -273,6 +232,9 @@ class SystemNicTest extends TestCase
 
         $nic = new SystemNic(os: $os);
 
+        $this->assertSame('fedcba987654', $nic->address());
+
+        // Called again returns the same MAC address.
         $this->assertSame('fedcba987654', $nic->address());
     }
 
@@ -326,13 +288,16 @@ class SystemNicTest extends TestCase
         $nic = new SystemNic(os: $os);
 
         $this->assertSame('fedcba987654', $nic->address());
+
+        // Called again returns the same MAC address.
+        $this->assertSame('fedcba987654', $nic->address());
     }
 
     /**
      * @runInSeparateProcess since the address is stored statically on the class
      * @preserveGlobalState disabled
      */
-    public function testAddressNotFound(): void
+    public function testAddressUsesRandomNicIfAddressNotFound(): void
     {
         $netstat = <<<'NETSTAT'
             Kernel Interface table
@@ -352,10 +317,58 @@ class SystemNicTest extends TestCase
         $os->expects('run')->with('netstat -ie')->andReturn($netstat);
 
         $nic = new SystemNic(os: $os);
+        $address = $nic->address();
+        $firstOctet = substr($address, 0, 2);
 
-        $this->expectException(MacAddressNotFound::class);
-        $this->expectExceptionMessage('Unable to fetch an address for this system');
+        $this->assertSame(12, strlen($address));
 
-        $nic->address();
+        // Assert the multicast bit is set, since this is a random MAC address.
+        $this->assertSame(1, hexdec($firstOctet) & 0x01);
+
+        // Called again returns the same MAC address.
+        $this->assertSame($address, $nic->address());
+    }
+
+    /**
+     * @runInSeparateProcess since the address is stored statically on the class
+     * @preserveGlobalState disabled
+     */
+    public function testAddressUsesRandomNicIfAddressNotFoundWithCache(): void
+    {
+        $netstat = <<<'NETSTAT'
+            Kernel Interface table
+            docker0   Link encap:Ethernet  HWaddr 00:00:00:00:00:00
+                      inet addr:172.17.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+                      UP BROADCAST MULTICAST  MTU:1500  Metric:1
+                      RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+                      TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+                      collisions:0 txqueuelen:0
+                      RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+            NETSTAT;
+
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Unknown',
+        ]);
+
+        $os->expects('run')->with('netstat -ie')->andReturn($netstat);
+
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->expects('get')->with('__ramsey_identifier_64f4')->andReturn('');
+        $cache
+            ->expects('set')
+            ->with('__ramsey_identifier_64f4', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->andReturnTrue();
+
+        $nic = new SystemNic($cache, $os);
+        $address = $nic->address();
+        $firstOctet = substr($address, 0, 2);
+
+        $this->assertSame(12, strlen($address));
+
+        // Assert the multicast bit is set, since this is a random MAC address.
+        $this->assertSame(1, hexdec($firstOctet) & 0x01);
+
+        // Called again returns the same MAC address.
+        $this->assertSame($address, $nic->address());
     }
 }
