@@ -23,20 +23,10 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Counter\Counter;
-use Ramsey\Identifier\Service\Counter\RandomCounter;
-use Ramsey\Identifier\Service\Dce\Dce;
-use Ramsey\Identifier\Service\Dce\SystemDce;
-use Ramsey\Identifier\Service\Nic\Nic;
-use Ramsey\Identifier\Service\Nic\RandomNic;
-use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
-use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
 use Ramsey\Identifier\UuidFactory;
 use Ramsey\Identifier\UuidIdentifier;
-use StellaMaris\Clock\ClockInterface as Clock;
 
 use function is_int;
 use function is_string;
@@ -68,33 +58,16 @@ final class DefaultUuidFactory implements UuidFactory
 
     /**
      * Constructs a default factory for creating UUIDs
-     *
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Counter $counter A counter that provides the next value in a
-     *     sequence to prevent collisions in versions 1, 2, and 6 UUIDs;
-     *     defaults to {@see RandomCounter}
-     * @param Dce $dce A service that provides local identifiers when creating
-     *     version 2 UUIDs; defaults to {@see SystemDce}
-     * @param Nic $nic A NIC that provides the system MAC address value for
-     *     versions 1, 2, and 6 UUIDs; defaults to {@see RandomNic}
-     * @param RandomGenerator $randomGenerator A random generator used to
-     *     generate bytes; defaults to {@see PhpRandomGenerator}
      */
-    public function __construct(
-        Clock $clock = new SystemClock(),
-        Counter $counter = new RandomCounter(),
-        Dce $dce = new SystemDce(),
-        Nic $nic = new RandomNic(),
-        RandomGenerator $randomGenerator = new PhpRandomGenerator(),
-    ) {
-        $this->uuidV1Factory = new UuidV1Factory($clock, $counter, $nic);
-        $this->uuidV2Factory = new UuidV2Factory($clock, $counter, $dce, $nic);
+    public function __construct()
+    {
+        $this->uuidV1Factory = new UuidV1Factory();
+        $this->uuidV2Factory = new UuidV2Factory();
         $this->uuidV3Factory = new UuidV3Factory();
-        $this->uuidV4Factory = new UuidV4Factory($randomGenerator);
+        $this->uuidV4Factory = new UuidV4Factory();
         $this->uuidV5Factory = new UuidV5Factory();
-        $this->uuidV6Factory = new UuidV6Factory($clock, $counter, $nic);
-        $this->uuidV7Factory = new UuidV7Factory($clock, $randomGenerator);
+        $this->uuidV6Factory = new UuidV6Factory();
+        $this->uuidV7Factory = new UuidV7Factory();
         $this->uuidV8Factory = new UuidV8Factory();
     }
 

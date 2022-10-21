@@ -6,11 +6,6 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Counter\FrozenCounter;
-use Ramsey\Identifier\Service\Dce\StaticDce;
-use Ramsey\Identifier\Service\Nic\StaticNic;
-use Ramsey\Identifier\Service\RandomGenerator\FrozenRandomGenerator;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\MaxUuid;
@@ -565,26 +560,5 @@ class DefaultUuidFactoryTest extends TestCase
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
-    }
-
-    public function testFactoryWithDeterministicServices(): void
-    {
-        $counter = new FrozenCounter(1);
-        $dce = new StaticDce(2, 3, 4);
-        $nic = new StaticNic(5);
-        $randomGenerator = new FrozenRandomGenerator(
-            "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff",
-        );
-        $clock = new FrozenClock(new DateTimeImmutable('2022-09-30 00:59:09.654321'));
-
-        $factory = new DefaultUuidFactory($clock, $counter, $dce, $nic, $randomGenerator);
-
-        $this->assertSame('175d43ea-405b-11ed-8001-010000000005', $factory->v1()->toString());
-        $this->assertSame('00000002-405b-21ed-8100-010000000005', $factory->v2()->toString());
-        $this->assertSame('00000003-405b-21ed-8101-010000000005', $factory->v2(DceDomain::Group)->toString());
-        $this->assertSame('00000004-405b-21ed-8102-010000000005', $factory->v2(DceDomain::Org)->toString());
-        $this->assertSame('00112233-4455-4677-8899-aabbccddeeff', $factory->v4()->toString());
-        $this->assertSame('1ed405b1-75d4-63ea-8001-010000000005', $factory->v6()->toString());
-        $this->assertSame('01838be7-85d6-7011-a233-445566778899', $factory->v7()->toString());
     }
 }
