@@ -17,13 +17,11 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Utility;
 
 use Brick\Math\BigInteger;
-use Brick\Math\RoundingMode;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
-use function intdiv;
 use function pack;
 use function str_pad;
 use function substr;
@@ -42,15 +40,28 @@ final class Time
     public const GREGORIAN_OFFSET_BIN = "\x01\xb2\x1d\xd2\x13\x81\x40\x00";
 
     /**
-     * The number of 100-nanosecond intervals as a native integer between the
-     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
-     */
-    public const GREGORIAN_OFFSET_INT = 0x01b21dd213814000;
-
-    /**
      * The number of 100-nanosecond intervals in one second.
      */
     public const NANOSECOND_INTERVALS = 10000000;
+
+    /**
+     * The 100-nanosecond interval count of the Gregorian Epoch, relative to
+     * the Unix Epoch. This is stored as a string, since we use it only for
+     * string comparison.
+     *
+     * Derived from:
+     *
+     * ```php
+     * (new DateTimeImmutable('1582-10-15'))->format('Uu0');
+     * ```
+     */
+    private const GREGORIAN_EPOCH_NANOSECONDS = '-122192928000000000';
+
+    /**
+     * The number of 100-nanosecond intervals as a native integer between the
+     * Gregorian epoch 1582-10-15 00:00:00 and the Unix epoch 1970-01-01 00:00:00.
+     */
+    private const GREGORIAN_OFFSET_INT = 0x01b21dd213814000;
 
     public function __construct(private readonly Os $os = new PhpOs())
     {
@@ -69,20 +80,20 @@ final class Time
      */
     public function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
-        if ($dateTime->format('Y-m-d') < '1582-10-15') {
+        $ns = $dateTime->format('Uu0');
+
+        if ($ns < self::GREGORIAN_EPOCH_NANOSECONDS) {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
         }
 
         if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
-            return pack('J', (int) $dateTime->format('Uu0') + self::GREGORIAN_OFFSET_INT);
+            return pack('J', (int) $ns + self::GREGORIAN_OFFSET_INT);
         }
 
         /** @var non-empty-string */
         return str_pad(
-            BigInteger::of($dateTime->format('Uu0'))
-                ->plus(BigInteger::fromBytes(self::GREGORIAN_OFFSET_BIN))
-                ->toBytes(false),
+            BigInteger::of($ns)->plus(BigInteger::fromBytes(self::GREGORIAN_OFFSET_BIN))->toBytes(false),
             8,
             "\x00",
             STR_PAD_LEFT,
@@ -102,23 +113,18 @@ final class Time
      */
     public function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
     {
-        if ($dateTime->getTimestamp() < 0) {
+        $ms = $dateTime->format('Uv');
+
+        if ($ms < 0) {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Unix Epoch');
         }
 
         if ($this->os->getIntSize() >= 8) {
             /** @var non-empty-string */
-            return substr(pack('J', intdiv((int) $dateTime->format('Uu'), 1000)), -6);
+            return substr(pack('J', (int) $ms), -6);
         }
 
         /** @var non-empty-string */
-        return str_pad(
-            BigInteger::of($dateTime->format('Uu'))
-                ->dividedBy(1000, RoundingMode::DOWN)
-                ->toBytes(false),
-            6,
-            "\x00",
-            STR_PAD_LEFT,
-        );
+        return str_pad(BigInteger::of($ms)->toBytes(false), 6, "\x00", STR_PAD_LEFT);
     }
 }

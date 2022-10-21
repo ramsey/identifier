@@ -54,8 +54,9 @@ trait TimeBasedUuid
 
     private function getDateTimeGregorian(): DateTimeImmutable
     {
+        /** @psalm-suppress ImpureMethodCall */
         $epochNanoseconds = BigInteger::fromBase($this->getTimestamp(), 16)
-            ->minus(Time::GREGORIAN_OFFSET_INT);
+            ->minus(BigInteger::fromBytes(Time::GREGORIAN_OFFSET_BIN));
 
         $unixTimestamp = $epochNanoseconds->dividedBy(
             Time::NANOSECOND_INTERVALS,
