@@ -13,10 +13,6 @@ use const PHP_INT_MAX;
 
 class StatefulSequenceTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testValueRemainsTheSameAsDateIncreases(): void
     {
         $sequence = new StatefulSequence();
@@ -38,10 +34,6 @@ class StatefulSequenceTest extends TestCase
         );
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testValueIncreasesIfDateRemainsTheSame(): void
     {
         $date = new DateTimeImmutable('2022-10-20 23:08:36.123456');
@@ -54,10 +46,6 @@ class StatefulSequenceTest extends TestCase
         $this->assertSame(13, $sequence->value('010000000000', $date));
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testValueRollsOverIfItReachesIntMax(): void
     {
         $date = new DateTimeImmutable('2022-10-20 23:08:36.123456');
@@ -73,10 +61,6 @@ class StatefulSequenceTest extends TestCase
         $this->assertSame(1, $sequence->value('010000000000', $date));
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testValueChangesIfNodeChanges(): void
     {
         $sequence = new StatefulSequence();
@@ -94,10 +78,6 @@ class StatefulSequenceTest extends TestCase
         $this->assertNotSame($value1, $value4);
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testWithCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -108,16 +88,20 @@ class StatefulSequenceTest extends TestCase
 
         $sequence = new StatefulSequence(1, $cache);
 
-        $value1 = $sequence->value('010000000000', new DateTimeImmutable('2022-10-20 23:08:36.123456'));
-        $value2 = $sequence->value('010000000000', new DateTimeImmutable('2022-10-20 23:08:36.123457'));
-        $value3 = $sequence->value('010000000001', new DateTimeImmutable('2022-10-20 23:08:36.123458'));
-        $value4 = $sequence->value('010000000001', new DateTimeImmutable('2022-10-20 23:08:36.123458'));
-        $value5 = $sequence->value('010000000001', new DateTimeImmutable('2022-10-20 23:08:37'));
+        $value1 = $sequence->value('010000000000', new DateTimeImmutable('@1666307316.123456'));
+        $value2 = $sequence->value('010000000000', new DateTimeImmutable('@1666307316.123457'));
+        $value3 = $sequence->value('010000000000', new DateTimeImmutable('@1666307316.123457'));
+        $value4 = $sequence->value('010000000000', new DateTimeImmutable('@1666307316.123457'));
+        $value5 = $sequence->value('010000000001', new DateTimeImmutable('@1666307316.123458'));
+        $value6 = $sequence->value('010000000001', new DateTimeImmutable('@1666307316.123458'));
+        $value7 = $sequence->value('010000000001', new DateTimeImmutable('@1666307317.000000'));
 
-        $this->assertSame(2, $value1);
-        $this->assertSame(2, $value2);
-        $this->assertNotSame($value2, $value3);
-        $this->assertSame($value3 + 1, $value4);
-        $this->assertSame($value4, $value5);
+        $this->assertSame(1, $value1);
+        $this->assertSame(1, $value2);
+        $this->assertSame(2, $value3);
+        $this->assertSame(3, $value4);
+        $this->assertNotSame($value4, $value5);
+        $this->assertSame($value5 + 1, $value6);
+        $this->assertSame($value6, $value7);
     }
 }

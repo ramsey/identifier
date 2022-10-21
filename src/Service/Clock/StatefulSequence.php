@@ -36,10 +36,10 @@ final class StatefulSequence implements Sequence
     /**
      * @var int<0, max>
      */
-    private static int $clockSeq;
+    private int $clockSeq;
 
-    private static ?string $lastNode = null;
-    private static ?DateTimeInterface $lastTime = null;
+    private ?string $lastNode = null;
+    private ?DateTimeInterface $lastTime = null;
 
     /**
      * @param int<0, max> | null $initialClockSeq An initial clock sequence value.
@@ -52,47 +52,47 @@ final class StatefulSequence implements Sequence
         ?int $initialClockSeq = null,
         private readonly ?CacheInterface $cache = null,
     ) {
-        self::$clockSeq = $initialClockSeq ?? random_int(0, PHP_INT_MAX);
+        $this->clockSeq = $initialClockSeq ?? random_int(0, PHP_INT_MAX);
 
         /** @var string | null $lastNode */
         $lastNode = $this->cache?->get(self::NODE_CACHE_KEY);
-        self::$lastNode = $lastNode;
+        $this->$lastNode = $lastNode;
 
         /** @var string | null $lastTime */
         $lastTime = $this->cache?->get(self::TIME_CACHE_KEY);
-        self::$lastTime = $lastTime !== null ? new DateTimeImmutable($lastTime) : null;
+        $this->$lastTime = $lastTime !== null ? new DateTimeImmutable($lastTime) : null;
     }
 
     public function __destruct()
     {
-        if (self::$lastNode !== null) {
-            $this->cache?->set(self::NODE_CACHE_KEY, self::$lastNode);
+        if ($this->lastNode !== null) {
+            $this->cache?->set(self::NODE_CACHE_KEY, $this->lastNode);
         }
 
-        if (self::$lastTime !== null) {
-            $this->cache?->set(self::TIME_CACHE_KEY, self::$lastTime->format('@U.u'));
+        if ($this->lastTime !== null) {
+            $this->cache?->set(self::TIME_CACHE_KEY, $this->lastTime->format('@U.u'));
         }
     }
 
     public function value(string $node, DateTimeInterface $dateTime): int
     {
-        if (self::$lastNode !== null && $node !== self::$lastNode) {
+        if ($this->lastNode !== null && $node !== $this->lastNode) {
             // If the node has changed, regenerate the clock sequence.
-            self::$clockSeq = random_int(0, PHP_INT_MAX);
+            $this->clockSeq = random_int(0, PHP_INT_MAX);
         }
 
-        if (self::$lastTime !== null && $dateTime->format('Uu') <= self::$lastTime->format('Uu')) {
-            if (self::$clockSeq === PHP_INT_MAX) {
+        if ($this->lastTime !== null && $dateTime->format('Uu') <= $this->lastTime->format('Uu')) {
+            if ($this->clockSeq === PHP_INT_MAX) {
                 // Roll over the clock sequence.
-                self::$clockSeq = 0;
+                $this->clockSeq = 0;
             } else {
-                self::$clockSeq++;
+                $this->clockSeq++;
             }
         }
 
-        self::$lastNode = $node;
-        self::$lastTime = clone $dateTime;
+        $this->lastNode = $node;
+        $this->lastTime = clone $dateTime;
 
-        return self::$clockSeq;
+        return $this->clockSeq;
     }
 }
