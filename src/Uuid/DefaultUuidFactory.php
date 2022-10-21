@@ -47,33 +47,24 @@ final class DefaultUuidFactory implements UuidFactory
 {
     use Validation;
 
-    private readonly UuidV1Factory $uuidV1Factory;
-    private readonly UuidV2Factory $uuidV2Factory;
-    private readonly UuidV3Factory $uuidV3Factory;
-    private readonly UuidV4Factory $uuidV4Factory;
-    private readonly UuidV5Factory $uuidV5Factory;
-    private readonly UuidV6Factory $uuidV6Factory;
-    private readonly UuidV7Factory $uuidV7Factory;
-    private readonly UuidV8Factory $uuidV8Factory;
-
     /**
      * Constructs a default factory for creating UUIDs
      */
-    public function __construct()
-    {
-        $this->uuidV1Factory = new UuidV1Factory();
-        $this->uuidV2Factory = new UuidV2Factory();
-        $this->uuidV3Factory = new UuidV3Factory();
-        $this->uuidV4Factory = new UuidV4Factory();
-        $this->uuidV5Factory = new UuidV5Factory();
-        $this->uuidV6Factory = new UuidV6Factory();
-        $this->uuidV7Factory = new UuidV7Factory();
-        $this->uuidV8Factory = new UuidV8Factory();
+    public function __construct(
+        private readonly UuidV1Factory $v1Factory = new UuidV1Factory(),
+        private readonly UuidV2Factory $v2Factory = new UuidV2Factory(),
+        private readonly UuidV3Factory $v3Factory = new UuidV3Factory(),
+        private readonly UuidV4Factory $v4Factory = new UuidV4Factory(),
+        private readonly UuidV5Factory $v5Factory = new UuidV5Factory(),
+        private readonly UuidV6Factory $v6Factory = new UuidV6Factory(),
+        private readonly UuidV7Factory $v7Factory = new UuidV7Factory(),
+        private readonly UuidV8Factory $v8Factory = new UuidV8Factory(),
+    ) {
     }
 
     public function create(): UuidV4
     {
-        return $this->uuidV4Factory->create();
+        return $this->v4Factory->create();
     }
 
     /**
@@ -162,7 +153,7 @@ final class DefaultUuidFactory implements UuidFactory
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
     ): UuidV1 {
-        return $this->uuidV1Factory->create($node, $clockSequence, $dateTime);
+        return $this->v1Factory->create($node, $clockSequence, $dateTime);
     }
 
     /**
@@ -176,7 +167,7 @@ final class DefaultUuidFactory implements UuidFactory
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
     ): UuidV2 {
-        return $this->uuidV2Factory->create($localDomain, $localIdentifier, $node, $clockSequence, $dateTime);
+        return $this->v2Factory->create($localDomain, $localIdentifier, $node, $clockSequence, $dateTime);
     }
 
     /**
@@ -193,12 +184,12 @@ final class DefaultUuidFactory implements UuidFactory
             };
         }
 
-        return $this->uuidV3Factory->create($namespace, $name);
+        return $this->v3Factory->create($namespace, $name);
     }
 
     public function v4(): UuidV4
     {
-        return $this->uuidV4Factory->create();
+        return $this->v4Factory->create();
     }
 
     /**
@@ -215,7 +206,7 @@ final class DefaultUuidFactory implements UuidFactory
             };
         }
 
-        return $this->uuidV5Factory->create($namespace, $name);
+        return $this->v5Factory->create($namespace, $name);
     }
 
     /**
@@ -226,7 +217,7 @@ final class DefaultUuidFactory implements UuidFactory
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
     ): UuidV6 {
-        return $this->uuidV6Factory->create($node, $clockSequence, $dateTime);
+        return $this->v6Factory->create($node, $clockSequence, $dateTime);
     }
 
     /**
@@ -234,7 +225,7 @@ final class DefaultUuidFactory implements UuidFactory
      */
     public function v7(?DateTimeInterface $dateTime = null): UuidV7
     {
-        return $this->uuidV7Factory->create($dateTime);
+        return $this->v7Factory->create($dateTime);
     }
 
     /**
@@ -242,7 +233,7 @@ final class DefaultUuidFactory implements UuidFactory
      */
     public function v8(string $customFieldA, string $customFieldB, string $customFieldC): UuidV8
     {
-        return $this->uuidV8Factory->create($customFieldA, $customFieldB, $customFieldC);
+        return $this->v8Factory->create($customFieldA, $customFieldB, $customFieldC);
     }
 
     /**
