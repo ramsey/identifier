@@ -14,18 +14,24 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\Counter;
+namespace Ramsey\Identifier\Service\Clock;
+
+use DateTimeInterface;
 
 /**
- * Defines a counter interface for obtaining the next value in a sequence, for
- * the purpose of avoiding duplicates or collisions
+ * A sequence that returns a pre-determined value as the clock sequence
  */
-interface Counter
+final class FrozenSequence implements Sequence
 {
     /**
-     * Returns the next value in the sequence
-     *
-     * @return int<0, max>
+     * @param int<0, max> $value A pre-determined clock sequence value
      */
-    public function next(): int;
+    public function __construct(private readonly int $value)
+    {
+    }
+
+    public function value(string $node, DateTimeInterface $dateTime): int
+    {
+        return $this->value;
+    }
 }

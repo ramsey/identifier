@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Service\Counter;
+namespace Ramsey\Test\Identifier\Service\Clock;
 
-use Ramsey\Identifier\Service\Counter\FrozenCounter;
+use DateTimeImmutable;
+use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Test\Identifier\TestCase;
 
 use const PHP_INT_MAX;
 
-class FrozenCounterTest extends TestCase
+class FrozenSequenceTest extends TestCase
 {
     /**
      * @param int<0, max> $value
@@ -18,9 +19,9 @@ class FrozenCounterTest extends TestCase
      */
     public function testNext(int $value): void
     {
-        $counter = new FrozenCounter($value);
+        $sequence = new FrozenSequence($value);
 
-        $this->assertSame($value, $counter->next());
+        $this->assertSame($value, $sequence->value('010000000000', new DateTimeImmutable()));
     }
 
     /**

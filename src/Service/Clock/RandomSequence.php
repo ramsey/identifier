@@ -14,21 +14,22 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\Counter;
+namespace Ramsey\Identifier\Service\Clock;
+
+use DateTimeInterface;
 
 use function random_int;
 
 use const PHP_INT_MAX;
 
 /**
- * A counter that uses PHP's `random_int()` function to generate the "next"
- * value randomly
+ * Uses PHP's `random_int()` function to always generate a random sequence value
  *
  * @link https://www.php.net/random_int random_int()
  */
-final class RandomCounter implements Counter
+final class RandomSequence implements Sequence
 {
-    public function next(): int
+    public function value(string $node, DateTimeInterface $dateTime): int
     {
         return random_int(0, PHP_INT_MAX);
     }

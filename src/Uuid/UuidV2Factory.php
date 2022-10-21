@@ -23,9 +23,9 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\Sequence;
+use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Counter\Counter;
-use Ramsey\Identifier\Service\Counter\RandomCounter;
 use Ramsey\Identifier\Service\Dce\Dce;
 use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Nic\Nic;
@@ -60,18 +60,18 @@ final class UuidV2Factory implements
      *
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
-     * @param Counter $counter A counter that provides the next value in a
-     *     sequence to prevent collisions; defaults to {@see RandomCounter}
      * @param Dce $dce A service that provides local identifiers when creating
      *     version 2 UUIDs; defaults to {@see SystemDce}
      * @param Nic $nic A NIC that provides the system MAC address value;
      *     defaults to {@see SystemNic}
+     * @param Sequence $sequence A sequence that provides a clock sequence value
+     *     to prevent collisions; defaults to {@see StatefulSequence}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
-        private readonly Counter $counter = new RandomCounter(),
         private readonly Dce $dce = new SystemDce(),
         private readonly Nic $nic = new SystemNic(),
+        private readonly Sequence $sequence = new StatefulSequence(),
     ) {
         $this->binary = new Binary();
         $this->time = new Time();
@@ -114,8 +114,8 @@ final class UuidV2Factory implements
         };
 
         $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
-        $clockSequence = ($clockSequence ?? $this->counter->next()) % 16384;
         $dateTime = $dateTime ?? $this->clock->now();
+        $clockSequence = ($clockSequence ?? $this->sequence->value($node, $dateTime)) % 16384;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
 

@@ -7,7 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Counter\FrozenCounter;
+use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV1Factory;
@@ -35,8 +35,8 @@ class UuidV1FactoryTest extends TestCase
     {
         $factory = new UuidV1Factory(
             new FrozenClock(new DateTimeImmutable('1582-10-15 00:00:00')),
-            new FrozenCounter(0),
             new StaticNic(0),
+            new FrozenSequence(0),
         );
 
         $uuid = $factory->create();
