@@ -52,7 +52,7 @@ final class Time
      * Derived from:
      *
      * ```php
-     * (new DateTimeImmutable('1582-10-15'))->format('Uu0');
+     * (new DateTimeImmutable('1582-10-15 00:00:00.0'))->format('Uu0');
      * ```
      */
     private const GREGORIAN_EPOCH_NANOSECONDS = '-122192928000000000';
