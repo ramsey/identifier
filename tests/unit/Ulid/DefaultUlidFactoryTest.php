@@ -6,8 +6,8 @@ namespace Ramsey\Test\Identifier\Ulid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\RandomGenerator\FrozenRandomGenerator;
 use Ramsey\Identifier\Ulid\DefaultUlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
@@ -40,7 +40,7 @@ class DefaultUlidFactoryTest extends TestCase
     {
         $factory = new DefaultUlidFactory(
             new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00')),
-            new FrozenRandomGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+            new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
         );
 
         $ulid = $factory->create();

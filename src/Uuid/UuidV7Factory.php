@@ -23,11 +23,11 @@ use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
-use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
-use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
@@ -77,12 +77,12 @@ final class UuidV7Factory implements
      *
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
-     * @param RandomGenerator $randomGenerator A random generator used to
-     *     generate bytes; defaults to {@see PhpRandomGenerator}
+     * @param BytesGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
-        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
+        private readonly BytesGenerator $randomGenerator = new RandomBytesGenerator(),
         private readonly Os $os = new PhpOs(),
     ) {
     }

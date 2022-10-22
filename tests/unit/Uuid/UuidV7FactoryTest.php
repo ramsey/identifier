@@ -6,9 +6,9 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\RandomGenerator\FrozenRandomGenerator;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV7Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -48,7 +48,7 @@ class UuidV7FactoryTest extends TestCase
     {
         $factory = new UuidV7Factory(
             new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00.000000')),
-            new FrozenRandomGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+            new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
         );
 
         $uuid = $factory->create();
@@ -230,7 +230,7 @@ class UuidV7FactoryTest extends TestCase
     public function testCreateWithMaximumRandomSeedValue(): void
     {
         $factory = new UuidV7Factory(
-            randomGenerator: new FrozenRandomGenerator(
+            randomGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
         );
@@ -257,7 +257,7 @@ class UuidV7FactoryTest extends TestCase
         ]);
 
         $factory = new UuidV7Factory(
-            randomGenerator: new FrozenRandomGenerator(
+            randomGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
             os: $os,
@@ -284,7 +284,7 @@ class UuidV7FactoryTest extends TestCase
 
         $factory = new UuidV7Factory(
             clock: new FrozenClock($date),
-            randomGenerator: new FrozenRandomGenerator(
+            randomGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
         );
@@ -313,7 +313,7 @@ class UuidV7FactoryTest extends TestCase
 
         $factory = new UuidV7Factory(
             clock: new FrozenClock($date),
-            randomGenerator: new FrozenRandomGenerator(
+            randomGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
             os: $os,

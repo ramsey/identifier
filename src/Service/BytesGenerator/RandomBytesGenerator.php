@@ -14,7 +14,9 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\RandomGenerator;
+namespace Ramsey\Identifier\Service\BytesGenerator;
+
+use DateTimeInterface;
 
 use function random_bytes;
 
@@ -24,9 +26,9 @@ use function random_bytes;
  *
  * @link https://www.php.net/random_bytes random_bytes()
  */
-final class PhpRandomGenerator implements RandomGenerator
+final class RandomBytesGenerator implements BytesGenerator
 {
-    public function bytes(int $length): string
+    public function bytes(int $length, ?DateTimeInterface $dateTime = null): string
     {
         return random_bytes($length);
     }

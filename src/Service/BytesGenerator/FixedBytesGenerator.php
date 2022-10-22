@@ -14,16 +14,17 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\RandomGenerator;
+namespace Ramsey\Identifier\Service\BytesGenerator;
+
+use DateTimeInterface;
 
 use function strlen;
 use function substr;
 
 /**
- * A random generator that isn't random and returns a pre-determined string
- * of bytes
+ * A bytes generator that returns a pre-determined string of bytes
  */
-final class FrozenRandomGenerator implements RandomGenerator
+final class FixedBytesGenerator implements BytesGenerator
 {
     /**
      * @param non-empty-string $bytes
@@ -32,7 +33,7 @@ final class FrozenRandomGenerator implements RandomGenerator
     {
     }
 
-    public function bytes(int $length): string
+    public function bytes(int $length, ?DateTimeInterface $dateTime = null): string
     {
         if (strlen($this->bytes) > $length) {
             /** @var non-empty-string */

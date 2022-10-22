@@ -20,8 +20,8 @@ use Identifier\BinaryIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\RandomGenerator\PhpRandomGenerator;
-use Ramsey\Identifier\Service\RandomGenerator\RandomGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 
@@ -37,11 +37,11 @@ final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     /**
      * Constructs a factory for creating version 4, random UUIDs
      *
-     * @param RandomGenerator $randomGenerator A random generator used to
-     *     generate bytes; defaults to {@see PhpRandomGenerator}
+     * @param BytesGenerator $randomGenerator A random generator used to
+     *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
-        private readonly RandomGenerator $randomGenerator = new PhpRandomGenerator(),
+        private readonly BytesGenerator $randomGenerator = new RandomBytesGenerator(),
     ) {
         $this->binary = new Binary();
     }

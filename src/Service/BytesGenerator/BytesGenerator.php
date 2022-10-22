@@ -14,21 +14,27 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Service\RandomGenerator;
+namespace Ramsey\Identifier\Service\BytesGenerator;
+
+use DateTimeInterface;
 
 /**
- * Defines a random generator interface for generating pseudorandom bytes
+ * Defines a bytes generator interface for generating bytes used to create
+ * identifiers
  */
-interface RandomGenerator
+interface BytesGenerator
 {
     /**
-     * Generates an n-length string of random bytes
+     * Generates an n-length string of bytes
      *
      * @param int $length The number of bytes to generate
+     * @param DateTimeInterface | null $dateTime An optional date-time instance
+     *     to use when generating the bytes; not all generators will need or use
+     *     this parameter
      *
      * @return non-empty-string
      *
      * @psalm-param positive-int $length
      */
-    public function bytes(int $length): string;
+    public function bytes(int $length, ?DateTimeInterface $dateTime = null): string;
 }
