@@ -556,7 +556,7 @@ class DefaultUuidFactoryTest extends TestCase
 
     public function testUuid8(): void
     {
-        $uuid = $this->factory->v8('0', '0', '0');
+        $uuid = $this->factory->v8("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());

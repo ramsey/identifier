@@ -231,9 +231,9 @@ final class DefaultUuidFactory implements UuidFactory
     /**
      * @throws InvalidArgument
      */
-    public function v8(string $customFieldA, string $customFieldB, string $customFieldC): UuidV8
+    public function v8(string $bytes): UuidV8
     {
-        return $this->v8Factory->create($customFieldA, $customFieldB, $customFieldC);
+        return $this->v8Factory->create($bytes);
     }
 
     /**

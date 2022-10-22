@@ -20,7 +20,7 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreate(): void
     {
-        $uuid = $this->factory->create('0', '0', '0');
+        $uuid = $this->factory->create("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
@@ -28,58 +28,26 @@ class UuidV8FactoryTest extends TestCase
 
     public function testCreateWithMax(): void
     {
-        $uuid = $this->factory->create('ffffffffffff', 'fff', 'ffffffffffffffff');
+        $uuid = $this->factory->create("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
 
         $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('ffffffff-ffff-8fff-bfff-ffffffffffff', $uuid->toString());
     }
 
-    public function testCreateWithoutCustomFieldAThrowsException(): void
+    public function testCreateWithoutBytesThrowsException(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldA cannot be null when creating version 8 UUIDs');
+        $this->expectExceptionMessage('$bytes cannot be null when creating version 8 UUIDs');
 
         $this->factory->create();
     }
 
-    public function testCreateWithoutCustomFieldBThrowsException(): void
+    public function testCreateWithInvalidBytesThrowsException(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldB cannot be null when creating version 8 UUIDs');
+        $this->expectExceptionMessage('$bytes must be a 16-byte octet string');
 
-        $this->factory->create('000000000000');
-    }
-
-    public function testCreateWithoutCustomFieldCThrowsException(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldC cannot be null when creating version 8 UUIDs');
-
-        $this->factory->create('000000000000', '000');
-    }
-
-    public function testCreateWithInvalidCustomFieldAThrowsException(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldA must be a 48-bit hexadecimal string');
-
-        $this->factory->create('foobar', '0', '0');
-    }
-
-    public function testCreateWithInvalidCustomFieldBThrowsException(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldB must be a 12-bit hexadecimal string');
-
-        $this->factory->create('0', 'foobar', '0');
-    }
-
-    public function testCreateWithInvalidCustomFieldCThrowsException(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$customFieldC must be a 62-bit hexadecimal string');
-
-        $this->factory->create('0', '0', 'foobar');
+        $this->factory->create('foobar');
     }
 
     public function testCreateFromBytes(): void

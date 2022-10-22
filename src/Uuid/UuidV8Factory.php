@@ -21,12 +21,10 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
 
-use function hex2bin;
-use function sprintf;
-use function strspn;
+use function assert;
+use function strlen;
 
 /**
  * A factory for creating version 8, custom UUIDs
@@ -45,57 +43,29 @@ final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     /**
      * Creates a new instance of an identifier
      *
-     * The three custom fields, A, B, and C, may contain any values according to
-     * your application's needs. Be aware, however, that other implementations
-     * may not understand the semantics of the values.
+     * The bytes provided may contain any value according to your application's
+     * needs. Be aware, however, that other applications may not understand the
+     * semantics of the value.
      *
-     * @param string | null $customFieldA An arbitrary 48-bit (12-character)
-     *     hexadecimal string
-     * @param string | null $customFieldB An arbitrary 12-bit (3-character)
-     *     hexadecimal string
-     * @param string | null $customFieldC An arbitrary 64-bit (16-character)
-     *     hexadecimal string (if set, the 2 most significant bits will be lost,
-     *     since they are replaced with the variant bits, so don't rely on these
-     *     bits to hold any important data; in other words, treat this as a
-     *     62-bit value)
+     * @param string | null $bytes A 16-byte octet string. This is an open blob
+     *     of data that you may fill with 128 bits of information. Be aware,
+     *     however, bits 48 through 51 will be replaced with the UUID version
+     *     field, and bits 64 and 65 will be replaced with the UUID variant. You
+     *     MUST NOT rely on these bits for your application needs.
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if $bytes is null or is not a 16-byte octet string
      */
-    public function create(
-        ?string $customFieldA = null,
-        ?string $customFieldB = null,
-        ?string $customFieldC = null,
-    ): UuidV8 {
-        if ($customFieldA === null) {
-            throw new InvalidArgument('$customFieldA cannot be null when creating version 8 UUIDs');
+    public function create(?string $bytes = null): UuidV8
+    {
+        if ($bytes === null) {
+            throw new InvalidArgument('$bytes cannot be null when creating version 8 UUIDs');
         }
 
-        if ($customFieldB === null) {
-            throw new InvalidArgument('$customFieldB cannot be null when creating version 8 UUIDs');
+        if (strlen($bytes) !== 16) {
+            throw new InvalidArgument('$bytes must be a 16-byte octet string');
         }
 
-        if ($customFieldC === null) {
-            throw new InvalidArgument('$customFieldC cannot be null when creating version 8 UUIDs');
-        }
-
-        $customFieldA = sprintf('%012s', $customFieldA);
-        $customFieldB = sprintf('%03s', $customFieldB);
-        $customFieldC = sprintf('%016s', $customFieldC);
-
-        if (strspn($customFieldA, Format::MASK_HEX) !== 12) {
-            throw new InvalidArgument('$customFieldA must be a 48-bit hexadecimal string');
-        }
-
-        if (strspn($customFieldB, Format::MASK_HEX) !== 3) {
-            throw new InvalidArgument('$customFieldB must be a 12-bit hexadecimal string');
-        }
-
-        if (strspn($customFieldC, Format::MASK_HEX) !== 16) {
-            throw new InvalidArgument('$customFieldC must be a 62-bit hexadecimal string');
-        }
-
-        /** @psalm-var non-empty-string $bytes */
-        $bytes = hex2bin($customFieldA . '0' . $customFieldB . $customFieldC);
+        assert($bytes !== '');
 
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Custom);
 

@@ -185,21 +185,17 @@ interface UuidFactory extends
     /**
      * Creates a version 8, custom UUID
      *
-     * The three custom fields, A, B, and C, may contain any values according to
-     * your application's needs. Be aware, however, that other implementations
-     * may not understand the semantics of the values.
+     * The bytes provided may contain any value according to your application's
+     * needs. Be aware, however, that other applications may not understand the
+     * semantics of the value.
      *
-     * @param string $customFieldA An arbitrary 48-bit (12-character)
-     *     hexadecimal string
-     * @param string $customFieldB An arbitrary 12-bit (3-character)
-     *     hexadecimal string
-     * @param string $customFieldC An arbitrary 64-bit (16-character)
-     *     hexadecimal string (if set, the 2 most significant bits will be lost,
-     *     since they are replaced with the variant bits, so don't rely on these
-     *     bits to hold any important data; in other words, treat this as a
-     *     62-bit value)
+     * @param string $bytes A 16-byte octet string. This is an open blob of data
+     *     that you may fill with 128 bits of information. Be aware, however,
+     *     bits 48 through 51 will be replaced with the UUID version field, and
+     *     bits 64 and 65 will be replaced with the UUID variant. You MUST NOT
+     *     rely on these bits for your application needs.
      *
-     * @throws InvalidArgument MUST throw if parameters are not legal values
+     * @throws InvalidArgument MUST throw if $bytes is not a legal value
      */
-    public function v8(string $customFieldA, string $customFieldB, string $customFieldC): UuidIdentifier;
+    public function v8(string $bytes): UuidIdentifier;
 }

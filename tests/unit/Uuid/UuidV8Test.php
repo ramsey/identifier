@@ -449,25 +449,4 @@ class UuidV8Test extends TestCase
             ],
         ];
     }
-
-    public function testGetCustomFieldA(): void
-    {
-        $this->assertSame('27433d43011d', $this->uuidWithString->getCustomFieldA());
-        $this->assertSame('27433d43011d', $this->uuidWithHex->getCustomFieldA());
-        $this->assertSame('27433d43011d', $this->uuidWithBytes->getCustomFieldA());
-    }
-
-    public function testGetCustomFieldB(): void
-    {
-        $this->assertSame('a6a', $this->uuidWithString->getCustomFieldB());
-        $this->assertSame('a6a', $this->uuidWithHex->getCustomFieldB());
-        $this->assertSame('a6a', $this->uuidWithBytes->getCustomFieldB());
-    }
-
-    public function testGetCustomFieldC(): void
-    {
-        $this->assertSame('11611550863792c9', $this->uuidWithString->getCustomFieldC());
-        $this->assertSame('11611550863792c9', $this->uuidWithHex->getCustomFieldC());
-        $this->assertSame('11611550863792c9', $this->uuidWithBytes->getCustomFieldC());
-    }
 }
