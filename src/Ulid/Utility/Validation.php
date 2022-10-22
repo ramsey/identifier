@@ -21,6 +21,7 @@ use Ramsey\Identifier\Uuid\Utility\Format;
 use function strspn;
 use function strtolower;
 use function strtoupper;
+use function strtr;
 
 /**
  * This internal trait provides common validation functionality for ULIDs
@@ -65,7 +66,11 @@ trait Validation
     private function isValid(string $ulid, int $format): bool
     {
         return match ($format) {
-            Format::FORMAT_ULID => strspn($ulid, Format::MASK_CROCKFORD32) === Format::FORMAT_ULID && $ulid[0] <= '7',
+            Format::FORMAT_ULID => (static function (string $ulid): bool {
+                $ulid = strtr($ulid, 'IiLlOo', '111100');
+
+                return strspn($ulid, Format::MASK_CROCKFORD32) === Format::FORMAT_ULID && $ulid[0] <= '7';
+            })($ulid),
             Format::FORMAT_HEX => strspn($ulid, Format::MASK_HEX) === Format::FORMAT_HEX,
             Format::FORMAT_BYTES => true,
             default => false,

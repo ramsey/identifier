@@ -236,6 +236,14 @@ class DefaultUlidFactoryTest extends TestCase
         $this->assertSame('01BX5ZZKBKACTAV9WEVGEMMVRZ', $ulid->toString());
     }
 
+    public function testCreateFromStringWithExcludedSymbols(): void
+    {
+        $ulid = $this->factory->createFromString('7Z1ZIZiZLZlZ0ZOZoZZZZZZZZZ');
+
+        $this->assertInstanceOf(Ulid::class, $ulid);
+        $this->assertSame('7Z1Z1Z1Z1Z1Z0Z0Z0ZZZZZZZZZ', $ulid->toString());
+    }
+
     public function testCreateFromStringReturnsMaxUlid(): void
     {
         $ulid = $this->factory->createFromString('7ZZZZZZZZZZZZZZZZZZZZZZZZZ');

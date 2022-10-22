@@ -85,6 +85,17 @@ class UlidTest extends TestCase
         $this->assertSame($expected, $serialized);
     }
 
+    public function testSerializeForStringWithExcludedCharacters(): void
+    {
+        $expected =
+            'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:26:"7Z1Z1Z1Z1Z1Z0Z0Z0ZZZZZZZZZ";}';
+
+        $ulid = new Ulid('7Z1ZIZiZLZlZ0ZOZoZZZZZZZZZ');
+        $serialized = serialize($ulid);
+
+        $this->assertSame($expected, $serialized);
+    }
+
     public function testSerializeForHex(): void
     {
         $expected =
@@ -152,13 +163,13 @@ class UlidTest extends TestCase
         unserialize($serialized);
     }
 
-    public function testUnserializeFailsForInvalidVersionUlid(): void
+    public function testUnserializeFailsForInvalidUlid(): void
     {
         $serialized =
-            'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:36:"a6a011d2-7433-9d43-9161-1550863792c9";}';
+            'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:26:"7ZZZZZZILOUZZZZZZZZZZZZZZZ";}';
 
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid ULID: "a6a011d2-7433-9d43-9161-1550863792c9"');
+        $this->expectExceptionMessage('Invalid ULID: "7ZZZZZZILOUZZZZZZZZZZZZZZZ');
 
         unserialize($serialized);
     }
@@ -222,6 +233,8 @@ class UlidTest extends TestCase
             'with Ulid from hex' => [new Ulid(self::ULID_HEX), 0],
             'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), 0],
             'with MaxUlid' => [new MaxUlid(), -7],
+            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', 0],
+            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), 0],
         ];
     }
 
@@ -292,6 +305,8 @@ class UlidTest extends TestCase
             'with Ulid from hex' => [new Ulid(self::ULID_HEX), true],
             'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), true],
             'with MaxUlid' => [new MaxUlid(), false],
+            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', true],
+            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), true],
         ];
     }
 
@@ -386,5 +401,12 @@ class UlidTest extends TestCase
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
+    }
+
+    public function testConversionOfExcludedSymbols(): void
+    {
+        $ulid = new Ulid('7Z1ZIZiZLZlZ0ZOZoZZZZZZZZZ');
+
+        $this->assertSame('7Z1Z1Z1Z1Z1Z0Z0Z0ZZZZZZZZZ', $ulid->toString());
     }
 }

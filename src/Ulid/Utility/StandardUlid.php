@@ -36,6 +36,7 @@ use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function strtoupper;
+use function strtr;
 use function substr;
 
 use const STR_PAD_LEFT;
@@ -51,6 +52,7 @@ trait StandardUlid
 {
     use Validation;
 
+    private readonly string $ulid;
     private readonly int $format;
 
     /**
@@ -61,12 +63,19 @@ trait StandardUlid
      *
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $ulid)
+    public function __construct(string $ulid)
     {
-        $this->format = strlen($this->ulid);
+        $original = $ulid;
+        $this->format = strlen($ulid);
+
+        if ($this->format === Format::FORMAT_ULID) {
+            $ulid = strtr($ulid, 'IiLlOo', '111100');
+        }
+
+        $this->ulid = $ulid;
 
         if (!$this->isValid($this->ulid, $this->format)) {
-            throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $this->ulid));
+            throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $original));
         }
     }
 
@@ -106,7 +115,7 @@ trait StandardUlid
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
             if ($this->isValid($other, strlen($other))) {
-                $other = $this->getFormat(Format::FORMAT_ULID, $other);
+                $other = $this->getFormat(Format::FORMAT_ULID, strtr($other, 'IiLlOo', '111100'));
             }
 
             return strcasecmp($this->getFormat(Format::FORMAT_ULID), $other);
