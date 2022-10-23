@@ -65,7 +65,7 @@ final class MicrosoftGuidFactory implements
 
     public function create(): MicrosoftGuid
     {
-        $bytes = $this->bytesGenerator->bytes(16);
+        $bytes = $this->bytesGenerator->bytes();
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));

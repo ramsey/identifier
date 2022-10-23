@@ -48,7 +48,7 @@ final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierF
 
     public function create(): UuidV4
     {
-        $bytes = $this->bytesGenerator->bytes(16);
+        $bytes = $this->bytesGenerator->bytes();
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random);
 
         return new UuidV4($bytes);

@@ -36,5 +36,5 @@ interface BytesGenerator
      *
      * @psalm-param positive-int $length
      */
-    public function bytes(int $length, ?DateTimeInterface $dateTime = null): string;
+    public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string;
 }

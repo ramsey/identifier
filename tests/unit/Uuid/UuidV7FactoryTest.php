@@ -7,8 +7,8 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV7Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -41,14 +41,16 @@ class UuidV7FactoryTest extends TestCase
     }
 
     /**
-     * @runInSeparateProcess since values are stored statically on the class
+     * @runInSeparateProcess since values are stored statically on the MonotonicBytesGenerator
      * @preserveGlobalState disabled
      */
     public function testCreateWithFactoryInitializedValues(): void
     {
         $factory = new UuidV7Factory(
-            new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00.000000')),
-            new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+            new MonotonicBytesGenerator(
+                new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+                new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00.000000')),
+            ),
         );
 
         $uuid = $factory->create();
@@ -69,23 +71,6 @@ class UuidV7FactoryTest extends TestCase
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
         $uuid = $this->factory->create(dateTime: $dateTime);
-
-        $this->assertInstanceOf(UuidV7::class, $uuid);
-        $this->assertNotSame($dateTime, $uuid->getDateTime());
-        $this->assertSame('2022-09-25T17:32:12+00:00', $uuid->getDateTime()->format('c'));
-        $this->assertSame('018375b4-e160', substr($uuid->toString(), 0, 13));
-    }
-
-    public function testCreateWithDateTimeOn32Bit(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $factory = new UuidV7Factory(os: $os);
-
-        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
-        $uuid = $factory->create(dateTime: $dateTime);
 
         $this->assertInstanceOf(UuidV7::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
@@ -196,135 +181,6 @@ class UuidV7FactoryTest extends TestCase
             $now = gmdate('Y-m-d H:i');
             $this->assertGreaterThan(0, $uuid->compareTo($previous));
             $this->assertSame($now, $uuid->getDateTime()->format('Y-m-d H:i'));
-            $previous = $uuid;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testCreateEachUuidIsMonotonicallyIncreasingOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $factory = new UuidV7Factory(os: $os);
-
-        $previous = $factory->create();
-
-        for ($i = 0; $i < 25; $i++) {
-            $uuid = $factory->create();
-            $now = gmdate('Y-m-d H:i');
-            $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame($now, $uuid->getDateTime()->format('Y-m-d H:i'));
-            $previous = $uuid;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testCreateWithMaximumRandomSeedValue(): void
-    {
-        $factory = new UuidV7Factory(
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-        );
-
-        $previous = $factory->create();
-
-        for ($i = 0; $i < 25; $i++) {
-            $uuid = $factory->create();
-            $now = gmdate('Y-m-d H:i');
-            $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame($now, $uuid->getDateTime()->format('Y-m-d H:i'));
-            $previous = $uuid;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testCreateWithMaximumRandomSeedValueOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $factory = new UuidV7Factory(
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-            os: $os,
-        );
-
-        $previous = $factory->create();
-
-        for ($i = 0; $i < 25; $i++) {
-            $uuid = $factory->create();
-            $now = gmdate('Y-m-d H:i');
-            $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame($now, $uuid->getDateTime()->format('Y-m-d H:i'));
-            $previous = $uuid;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testCreateWithMaximumRandomSeedValueWithTimeAtMaximumNines(): void
-    {
-        $date = new DateTimeImmutable('@1666999999.999');
-
-        $factory = new UuidV7Factory(
-            clock: new FrozenClock($date),
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-        );
-
-        $previous = $factory->create();
-
-        for ($i = 0; $i < 25; $i++) {
-            $uuid = $factory->create();
-            $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame('2022-10-28 23:33', $uuid->getDateTime()->format('Y-m-d H:i'));
-            $previous = $uuid;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testCreateWithMaximumRandomSeedValueWithTimeAtMaximumNinesOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $date = new DateTimeImmutable('@1666999999.999');
-
-        $factory = new UuidV7Factory(
-            clock: new FrozenClock($date),
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-            os: $os,
-        );
-
-        $previous = $factory->create();
-
-        for ($i = 0; $i < 25; $i++) {
-            $uuid = $factory->create();
-            $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame('2022-10-28 23:33', $uuid->getDateTime()->format('Y-m-d H:i'));
             $previous = $uuid;
         }
     }

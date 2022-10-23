@@ -32,7 +32,7 @@ final class FixedBytesGenerator implements BytesGenerator
     {
     }
 
-    public function bytes(int $length, ?DateTimeInterface $dateTime = null): string
+    public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
         /** @var non-empty-string */
         return substr($this->bytes, 0, $length);
