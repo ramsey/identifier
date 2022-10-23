@@ -320,4 +320,12 @@ class DefaultUlidFactoryTest extends TestCase
             $previous = $ulid;
         }
     }
+
+    public function testCreateFromDateThrowsExceptionForTooEarlyTimestamp(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Timestamp may not be earlier than the Unix Epoch');
+
+        $this->factory->createFromDateTime(new DateTimeImmutable('1969-12-31 23:59:59.999999'));
+    }
 }
