@@ -230,7 +230,7 @@ class UuidV7FactoryTest extends TestCase
     public function testCreateWithMaximumRandomSeedValue(): void
     {
         $factory = new UuidV7Factory(
-            randomGenerator: new FixedBytesGenerator(
+            bytesGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
         );
@@ -257,7 +257,7 @@ class UuidV7FactoryTest extends TestCase
         ]);
 
         $factory = new UuidV7Factory(
-            randomGenerator: new FixedBytesGenerator(
+            bytesGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
             os: $os,
@@ -284,7 +284,7 @@ class UuidV7FactoryTest extends TestCase
 
         $factory = new UuidV7Factory(
             clock: new FrozenClock($date),
-            randomGenerator: new FixedBytesGenerator(
+            bytesGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
         );
@@ -313,7 +313,7 @@ class UuidV7FactoryTest extends TestCase
 
         $factory = new UuidV7Factory(
             clock: new FrozenClock($date),
-            randomGenerator: new FixedBytesGenerator(
+            bytesGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
             os: $os,

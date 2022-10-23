@@ -57,12 +57,12 @@ final class DefaultUlidFactory implements UlidFactory
      *
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
-     * @param BytesGenerator $randomGenerator A random generator used to
+     * @param BytesGenerator $bytesGenerator A random generator used to
      *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
-        private readonly BytesGenerator $randomGenerator = new RandomBytesGenerator(),
+        private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
     ) {
         $this->time = new Time();
     }
@@ -74,7 +74,7 @@ final class DefaultUlidFactory implements UlidFactory
     {
         $dateTime = $this->clock->now();
         $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
-            . $this->randomGenerator->bytes(10);
+            . $this->bytesGenerator->bytes(10);
 
         return new Ulid($bytes);
     }
@@ -105,7 +105,7 @@ final class DefaultUlidFactory implements UlidFactory
     public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
     {
         $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
-            . $this->randomGenerator->bytes(10);
+            . $this->bytesGenerator->bytes(10);
 
         return new Ulid($bytes);
     }

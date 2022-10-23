@@ -13,8 +13,8 @@ class RandomBytesGeneratorTest extends TestCase
 {
     public function testGetRandomBytes(): void
     {
-        $randomGenerator = new RandomBytesGenerator();
+        $bytesGenerator = new RandomBytesGenerator();
 
-        $this->assertSame(16, strlen($randomGenerator->bytes(16)));
+        $this->assertSame(16, strlen($bytesGenerator->bytes(16)));
     }
 }

@@ -77,12 +77,12 @@ final class UuidV7Factory implements
      *
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
-     * @param BytesGenerator $randomGenerator A random generator used to
+     * @param BytesGenerator $bytesGenerator A random generator used to
      *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
-        private readonly BytesGenerator $randomGenerator = new RandomBytesGenerator(),
+        private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
         private readonly Os $os = new PhpOs(),
     ) {
     }
@@ -178,10 +178,10 @@ final class UuidV7Factory implements
     private function randomize(string $time): void
     {
         if (self::$seed === null) {
-            $seed = $this->randomGenerator->bytes(16);
+            $seed = $this->bytesGenerator->bytes(16);
             self::$seed = $seed;
         } else {
-            $seed = $this->randomGenerator->bytes(10);
+            $seed = $this->bytesGenerator->bytes(10);
         }
 
         /** @var int[] $rand */

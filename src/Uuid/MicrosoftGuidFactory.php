@@ -54,18 +54,18 @@ final class MicrosoftGuidFactory implements
     /**
      * Constructs a factory for creating Microsoft GUIDs
      *
-     * @param BytesGenerator $randomGenerator A random generator used to
+     * @param BytesGenerator $bytesGenerator A random generator used to
      *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
-        private readonly BytesGenerator $randomGenerator = new RandomBytesGenerator(),
+        private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
     ) {
         $this->binary = new Binary();
     }
 
     public function create(): MicrosoftGuid
     {
-        $bytes = $this->randomGenerator->bytes(16);
+        $bytes = $this->bytesGenerator->bytes(16);
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));
