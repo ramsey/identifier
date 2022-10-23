@@ -18,7 +18,6 @@ namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
 
-use function strlen;
 use function substr;
 
 /**
@@ -35,11 +34,7 @@ final class FixedBytesGenerator implements BytesGenerator
 
     public function bytes(int $length, ?DateTimeInterface $dateTime = null): string
     {
-        if (strlen($this->bytes) > $length) {
-            /** @var non-empty-string */
-            return substr($this->bytes, 0, $length);
-        }
-
-        return $this->bytes;
+        /** @var non-empty-string */
+        return substr($this->bytes, 0, $length);
     }
 }
