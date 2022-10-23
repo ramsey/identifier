@@ -18,6 +18,8 @@ namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
 
+use function intdiv;
+use function strlen;
 use function substr;
 
 /**
@@ -25,16 +27,24 @@ use function substr;
  */
 final class FixedBytesGenerator implements BytesGenerator
 {
+    private readonly int $bytesLength;
+
     /**
      * @param non-empty-string $bytes
      */
     public function __construct(private readonly string $bytes)
     {
+        $this->bytesLength = strlen($this->bytes);
     }
 
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
+        $bytes = '';
+        for ($i = 0; $i <= intdiv($length, $this->bytesLength); $i++) {
+            $bytes .= $this->bytes;
+        }
+
         /** @var non-empty-string */
-        return substr($this->bytes, 0, $length);
+        return substr($bytes, 0, $length);
     }
 }

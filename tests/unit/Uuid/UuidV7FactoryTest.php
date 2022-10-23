@@ -184,4 +184,18 @@ class UuidV7FactoryTest extends TestCase
             $previous = $uuid;
         }
     }
+
+    public function testCreateEachUuidFromSameDateTimeIsMonotonicallyIncreasing(): void
+    {
+        $dateTime = new DateTimeImmutable();
+
+        $previous = $this->factory->create($dateTime);
+
+        for ($i = 0; $i < 25; $i++) {
+            $uuid = $this->factory->create($dateTime);
+            $this->assertGreaterThan(0, $uuid->compareTo($previous));
+            $this->assertSame($dateTime->format('Y-m-d H:i'), $uuid->getDateTime()->format('Y-m-d H:i'));
+            $previous = $uuid;
+        }
+    }
 }

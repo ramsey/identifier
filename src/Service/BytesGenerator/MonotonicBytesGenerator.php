@@ -25,6 +25,7 @@ use StellaMaris\Clock\ClockInterface as Clock;
 
 use function hash;
 use function pack;
+use function random_bytes;
 use function str_pad;
 use function strlen;
 use function substr;
@@ -84,8 +85,18 @@ final class MonotonicBytesGenerator implements BytesGenerator
             $time = str_pad(BigInteger::of($time)->toBytes(false), 6, "\x00", STR_PAD_LEFT);
         }
 
-        /** @var non-empty-string */
-        return $time . pack('n*', self::$rand[1], self::$rand[2], self::$rand[3], self::$rand[4], self::$rand[5]);
+        /** @var non-empty-string $bytes */
+        $bytes = $time . pack('n*', self::$rand[1], self::$rand[2], self::$rand[3], self::$rand[4], self::$rand[5]);
+
+        if ($length === 16) {
+            return $bytes;
+        } elseif ($length <= 16) {
+            /** @var non-empty-string */
+            return substr($bytes, 0, $length);
+        } else {
+            // If the caller requested more bytes, add more bytes.
+            return $bytes . random_bytes($length - 16);
+        }
     }
 
     private function randomize(string $time): void

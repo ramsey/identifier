@@ -22,14 +22,11 @@ use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
-use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
-use Ramsey\Identifier\Service\Clock\SystemClock;
+use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Ulid\Utility\Validation;
 use Ramsey\Identifier\UlidFactory;
 use Ramsey\Identifier\UlidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\Time;
-use StellaMaris\Clock\ClockInterface as Clock;
 
 use function is_int;
 use function is_string;
@@ -50,21 +47,15 @@ final class DefaultUlidFactory implements UlidFactory
 {
     use Validation;
 
-    private readonly Time $time;
-
     /**
      * Constructs a factory for creating ULIDs
      *
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
      * @param BytesGenerator $bytesGenerator A random generator used to
      *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
-        private readonly Clock $clock = new SystemClock(),
-        private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
+        private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator(),
     ) {
-        $this->time = new Time();
     }
 
     /**
@@ -72,11 +63,7 @@ final class DefaultUlidFactory implements UlidFactory
      */
     public function create(): UlidIdentifier
     {
-        $dateTime = $this->clock->now();
-        $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
-            . $this->bytesGenerator->bytes(10);
-
-        return new Ulid($bytes);
+        return new Ulid($this->bytesGenerator->bytes());
     }
 
     /**
@@ -104,10 +91,11 @@ final class DefaultUlidFactory implements UlidFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
     {
-        $bytes = $this->time->getTimeBytesForUnixEpoch($dateTime)
-            . $this->bytesGenerator->bytes(10);
+        if ($dateTime->getTimestamp() < 0) {
+            throw new InvalidArgument('Timestamp may not be earlier than the Unix Epoch');
+        }
 
-        return new Ulid($bytes);
+        return new Ulid($this->bytesGenerator->bytes(dateTime: $dateTime));
     }
 
     /**

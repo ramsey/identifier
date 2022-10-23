@@ -7,6 +7,7 @@ namespace Ramsey\Test\Identifier\Ulid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Ulid\DefaultUlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
@@ -15,6 +16,7 @@ use Ramsey\Identifier\Ulid\Ulid;
 use Ramsey\Identifier\UlidFactory;
 use Ramsey\Test\Identifier\TestCase;
 
+use function gmdate;
 use function sprintf;
 use function substr;
 
@@ -36,11 +38,17 @@ class DefaultUlidFactoryTest extends TestCase
         $this->assertInstanceOf(Ulid::class, $ulid);
     }
 
+    /**
+     * @runInSeparateProcess since values are stored statically on the MonotonicBytesGenerator
+     * @preserveGlobalState disabled
+     */
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new DefaultUlidFactory(
-            new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00')),
-            new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+            new MonotonicBytesGenerator(
+                new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+                new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00')),
+            ),
         );
 
         $ulid = $factory->create();
@@ -284,5 +292,32 @@ class DefaultUlidFactoryTest extends TestCase
     public function testNil(): void
     {
         $this->assertInstanceOf(NilUlid::class, $this->factory->nil());
+    }
+
+    public function testCreateEachUlidIsMonotonicallyIncreasing(): void
+    {
+        $previous = $this->factory->create();
+
+        for ($i = 0; $i < 25; $i++) {
+            $ulid = $this->factory->create();
+            $now = gmdate('Y-m-d H:i');
+            $this->assertTrue($ulid->compareTo($previous) > 0);
+            $this->assertSame($now, $ulid->getDateTime()->format('Y-m-d H:i'));
+            $previous = $ulid;
+        }
+    }
+
+    public function testCreateEachUlidFromSameDateTimeIsMonotonicallyIncreasing(): void
+    {
+        $dateTime = new DateTimeImmutable();
+
+        $previous = $this->factory->createFromDateTime($dateTime);
+
+        for ($i = 0; $i < 25; $i++) {
+            $ulid = $this->factory->createFromDateTime($dateTime);
+            $this->assertTrue($ulid->compareTo($previous) > 0);
+            $this->assertSame($dateTime->format('Y-m-d H:i'), $ulid->getDateTime()->format('Y-m-d H:i'));
+            $previous = $ulid;
+        }
     }
 }

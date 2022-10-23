@@ -9,27 +9,51 @@ use Ramsey\Test\Identifier\TestCase;
 
 class FixedBytesGeneratorTest extends TestCase
 {
-    public function testGetBytesWithLengthExactlyAsValueProvided(): void
+    /**
+     * @param non-empty-string $bytes
+     * @param int<1, max> $length
+     * @param non-empty-string $expectedBytes
+     *
+     * @dataProvider bytesProvider
+     */
+    public function testBytes(string $bytes, int $length, string $expectedBytes): void
     {
-        $bytes = "\xab\xcd\xef\x01\x23\x45\x67\x89";
         $bytesGenerator = new FixedBytesGenerator($bytes);
 
-        $this->assertSame($bytes, $bytesGenerator->bytes(8));
+        $this->assertSame($expectedBytes, $bytesGenerator->bytes($length));
     }
 
-    public function testGetBytesWithLengthGreaterThanValueProvided(): void
+    /**
+     * @return array<array{bytes: non-empty-string, length: int<1, max>, expectedBytes: non-empty-string}>
+     */
+    public function bytesProvider(): array
     {
-        $bytes = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
-        $bytesGenerator = new FixedBytesGenerator($bytes);
-
-        $this->assertSame($bytes, $bytesGenerator->bytes(20));
-    }
-
-    public function testGetBytesWithLengthLessThanValueProvided(): void
-    {
-        $bytes = "\xff\xff\xff\xff\xab\xcd\xef\x01\x23\x45\x67\x89\xff\xff\xff\xff";
-        $bytesGenerator = new FixedBytesGenerator($bytes);
-
-        $this->assertSame("\xff\xff\xff\xff\xab\xcd\xef\x01", $bytesGenerator->bytes(8));
+        return [
+            [
+                'bytes' => "\xab\xcd\xef\x01\x23\x45\x67\x89",
+                'length' => 8,
+                'expectedBytes' => "\xab\xcd\xef\x01\x23\x45\x67\x89",
+            ],
+            [
+                'bytes' => "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff",
+                'length' => 20,
+                'expectedBytes' => "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff\x00\x11\x22\x33",
+            ],
+            [
+                'bytes' => "\x00\x11\x22",
+                'length' => 15,
+                'expectedBytes' => "\x00\x11\x22\x00\x11\x22\x00\x11\x22\x00\x11\x22\x00\x11\x22",
+            ],
+            [
+                'bytes' => "\x00\x11\x22\33",
+                'length' => 17,
+                'expectedBytes' => "\x00\x11\x22\33\x00\x11\x22\33\x00\x11\x22\33\x00\x11\x22\33\x00",
+            ],
+            [
+                'bytes' => "\xff\xff\xff\xff\xab\xcd\xef\x01\x23\x45\x67\x89\xff\xff\xff\xff",
+                'length' => 8,
+                'expectedBytes' => "\xff\xff\xff\xff\xab\xcd\xef\x01",
+            ],
+        ];
     }
 }

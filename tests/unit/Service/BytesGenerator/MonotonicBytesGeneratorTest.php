@@ -74,6 +74,33 @@ class MonotonicBytesGeneratorTest extends TestCase
         }
     }
 
+    public function testLongerLengthBytesRequestedAreMonotonicallyIncreasing(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator();
+
+        $previous = $bytesGenerator->bytes(29);
+        $this->assertSame(29, strlen($previous));
+
+        for ($i = 0; $i < 25; $i++) {
+            $bytes = $bytesGenerator->bytes(29);
+            $this->assertSame(29, strlen($bytes));
+            $this->assertTrue($previous < $bytes);
+            $previous = $bytes;
+        }
+    }
+
+    /**
+     * We support fewer bytes returned, but when you truncate the bytes, you
+     * lose the monotonicity, since the monotonicity is based on a 48-bit
+     * timestamp.
+     */
+    public function testShorterLengthBytesRequested(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator();
+
+        $this->assertSame(5, strlen($bytesGenerator->bytes(5)));
+    }
+
     /**
      * @runInSeparateProcess since values are stored statically on the class
      * @preserveGlobalState disabled
