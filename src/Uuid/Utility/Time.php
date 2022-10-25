@@ -24,7 +24,6 @@ use Ramsey\Identifier\Service\Os\PhpOs;
 
 use function pack;
 use function str_pad;
-use function substr;
 
 use const STR_PAD_LEFT;
 
@@ -98,33 +97,5 @@ final class Time
             "\x00",
             STR_PAD_LEFT,
         );
-    }
-
-    /**
-     * Returns a 6-byte string representing the number of milliseconds since the
-     * Unix Epoch, 1970-01-01 00:00:00
-     *
-     * @param DateTimeInterface $dateTime The date-time for which to construct
-     *     a count of milliseconds since the Unix Epoch
-     *
-     * @return non-empty-string
-     *
-     * @throws InvalidArgument
-     */
-    public function getTimeBytesForUnixEpoch(DateTimeInterface $dateTime): string
-    {
-        $ms = $dateTime->format('Uv');
-
-        if ($ms < 0) {
-            throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Unix Epoch');
-        }
-
-        if ($this->os->getIntSize() >= 8) {
-            /** @var non-empty-string */
-            return substr(pack('J', (int) $ms), -6);
-        }
-
-        /** @var non-empty-string */
-        return str_pad(BigInteger::of($ms)->toBytes(false), 6, "\x00", STR_PAD_LEFT);
     }
 }
