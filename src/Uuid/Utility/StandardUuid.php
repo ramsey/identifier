@@ -17,8 +17,10 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Utility;
 
 use Brick\Math\BigInteger;
+use Identifier\BinaryIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Variant;
 use Stringable;
 
@@ -30,6 +32,7 @@ use function is_scalar;
 use function sprintf;
 use function str_replace;
 use function strcasecmp;
+use function strcmp;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -101,13 +104,21 @@ trait StandardUuid
      */
     public function compareTo(mixed $other): int
     {
+        // Microsoft GUID bytes are in a different order, even though the string
+        // representations might be identical, so we'll skip MicrosoftGuid bytes
+        // comparisons.
+        if ($other instanceof BinaryIdentifier && !$other instanceof MicrosoftGuid) {
+            /** @psalm-suppress ImpureMethodCall BinaryIdentifier doesn't make any purity guarantees. */
+            return strcmp($this->toBytes(), $other->toBytes());
+        }
+
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
             if ($this->isValid($other, strlen($other))) {
                 $other = $this->getFormat(Format::FORMAT_STRING, $other);
             }
 
-            return strcasecmp($this->getFormat(Format::FORMAT_STRING), $other);
+            return strcasecmp($this->toString(), $other);
         }
 
         throw new NotComparable(sprintf(

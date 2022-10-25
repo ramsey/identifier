@@ -11,6 +11,10 @@ use Ramsey\Identifier\Ulid\DefaultUlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
+use Ramsey\Identifier\Uuid\NonstandardUuid;
+use Ramsey\Identifier\Uuid\UuidV7;
+use Ramsey\Test\Identifier\Comparison;
+use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -177,35 +181,56 @@ class UlidTest extends TestCase
     /**
      * @dataProvider compareToProvider
      */
-    public function testCompareTo(mixed $other, int $expected): void
+    public function testCompareTo(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->ulidWithString->compareTo($other));
-        $this->assertSame($expected, $this->ulidWithHex->compareTo($other));
-        $this->assertSame($expected, $this->ulidWithBytes->compareTo($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertSame(0, $this->ulidWithString->compareTo($other));
+                $this->assertSame(0, $this->ulidWithHex->compareTo($other));
+                $this->assertSame(0, $this->ulidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::GreaterThan:
+                $this->assertGreaterThan(0, $this->ulidWithString->compareTo($other));
+                $this->assertGreaterThan(0, $this->ulidWithHex->compareTo($other));
+                $this->assertGreaterThan(0, $this->ulidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::LessThan:
+                $this->assertLessThan(0, $this->ulidWithString->compareTo($other));
+                $this->assertLessThan(0, $this->ulidWithHex->compareTo($other));
+                $this->assertLessThan(0, $this->ulidWithBytes->compareTo($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, int}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function compareToProvider(): array
     {
         $factory = new DefaultUlidFactory();
 
         return [
-            'with null' => [null, 26],
-            'with int' => [123, -1],
-            'with float' => [123.456, -1],
-            'with string' => ['foobar', -54],
-            'with string Nil ULID' => [$factory->nil()->toString(), 1],
-            'with same string ULID' => [self::ULID_STRING, 0],
-            'with same string ULID all lowercase' => [strtoupper(self::ULID_STRING), 0],
-            'with same hex ULID' => [self::ULID_HEX, 0],
-            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), 0],
-            'with same bytes ULID' => [self::ULID_BYTES, 0],
-            'with string Max ULID' => [$factory->max()->toString(), -7],
-            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), -7],
-            'with bool true' => [true, -1],
-            'with bool false' => [false, 26],
+            'with null' => [null, Comparison::GreaterThan],
+            'with int' => [123, Comparison::LessThan],
+            'with float' => [123.456, Comparison::LessThan],
+            'with string' => ['foobar', Comparison::LessThan],
+            'with string Nil ULID' => [$factory->nil()->toString(), Comparison::GreaterThan],
+            'with same string ULID' => [self::ULID_STRING, Comparison::Equal],
+            'with same string ULID all lowercase' => [strtoupper(self::ULID_STRING), Comparison::Equal],
+            'with same hex ULID' => [self::ULID_HEX, Comparison::Equal],
+            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), Comparison::Equal],
+            'with same bytes ULID' => [self::ULID_BYTES, Comparison::Equal],
+            'with string Max ULID' => [$factory->max()->toString(), Comparison::LessThan],
+            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), Comparison::LessThan],
+            'with bool true' => [true, Comparison::LessThan],
+            'with bool false' => [false, Comparison::GreaterThan],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -213,7 +238,7 @@ class UlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -54,
+                Comparison::LessThan,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class (self::ULID_BYTES) {
@@ -226,15 +251,17 @@ class UlidTest extends TestCase
                         return $this->ulidBytes;
                     }
                 },
-                0,
+                Comparison::Equal,
             ],
-            'with NilUlid' => [new NilUlid(), 1],
-            'with Ulid from string' => [new Ulid(self::ULID_STRING), 0],
-            'with Ulid from hex' => [new Ulid(self::ULID_HEX), 0],
-            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), 0],
-            'with MaxUlid' => [new MaxUlid(), -7],
-            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', 0],
-            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), 0],
+            'with NilUlid' => [new NilUlid(), Comparison::GreaterThan],
+            'with Ulid from string' => [new Ulid(self::ULID_STRING), Comparison::Equal],
+            'with Ulid from hex' => [new Ulid(self::ULID_HEX), Comparison::Equal],
+            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), Comparison::Equal],
+            'with MaxUlid' => [new MaxUlid(), Comparison::LessThan],
+            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', Comparison::Equal],
+            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), Comparison::Equal],
+            'with BinaryIdentifier class' => [new MockBinaryIdentifier(self::ULID_BYTES), Comparison::Equal],
+            'with UuidV7' => [new UuidV7(self::ULID_BYTES), Comparison::Equal],
         ];
     }
 
@@ -249,35 +276,50 @@ class UlidTest extends TestCase
     /**
      * @dataProvider equalsProvider
      */
-    public function testEquals(mixed $other, bool $expected): void
+    public function testEquals(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->ulidWithString->equals($other));
-        $this->assertSame($expected, $this->ulidWithHex->equals($other));
-        $this->assertSame($expected, $this->ulidWithBytes->equals($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertTrue($this->ulidWithString->equals($other));
+                $this->assertTrue($this->ulidWithHex->equals($other));
+                $this->assertTrue($this->ulidWithBytes->equals($other));
+
+                break;
+            case Comparison::NotEqual:
+                $this->assertFalse($this->ulidWithString->equals($other));
+                $this->assertFalse($this->ulidWithHex->equals($other));
+                $this->assertFalse($this->ulidWithBytes->equals($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, bool}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function equalsProvider(): array
     {
         $factory = new DefaultUlidFactory();
 
         return [
-            'with null' => [null, false],
-            'with int' => [123, false],
-            'with float' => [123.456, false],
-            'with string' => ['foobar', false],
-            'with string Nil ULID' => [$factory->nil()->toString(), false],
-            'with same string ULID' => [self::ULID_STRING, true],
-            'with same string ULID all lowercase' => [strtolower(self::ULID_STRING), true],
-            'with same hex ULID' => [self::ULID_HEX, true],
-            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), true],
-            'with same bytes ULID' => [self::ULID_BYTES, true],
-            'with string Max ULID' => [$factory->max()->toString(), false],
-            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), false],
-            'with bool true' => [true, false],
-            'with bool false' => [false, false],
+            'with null' => [null, Comparison::NotEqual],
+            'with int' => [123, Comparison::NotEqual],
+            'with float' => [123.456, Comparison::NotEqual],
+            'with string' => ['foobar', Comparison::NotEqual],
+            'with string Nil ULID' => [$factory->nil()->toString(), Comparison::NotEqual],
+            'with same string ULID' => [self::ULID_STRING, Comparison::Equal],
+            'with same string ULID all lowercase' => [strtolower(self::ULID_STRING), Comparison::Equal],
+            'with same hex ULID' => [self::ULID_HEX, Comparison::Equal],
+            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), Comparison::Equal],
+            'with same bytes ULID' => [self::ULID_BYTES, Comparison::Equal],
+            'with string Max ULID' => [$factory->max()->toString(), Comparison::NotEqual],
+            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), Comparison::NotEqual],
+            'with bool true' => [true, Comparison::NotEqual],
+            'with bool false' => [false, Comparison::NotEqual],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -285,7 +327,7 @@ class UlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                false,
+                Comparison::NotEqual,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class (self::ULID_BYTES) {
@@ -298,15 +340,17 @@ class UlidTest extends TestCase
                         return $this->ulidBytes;
                     }
                 },
-                true,
+                Comparison::Equal,
             ],
-            'with NilUlid' => [new NilUlid(), false],
-            'with Ulid from string' => [new Ulid(self::ULID_STRING),true],
-            'with Ulid from hex' => [new Ulid(self::ULID_HEX), true],
-            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), true],
-            'with MaxUlid' => [new MaxUlid(), false],
-            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', true],
-            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), true],
+            'with NilUlid' => [new NilUlid(), Comparison::NotEqual],
+            'with Ulid from string' => [new Ulid(self::ULID_STRING), Comparison::Equal],
+            'with Ulid from hex' => [new Ulid(self::ULID_HEX), Comparison::Equal],
+            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), Comparison::Equal],
+            'with MaxUlid' => [new MaxUlid(), Comparison::NotEqual],
+            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', Comparison::Equal],
+            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), Comparison::Equal],
+            'with BinaryIdentifier class' => [new MockBinaryIdentifier(self::ULID_BYTES), Comparison::Equal],
+            'with UuidV7' => [new UuidV7(self::ULID_BYTES), Comparison::Equal],
         ];
     }
 
@@ -408,5 +452,14 @@ class UlidTest extends TestCase
         $ulid = new Ulid('7Z1ZIZiZLZlZ0ZOZoZZZZZZZZZ');
 
         $this->assertSame('7Z1Z1Z1Z1Z1Z0Z0Z0ZZZZZZZZZ', $ulid->toString());
+    }
+
+    public function testToHexadecimalAndBytesFromLowercaseUlid(): void
+    {
+        $ulid = new Ulid('01gg5qhjkp09jx275b1x4jj25f');
+
+        $this->assertSame('01GG5QHJKP09JX275B1X4JJ25F', $ulid->toString());
+        $this->assertSame('01840b78ca760265d11cab0f492908af', $ulid->toHexadecimal());
+        $this->assertSame("\x01\x84\x0b\x78\xca\x76\x02\x65\xd1\x1c\xab\x0f\x49\x29\x08\xaf", $ulid->toBytes());
     }
 }

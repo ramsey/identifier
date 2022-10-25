@@ -7,6 +7,9 @@ namespace Ramsey\Test\Identifier\Ulid;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid;
+use Ramsey\Identifier\Uuid\NilUuid;
+use Ramsey\Test\Identifier\Comparison;
+use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -173,31 +176,57 @@ class NilUlidTest extends TestCase
     /**
      * @dataProvider compareToProvider
      */
-    public function testCompareTo(mixed $other, int $expected): void
+    public function testCompareTo(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->nilUlid->compareTo($other));
-        $this->assertSame($expected, $this->nilUlidWithString->compareTo($other));
-        $this->assertSame($expected, $this->nilUlidWithHex->compareTo($other));
-        $this->assertSame($expected, $this->nilUlidWithBytes->compareTo($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertSame(0, $this->nilUlid->compareTo($other));
+                $this->assertSame(0, $this->nilUlidWithString->compareTo($other));
+                $this->assertSame(0, $this->nilUlidWithHex->compareTo($other));
+                $this->assertSame(0, $this->nilUlidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::GreaterThan:
+                $this->assertGreaterThan(0, $this->nilUlid->compareTo($other));
+                $this->assertGreaterThan(0, $this->nilUlidWithString->compareTo($other));
+                $this->assertGreaterThan(0, $this->nilUlidWithHex->compareTo($other));
+                $this->assertGreaterThan(0, $this->nilUlidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::LessThan:
+                $this->assertLessThan(0, $this->nilUlid->compareTo($other));
+                $this->assertLessThan(0, $this->nilUlidWithString->compareTo($other));
+                $this->assertLessThan(0, $this->nilUlidWithHex->compareTo($other));
+                $this->assertLessThan(0, $this->nilUlidWithBytes->compareTo($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, int}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 26],
-            'with int' => [123, -1],
-            'with float' => [123.456, -1],
-            'with string' => ['foobar', -54],
-            'with string Nil ULID' => [self::NIL_ULID, 0],
-            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', -7],
-            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', -7],
-            'with hex Nil ULID' => ['00000000000000000000000000000000', 0],
-            'with bytes Nil ULID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 0],
-            'with bool true' => [true, -1],
-            'with bool false' => [false, 26],
+            'with null' => [null, Comparison::GreaterThan],
+            'with int' => [123, Comparison::LessThan],
+            'with float' => [123.456, Comparison::LessThan],
+            'with string' => ['foobar', Comparison::LessThan],
+            'with string Nil ULID' => [self::NIL_ULID, Comparison::Equal],
+            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', Comparison::LessThan],
+            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', Comparison::LessThan],
+            'with hex Nil ULID' => ['00000000000000000000000000000000', Comparison::Equal],
+            'with bytes Nil ULID' => [
+                "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                Comparison::Equal,
+            ],
+            'with bool true' => [true, Comparison::LessThan],
+            'with bool false' => [false, Comparison::GreaterThan],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -205,7 +234,7 @@ class NilUlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -54,
+                Comparison::LessThan,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class {
@@ -214,16 +243,21 @@ class NilUlidTest extends TestCase
                         return "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
                     }
                 },
-                0,
+                Comparison::Equal,
             ],
-            'with NilUlid' => [new Ulid\NilUlid(), 0],
-            'with MaxUlid' => [new Ulid\MaxUlid(), -7],
-            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), 0],
-            'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), 0],
+            'with NilUlid' => [new Ulid\NilUlid(), Comparison::Equal],
+            'with MaxUlid' => [new Ulid\MaxUlid(), Comparison::LessThan],
+            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), Comparison::Equal],
+            'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), Comparison::Equal],
             'with NilUlid from bytes' => [
                 new Ulid\NilUlid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
-                0,
+                Comparison::Equal,
             ],
+            'with BinaryIdentifier class' => [
+                new MockBinaryIdentifier("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+                Comparison::Equal,
+            ],
+            'with NilUuid' => [new NilUuid(), Comparison::Equal],
         ];
     }
 
@@ -238,31 +272,50 @@ class NilUlidTest extends TestCase
     /**
      * @dataProvider equalsProvider
      */
-    public function testEquals(mixed $other, bool $expected): void
+    public function testEquals(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->nilUlid->equals($other));
-        $this->assertSame($expected, $this->nilUlidWithString->equals($other));
-        $this->assertSame($expected, $this->nilUlidWithHex->equals($other));
-        $this->assertSame($expected, $this->nilUlidWithBytes->equals($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertTrue($this->nilUlid->equals($other));
+                $this->assertTrue($this->nilUlidWithString->equals($other));
+                $this->assertTrue($this->nilUlidWithHex->equals($other));
+                $this->assertTrue($this->nilUlidWithBytes->equals($other));
+
+                break;
+            case Comparison::NotEqual:
+                $this->assertFalse($this->nilUlid->equals($other));
+                $this->assertFalse($this->nilUlidWithString->equals($other));
+                $this->assertFalse($this->nilUlidWithHex->equals($other));
+                $this->assertFalse($this->nilUlidWithBytes->equals($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, bool}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function equalsProvider(): array
     {
         return [
-            'with null' => [null, false],
-            'with int' => [123, false],
-            'with float' => [123.456, false],
-            'with string' => ['foobar', false],
-            'with string Nil ULID' => [self::NIL_ULID, true],
-            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', false],
-            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', false],
-            'with hex Nil ULID' => ['00000000000000000000000000000000', true],
-            'with bytes Nil ULID' => ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", true],
-            'with bool true' => [true, false],
-            'with bool false' => [false, false],
+            'with null' => [null, Comparison::NotEqual],
+            'with int' => [123, Comparison::NotEqual],
+            'with float' => [123.456, Comparison::NotEqual],
+            'with string' => ['foobar', Comparison::NotEqual],
+            'with string Nil ULID' => [self::NIL_ULID, Comparison::Equal],
+            'with string Max ULID' => ['7FFFFFFFFFFFFFFFFFFFFFFFFF', Comparison::NotEqual],
+            'with string Max ULID all lower' => ['7fffffffffffffffffffffffff', Comparison::NotEqual],
+            'with hex Nil ULID' => ['00000000000000000000000000000000', Comparison::Equal],
+            'with bytes Nil ULID' => [
+                "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
+                Comparison::Equal,
+            ],
+            'with bool true' => [true, Comparison::NotEqual],
+            'with bool false' => [false, Comparison::NotEqual],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -270,7 +323,7 @@ class NilUlidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                false,
+                Comparison::NotEqual,
             ],
             'with Stringable class returning ULID bytes' => [
                 new class {
@@ -279,16 +332,21 @@ class NilUlidTest extends TestCase
                         return "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
                     }
                 },
-                true,
+                Comparison::Equal,
             ],
-            'with NilUlid' => [new Ulid\NilUlid(), true],
-            'with MaxUlid' => [new Ulid\MaxUlid(), false],
-            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), true],
-            'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), true],
+            'with NilUlid' => [new Ulid\NilUlid(), Comparison::Equal],
+            'with MaxUlid' => [new Ulid\MaxUlid(), Comparison::NotEqual],
+            'with NilUlid from string' => [new Ulid\NilUlid(self::NIL_ULID), Comparison::Equal],
+            'with NilUlid from hex' => [new Ulid\NilUlid('00000000000000000000000000000000'), Comparison::Equal],
             'with NilUlid from bytes' => [
                 new Ulid\NilUlid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
-                true,
+                Comparison::Equal,
             ],
+            'with BinaryIdentifier class' => [
+                new MockBinaryIdentifier("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
+                Comparison::Equal,
+            ],
+            'with NilUuid' => [new NilUuid(), Comparison::Equal],
         ];
     }
 

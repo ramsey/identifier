@@ -7,8 +7,11 @@ namespace Ramsey\Test\Identifier\Uuid;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Variant;
+use Ramsey\Test\Identifier\Comparison;
+use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -208,32 +211,58 @@ class MaxUuidTest extends TestCase
     /**
      * @dataProvider compareToProvider
      */
-    public function testCompareTo(mixed $other, int $expected): void
+    public function testCompareTo(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->maxUuid->compareTo($other));
-        $this->assertSame($expected, $this->maxUuidWithString->compareTo($other));
-        $this->assertSame($expected, $this->maxUuidWithHex->compareTo($other));
-        $this->assertSame($expected, $this->maxUuidWithBytes->compareTo($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertSame(0, $this->maxUuid->compareTo($other));
+                $this->assertSame(0, $this->maxUuidWithString->compareTo($other));
+                $this->assertSame(0, $this->maxUuidWithHex->compareTo($other));
+                $this->assertSame(0, $this->maxUuidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::GreaterThan:
+                $this->assertGreaterThan(0, $this->maxUuid->compareTo($other));
+                $this->assertGreaterThan(0, $this->maxUuidWithString->compareTo($other));
+                $this->assertGreaterThan(0, $this->maxUuidWithHex->compareTo($other));
+                $this->assertGreaterThan(0, $this->maxUuidWithBytes->compareTo($other));
+
+                break;
+            case Comparison::LessThan:
+                $this->assertLessThan(0, $this->maxUuid->compareTo($other));
+                $this->assertLessThan(0, $this->maxUuidWithString->compareTo($other));
+                $this->assertLessThan(0, $this->maxUuidWithHex->compareTo($other));
+                $this->assertLessThan(0, $this->maxUuidWithBytes->compareTo($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, int}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function compareToProvider(): array
     {
         return [
-            'with null' => [null, 36],
-            'with int' => [123, 53],
-            'with float' => [123.456, 53],
-            'with string' => ['foobar', -9],
-            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', 54],
-            'with string Max UUID' => [self::MAX_UUID, 0],
-            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), 0],
-            'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', 0],
-            'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 0],
-            'with bytes Max UUID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", 0],
-            'with bool true' => [true, 53],
-            'with bool false' => [false, 36],
+            'with null' => [null, Comparison::GreaterThan],
+            'with int' => [123, Comparison::GreaterThan],
+            'with float' => [123.456, Comparison::GreaterThan],
+            'with string' => ['foobar', Comparison::LessThan],
+            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', Comparison::GreaterThan],
+            'with string Max UUID' => [self::MAX_UUID, Comparison::Equal],
+            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), Comparison::Equal],
+            'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', Comparison::Equal],
+            'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', Comparison::Equal],
+            'with bytes Max UUID' => [
+                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                Comparison::Equal,
+            ],
+            'with bool true' => [true, Comparison::GreaterThan],
+            'with bool false' => [false, Comparison::GreaterThan],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -241,7 +270,7 @@ class MaxUuidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                -9,
+                Comparison::LessThan,
             ],
             'with Stringable class returning UUID bytes' => [
                 new class {
@@ -250,16 +279,21 @@ class MaxUuidTest extends TestCase
                         return "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
                     }
                 },
-                0,
+                Comparison::Equal,
             ],
-            'with NilUuid' => [new Uuid\NilUuid(), 54],
-            'with MaxUuid' => [new Uuid\MaxUuid(), 0],
-            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), 0],
-            'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), 0],
+            'with NilUuid' => [new Uuid\NilUuid(), Comparison::GreaterThan],
+            'with MaxUuid' => [new Uuid\MaxUuid(), Comparison::Equal],
+            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), Comparison::Equal],
+            'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), Comparison::Equal],
             'with MaxUuid from bytes' => [
                 new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
-                0,
+                Comparison::Equal,
             ],
+            'with BinaryIdentifier class' => [
+                new MockBinaryIdentifier("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
+                Comparison::Equal,
+            ],
+            'with MaxUlid' => [new MaxUlid(), Comparison::Equal],
         ];
     }
 
@@ -274,32 +308,51 @@ class MaxUuidTest extends TestCase
     /**
      * @dataProvider equalsProvider
      */
-    public function testEquals(mixed $other, bool $expected): void
+    public function testEquals(mixed $other, Comparison $comparison): void
     {
-        $this->assertSame($expected, $this->maxUuid->equals($other));
-        $this->assertSame($expected, $this->maxUuidWithString->equals($other));
-        $this->assertSame($expected, $this->maxUuidWithHex->equals($other));
-        $this->assertSame($expected, $this->maxUuidWithBytes->equals($other));
+        switch ($comparison) {
+            case Comparison::Equal:
+                $this->assertTrue($this->maxUuid->equals($other));
+                $this->assertTrue($this->maxUuidWithString->equals($other));
+                $this->assertTrue($this->maxUuidWithHex->equals($other));
+                $this->assertTrue($this->maxUuidWithBytes->equals($other));
+
+                break;
+            case Comparison::NotEqual:
+                $this->assertFalse($this->maxUuid->equals($other));
+                $this->assertFalse($this->maxUuidWithString->equals($other));
+                $this->assertFalse($this->maxUuidWithHex->equals($other));
+                $this->assertFalse($this->maxUuidWithBytes->equals($other));
+
+                break;
+            default:
+                $this->markAsRisky();
+
+                break;
+        }
     }
 
     /**
-     * @return array<string, array{mixed, bool}>
+     * @return array<string, array{mixed, Comparison}>
      */
     public function equalsProvider(): array
     {
         return [
-            'with null' => [null, false],
-            'with int' => [123, false],
-            'with float' => [123.456, false],
-            'with string' => ['foobar', false],
-            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', false],
-            'with string Max UUID' => [self::MAX_UUID, true],
-            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), true],
-            'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', true],
-            'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', true],
-            'with bytes Max UUID' => ["\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff", true],
-            'with bool true' => [true, false],
-            'with bool false' => [false, false],
+            'with null' => [null, Comparison::NotEqual],
+            'with int' => [123, Comparison::NotEqual],
+            'with float' => [123.456, Comparison::NotEqual],
+            'with string' => ['foobar', Comparison::NotEqual],
+            'with string Nil UUID' => ['00000000-0000-0000-0000-000000000000', Comparison::NotEqual],
+            'with string Max UUID' => [self::MAX_UUID, Comparison::Equal],
+            'with string Max UUID all caps' => [strtoupper(self::MAX_UUID), Comparison::Equal],
+            'with hex Max UUID' => ['ffffffffffffffffffffffffffffffff', Comparison::Equal],
+            'with hex Max UUID all caps' => ['FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', Comparison::Equal],
+            'with bytes Max UUID' => [
+                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
+                Comparison::Equal,
+            ],
+            'with bool true' => [true, Comparison::NotEqual],
+            'with bool false' => [false, Comparison::NotEqual],
             'with Stringable class' => [
                 new class {
                     public function __toString(): string
@@ -307,7 +360,7 @@ class MaxUuidTest extends TestCase
                         return 'foobar';
                     }
                 },
-                false,
+                Comparison::NotEqual,
             ],
             'with Stringable class returning UUID bytes' => [
                 new class {
@@ -316,17 +369,22 @@ class MaxUuidTest extends TestCase
                         return "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
                     }
                 },
-                true,
+                Comparison::Equal,
             ],
-            'with NilUuid' => [new Uuid\NilUuid(), false],
-            'with MaxUuid' => [new Uuid\MaxUuid(), true],
-            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), true],
-            'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), true],
+            'with NilUuid' => [new Uuid\NilUuid(), Comparison::NotEqual],
+            'with MaxUuid' => [new Uuid\MaxUuid(), Comparison::Equal],
+            'with MaxUuid from string' => [new Uuid\MaxUuid(self::MAX_UUID), Comparison::Equal],
+            'with MaxUuid from hex' => [new Uuid\MaxUuid('ffffffffffffffffffffffffffffffff'), Comparison::Equal],
             'with MaxUuid from bytes' => [
                 new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
-                true,
+                Comparison::Equal,
             ],
-            'with array' => [[], false],
+            'with array' => [[], Comparison::NotEqual],
+            'with BinaryIdentifier class' => [
+                new MockBinaryIdentifier("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"),
+                Comparison::Equal,
+            ],
+            'with MaxUlid' => [new MaxUlid(), Comparison::Equal],
         ];
     }
 

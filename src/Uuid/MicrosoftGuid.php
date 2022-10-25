@@ -24,6 +24,7 @@ use Ramsey\Identifier\NodeBasedUuidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
+use Ramsey\Identifier\UuidIdentifier;
 
 use function assert;
 use function bin2hex;
@@ -31,6 +32,7 @@ use function hex2bin;
 use function hexdec;
 use function sprintf;
 use function str_replace;
+use function strcmp;
 use function strlen;
 use function substr;
 
@@ -66,6 +68,7 @@ use function substr;
 final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
 {
     use NodeBasedUuid {
+        compareTo as private baseCompareTo;
         getDateTime as private baseGetDateTime;
         getFormat as private baseGetFormat;
         getNode as private baseGetNode;
@@ -109,6 +112,22 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
         assert(isset($data['guid']), "'guid' is not set in serialized data");
 
         $this->__construct($data['guid']);
+    }
+
+    public function compareTo(mixed $other): int
+    {
+        if ($other instanceof MicrosoftGuid) {
+            return strcmp($this->toBytes(), $other->toBytes());
+        }
+
+        // We need to compare with strings here, since Microsoft GUID bytes
+        // are in a different order than UUID bytes.
+        if ($other instanceof UuidIdentifier) {
+            /** @psalm-suppress ImpureMethodCall UuidIdentifier doesn't make any purity guarantees. */
+            return strcmp($this->toString(), $other->toString());
+        }
+
+        return $this->baseCompareTo($other);
     }
 
     /**

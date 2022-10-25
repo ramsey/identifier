@@ -19,12 +19,14 @@ namespace Ramsey\Identifier\Ulid\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\IntegerOverflowException;
 use DateTimeImmutable;
+use Identifier\BinaryIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Stringable;
 
 use function assert;
+use function bin2hex;
 use function gettype;
 use function hex2bin;
 use function hexdec;
@@ -33,6 +35,7 @@ use function number_format;
 use function sprintf;
 use function str_pad;
 use function strcasecmp;
+use function strcmp;
 use function strlen;
 use function strtolower;
 use function strtoupper;
@@ -112,6 +115,11 @@ trait StandardUlid
      */
     public function compareTo(mixed $other): int
     {
+        if ($other instanceof BinaryIdentifier) {
+            /** @psalm-suppress ImpureMethodCall */
+            return strcmp($this->toBytes(), $other->toBytes());
+        }
+
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
             if ($this->isValid($other, strlen($other))) {
@@ -225,23 +233,20 @@ trait StandardUlid
             Format::FORMAT_HEX => match ($formatOfUlid) {
                 Format::FORMAT_ULID => sprintf(
                     '%032s',
-                    BigInteger::fromArbitraryBase($ulid, Format::CROCKFORD32_ALPHABET)->toBase(16),
+                    BigInteger::fromArbitraryBase(strtoupper($ulid), Format::CROCKFORD32_ALPHABET)->toBase(16),
                 ),
                 Format::FORMAT_HEX => strtolower($ulid),
-                Format::FORMAT_BYTES => sprintf(
-                    '%032s',
-                    BigInteger::fromBytes($ulid, false)->toBase(16),
-                ),
+                Format::FORMAT_BYTES => bin2hex($ulid),
             },
             Format::FORMAT_BYTES => match ($formatOfUlid) {
                 Format::FORMAT_ULID => str_pad(
-                    BigInteger::fromArbitraryBase($ulid, Format::CROCKFORD32_ALPHABET)->toBytes(false),
+                    BigInteger::fromArbitraryBase(strtoupper($ulid), Format::CROCKFORD32_ALPHABET)->toBytes(false),
                     16,
                     "\x00",
                     STR_PAD_LEFT,
                 ),
                 Format::FORMAT_HEX => str_pad((string) hex2bin($ulid), 16, "\x00", STR_PAD_LEFT),
-                Format::FORMAT_BYTES => str_pad($ulid, 16, "\x00", STR_PAD_LEFT),
+                Format::FORMAT_BYTES => $ulid,
             },
         };
     }
