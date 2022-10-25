@@ -265,6 +265,22 @@ class UntypedUuidTest extends TestCase
             'date' => BadMethodCall::class,
         ];
 
+        // This looks like a version 2 UUID, but the domain is wrong, so it
+        // should be converted to a NonstandardUuid.
+        $expectedNonstandardV2 = [
+            'type' => NonstandardUuid::class,
+            'variant' => Variant::Rfc4122,
+            'version' => Version::DceSecurity,
+            'json' => '"0001e240-4103-21ed-80ff-0100499602d2"',
+            'string' => '0001e240-4103-21ed-80ff-0100499602d2',
+            'bytes' => "\x00\x01\xe2\x40\x41\x03\x21\xed\x80\xff\x01\x00\x49\x96\x02\xd2",
+            'hex' => '0001e240410321ed80ff0100499602d2',
+            'int' => '9781212151673653175651340685542098',
+            'urn' => 'urn:uuid:0001e240-4103-21ed-80ff-0100499602d2',
+            'node' => BadMethodCall::class,
+            'date' => BadMethodCall::class,
+        ];
+
         return [
             'max string' => ['value' => $expectedMax['string'], 'expected' => $expectedMax],
             'max bytes' => ['value' => $expectedMax['bytes'], 'expected' => $expectedMax],
@@ -299,6 +315,15 @@ class UntypedUuidTest extends TestCase
             'nonstandard string' => ['value' => $expectedNonstandard['string'], 'expected' => $expectedNonstandard],
             'nonstandard bytes' => ['value' => $expectedNonstandard['bytes'], 'expected' => $expectedNonstandard],
             'nonstandard hex' => ['value' => $expectedNonstandard['hex'], 'expected' => $expectedNonstandard],
+            'nonstandard v2 string' => [
+                'value' => $expectedNonstandardV2['string'],
+                'expected' => $expectedNonstandardV2,
+            ],
+            'nonstandard v2 bytes' => [
+                'value' => $expectedNonstandardV2['bytes'],
+                'expected' => $expectedNonstandardV2,
+            ],
+            'nonstandard v2 hex' => ['value' => $expectedNonstandardV2['hex'], 'expected' => $expectedNonstandardV2],
         ];
     }
 

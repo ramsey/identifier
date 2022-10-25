@@ -169,7 +169,15 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
 
             $this->typedUuid = match (true) {
                 $version === Version::V1 && $variant === Variant::Rfc4122 => new UuidV1($this->uuid),
-                $version === Version::V2 && $variant === Variant::Rfc4122 => new UuidV2($this->uuid),
+                $version === Version::V2 && $variant === Variant::Rfc4122 => (
+                    static function (string $uuid): UuidV2 | NonstandardUuid {
+                        try {
+                            return new UuidV2($uuid);
+                        } catch (InvalidArgument) {
+                            return new NonstandardUuid($uuid);
+                        }
+                    }
+                )($this->uuid),
                 $version === Version::V3 && $variant === Variant::Rfc4122 => new UuidV3($this->uuid),
                 $version === Version::V4 && $variant === Variant::Rfc4122 => new UuidV4($this->uuid),
                 $version === Version::V5 && $variant === Variant::Rfc4122 => new UuidV5($this->uuid),
