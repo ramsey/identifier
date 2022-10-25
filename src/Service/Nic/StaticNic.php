@@ -22,13 +22,13 @@ use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Uuid\Utility\Format;
 
 use function bin2hex;
+use function dechex;
 use function hex2bin;
 use function is_int;
 use function pack;
 use function sprintf;
 use function strlen;
 use function strspn;
-use function substr;
 use function unpack;
 
 /**
@@ -54,26 +54,9 @@ final class StaticNic implements Nic
     public function __construct(int | string $address, private readonly Os $os = new PhpOs())
     {
         if (is_int($address)) {
-            if ($this->os->getIntSize() >= 8) {
-                /** @var non-empty-string $address */
-                $address = substr(bin2hex(pack('J', $address | 0x010000000000)), -12);
-            } else {
-                /** @var int[] $parts */
-                $parts = unpack('n2', pack('N', $address));
-
-                /** @var non-empty-string $address */
-                $address = bin2hex(pack('n3', 0x0100, ...$parts));
-            }
-        } elseif (strspn($address, Format::MASK_HEX) === strlen($address) && strlen($address) <= 12) {
-            /** @var int[] $parts */
-            $parts = unpack('n3', (string) hex2bin(sprintf('%012s', $address)));
-
-            /** @var non-empty-string $address */
-            $address = bin2hex(pack('n3', $parts[1] | 0x0100, $parts[2], $parts[3]));
+            $address = $this->parseIntegerAddress($address);
         } else {
-            throw new InvalidArgument(
-                'Address must be a 48-bit integer or hexadecimal string',
-            );
+            $address = $this->parseHexadecimalAddress($address);
         }
 
         $this->address = $address;
@@ -82,5 +65,40 @@ final class StaticNic implements Nic
     public function address(): string
     {
         return $this->address;
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    private function parseIntegerAddress(int $address): string
+    {
+        if ($this->os->getIntSize() >= 8) {
+            /** @var non-empty-string */
+            return sprintf('%012s', dechex($address | 0x010000000000));
+        }
+
+        /** @var int[] $parts */
+        $parts = unpack('n2', pack('N', $address));
+
+        /** @var non-empty-string */
+        return bin2hex(pack('n3', 0x0100, ...$parts));
+    }
+
+    /**
+     * @return non-empty-string
+     *
+     * @throws InvalidArgument
+     */
+    private function parseHexadecimalAddress(string $address): string
+    {
+        if (strspn($address, Format::MASK_HEX) !== strlen($address) || strlen($address) > 12) {
+            throw new InvalidArgument('Address must be a 48-bit integer or hexadecimal string');
+        }
+
+        /** @var int[] $parts */
+        $parts = unpack('n3', (string) hex2bin(sprintf('%012s', $address)));
+
+        /** @var non-empty-string */
+        return bin2hex(pack('n3', $parts[1] | 0x0100, $parts[2], $parts[3]));
     }
 }
