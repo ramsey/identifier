@@ -607,9 +607,9 @@ class MicrosoftGuidTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithString->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithHex->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithBytes->format('c'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
         $this->assertSame('1550863792c9', $guidWithString->getNode());
         $this->assertSame('1550863792c9', $guidWithHex->getNode());
         $this->assertSame('1550863792c9', $guidWithBytes->getNode());
@@ -631,9 +631,9 @@ class MicrosoftGuidTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTimeForGuidWithString->format('c'));
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTimeForGuidWithHex->format('c'));
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTimeForGuidWithBytes->format('c'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
         $this->assertSame(DceDomain::Group, $guidWithString->getLocalDomain());
         $this->assertSame(DceDomain::Group, $guidWithHex->getLocalDomain());
         $this->assertSame(DceDomain::Group, $guidWithBytes->getLocalDomain());
@@ -661,9 +661,9 @@ class MicrosoftGuidTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithString->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithHex->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithBytes->format('c'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500628', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
         $this->assertSame('1550863792c9', $guidWithString->getNode());
         $this->assertSame('1550863792c9', $guidWithHex->getNode());
         $this->assertSame('1550863792c9', $guidWithBytes->getNode());
@@ -671,9 +671,9 @@ class MicrosoftGuidTest extends TestCase
 
     public function testVersion7Guid(): void
     {
-        $guidWithString = new Uuid\MicrosoftGuid('3922e67a-9300-7133-d80f-9197c75729de');
-        $guidWithHex = new Uuid\MicrosoftGuid('3922e67a93007133d80f9197c75729de');
-        $guidWithBytes = new Uuid\MicrosoftGuid("\x7a\xe6\x22\x39\x00\x93\x33\x71\xd8\x0f\x91\x97\xc7\x57\x29\xde");
+        $guidWithString = new Uuid\MicrosoftGuid('3922e67a-910c-704c-bbd3-a5765a69f0d9');
+        $guidWithHex = new Uuid\MicrosoftGuid('3922e67a910c704cbbd3a5765a69f0d9');
+        $guidWithBytes = new Uuid\MicrosoftGuid("\x7a\xe6\x22\x39\x0c\x91\x4c\x70\xbb\xd3\xa5\x76\x5a\x69\xf0\xd9");
 
         $dateTimeForGuidWithString = $guidWithString->getDateTime();
         $dateTimeForGuidWithHex = $guidWithHex->getDateTime();
@@ -685,9 +685,9 @@ class MicrosoftGuidTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithString->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithHex->format('c'));
-        $this->assertSame('3960-10-02T03:47:44+00:00', $dateTimeForGuidWithBytes->format('c'));
+        $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeThrowsException(): void

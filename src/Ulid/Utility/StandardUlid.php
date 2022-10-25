@@ -64,7 +64,7 @@ trait StandardUlid
     private readonly int $format;
 
     /**
-     * Constructs a {@see UlidInterface} instance
+     * Constructs a {@see \Ramsey\Identifier\UlidIdentifier} instance
      *
      * @param string $ulid A representation of the ULID in either Crockford
      *     base 32 or bytes form
@@ -131,7 +131,7 @@ trait StandardUlid
                 $other = $this->getFormat(Format::FORMAT_ULID, strtr($other, 'IiLlOo', '111100'));
             }
 
-            return strcasecmp($this->getFormat(Format::FORMAT_ULID), $other);
+            return strcasecmp($this->toString(), $other);
         }
 
         throw new NotComparable(sprintf(
@@ -285,7 +285,7 @@ trait StandardUlid
                     "\x00",
                     STR_PAD_LEFT,
                 ),
-                Format::FORMAT_HEX => str_pad((string) hex2bin($ulid), 16, "\x00", STR_PAD_LEFT),
+                Format::FORMAT_HEX => (string) hex2bin($ulid),
                 Format::FORMAT_BYTES => $ulid,
             },
         };

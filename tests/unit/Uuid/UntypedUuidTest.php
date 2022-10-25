@@ -93,7 +93,10 @@ class UntypedUuidTest extends TestCase
         }
 
         if ($expected['date'] instanceof DateTimeInterface) {
-            $this->assertSame($expected['date']->format('c'), $untypedUuid->getDateTime()->format('c'));
+            $this->assertSame(
+                $expected['date']->format('Y-m-d H:i:s.u'),
+                $untypedUuid->getDateTime()->format('Y-m-d H:i:s.u'),
+            );
         } else {
             try {
                 $date = $untypedUuid->getDateTime();
@@ -150,7 +153,7 @@ class UntypedUuidTest extends TestCase
             'int' => '132240405058036425907283047087500034050',
             'urn' => 'urn:uuid:637c935a-4107-11ed-b878-0242ac120002',
             'node' => '0242ac120002',
-            'date' => new DateTimeImmutable('2022-09-30T21:32:31+00:00'),
+            'date' => new DateTimeImmutable('2022-09-30 21:32:30.803849'),
         ];
 
         $expectedV2 = [
@@ -164,7 +167,7 @@ class UntypedUuidTest extends TestCase
             'int' => '9781212151673653104156696601035474',
             'urn' => 'urn:uuid:0001e240-4103-21ed-8001-0100499602d2',
             'node' => '0100499602d2',
-            'date' => new DateTimeImmutable('2022-09-30T21:01:06+00:00'),
+            'date' => new DateTimeImmutable('2022-09-30 21:01:05.906074'),
         ];
 
         $expectedV3 = [
@@ -220,7 +223,7 @@ class UntypedUuidTest extends TestCase
             'int' => '40977940692298833571978962982688391170',
             'urn' => 'urn:uuid:1ed41076-37c9-635a-b878-0242ac120002',
             'node' => '0242ac120002',
-            'date' => new DateTimeImmutable('2022-09-30T21:32:31+00:00'),
+            'date' => new DateTimeImmutable('2022-09-30 21:32:30.803849'),
         ];
 
         $expectedV7 = [
@@ -234,7 +237,7 @@ class UntypedUuidTest extends TestCase
             'int' => '2012345944452046749472145290585833474',
             'urn' => 'urn:uuid:01839050-b198-71ed-b878-0242ac120002',
             'node' => BadMethodCall::class,
-            'date' => new DateTimeImmutable('2022-09-30T21:32:31+00:00'),
+            'date' => new DateTimeImmutable('2022-09-30 21:32:31.000000'),
         ];
 
         $expectedV8 = [

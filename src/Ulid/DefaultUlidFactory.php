@@ -51,8 +51,8 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * Constructs a factory for creating ULIDs
      *
-     * @param BytesGenerator $bytesGenerator A random generator used to
-     *     generate bytes; defaults to {@see RandomBytesGenerator}
+     * @param BytesGenerator $bytesGenerator A bytes generator used to
+     *     generate bytes; defaults to {@see MonotonicBytesGenerator}
      */
     public function __construct(
         private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator(),

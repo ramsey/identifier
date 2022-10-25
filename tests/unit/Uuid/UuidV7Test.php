@@ -518,4 +518,18 @@ class UuidV7Test extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
     }
+
+    public function testMaximumDate(): void
+    {
+        $uuid = new Uuid\UuidV7('ffffffff-ffff-7fff-bfff-ffffffffffff');
+
+        $this->assertSame('10889-08-02 05:31:50.655000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+    }
+
+    public function testMinimumDate(): void
+    {
+        $uuid = new Uuid\UuidV7('00000000-0000-7fff-bfff-ffffffffffff');
+
+        $this->assertSame('1970-01-01 00:00:00.000000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+    }
 }

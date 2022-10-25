@@ -22,14 +22,9 @@ use DateTimeImmutable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Uuid\Version;
 
-use function explode;
 use function hexdec;
-use function number_format;
 use function sprintf;
-use function str_pad;
 use function substr;
-
-use const STR_PAD_LEFT;
 
 /**
  * This internal trait provides functionality common to time-based UUIDs
@@ -58,24 +53,25 @@ trait TimeBasedUuid
         $epochNanoseconds = BigInteger::fromBase($this->getTimestamp(), 16)
             ->minus(BigInteger::fromBytes(Time::GREGORIAN_OFFSET_BIN));
 
-        $unixTimestamp = $epochNanoseconds->dividedBy(
+        $unixTimestamp = $epochNanoseconds->toBigDecimal()->dividedBy(
             Time::NANOSECOND_INTERVALS,
+            6,
             RoundingMode::HALF_UP,
         );
 
-        $split = explode('.', (string) $unixTimestamp, 2);
-
-        return new DateTimeImmutable(
-            '@'
-            . $split[0]
-            . '.'
-            . str_pad($split[1] ?? '0', 6, '0', STR_PAD_LEFT),
-        );
+        return new DateTimeImmutable('@' . $unixTimestamp);
     }
 
     private function getDateTimeUnix(): DateTimeImmutable
     {
-        $unixTimestamp = number_format(hexdec($this->getTimestamp()) / 1000, 6, '.', '');
+        /** @psalm-suppress ImpureMethodCall */
+        $epochMilliseconds = BigInteger::fromBase($this->getTimestamp(), 16);
+
+        $unixTimestamp = $epochMilliseconds->toBigDecimal()->dividedBy(
+            1000,
+            3,
+            RoundingMode::HALF_UP,
+        );
 
         return new DateTimeImmutable('@' . $unixTimestamp);
     }

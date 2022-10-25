@@ -476,7 +476,7 @@ class UuidV2Test extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTime->format('c'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromHexUuid(): void
@@ -486,7 +486,7 @@ class UuidV2Test extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTime->format('c'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromBytesUuid(): void
@@ -496,7 +496,7 @@ class UuidV2Test extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02T03:46:38+00:00', $dateTime->format('c'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetNode(): void
@@ -550,5 +550,19 @@ class UuidV2Test extends TestCase
                 'expected' => '27433d43-011d-2a6a-9100-1550863792c9',
             ],
         ];
+    }
+
+    public function testMaximumDate(): void
+    {
+        $uuid = new Uuid\UuidV2('00000001-ffff-2fff-bf00-ffffffffffff');
+
+        $this->assertSame('5236-03-31 21:13:51.187968', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+    }
+
+    public function testMinimumDate(): void
+    {
+        $uuid = new Uuid\UuidV2('00000001-0000-2000-bf00-ffffffffffff');
+
+        $this->assertSame('1582-10-15 00:00:00.000000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
 }
