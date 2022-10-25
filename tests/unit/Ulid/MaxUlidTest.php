@@ -431,4 +431,21 @@ class MaxUlidTest extends TestCase
             ],
         ];
     }
+
+    public function testToUuid(): void
+    {
+        $uuid = $this->maxUlid->toUuid();
+
+        $this->assertInstanceOf(MaxUuid::class, $uuid);
+        $this->assertTrue($this->maxUlid->equals($uuid));
+    }
+
+    public function testToUuidV7(): void
+    {
+        $expectedBytes = "\xff\xff\xff\xff\xff\xff\x7f\xff\xbf\xff\xff\xff\xff\xff\xff\xff";
+        $uuid = $this->maxUlid->toUuidV7();
+
+        $this->assertSame($expectedBytes, $uuid->toBytes());
+        $this->assertFalse($this->maxUlid->equals($uuid));
+    }
 }

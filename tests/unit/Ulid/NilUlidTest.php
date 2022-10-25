@@ -395,4 +395,21 @@ class NilUlidTest extends TestCase
         $this->assertSame($int, $this->nilUlidWithHex->toInteger());
         $this->assertSame($int, $this->nilUlidWithBytes->toInteger());
     }
+
+    public function testToUuid(): void
+    {
+        $uuid = $this->nilUlid->toUuid();
+
+        $this->assertInstanceOf(NilUuid::class, $uuid);
+        $this->assertTrue($this->nilUlid->equals($uuid));
+    }
+
+    public function testToUuidV7(): void
+    {
+        $expectedBytes = "\x00\x00\x00\x00\x00\x00\x70\x00\x80\x00\x00\x00\x00\x00\x00\x00";
+        $uuid = $this->nilUlid->toUuidV7();
+
+        $this->assertSame($expectedBytes, $uuid->toBytes());
+        $this->assertFalse($this->nilUlid->equals($uuid));
+    }
 }

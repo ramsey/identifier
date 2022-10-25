@@ -462,4 +462,36 @@ class UlidTest extends TestCase
         $this->assertSame('01840b78ca760265d11cab0f492908af', $ulid->toHexadecimal());
         $this->assertSame("\x01\x84\x0b\x78\xca\x76\x02\x65\xd1\x1c\xab\x0f\x49\x29\x08\xaf", $ulid->toBytes());
     }
+
+    public function testToUuidWhenUlidBytesAreAlreadyForUuidVersion7(): void
+    {
+        $ulidBytes = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
+        $ulid = new Ulid($ulidBytes);
+        $uuid = $ulid->toUuid();
+
+        $this->assertInstanceOf(UuidV7::class, $uuid);
+        $this->assertTrue($ulid->equals($uuid));
+    }
+
+    public function testToUuidWhenUlidBytesAreForNonstandardUuid(): void
+    {
+        $ulidBytes = "\x01\x7f\x22\xe2\x79\xb0\x4c\xc3\x68\xc4\xdc\x0c\x0c\x07\x39\x8f";
+        $ulid = new Ulid($ulidBytes);
+        $uuid = $ulid->toUuid();
+
+        $this->assertInstanceOf(NonstandardUuid::class, $uuid);
+        $this->assertTrue($ulid->equals($uuid));
+    }
+
+    public function testToUuidV7(): void
+    {
+        $expectedBytes = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\xa8\xc4\xdc\x0c\x0c\x07\x39\x8f";
+
+        $ulidBytes = "\x01\x7f\x22\xe2\x79\xb0\x4c\xc3\x68\xc4\xdc\x0c\x0c\x07\x39\x8f";
+        $ulid = new Ulid($ulidBytes);
+        $uuid = $ulid->toUuidV7();
+
+        $this->assertSame($expectedBytes, $uuid->toBytes());
+        $this->assertFalse($ulid->equals($uuid));
+    }
 }

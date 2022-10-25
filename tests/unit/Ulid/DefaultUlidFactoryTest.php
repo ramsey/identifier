@@ -14,6 +14,7 @@ use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
 use Ramsey\Identifier\UlidFactory;
+use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function gmdate;
@@ -327,5 +328,56 @@ class DefaultUlidFactoryTest extends TestCase
         $this->expectExceptionMessage('Timestamp may not be earlier than the Unix Epoch');
 
         $this->factory->createFromDateTime(new DateTimeImmutable('1969-12-31 23:59:59.999999'));
+    }
+
+    /**
+     * @dataProvider createFromUuidProvider
+     */
+    public function testCreateFromUuid(string $bytes): void
+    {
+        $ulidFactory = new DefaultUlidFactory();
+        $uuidFactory = new DefaultUuidFactory();
+        $uuid = $uuidFactory->createFromBytes($bytes)->toTypedUuid();
+        $ulid = $ulidFactory->createFromUuid($uuid);
+
+        $this->assertTrue($uuid->equals($ulid));
+        $this->assertSame($bytes, $ulid->toBytes());
+    }
+
+    /**
+     * @return array<array{bytes: string}>
+     */
+    public function createFromUuidProvider(): array
+    {
+        return [
+            // Max UUID
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Nil UUID
+            ['bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
+
+            // Standard UUIDs
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x8f\x00\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x3f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x4f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x5f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x6f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x7f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x8f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Microsoft GUIDs
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x1f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x2f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x3f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x4f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x5f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x6f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x7f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x8f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Nonstandard UUIDs
+            ['bytes' => "\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33"],
+        ];
     }
 }

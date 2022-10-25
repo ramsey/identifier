@@ -27,6 +27,7 @@ use Ramsey\Identifier\Ulid\Utility\Validation;
 use Ramsey\Identifier\UlidFactory;
 use Ramsey\Identifier\UlidIdentifier;
 use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\UuidIdentifier;
 
 use function is_int;
 use function is_string;
@@ -172,6 +173,23 @@ final class DefaultUlidFactory implements UlidFactory
         }
 
         throw new InvalidArgument('Identifier must be a valid ULID string representation');
+    }
+
+    /**
+     * Returns a ULID created from the value of a UUID
+     *
+     * ULIDs are defined as being generated from a timestamp based on a count of
+     * milliseconds since the Unix Epoch. The only type of UUID that is binary
+     * compatible with the ULID specification is version 7. Only version 7 UUIDs
+     * will produce sortable ULIDs with meaningful timestamps.
+     *
+     * That said, any type of UUID may be converted to a ULID representation,
+     * though the ULID produced may not be sortable or contain any meaningful
+     * timestamp information.
+     */
+    public function createFromUuid(UuidIdentifier $uuid): UlidIdentifier
+    {
+        return $this->createFromBytes($uuid->toBytes());
     }
 
     public function max(): MaxUlid
