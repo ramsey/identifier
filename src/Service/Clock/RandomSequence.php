@@ -29,7 +29,7 @@ use const PHP_INT_MAX;
  */
 final class RandomSequence implements Sequence
 {
-    public function value(string $node, DateTimeInterface $dateTime): int
+    public function value(int | string $node, DateTimeInterface $dateTime): int
     {
         return random_int(0, PHP_INT_MAX);
     }

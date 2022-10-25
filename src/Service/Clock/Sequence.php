@@ -27,10 +27,11 @@ interface Sequence
     /**
      * Calculates and returns a clock sequence value
      *
-     * @param non-empty-string $node A 12-character hexadecimal string
-     *     representing the system node, or MAC address; the Sequence should
+     * @param int | non-empty-string $node A value that identifies the machine
+     *     or node; this may be the MAC address, or it may be some other
+     *     identifier, according to the application's need; the Sequence should
      *     compare this node to a previously-stored node and, if it has changed,
-     *     change the clock sequence value
+     *     regenerate the clock sequence value
      * @param DateTimeInterface $dateTime A date-time value for comparison to a
      *     previously-stored date-time value; if this value is less than or
      *     equal to the previous value, then the Sequence should increment the
@@ -38,5 +39,5 @@ interface Sequence
      *
      * @return int<0, max>
      */
-    public function value(string $node, DateTimeInterface $dateTime): int;
+    public function value(int | string $node, DateTimeInterface $dateTime): int;
 }

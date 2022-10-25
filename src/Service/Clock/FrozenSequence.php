@@ -30,7 +30,7 @@ final class FrozenSequence implements Sequence
     {
     }
 
-    public function value(string $node, DateTimeInterface $dateTime): int
+    public function value(int | string $node, DateTimeInterface $dateTime): int
     {
         return $this->value;
     }
