@@ -59,11 +59,14 @@ final class MonotonicBytesGenerator implements BytesGenerator
     /** @var int[] */
     private static array $seedParts;
 
+    private readonly int $intSize;
+
     public function __construct(
         private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
         private readonly Clock $clock = new SystemClock(),
-        private readonly Os $os = new PhpOs(),
+        Os $os = new PhpOs(),
     ) {
+        $this->intSize = $os->getIntSize();
     }
 
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
@@ -79,7 +82,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
             $time = $this->increment();
         }
 
-        if ($this->os->getIntSize() >= 8) {
+        if ($this->intSize >= 8) {
             $time = substr(pack('J', (int) $time), -6);
         } else {
             $time = str_pad(BigInteger::of($time)->toBytes(false), 6, "\x00", STR_PAD_LEFT);
@@ -88,15 +91,12 @@ final class MonotonicBytesGenerator implements BytesGenerator
         /** @var non-empty-string $bytes */
         $bytes = $time . pack('n*', self::$rand[1], self::$rand[2], self::$rand[3], self::$rand[4], self::$rand[5]);
 
-        if ($length === 16) {
-            return $bytes;
-        } elseif ($length <= 16) {
-            /** @var non-empty-string */
-            return substr($bytes, 0, $length);
-        } else {
-            // If the caller requested more bytes, add more bytes.
-            return $bytes . random_bytes($length - 16);
-        }
+        /** @var non-empty-string */
+        return match (true) {
+            $length > 16 => $bytes . random_bytes($length - 16),
+            $length < 16 => substr($bytes, 0, $length),
+            default => $bytes,
+        };
     }
 
     private function randomize(string $time): void
@@ -162,7 +162,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
             $time = self::$time;
             $mtime = (int) substr($time, -9);
 
-            if ($this->os->getIntSize() >= 8 || strlen($time) < 10) {
+            if ($this->intSize >= 8 || strlen($time) < 10) {
                 $time = (string) ((int) $time + 1);
             } elseif ($mtime === 999999999) {
                 $time = (1 + (int) substr($time, 0, -9)) . '000000000';
