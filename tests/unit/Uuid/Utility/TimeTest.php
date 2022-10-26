@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
+use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -35,7 +36,6 @@ class TimeTest extends TestCase
      */
     public function testGetTimeBytesForGregorianEpochOn32Bit(DateTimeInterface $dateTime, string $expectedBytes): void
     {
-        // Force the 32-bit code path.
         $os = $this->mockery(Os::class, [
             'getIntSize' => 4,
         ]);
@@ -78,5 +78,72 @@ class TimeTest extends TestCase
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
 
         (new Time())->getTimeBytesForGregorianEpoch($dateTime);
+    }
+
+    /**
+     * @dataProvider getDateTimeForUuidProvider
+     */
+    public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
+    {
+        $uuid = (new DefaultUuidFactory())->createFromString($uuid);
+        $time = new Time();
+
+        $this->assertSame($expectedTime, $time->getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
+    }
+
+    /**
+     * @dataProvider getDateTimeForUuidProvider
+     */
+    public function testGetDateTimeForUuidOn32Bit(string $uuid, string $expectedTime): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getIntSize' => 4,
+        ]);
+
+        $uuid = (new DefaultUuidFactory())->createFromString($uuid);
+        $time = new Time($os);
+
+        $this->assertSame($expectedTime, $time->getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
+    }
+
+    /**
+     * @return array<string, array{uuid: string, expectedTime: string}>
+     */
+    public function getDateTimeForUuidProvider(): array
+    {
+        return [
+            'v1 UUID' => [
+                'uuid' => '27433d43-011d-1a6a-8161-1550863792c9',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
+            ],
+            'v2 UUID' => [
+                'uuid' => '27433d43-011d-2a6a-8101-1550863792c9',
+                'expectedTime' => '3960-10-02 03:46:37.628826',
+            ],
+            'v6 UUID' => [
+                'uuid' => 'a6a011d2-7433-6d43-8161-1550863792c9',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
+            ],
+            'v7 UUID' => [
+                'uuid' => '3922e67a-910c-704c-8bd3-a5765a69f0d9',
+                'expectedTime' => '3960-10-02 03:47:43.500000',
+            ],
+            'v1 GUID' => [
+                'uuid' => '27433d43-011d-1a6a-d161-1550863792c9',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
+            ],
+            'v2 GUID' => [
+                'uuid' => '27433d43-011d-2a6a-d101-1550863792c9',
+                'expectedTime' => '3960-10-02 03:46:37.628826',
+            ],
+            'v6 GUID' => [
+                'uuid' => 'a6a011d2-7433-6d43-d161-1550863792c9',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
+            ],
+            'v7 GUID' => [
+                'uuid' => '3922e67a-910c-704c-bbd3-a5765a69f0d9',
+                'expectedTime' => '3960-10-02 03:47:43.500000',
+            ],
+        ];
     }
 }
