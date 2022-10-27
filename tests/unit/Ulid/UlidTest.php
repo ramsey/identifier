@@ -173,7 +173,7 @@ class UlidTest extends TestCase
             'O:27:"Ramsey\\Identifier\\Ulid\\Ulid":1:{s:4:"ulid";s:26:"7ZZZZZZILOUZZZZZZZZZZZZZZZ";}';
 
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid ULID: "7ZZZZZZILOUZZZZZZZZZZZZZZZ');
+        $this->expectExceptionMessage('Invalid ULID: "7ZZZZZZILOUZZZZZZZZZZZZZZZ"');
 
         unserialize($serialized);
     }
