@@ -235,7 +235,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
             ['input' => 'foobar'],
             ['input' => -1],
             ['input' => '-9223372036854775808'],
-            ['input' => -2147483648],
+            ['input' => -2147483646],
         ];
     }
 
