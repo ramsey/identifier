@@ -28,7 +28,7 @@ use Identifier\IntegerIdentifier;
  * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes
  * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes
  */
-interface SnowflakeIdentifier extends BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier
+interface Snowflake extends BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier
 {
     /**
      * Returns a string representation of the Snowflake encoded as hexadecimal digits

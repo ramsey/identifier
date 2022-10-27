@@ -26,7 +26,7 @@ use Ramsey\Identifier\Uuid\Version;
  *
  * @link https://datatracker.ietf.org/doc/html/rfc4122 RFC 4122
  */
-interface UuidIdentifier extends BinaryIdentifier, IntegerIdentifier
+interface Uuid extends BinaryIdentifier, IntegerIdentifier
 {
     /**
      * Returns the variant of this UUID, describing the layout of the UUID

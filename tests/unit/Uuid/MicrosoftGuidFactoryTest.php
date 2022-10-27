@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\MicrosoftGuidFactory;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -132,7 +132,7 @@ class MicrosoftGuidFactoryTest extends TestCase
         string $uuidValue,
         string $expectedGuidValue,
     ): void {
-        $factory = new DefaultUuidFactory();
+        $factory = new UuidFactory();
         $uuid = $factory->createFromString($uuidValue);
 
         /** @var UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $typedUuid */

@@ -17,13 +17,13 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid;
 
 use JsonSerializable;
-use Ramsey\Identifier\Ulid\Utility\StandardUlid;
-use Ramsey\Identifier\UlidIdentifier;
+use Ramsey\Identifier\Ulid as UlidContract;
+use Ramsey\Identifier\Ulid\Utility\Standard;
 
 /**
  * @psalm-immutable
  */
-final class Ulid implements JsonSerializable, UlidIdentifier
+final class Ulid implements JsonSerializable, UlidContract
 {
-    use StandardUlid;
+    use Standard;
 }

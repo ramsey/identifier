@@ -18,6 +18,10 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\DateTimeIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
@@ -26,7 +30,6 @@ use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake\Utility\Format;
 use Ramsey\Identifier\Snowflake\Utility\Validation;
-use Ramsey\Identifier\SnowflakeFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
 use function hexdec;
@@ -39,7 +42,11 @@ use function unpack;
  *
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes
  */
-final class TwitterSnowflakeFactory implements SnowflakeFactory
+final class TwitterSnowflakeFactory implements
+    BinaryIdentifierFactory,
+    DateTimeIdentifierFactory,
+    IntegerIdentifierFactory,
+    StringIdentifierFactory
 {
     use Validation;
 

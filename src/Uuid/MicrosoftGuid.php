@@ -20,11 +20,11 @@ use DateTimeImmutable;
 use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\NodeBasedUuidIdentifier;
+use Ramsey\Identifier\NodeBasedUuid;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid\Utility\NodeBased;
 
 use function assert;
 use function bin2hex;
@@ -65,9 +65,9 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
+final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid
 {
-    use NodeBasedUuid {
+    use NodeBased {
         compareTo as private baseCompareTo;
         getDateTime as private baseGetDateTime;
         getFormat as private baseGetFormat;
@@ -122,7 +122,7 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuidIdentifier
 
         // We need to compare with strings here, since Microsoft GUID bytes
         // are in a different order than UUID bytes.
-        if ($other instanceof UuidIdentifier) {
+        if ($other instanceof Uuid) {
             /** @psalm-suppress ImpureMethodCall UuidIdentifier doesn't make any purity guarantees. */
             return strcmp($this->toString(), $other->toString());
         }

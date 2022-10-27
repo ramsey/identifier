@@ -21,7 +21,7 @@ use Brick\Math\RoundingMode;
 use DateTimeImmutable;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
-use Ramsey\Identifier\SnowflakeIdentifier;
+use Ramsey\Identifier\Snowflake;
 
 use function sprintf;
 use function substr;
@@ -46,7 +46,7 @@ final class Time
      *     the Unix Epoch to offset the starting epoch for this Snowflake
      */
     public function getDateTimeForSnowflake(
-        SnowflakeIdentifier $snowflake,
+        Snowflake $snowflake,
         int | string $epochOffset,
     ): DateTimeImmutable {
         if ($this->is64Bit) {
@@ -57,7 +57,7 @@ final class Time
             // headaches, so we'll manually "divide" by inserting a decimal.
             $timestamp = substr($milliseconds, 0, -3) . '.' . substr($milliseconds, -3);
         } else {
-            $timestamp = BigInteger::of($snowflake->toString())
+            $timestamp = (string) BigInteger::of($snowflake->toString())
                 ->shiftedRight(22)
                 ->plus($epochOffset)
                 ->toBigDecimal()

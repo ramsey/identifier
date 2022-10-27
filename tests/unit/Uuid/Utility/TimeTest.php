@@ -8,8 +8,8 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function bin2hex;
@@ -85,7 +85,7 @@ class TimeTest extends TestCase
      */
     public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
     {
-        $uuid = (new DefaultUuidFactory())->createFromString($uuid);
+        $uuid = (new UuidFactory())->createFromString($uuid);
         $time = new Time();
 
         $this->assertSame($expectedTime, $time->getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
@@ -100,7 +100,7 @@ class TimeTest extends TestCase
             'getIntSize' => 4,
         ]);
 
-        $uuid = (new DefaultUuidFactory())->createFromString($uuid);
+        $uuid = (new UuidFactory())->createFromString($uuid);
         $time = new Time($os);
 
         $this->assertSame($expectedTime, $time->getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));

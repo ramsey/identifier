@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid;
 use Throwable;
 
 use function sprintf;
@@ -33,7 +33,7 @@ use const STR_PAD_LEFT;
  *
  * @internal
  */
-trait StandardUuidFactory
+trait StandardFactory
 {
     use Validation;
 
@@ -41,17 +41,17 @@ trait StandardUuidFactory
      * Returns the name of the UUID class to use when instantiating UUID
      * instances from this trait
      *
-     * @return class-string<UuidIdentifier>
+     * @return class-string<Uuid>
      */
     abstract protected function getUuidClass(): string;
 
     /**
      * @throws InvalidArgument
      */
-    private function createFromBytesInternal(string $identifier): UuidIdentifier
+    private function createFromBytesInternal(string $identifier): Uuid
     {
         if (strlen($identifier) === Format::FORMAT_BYTES) {
-            /** @var UuidIdentifier */
+            /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
 
@@ -65,7 +65,7 @@ trait StandardUuidFactory
      *
      * @throws InvalidArgument
      */
-    private function createFromIntegerInternal(int | string $identifier): UuidIdentifier
+    private function createFromIntegerInternal(int | string $identifier): Uuid
     {
         try {
             $bigInteger = BigInteger::of($identifier);
@@ -92,13 +92,13 @@ trait StandardUuidFactory
     /**
      * @throws InvalidArgument
      */
-    private function createFromStringInternal(string $identifier): UuidIdentifier
+    private function createFromStringInternal(string $identifier): Uuid
     {
         if (
             strlen($identifier) === Format::FORMAT_STRING
             && $this->hasValidFormat($identifier, Format::FORMAT_STRING)
         ) {
-            /** @var UuidIdentifier */
+            /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
 

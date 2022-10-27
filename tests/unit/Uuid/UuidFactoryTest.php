@@ -6,12 +6,13 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
 use Ramsey\Identifier\Uuid\UuidV3;
@@ -20,7 +21,6 @@ use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV6;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV8;
-use Ramsey\Identifier\UuidIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function sprintf;
@@ -28,13 +28,13 @@ use function substr;
 
 use const PHP_INT_MAX;
 
-class DefaultUuidFactoryTest extends TestCase
+class UuidFactoryTest extends TestCase
 {
-    private DefaultUuidFactory $factory;
+    private UuidFactory $factory;
 
     protected function setUp(): void
     {
-        $this->factory = new DefaultUuidFactory();
+        $this->factory = new UuidFactory();
     }
 
     public function testCreate(): void
@@ -43,7 +43,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidIdentifier> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromBytesProvider
      */
@@ -56,7 +56,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, expectedType: class-string<UuidIdentifier>}>
+     * @return array<array{bytes: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromBytesProvider(): array
     {
@@ -135,7 +135,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidIdentifier> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromHexadecimalProvider
      */
@@ -148,7 +148,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<UuidIdentifier>}>
+     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromHexadecimalProvider(): array
     {
@@ -268,7 +268,7 @@ class DefaultUuidFactoryTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     * @param class-string<UuidIdentifier> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromIntegerProvider
      */
@@ -281,7 +281,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string<UuidIdentifier>}>
+     * @return array<array{value: int | numeric-string, expectedType: class-string<Uuid>}>
      */
     public function createFromIntegerProvider(): array
     {
@@ -342,7 +342,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @param class-string<UuidIdentifier> $expectedType
+     * @param class-string<Uuid> $expectedType
      *
      * @dataProvider createFromStringProvider
      */
@@ -355,7 +355,7 @@ class DefaultUuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: non-empty-string, expectedType: class-string<UuidIdentifier>}>
+     * @return array<array{value: non-empty-string, expectedType: class-string<Uuid>}>
      */
     public function createFromStringProvider(): array
     {

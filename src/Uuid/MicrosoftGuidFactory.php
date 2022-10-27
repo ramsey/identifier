@@ -26,7 +26,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 use Throwable;
 
 use function sprintf;
@@ -47,7 +47,7 @@ final class MicrosoftGuidFactory implements
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
 

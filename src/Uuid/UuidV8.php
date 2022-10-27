@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
-use Ramsey\Identifier\Uuid\Utility\StandardUuid;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Standard;
 
 /**
  * Version 8, Custom UUIDs provide an RFC 4122 compatible format for
@@ -33,9 +33,9 @@ use Ramsey\Identifier\UuidIdentifier;
  *
  * @psalm-immutable
  */
-final class UuidV8 implements JsonSerializable, UuidIdentifier
+final class UuidV8 implements JsonSerializable, Uuid
 {
-    use StandardUuid;
+    use Standard;
 
     public function getVersion(): Version
     {

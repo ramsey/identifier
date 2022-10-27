@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
-use Ramsey\Identifier\TimeBasedUuidIdentifier;
-use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
+use Ramsey\Identifier\TimeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 /**
  * Unix Epoch time, or version 7, UUIDs include a timestamp in milliseconds
@@ -30,9 +30,9 @@ use Ramsey\Identifier\Uuid\Utility\TimeBasedUuid;
  *
  * @psalm-immutable
  */
-final class UuidV7 implements JsonSerializable, TimeBasedUuidIdentifier
+final class UuidV7 implements JsonSerializable, TimeBasedUuid
 {
-    use TimeBasedUuid;
+    use TimeBased;
 
     public function getVersion(): Version
     {

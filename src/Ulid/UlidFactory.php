@@ -20,14 +20,16 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\DateTimeIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Ulid\Utility\Validation;
-use Ramsey\Identifier\UlidFactory;
-use Ramsey\Identifier\UlidIdentifier;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\UuidIdentifier;
 
 use function is_int;
 use function is_string;
@@ -42,9 +44,13 @@ use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
- * A factory that uses default services to generate ULIDs
+ * A factory for creating ULIDs
  */
-final class DefaultUlidFactory implements UlidFactory
+final class UlidFactory implements
+    BinaryIdentifierFactory,
+    DateTimeIdentifierFactory,
+    IntegerIdentifierFactory,
+    StringIdentifierFactory
 {
     use Validation;
 
@@ -62,7 +68,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function create(): UlidIdentifier
+    public function create(): Ulid
     {
         return new Ulid($this->bytesGenerator->bytes());
     }
@@ -70,7 +76,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function createFromBytes(string $identifier): UlidIdentifier
+    public function createFromBytes(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::FORMAT_BYTES)) {
             return new MaxUlid();
@@ -90,7 +96,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function createFromDateTime(DateTimeInterface $dateTime): UlidIdentifier
+    public function createFromDateTime(DateTimeInterface $dateTime): Ulid
     {
         if ($dateTime->getTimestamp() < 0) {
             throw new InvalidArgument('Timestamp may not be earlier than the Unix Epoch');
@@ -102,7 +108,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function createFromHexadecimal(string $identifier): UlidIdentifier
+    public function createFromHexadecimal(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::FORMAT_HEX)) {
             return new MaxUlid();
@@ -122,7 +128,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function createFromInteger(int | string $identifier): UlidIdentifier
+    public function createFromInteger(int | string $identifier): MaxUlid | NilUlid | Ulid
     {
         if (
             is_string($identifier)
@@ -158,7 +164,7 @@ final class DefaultUlidFactory implements UlidFactory
     /**
      * @throws InvalidArgument
      */
-    public function createFromString(string $identifier): UlidIdentifier
+    public function createFromString(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::FORMAT_ULID)) {
             return new MaxUlid();
@@ -187,16 +193,22 @@ final class DefaultUlidFactory implements UlidFactory
      * though the ULID produced may not be sortable or contain any meaningful
      * timestamp information.
      */
-    public function createFromUuid(UuidIdentifier $uuid): UlidIdentifier
+    public function createFromUuid(Uuid $uuid): MaxUlid | NilUlid | Ulid
     {
         return $this->createFromBytes($uuid->toBytes());
     }
 
+    /**
+     * Creates a Max ULID with all bits set to one (1)
+     */
     public function max(): MaxUlid
     {
         return new MaxUlid();
     }
 
+    /**
+     * Creates a Nil ULID with all bits set to zero (0)
+     */
     public function nil(): NilUlid
     {
         return new NilUlid();

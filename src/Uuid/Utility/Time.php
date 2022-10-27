@@ -25,7 +25,7 @@ use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
-use Ramsey\Identifier\TimeBasedUuidIdentifier;
+use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Version;
 
@@ -93,7 +93,7 @@ final class Time
      * Returns a date-time instance created from the timestamp extracted from
      * a time-based UUID
      */
-    public function getDateTimeForUuid(TimeBasedUuidIdentifier $uuid): DateTimeImmutable
+    public function getDateTimeForUuid(TimeBasedUuid $uuid): DateTimeImmutable
     {
         if ($this->intSize >= 8) {
             $timestamp = $this->getTimestamp($uuid);
@@ -141,7 +141,7 @@ final class Time
      * For time-based UUIDs, returns the Unix timestamp with microsecond
      * resolution as a string
      */
-    private function getTimestamp(TimeBasedUuidIdentifier $uuid): string
+    private function getTimestamp(TimeBasedUuid $uuid): string
     {
         if ($uuid instanceof MicrosoftGuid) {
             // Convert the hexadecimal representation to bytes, since the
@@ -233,7 +233,7 @@ final class Time
      * For time-based UUIDs, returns the Unix timestamp with microsecond
      * resolution as a string (for use on 32-bit systems)
      */
-    private function getTimestamp32Bit(TimeBasedUuidIdentifier $uuid): string
+    private function getTimestamp32Bit(TimeBasedUuid $uuid): string
     {
         return match ($uuid->getVersion()) {
             Version::GregorianTime => $this->getTimestampGregorian32Bit($uuid->toHexadecimal()),

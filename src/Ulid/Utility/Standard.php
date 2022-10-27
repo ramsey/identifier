@@ -22,12 +22,12 @@ use DateTimeImmutable;
 use Identifier\BinaryIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
-use Ramsey\Identifier\UuidIdentifier;
 use Stringable;
 
 use function assert;
@@ -56,7 +56,7 @@ use const STR_PAD_LEFT;
  *
  * @psalm-immutable
  */
-trait StandardUlid
+trait Standard
 {
     use Validation;
 
@@ -64,7 +64,7 @@ trait StandardUlid
     private readonly int $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\UlidIdentifier} instance
+     * Constructs a {@see \Ramsey\Identifier\Ulid} instance
      *
      * @param string $ulid A representation of the ULID in either Crockford
      *     base 32 or bytes form
@@ -219,10 +219,10 @@ trait StandardUlid
      * RFC 4122 variant UUID. If this is the case, the resulting UUID will be of
      * the type {@see \Ramsey\Identifier\Uuid\NonstandardUuid NonstandardUuid}.
      */
-    public function toUuid(): UuidIdentifier
+    public function toUuid(): Uuid
     {
         /** @psalm-suppress ImpureMethodCall */
-        return (new DefaultUuidFactory())->createFromBytes($this->toBytes())->toTypedUuid();
+        return (new UuidFactory())->createFromBytes($this->toBytes())->toTypedUuid();
     }
 
     /**

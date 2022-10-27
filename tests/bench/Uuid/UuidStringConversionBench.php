@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Bench\Identifier\Uuid;
 
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\UuidFactory;
 
 use function array_map;
 
@@ -115,14 +115,14 @@ final class UuidStringConversionBench
         '732a6571-9729-4935-92be-1a74b3242636',
         'c15f5581-e047-45b7-a36f-dfef4e7ba4bb',
     ];
-    private UuidIdentifier $tinyUuid;
-    private UuidIdentifier $hugeUuid;
-    private UuidIdentifier $uuid;
-    private DefaultUuidFactory $factory;
+    private Uuid $tinyUuid;
+    private Uuid $hugeUuid;
+    private Uuid $uuid;
+    private UuidFactory $factory;
 
     /**
-     * @var UuidIdentifier[]
-     * @psalm-var non-empty-list<UuidIdentifier>
+     * @var Uuid[]
+     * @psalm-var non-empty-list<Uuid>
      */
     private array $promiscuousUuids;
 
@@ -138,7 +138,7 @@ final class UuidStringConversionBench
 
     public function __construct()
     {
-        $this->factory = new DefaultUuidFactory();
+        $this->factory = new UuidFactory();
         $this->tinyUuid = $this->factory->createFromString(self::TINY_UUID);
         $this->hugeUuid = $this->factory->createFromString(self::HUGE_UUID);
         $this->uuid = $this->factory->createFromString(self::UUIDS_TO_BE_SHORTENED[0]);
@@ -147,7 +147,7 @@ final class UuidStringConversionBench
         $this->hugeUuidBytes = $this->hugeUuid->toBytes();
         $this->uuidBytes = $this->uuid->toBytes();
         $this->promiscuousUuidsBytes = array_map(
-            static fn (UuidIdentifier $uuid): string => $uuid->toBytes(),
+            static fn (Uuid $uuid): string => $uuid->toBytes(),
             $this->promiscuousUuids,
         );
     }
@@ -209,7 +209,7 @@ final class UuidStringConversionBench
 
     public function benchStringConversionOfPromiscuousUuids(): void
     {
-        array_map(static fn (UuidIdentifier $uuid): string => $uuid->toString(), $this->promiscuousUuids);
+        array_map(static fn (Uuid $uuid): string => $uuid->toString(), $this->promiscuousUuids);
     }
 
     public function benchBytesConversionOfTinyUuid(): void
@@ -229,6 +229,6 @@ final class UuidStringConversionBench
 
     public function benchBytesConversionOfPromiscuousUuids(): void
     {
-        array_map(static fn (UuidIdentifier $uuid): string => $uuid->toBytes(), $this->promiscuousUuids);
+        array_map(static fn (Uuid $uuid): string => $uuid->toBytes(), $this->promiscuousUuids);
     }
 }

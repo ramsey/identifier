@@ -16,22 +16,25 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Utility;
 
-use DateTimeImmutable;
+use function substr;
 
 /**
- * This internal trait provides functionality common to time-based UUIDs
+ * This internal trait provides functionality common to node-based UUIDs
  *
  * @internal
  *
  * @psalm-immutable
  */
-trait TimeBasedUuid
+trait NodeBased
 {
-    use StandardUuid;
+    use TimeBased;
 
-    public function getDateTime(): DateTimeImmutable
+    /**
+     * @return non-empty-string
+     */
+    public function getNode(): string
     {
-        /** @psalm-suppress ImpureMethodCall */
-        return (new Time())->getDateTimeForUuid($this);
+        /** @var non-empty-string */
+        return substr($this->getFormat(Format::FORMAT_HEX), -12);
     }
 }

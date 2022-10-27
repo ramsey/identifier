@@ -44,14 +44,14 @@ use function substr;
  *
  * @psalm-immutable
  */
-trait StandardUuid
+trait Standard
 {
     use Validation;
 
     private readonly int $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\UuidIdentifier} instance
+     * Constructs a {@see \Ramsey\Identifier\Uuid} instance
      *
      * @param string $uuid A representation of the UUID in either string
      *     standard, hexadecimal, or bytes form

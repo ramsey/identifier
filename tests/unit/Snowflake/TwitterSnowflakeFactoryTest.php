@@ -11,7 +11,6 @@ use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
-use Ramsey\Identifier\SnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function gmdate;
@@ -23,7 +22,7 @@ use const PHP_INT_SIZE;
 class TwitterSnowflakeFactoryTest extends TestCase
 {
     private Os $os32;
-    private SnowflakeFactory $factory;
+    private TwitterSnowflakeFactory $factory;
 
     protected function setUp(): void
     {

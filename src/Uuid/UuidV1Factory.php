@@ -29,7 +29,7 @@ use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use StellaMaris\Clock\ClockInterface as Clock;
 
@@ -47,7 +47,7 @@ final class UuidV1Factory implements
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
     private readonly Time $time;

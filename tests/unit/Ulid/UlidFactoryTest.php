@@ -9,12 +9,11 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Ulid\DefaultUlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
-use Ramsey\Identifier\UlidFactory;
-use Ramsey\Identifier\Uuid\DefaultUuidFactory;
+use Ramsey\Identifier\Ulid\UlidFactory;
+use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function gmdate;
@@ -23,13 +22,13 @@ use function substr;
 
 use const PHP_INT_MAX;
 
-class DefaultUlidFactoryTest extends TestCase
+class UlidFactoryTest extends TestCase
 {
     private UlidFactory $factory;
 
     protected function setUp(): void
     {
-        $this->factory = new DefaultUlidFactory();
+        $this->factory = new UlidFactory();
     }
 
     public function testCreate(): void
@@ -45,7 +44,7 @@ class DefaultUlidFactoryTest extends TestCase
      */
     public function testCreateWithFactoryDeterministicValues(): void
     {
-        $factory = new DefaultUlidFactory(
+        $factory = new UlidFactory(
             new MonotonicBytesGenerator(
                 new FixedBytesGenerator("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"),
                 new FrozenClock(new DateTimeImmutable('1970-01-01 00:00:00')),
@@ -335,8 +334,8 @@ class DefaultUlidFactoryTest extends TestCase
      */
     public function testCreateFromUuid(string $bytes): void
     {
-        $ulidFactory = new DefaultUlidFactory();
-        $uuidFactory = new DefaultUuidFactory();
+        $ulidFactory = new UlidFactory();
+        $uuidFactory = new UuidFactory();
         $uuid = $uuidFactory->createFromBytes($bytes)->toTypedUuid();
         $ulid = $ulidFactory->createFromUuid($uuid);
 

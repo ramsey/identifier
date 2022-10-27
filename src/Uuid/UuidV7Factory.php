@@ -25,7 +25,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
 /**
  * A factory for creating version 7, Unix Epoch time UUIDs
@@ -36,7 +36,7 @@ final class UuidV7Factory implements
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
 

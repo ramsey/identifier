@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Uuid;
 use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\StandardUuid;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function sprintf;
 use function strlen;
@@ -33,9 +33,9 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NilUuid implements JsonSerializable, UuidIdentifier
+final class NilUuid implements JsonSerializable, Uuid
 {
-    use StandardUuid;
+    use Standard;
 
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 

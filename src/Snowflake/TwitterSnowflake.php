@@ -17,15 +17,15 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use JsonSerializable;
-use Ramsey\Identifier\Snowflake\Utility\StandardSnowflake;
-use Ramsey\Identifier\SnowflakeIdentifier;
+use Ramsey\Identifier\Snowflake;
+use Ramsey\Identifier\Snowflake\Utility\Standard;
 
 /**
  * @psalm-immutable
  */
-final class TwitterSnowflake implements JsonSerializable, SnowflakeIdentifier
+final class TwitterSnowflake implements JsonSerializable, Snowflake
 {
-    use StandardSnowflake;
+    use Standard;
 
     /**
      * The Twitter epoch begins at 2010-11-04 01:42:54.657 +00:00. It has enough

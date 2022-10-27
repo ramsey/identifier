@@ -14,13 +14,24 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier;
+namespace Ramsey\Identifier\Uuid\Utility;
 
-use Identifier\DateTimeIdentifier;
+use DateTimeImmutable;
 
 /**
- * Describes the interface of a time-based UUID
+ * This internal trait provides functionality common to time-based UUIDs
+ *
+ * @internal
+ *
+ * @psalm-immutable
  */
-interface TimeBasedUuidIdentifier extends DateTimeIdentifier, UuidIdentifier
+trait TimeBased
 {
+    use Standard;
+
+    public function getDateTime(): DateTimeImmutable
+    {
+        /** @psalm-suppress ImpureMethodCall */
+        return (new Time())->getDateTimeForUuid($this);
+    }
 }

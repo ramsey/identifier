@@ -18,8 +18,8 @@ namespace Ramsey\Identifier\Ulid;
 
 use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Ulid\Utility\StandardUlid;
-use Ramsey\Identifier\UlidIdentifier;
+use Ramsey\Identifier\Ulid;
+use Ramsey\Identifier\Ulid\Utility\Standard;
 
 use function sprintf;
 use function strlen;
@@ -27,9 +27,9 @@ use function strlen;
 /**
  * @psalm-immutable
  */
-final class NilUlid implements JsonSerializable, UlidIdentifier
+final class NilUlid implements JsonSerializable, Ulid
 {
-    use StandardUlid;
+    use Standard;
 
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 

@@ -21,7 +21,7 @@ use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
 use function assert;
 use function strlen;
@@ -31,7 +31,7 @@ use function strlen;
  */
 final class UuidV8Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
 

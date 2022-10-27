@@ -21,10 +21,10 @@ use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\NodeBasedUuidIdentifier;
-use Ramsey\Identifier\TimeBasedUuidIdentifier;
+use Ramsey\Identifier\NodeBasedUuid;
+use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\StandardUuid;
+use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function assert;
 use function preg_match;
@@ -47,9 +47,9 @@ use function strspn;
  *
  * @psalm-external-mutation-free
  */
-final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
+final class UntypedUuid implements JsonSerializable, NodeBasedUuid
 {
-    use StandardUuid;
+    use Standard;
 
     private const VALID_UUID = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
 
@@ -78,7 +78,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
     {
         $uuid = $this->toTypedUuid();
 
-        if ($uuid instanceof TimeBasedUuidIdentifier) {
+        if ($uuid instanceof TimeBasedUuid) {
             /**
              * @psalm-suppress ImpureMethodCall We know that everything returned
              *     from toTypedUuid() is immutable, but Psalm sees we're checking
@@ -101,7 +101,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuidIdentifier
     {
         $uuid = $this->toTypedUuid();
 
-        if ($uuid instanceof NodeBasedUuidIdentifier) {
+        if ($uuid instanceof NodeBasedUuid) {
             /**
              * @psalm-suppress ImpureMethodCall We know that everything returned
              *     from toTypedUuid() is immutable, but Psalm sees we're checking

@@ -26,7 +26,7 @@ use Identifier\IntegerIdentifier;
  *
  * @link https://github.com/ulid/spec ULID Specification
  */
-interface UlidIdentifier extends BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier
+interface Ulid extends BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier
 {
     /**
      * Returns a string representation of the ULID encoded as hexadecimal digits

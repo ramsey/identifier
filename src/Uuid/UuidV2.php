@@ -17,9 +17,9 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
-use Ramsey\Identifier\NodeBasedUuidIdentifier;
+use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\NodeBased;
 
 use function hexdec;
 use function substr;
@@ -50,9 +50,9 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV2 implements JsonSerializable, NodeBasedUuidIdentifier
+final class UuidV2 implements JsonSerializable, NodeBasedUuid
 {
-    use NodeBasedUuid {
+    use NodeBased {
         isValid as private baseIsValid;
     }
 

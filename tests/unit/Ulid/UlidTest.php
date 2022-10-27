@@ -7,10 +7,10 @@ namespace Ramsey\Test\Identifier\Ulid;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Ulid\DefaultUlidFactory;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
+use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Test\Identifier\Comparison;
@@ -214,7 +214,7 @@ class UlidTest extends TestCase
      */
     public function compareToProvider(): array
     {
-        $factory = new DefaultUlidFactory();
+        $factory = new UlidFactory();
 
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -303,7 +303,7 @@ class UlidTest extends TestCase
      */
     public function equalsProvider(): array
     {
-        $factory = new DefaultUlidFactory();
+        $factory = new UlidFactory();
 
         return [
             'with null' => [null, Comparison::NotEqual],

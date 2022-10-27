@@ -14,27 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Utility;
+namespace Ramsey\Identifier;
 
-use function substr;
+use Identifier\DateTimeIdentifier;
 
 /**
- * This internal trait provides functionality common to node-based UUIDs
- *
- * @internal
- *
- * @psalm-immutable
+ * Describes the interface of a time-based UUID
  */
-trait NodeBasedUuid
+interface TimeBasedUuid extends DateTimeIdentifier, Uuid
 {
-    use TimeBasedUuid;
-
-    /**
-     * @return non-empty-string
-     */
-    public function getNode(): string
-    {
-        /** @var non-empty-string */
-        return substr($this->getFormat(Format::FORMAT_HEX), -12);
-    }
 }

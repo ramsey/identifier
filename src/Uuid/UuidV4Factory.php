@@ -23,14 +23,14 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
 /**
  * A factory for creating version 4, random UUIDs
  */
 final class UuidV4Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
 

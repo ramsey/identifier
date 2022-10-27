@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Uuid;
 use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\StandardUuid;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function assert;
 use function sprintf;
@@ -37,9 +37,9 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NonstandardUuid implements JsonSerializable, UuidIdentifier
+final class NonstandardUuid implements JsonSerializable, Uuid
 {
-    use StandardUuid;
+    use Standard;
 
     private readonly ?Variant $variant;
 

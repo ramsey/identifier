@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
-use Ramsey\Identifier\NodeBasedUuidIdentifier;
-use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
+use Ramsey\Identifier\NodeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\NodeBased;
 
 /**
  * Reordered time, or version 6, UUIDs include timestamp, clock sequence, and
@@ -28,9 +28,9 @@ use Ramsey\Identifier\Uuid\Utility\NodeBasedUuid;
  *
  * @psalm-immutable
  */
-final class UuidV6 implements JsonSerializable, NodeBasedUuidIdentifier
+final class UuidV6 implements JsonSerializable, NodeBasedUuid
 {
-    use NodeBasedUuid;
+    use NodeBased;
 
     public function getVersion(): Version
     {

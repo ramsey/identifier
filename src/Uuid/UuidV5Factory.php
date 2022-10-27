@@ -20,9 +20,9 @@ use Identifier\BinaryIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardUuidFactory;
-use Ramsey\Identifier\UuidIdentifier;
+use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
 use function hash;
 use function substr;
@@ -32,7 +32,7 @@ use function substr;
  */
 final class UuidV5Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
 {
-    use StandardUuidFactory;
+    use StandardFactory;
 
     private readonly Binary $binary;
 
@@ -44,7 +44,7 @@ final class UuidV5Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     /**
      * @throws InvalidArgument
      */
-    public function create(?UuidIdentifier $namespace = null, ?string $name = null): UuidV5
+    public function create(?Uuid $namespace = null, ?string $name = null): UuidV5
     {
         if ($namespace === null) {
             throw new InvalidArgument('$namespace cannot be null when creating version 5 UUIDs');

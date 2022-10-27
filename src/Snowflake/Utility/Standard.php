@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Utility;
 
 use DateTimeImmutable;
+use Identifier\BinaryIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Stringable;
@@ -34,7 +35,7 @@ use function strcmp;
  *
  * @psalm-immutable
  */
-trait StandardSnowflake
+trait Standard
 {
     use Validation;
 
@@ -52,7 +53,7 @@ trait StandardSnowflake
     abstract protected function getEpochOffset(): int | string;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\SnowflakeIdentifier} instance
+     * Constructs a {@see \Ramsey\Identifier\Snowflake} instance
      *
      * @param int | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form
@@ -102,6 +103,11 @@ trait StandardSnowflake
      */
     public function compareTo(mixed $other): int
     {
+        if ($other instanceof BinaryIdentifier) {
+            /** @psalm-suppress ImpureMethodCall */
+            return strcmp($this->toBytes(), $other->toBytes());
+        }
+
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             return strcmp((string) $this->snowflake, (string) $other);
         }

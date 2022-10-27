@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Bench\Identifier\Ulid;
 
-use Ramsey\Identifier\Ulid\DefaultUlidFactory;
-use Ramsey\Identifier\UlidFactory;
-use Ramsey\Identifier\UlidIdentifier;
+use Ramsey\Identifier\Ulid;
+use Ramsey\Identifier\Ulid\UlidFactory;
 
 use function array_map;
 
@@ -116,14 +115,14 @@ final class UlidStringConversionBench
         '3K59JQ35S994TS5FGTEJSJ89HP',
         '61BXAR3R278PVT6VYZXX77Q95V',
     ];
-    private UlidIdentifier $tinyUlid;
-    private UlidIdentifier $hugeUlid;
-    private UlidIdentifier $ulid;
+    private Ulid $tinyUlid;
+    private Ulid $hugeUlid;
+    private Ulid $ulid;
     private UlidFactory $factory;
 
     /**
-     * @var array<UlidIdentifier>
-     * @psalm-var non-empty-list<UlidIdentifier>
+     * @var array<Ulid>
+     * @psalm-var non-empty-list<Ulid>
      */
     private array $promiscuousUlids;
 
@@ -139,7 +138,7 @@ final class UlidStringConversionBench
 
     public function __construct()
     {
-        $this->factory = new DefaultUlidFactory();
+        $this->factory = new UlidFactory();
         $this->tinyUlid = $this->factory->createFromString(self::TINY_ULID);
         $this->hugeUlid = $this->factory->createFromString(self::HUGE_ULID);
         $this->ulid = $this->factory->createFromString(self::ULIDS_TO_BE_SHORTENED[0]);
@@ -148,7 +147,7 @@ final class UlidStringConversionBench
         $this->hugeUlidBytes = $this->hugeUlid->toBytes();
         $this->ulidBytes = $this->ulid->toBytes();
         $this->promiscuousUlidsBytes = array_map(
-            static fn (UlidIdentifier $ulid): string => $ulid->toBytes(),
+            static fn (Ulid $ulid): string => $ulid->toBytes(),
             $this->promiscuousUlids,
         );
     }
@@ -210,7 +209,7 @@ final class UlidStringConversionBench
 
     public function benchStringConversionOfPromiscuousUlids(): void
     {
-        array_map(static fn (UlidIdentifier $ulid): string => $ulid->toString(), $this->promiscuousUlids);
+        array_map(static fn (Ulid $ulid): string => $ulid->toString(), $this->promiscuousUlids);
     }
 
     public function benchBytesConversionOfTinyUlid(): void
@@ -230,6 +229,6 @@ final class UlidStringConversionBench
 
     public function benchBytesConversionOfPromiscuousUlids(): void
     {
-        array_map(static fn (UlidIdentifier $ulid): string => $ulid->toBytes(), $this->promiscuousUlids);
+        array_map(static fn (Ulid $ulid): string => $ulid->toBytes(), $this->promiscuousUlids);
     }
 }

@@ -20,13 +20,15 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
+use Identifier\BinaryIdentifierFactory;
+use Identifier\IntegerIdentifierFactory;
+use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
-use Ramsey\Identifier\UuidFactory;
-use Ramsey\Identifier\UuidIdentifier;
 
 use function is_int;
 use function is_string;
@@ -41,9 +43,12 @@ use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
- * A default factory for creating UUIDs
+ * A factory for creating UUIDs
  */
-final class DefaultUuidFactory implements UuidFactory
+final class UuidFactory implements
+    BinaryIdentifierFactory,
+    IntegerIdentifierFactory,
+    StringIdentifierFactory
 {
     use Validation;
 
@@ -135,18 +140,37 @@ final class DefaultUuidFactory implements UuidFactory
         throw new InvalidArgument('Identifier must be a UUID in string standard representation');
     }
 
+    /**
+     * Creates a Max UUID with all bits set to one (1)
+     */
     public function max(): MaxUuid
     {
         return new MaxUuid();
     }
 
+    /**
+     * Creates a Nil UUID with all bits set to zero (0)
+     */
     public function nil(): NilUuid
     {
         return new NilUuid();
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 1, Gregorian time UUID
+     *
+     * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
+     *     string representing the hardware address of the machine where this
+     *     identifier was generated
+     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help
+     *     avoid duplicates that could arise when the clock is set backwards in
+     *     time or if the node ID changes
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
+     *
+     * @throws InvalidArgument if parameters are not legal values
+     *
+     * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function v1(
         int | string | null $node = null,
@@ -157,8 +181,28 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws DceIdentifierNotFound
-     * @throws InvalidArgument
+     * Creates a version 2, DCE Security UUID
+     *
+     * @param DceDomain $localDomain The local domain to which the local
+     *     identifier belongs; this MUST default to a suitable domain for the
+     *     implementation
+     * @param int<0, max> | null $localIdentifier A local identifier belonging
+     *     to the local domain specified in $localDomain; if no identifier is
+     *     provided, the factory SHOULD attempt to obtain a suitable local ID
+     *     for the domain (e.g., the UID or GID of the user running the script)
+     * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
+     *     string representing the hardware address of the machine where this
+     *     identifier was generated
+     * @param int<0, 63> | null $clockSequence A 6-bit number used to help
+     *     avoid duplicates that could arise when the clock is set backwards in
+     *     time or if the node ID changes
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
+     *
+     * @throws InvalidArgument if parameters are not legal values
+     * @throws DceIdentifierNotFound if unable to obtain a DCE identifier
+     *
+     * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function v2(
         DceDomain $localDomain = DceDomain::Person,
@@ -171,11 +215,18 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 3, name-based (MD5) UUID
+     *
+     * @param string | Uuid $namespace The UUID namespace to use when
+     *     creating this version 3 identifier
+     * @param string $name The name used to create the version 3 identifier in
+     *     the given namespace
+     *
+     * @throws InvalidArgument if parameters are not legal values
      */
-    public function v3(string | UuidIdentifier $namespace, string $name): UuidV3
+    public function v3(string | Uuid $namespace, string $name): UuidV3
     {
-        if (!$namespace instanceof UuidIdentifier) {
+        if (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
                 Format::FORMAT_STRING => $this->createFromString($namespace),
                 Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
@@ -187,17 +238,27 @@ final class DefaultUuidFactory implements UuidFactory
         return $this->v3Factory->create($namespace, $name);
     }
 
+    /**
+     * Creates a version 4, random UUID
+     */
     public function v4(): UuidV4
     {
         return $this->v4Factory->create();
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 5, name-based (SHA-1) UUID
+     *
+     * @param string | Uuid $namespace The UUID namespace to use when
+     *     creating this version 5 identifier
+     * @param string $name The name used to create the version 5 identifier in
+     *     the given namespace
+     *
+     * @throws InvalidArgument if parameters are not legal values
      */
-    public function v5(string | UuidIdentifier $namespace, string $name): UuidV5
+    public function v5(string | Uuid $namespace, string $name): UuidV5
     {
-        if (!$namespace instanceof UuidIdentifier) {
+        if (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
                 Format::FORMAT_STRING => $this->createFromString($namespace),
                 Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
@@ -210,7 +271,20 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 6, reordered time UUID
+     *
+     * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
+     *     string representing the hardware address of the machine where this
+     *     identifier was generated
+     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help
+     *     avoid duplicates that could arise when the clock is set backwards in
+     *     time or if the node ID changes
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
+     *
+     * @throws InvalidArgument if parameters are not legal values
+     *
+     * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function v6(
         int | string | null $node = null,
@@ -221,7 +295,12 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 7, Unix Epoch time UUID
+     *
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
+     *
+     * @throws InvalidArgument if $dateTime is not a legal value
      */
     public function v7(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -229,7 +308,19 @@ final class DefaultUuidFactory implements UuidFactory
     }
 
     /**
-     * @throws InvalidArgument
+     * Creates a version 8, custom UUID
+     *
+     * The bytes provided may contain any value according to your application's
+     * needs. Be aware, however, that other applications may not understand the
+     * semantics of the value.
+     *
+     * @param string $bytes A 16-byte octet string. This is an open blob of data
+     *     that you may fill with 128 bits of information. Be aware, however,
+     *     bits 48 through 51 will be replaced with the UUID version field, and
+     *     bits 64 and 65 will be replaced with the UUID variant. You MUST NOT
+     *     rely on these bits for your application needs.
+     *
+     * @throws InvalidArgument if $bytes is not a legal value
      */
     public function v8(string $bytes): UuidV8
     {
@@ -241,6 +332,6 @@ final class DefaultUuidFactory implements UuidFactory
      */
     protected function getVersion(): never
     {
-        throw new BadMethodCall('Unable to call getVersion() on UuidFactory'); // @codeCoverageIgnore
+        throw new BadMethodCall('method called out of context'); // @codeCoverageIgnore
     }
 }
