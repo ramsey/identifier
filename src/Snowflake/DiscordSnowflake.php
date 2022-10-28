@@ -27,7 +27,7 @@ use function assert;
 /**
  * @psalm-immutable
  */
-final class TwitterSnowflake implements JsonSerializable, Snowflake
+final class DiscordSnowflake implements JsonSerializable, Snowflake
 {
     private readonly GenericSnowflake $snowflake;
 
@@ -41,7 +41,7 @@ final class TwitterSnowflake implements JsonSerializable, Snowflake
      */
     public function __construct(int | string $snowflake)
     {
-        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Twitter->value);
+        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Discord->value);
     }
 
     /**

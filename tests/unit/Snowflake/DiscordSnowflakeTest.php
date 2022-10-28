@@ -7,8 +7,8 @@ namespace Ramsey\Test\Identifier\Snowflake;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Snowflake\TwitterSnowflake;
-use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
+use Ramsey\Identifier\Snowflake\DiscordSnowflake;
+use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\Comparison;
 use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
@@ -20,18 +20,18 @@ use function unserialize;
 
 use const PHP_INT_SIZE;
 
-class TwitterSnowflakeTest extends TestCase
+class DiscordSnowflakeTest extends TestCase
 {
     private const SNOWFLAKE_INT = 2147483647;
     private const SNOWFLAKE_STRING = '2147483647';
 
-    private TwitterSnowflake $snowflakeWithInt;
-    private TwitterSnowflake $snowflakeWithString;
+    private DiscordSnowflake $snowflakeWithInt;
+    private DiscordSnowflake $snowflakeWithString;
 
     protected function setUp(): void
     {
-        $this->snowflakeWithInt = new TwitterSnowflake(self::SNOWFLAKE_INT);
-        $this->snowflakeWithString = new TwitterSnowflake(self::SNOWFLAKE_STRING);
+        $this->snowflakeWithInt = new DiscordSnowflake(self::SNOWFLAKE_INT);
+        $this->snowflakeWithString = new DiscordSnowflake(self::SNOWFLAKE_STRING);
     }
 
     /**
@@ -44,7 +44,7 @@ class TwitterSnowflakeTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Snowflake: "%s"', $value));
 
-        new TwitterSnowflake($value);
+        new DiscordSnowflake($value);
     }
 
     /**
@@ -62,7 +62,7 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testSerializeForString(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
         $serialized = serialize($this->snowflakeWithString);
 
         $this->assertSame($expected, $serialized);
@@ -70,7 +70,7 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testSerializeForInt(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
         $serialized = serialize($this->snowflakeWithInt);
 
         $this->assertSame($expected, $serialized);
@@ -84,25 +84,25 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testUnserializeForString(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
         $snowflake = unserialize($serialized);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame(self::SNOWFLAKE_STRING, (string) $snowflake);
     }
 
     public function testUnserializeForInt(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";i:2147483647;}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";i:2147483647;}';
         $snowflake = unserialize($serialized);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame(self::SNOWFLAKE_STRING, (string) $snowflake);
     }
 
     public function testUnserializeFailsWhenSnowflakeIsAnEmptyString(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:0:"";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:0:"";}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: ""');
@@ -112,7 +112,7 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testUnserializeFailsForInvalidSnowflake(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:6:"foobar";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:6:"foobar";}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: "foobar"');
@@ -184,8 +184,8 @@ class TwitterSnowflakeTest extends TestCase
                 },
                 Comparison::Equal,
             ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
+            'with Snowflake from string' => [new DiscordSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
+            'with Snowflake from int' => [new DiscordSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
             'with BinaryIdentifier' => [
                 new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
                 Comparison::Equal,
@@ -260,8 +260,8 @@ class TwitterSnowflakeTest extends TestCase
                 },
                 Comparison::Equal,
             ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
+            'with Snowflake from string' => [new DiscordSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
+            'with Snowflake from int' => [new DiscordSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
             'with array' => [[], Comparison::NotEqual],
             'with BinaryIdentifier' => [
                 new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
@@ -308,7 +308,7 @@ class TwitterSnowflakeTest extends TestCase
     public function testGetDateTime(): void
     {
         $dateTime = new DateTimeImmutable();
-        $snowflake = (new TwitterSnowflakeFactory(123))->createFromDateTime($dateTime);
+        $snowflake = (new DiscordSnowflakeFactory(123, 456))->createFromDateTime($dateTime);
         $snowflakeDate = $snowflake->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $snowflakeDate);
@@ -321,7 +321,7 @@ class TwitterSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithString->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2010-11-04 01:42:55.168', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2015-01-01 00:00:00.511', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
     public function testGetDateTimeFromIntSnowflake(): void
@@ -329,6 +329,6 @@ class TwitterSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2010-11-04 01:42:55.168', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2015-01-01 00:00:00.511', $dateTime->format('Y-m-d H:i:s.v'));
     }
 }

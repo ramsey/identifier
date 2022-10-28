@@ -32,11 +32,11 @@ use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
 /**
- * A factory that generates Snowflakes according to Twitter's rules
+ * A factory that generates Snowflakes according to Instagram's rules
  *
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes
+ * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes
  */
-final class TwitterSnowflakeFactory implements
+final class InstagramSnowflakeFactory implements
     BinaryIdentifierFactory,
     DateTimeIdentifierFactory,
     IntegerIdentifierFactory,
@@ -47,15 +47,14 @@ final class TwitterSnowflakeFactory implements
     private readonly bool $is64Bit;
 
     /**
-     * For performance, we'll prepare the machine ID bits and store them
-     * for repeated use.
+     * For performance, we'll prepare the shared ID bits and store them for repeated use.
      */
-    private readonly int $machineIdShifted;
+    private readonly int $shardIdShifted;
 
     /**
-     * Constructs a factory for creating Twitter Snowflakes
+     * Constructs a factory for creating Instagram Snowflakes
      *
-     * @param int $machineId A 10-bit machine identifier to use when creating
+     * @param int $shardId A 13-bit shard identifier to use when creating
      *     Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
@@ -63,19 +62,19 @@ final class TwitterSnowflakeFactory implements
      *     to prevent collisions; defaults to {@see StatefulSequence}
      */
     public function __construct(
-        private readonly int $machineId,
+        private readonly int $shardId,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
         Os $os = new PhpOs(),
     ) {
         $this->is64Bit = $os->getIntSize() >= 8;
-        $this->machineIdShifted = ($this->machineId & 0x03ff) << 12;
+        $this->shardIdShifted = ($this->shardId & 0x1fff) << 10;
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function create(): TwitterSnowflake
+    public function create(): InstagramSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
     }
@@ -83,71 +82,71 @@ final class TwitterSnowflakeFactory implements
     /**
      * @throws InvalidArgument
      */
-    public function createFromBytes(string $identifier): TwitterSnowflake
+    public function createFromBytes(string $identifier): InstagramSnowflake
     {
-        return new TwitterSnowflake($this->convertFromBytes($identifier));
+        return new InstagramSnowflake($this->convertFromBytes($identifier));
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromDateTime(DateTimeInterface $dateTime): TwitterSnowflake
+    public function createFromDateTime(DateTimeInterface $dateTime): InstagramSnowflake
     {
         $milliseconds = $dateTime->format('Uv');
 
-        if ($this->is64Bit()) {
-            $milliseconds = (int) $milliseconds - (int) Epoch::Twitter->value;
+        if ($this->is64Bit) {
+            $milliseconds = (int) $milliseconds - (int) Epoch::Instagram->value;
         } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Twitter->value);
+            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Instagram->value);
         }
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(
-                'Timestamp may not be earlier than the Twitter epoch, 2010-11-04 01:42:54.657 +00:00',
+                'Timestamp may not be earlier than the Instagram epoch, 2011-08-24 21:07:01.721 +00:00',
             );
         }
 
-        $sequence = $this->sequence->value($this->machineId, $dateTime) & 0x0fff;
+        $sequence = $this->sequence->value($this->shardId, $dateTime) & 0x03ff;
 
-        if ($this->is64Bit()) {
+        if ($this->is64Bit) {
             /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 22 | $this->machineIdShifted | $sequence;
+            $identifier = (int) $milliseconds << 23 | $this->shardIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
-                ->shiftedLeft(22)
-                ->or($this->machineIdShifted)
+                ->shiftedLeft(23)
+                ->or($this->shardIdShifted)
                 ->or($sequence);
         }
 
-        return new TwitterSnowflake($identifier);
+        return new InstagramSnowflake($identifier);
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromHexadecimal(string $identifier): TwitterSnowflake
+    public function createFromHexadecimal(string $identifier): InstagramSnowflake
     {
-        return new TwitterSnowflake($this->convertFromHexadecimal($identifier));
+        return new InstagramSnowflake($this->convertFromHexadecimal($identifier));
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromInteger(int | string $identifier): TwitterSnowflake
+    public function createFromInteger(int | string $identifier): InstagramSnowflake
     {
-        return new TwitterSnowflake($identifier);
+        return new InstagramSnowflake($identifier);
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromString(string $identifier): TwitterSnowflake
+    public function createFromString(string $identifier): InstagramSnowflake
     {
         /** @var numeric-string $value */
         $value = $identifier;
 
-        return new TwitterSnowflake($value);
+        return new InstagramSnowflake($value);
     }
 
     protected function is64Bit(): bool

@@ -14,28 +14,32 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Snowflake\Utility;
+namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use Identifier\BinaryIdentifier;
+use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Snowflake;
+use Ramsey\Identifier\Snowflake\Utility\Format;
+use Ramsey\Identifier\Snowflake\Utility\Time;
+use Ramsey\Identifier\Snowflake\Utility\Validation;
 use Stringable;
 
 use function assert;
 use function gettype;
+use function is_int;
 use function is_scalar;
 use function sprintf;
 use function strcmp;
+use function strlen;
+use function strspn;
 
 /**
- * This internal trait provides functionality common to all types of Snowflakes
- *
- * @internal
- *
  * @psalm-immutable
  */
-trait Standard
+final class GenericSnowflake implements JsonSerializable, Snowflake
 {
     use Validation;
 
@@ -43,27 +47,28 @@ trait Standard
     private readonly Time $time;
 
     /**
-     * Returns the count in milliseconds from which this Snowflake is offset
-     * from the Unix Epoch
-     *
-     * If supporting 32-bit platforms, this may return a numeric string integer.
-     *
-     * @return int | numeric-string
-     */
-    abstract protected function getEpochOffset(): int | string;
-
-    /**
-     * Constructs a {@see \Ramsey\Identifier\Snowflake} instance
+     * Constructs a {@see Snowflake} instance
      *
      * @param int | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form
+     * @param int | numeric-string $epochOffset The Snowflake ID's offset from
+     *     the Unix Epoch in milliseconds
      *
      * @throws InvalidArgument
      */
-    public function __construct(private readonly int | string $snowflake)
-    {
+    public function __construct(
+        private readonly int | string $snowflake,
+        private readonly int | string $epochOffset,
+    ) {
         if (!$this->isValid($this->snowflake)) {
             throw new InvalidArgument(sprintf('Invalid Snowflake: "%s"', $this->snowflake));
+        }
+
+        if (
+            !is_int($this->epochOffset)
+            && strspn($this->epochOffset, Format::MASK_INT) !== strlen($this->epochOffset)
+        ) {
+            throw new InvalidArgument(sprintf('Invalid epoch offset: "%s"', $this->epochOffset));
         }
 
         $this->format = new Format();
@@ -71,11 +76,11 @@ trait Standard
     }
 
     /**
-     * @return array{snowflake: int | numeric-string}
+     * @return array{snowflake: int | numeric-string, epochOffset: int | numeric-string}
      */
     public function __serialize(): array
     {
-        return ['snowflake' => $this->snowflake];
+        return ['snowflake' => $this->snowflake, 'epochOffset' => $this->epochOffset];
     }
 
     /**
@@ -87,15 +92,16 @@ trait Standard
     }
 
     /**
-     * @param array{snowflake: int | numeric-string} $data
+     * @param array{snowflake: int | numeric-string, epochOffset: int | numeric-string} $data
      *
      * @throws InvalidArgument
      */
     public function __unserialize(array $data): void
     {
         assert(isset($data['snowflake']), "'snowflake' is not set in serialized data");
+        assert(isset($data['epochOffset']), "'epochOffset' is not set in serialized data");
 
-        $this->__construct($data['snowflake']);
+        $this->__construct($data['snowflake'], $data['epochOffset']);
     }
 
     /**
@@ -127,12 +133,10 @@ trait Standard
         }
     }
 
-    /**
-     * @psalm-suppress ImpureMethodCall
-     */
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, $this->getEpochOffset());
+        /** @psalm-suppress ImpureMethodCall */
+        return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, 22);
     }
 
     /**
@@ -168,13 +172,13 @@ trait Standard
     }
 
     /**
-     * @return int | numeric-string
+     * @return int<0, max> | numeric-string
      */
     public function toInteger(): int | string
     {
         /**
          * @psalm-suppress ImpureMethodCall
-         * @var int | numeric-string
+         * @var int<0, max> | numeric-string
          */
         return $this->format->format($this->snowflake, Format::FORMAT_INT);
     }

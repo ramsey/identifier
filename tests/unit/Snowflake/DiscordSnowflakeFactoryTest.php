@@ -9,8 +9,8 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Snowflake\TwitterSnowflake;
-use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
+use Ramsey\Identifier\Snowflake\DiscordSnowflake;
+use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function gmdate;
@@ -19,35 +19,36 @@ use function sprintf;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
 
-class TwitterSnowflakeFactoryTest extends TestCase
+class DiscordSnowflakeFactoryTest extends TestCase
 {
     private Os $os32;
-    private TwitterSnowflakeFactory $factory;
+    private DiscordSnowflakeFactory $factory;
 
     protected function setUp(): void
     {
         $this->os32 = $this->mockery(Os::class, ['getIntSize' => 4]);
-        $this->factory = new TwitterSnowflakeFactory(511);
+        $this->factory = new DiscordSnowflakeFactory(15, 30);
     }
 
     public function testCreate(): void
     {
         $snowflake = $this->factory->create();
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
     }
 
     public function testCreateWithFactoryDeterministicValues(): void
     {
-        $factory = new TwitterSnowflakeFactory(
+        $factory = new DiscordSnowflakeFactory(
             0,
-            new FrozenClock(new DateTimeImmutable('2010-11-04 01:42:54.657')),
+            0,
+            new FrozenClock(new DateTimeImmutable('2015-01-01 00:00:00.000')),
             new FrozenSequence(0),
         );
 
         $snowflake = $factory->create();
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0000000000000000', $snowflake->toHexadecimal());
         $this->assertSame('0', $snowflake->toString());
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00", $snowflake->toBytes());
@@ -62,32 +63,32 @@ class TwitterSnowflakeFactoryTest extends TestCase
     public function testCreateFromDateTime(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
-        $factory = new TwitterSnowflakeFactory(512, sequence: new FrozenSequence(1));
+        $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1));
         $snowflake = $factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertNotSame($dateTime, $snowflake->getDateTime());
         $this->assertSame('2022-09-25 17:32:12.345000', $snowflake->getDateTime()->format('Y-m-d H:i:s.u'));
-        $this->assertSame('15d849f7be200001', $snowflake->toHexadecimal());
+        $this->assertSame('0e34ba8cae422001', $snowflake->toHexadecimal());
     }
 
     public function testCreateFromDateTimeOn32Bit(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
-        $factory = new TwitterSnowflakeFactory(512, sequence: new FrozenSequence(1), os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1), os: $this->os32);
         $snowflake = $factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertNotSame($dateTime, $snowflake->getDateTime());
         $this->assertSame('2022-09-25 17:32:12.345000', $snowflake->getDateTime()->format('Y-m-d H:i:s.u'));
-        $this->assertSame('15d849f7be200001', $snowflake->toHexadecimal());
+        $this->assertSame('0e34ba8cae422001', $snowflake->toHexadecimal());
     }
 
     public function testCreateFromBytes(): void
     {
         $snowflake = $this->factory->createFromBytes("\x01\x83\x95\xab\x83\x9a\xdf\x27");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
@@ -95,7 +96,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\x7f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
@@ -103,34 +104,34 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
     public function testCreateFromBytesOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromBytes("\x01\x83\x95\xab\x83\x9a\xdf\x27");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
     public function testCreateFromBytesWithMaxValueOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromBytes("\x7f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
     public function testCreateFromBytesWithMinValueOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00");
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
@@ -146,7 +147,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('018395ab839adf27');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
@@ -154,7 +155,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('7fffffffffffffff');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
@@ -162,34 +163,34 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('0000000000000000');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
     public function testCreateFromHexadecimalOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromHexadecimal('018395ab839adf27');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
     public function testCreateFromHexadecimalWithMaxValueOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromHexadecimal('7fffffffffffffff');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
     public function testCreateFromHexadecimalWithMinValueOn32Bit(): void
     {
-        $factory = new TwitterSnowflakeFactory(512, os: $this->os32);
+        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
         $snowflake = $factory->createFromHexadecimal('0000000000000000');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
@@ -247,7 +248,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromInteger($value);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
     }
 
     /**
@@ -269,7 +270,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromString('2147483647');
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('2147483647', $snowflake->toString());
     }
 
@@ -312,9 +313,9 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Twitter epoch, 2010-11-04 01:42:54.657 +00:00',
+            'Timestamp may not be earlier than the Discord epoch, 2015-01-01 00:00:00.000 +00:00',
         );
 
-        $this->factory->createFromDateTime(new DateTimeImmutable('2010-11-04 01:42:54.656'));
+        $this->factory->createFromDateTime(new DateTimeImmutable('2014-12-31 23:59:59.999'));
     }
 }

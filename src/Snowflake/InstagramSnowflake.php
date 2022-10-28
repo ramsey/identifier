@@ -21,15 +21,17 @@ use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
+use Ramsey\Identifier\Snowflake\Utility\Time;
 
 use function assert;
 
 /**
  * @psalm-immutable
  */
-final class TwitterSnowflake implements JsonSerializable, Snowflake
+final class InstagramSnowflake implements JsonSerializable, Snowflake
 {
     private readonly GenericSnowflake $snowflake;
+    private readonly Time $time;
 
     /**
      * Constructs a Snowflake identifier using Discord's Unix Epoch offset
@@ -41,7 +43,8 @@ final class TwitterSnowflake implements JsonSerializable, Snowflake
      */
     public function __construct(int | string $snowflake)
     {
-        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Twitter->value);
+        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Instagram->value);
+        $this->time = new Time();
     }
 
     /**
@@ -87,7 +90,8 @@ final class TwitterSnowflake implements JsonSerializable, Snowflake
 
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->snowflake->getDateTime();
+        /** @psalm-suppress ImpureMethodCall */
+        return $this->time->getDateTimeForSnowflake($this, Epoch::Instagram->value, 23);
     }
 
     /**

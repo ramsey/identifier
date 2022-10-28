@@ -32,11 +32,11 @@ use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
 /**
- * A factory that generates Snowflakes according to Twitter's rules
+ * A factory that generates Snowflakes according to Discord's rules
  *
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes
+ * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes
  */
-final class TwitterSnowflakeFactory implements
+final class DiscordSnowflakeFactory implements
     BinaryIdentifierFactory,
     DateTimeIdentifierFactory,
     IntegerIdentifierFactory,
@@ -47,15 +47,17 @@ final class TwitterSnowflakeFactory implements
     private readonly bool $is64Bit;
 
     /**
-     * For performance, we'll prepare the machine ID bits and store them
-     * for repeated use.
+     * For performance, we'll prepare the worker and process ID bits and store
+     * them for repeated use.
      */
-    private readonly int $machineIdShifted;
+    private readonly int $workerProcessIdShifted;
 
     /**
-     * Constructs a factory for creating Twitter Snowflakes
+     * Constructs a factory for creating Discord Snowflakes
      *
-     * @param int $machineId A 10-bit machine identifier to use when creating
+     * @param int $workerId A 5-bit worker identifier to use when creating
+     *     Snowflakes
+     * @param int $processId A 5-bit process identifier to use when creating
      *     Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
@@ -63,19 +65,20 @@ final class TwitterSnowflakeFactory implements
      *     to prevent collisions; defaults to {@see StatefulSequence}
      */
     public function __construct(
-        private readonly int $machineId,
+        private readonly int $workerId,
+        private readonly int $processId,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
         Os $os = new PhpOs(),
     ) {
         $this->is64Bit = $os->getIntSize() >= 8;
-        $this->machineIdShifted = ($this->machineId & 0x03ff) << 12;
+        $this->workerProcessIdShifted = ($this->workerId & 0x1f) << 17 | ($this->processId & 0x1f) << 12;
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function create(): TwitterSnowflake
+    public function create(): DiscordSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
     }
@@ -83,71 +86,71 @@ final class TwitterSnowflakeFactory implements
     /**
      * @throws InvalidArgument
      */
-    public function createFromBytes(string $identifier): TwitterSnowflake
+    public function createFromBytes(string $identifier): DiscordSnowflake
     {
-        return new TwitterSnowflake($this->convertFromBytes($identifier));
+        return new DiscordSnowflake($this->convertFromBytes($identifier));
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromDateTime(DateTimeInterface $dateTime): TwitterSnowflake
+    public function createFromDateTime(DateTimeInterface $dateTime): DiscordSnowflake
     {
         $milliseconds = $dateTime->format('Uv');
 
-        if ($this->is64Bit()) {
-            $milliseconds = (int) $milliseconds - (int) Epoch::Twitter->value;
+        if ($this->is64Bit) {
+            $milliseconds = (int) $milliseconds - (int) Epoch::Discord->value;
         } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Twitter->value);
+            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Discord->value);
         }
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(
-                'Timestamp may not be earlier than the Twitter epoch, 2010-11-04 01:42:54.657 +00:00',
+                'Timestamp may not be earlier than the Discord epoch, 2015-01-01 00:00:00.000 +00:00',
             );
         }
 
-        $sequence = $this->sequence->value($this->machineId, $dateTime) & 0x0fff;
+        $sequence = $this->sequence->value($this->workerId + $this->processId, $dateTime) & 0x0fff;
 
-        if ($this->is64Bit()) {
+        if ($this->is64Bit) {
             /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 22 | $this->machineIdShifted | $sequence;
+            $identifier = (int) $milliseconds << 22 | $this->workerProcessIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
                 ->shiftedLeft(22)
-                ->or($this->machineIdShifted)
+                ->or($this->workerProcessIdShifted)
                 ->or($sequence);
         }
 
-        return new TwitterSnowflake($identifier);
+        return new DiscordSnowflake($identifier);
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromHexadecimal(string $identifier): TwitterSnowflake
+    public function createFromHexadecimal(string $identifier): DiscordSnowflake
     {
-        return new TwitterSnowflake($this->convertFromHexadecimal($identifier));
+        return new DiscordSnowflake($this->convertFromHexadecimal($identifier));
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromInteger(int | string $identifier): TwitterSnowflake
+    public function createFromInteger(int | string $identifier): DiscordSnowflake
     {
-        return new TwitterSnowflake($identifier);
+        return new DiscordSnowflake($identifier);
     }
 
     /**
      * @throws InvalidArgument
      */
-    public function createFromString(string $identifier): TwitterSnowflake
+    public function createFromString(string $identifier): DiscordSnowflake
     {
         /** @var numeric-string $value */
         $value = $identifier;
 
-        return new TwitterSnowflake($value);
+        return new DiscordSnowflake($value);
     }
 
     protected function is64Bit(): bool

@@ -48,17 +48,18 @@ final class Time
     public function getDateTimeForSnowflake(
         Snowflake $snowflake,
         int | string $epochOffset,
+        int $rightShifts,
     ): DateTimeImmutable {
         if ($this->is64Bit) {
             // Timestamp should be at least 4 characters for "division" to work.
-            $milliseconds = sprintf('%04s', ($snowflake->toInteger() >> 22) + $epochOffset);
+            $milliseconds = sprintf('%04s', ($snowflake->toInteger() >> $rightShifts) + $epochOffset);
 
             // Native division by 1_000 is faster, but it can cause precision
             // headaches, so we'll manually "divide" by inserting a decimal.
             $timestamp = substr($milliseconds, 0, -3) . '.' . substr($milliseconds, -3);
         } else {
             $timestamp = (string) BigInteger::of($snowflake->toString())
-                ->shiftedRight(22)
+                ->shiftedRight($rightShifts)
                 ->plus($epochOffset)
                 ->toBigDecimal()
                 ->dividedBy(

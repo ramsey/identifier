@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Snowflake\TwitterSnowflake;
-use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
+use Ramsey\Identifier\Snowflake\GenericSnowflake;
+use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 use Ramsey\Test\Identifier\Comparison;
 use Ramsey\Test\Identifier\MockBinaryIdentifier;
-use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
 use function serialize;
@@ -20,18 +20,19 @@ use function unserialize;
 
 use const PHP_INT_SIZE;
 
-class TwitterSnowflakeTest extends TestCase
+class GenericSnowflakeTest extends TestCase
 {
     private const SNOWFLAKE_INT = 2147483647;
     private const SNOWFLAKE_STRING = '2147483647';
+    private const EPOCH_OFFSET = '1662744255000';
 
-    private TwitterSnowflake $snowflakeWithInt;
-    private TwitterSnowflake $snowflakeWithString;
+    private GenericSnowflake $snowflakeWithInt;
+    private GenericSnowflake $snowflakeWithString;
 
     protected function setUp(): void
     {
-        $this->snowflakeWithInt = new TwitterSnowflake(self::SNOWFLAKE_INT);
-        $this->snowflakeWithString = new TwitterSnowflake(self::SNOWFLAKE_STRING);
+        $this->snowflakeWithInt = new GenericSnowflake(self::SNOWFLAKE_INT, self::EPOCH_OFFSET);
+        $this->snowflakeWithString = new GenericSnowflake(self::SNOWFLAKE_STRING, self::EPOCH_OFFSET);
     }
 
     /**
@@ -44,7 +45,7 @@ class TwitterSnowflakeTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Snowflake: "%s"', $value));
 
-        new TwitterSnowflake($value);
+        new GenericSnowflake($value, self::EPOCH_OFFSET);
     }
 
     /**
@@ -62,7 +63,8 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testSerializeForString(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";s:10:"2147483647";s:11:"epochOffset";s:13:"1662744255000";}';
         $serialized = serialize($this->snowflakeWithString);
 
         $this->assertSame($expected, $serialized);
@@ -70,7 +72,8 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testSerializeForInt(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";i:2147483647;s:11:"epochOffset";s:13:"1662744255000";}';
         $serialized = serialize($this->snowflakeWithInt);
 
         $this->assertSame($expected, $serialized);
@@ -84,25 +87,28 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testUnserializeForString(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";s:10:"2147483647";s:11:"epochOffset";s:13:"1662744255000";}';
         $snowflake = unserialize($serialized);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
         $this->assertSame(self::SNOWFLAKE_STRING, (string) $snowflake);
     }
 
     public function testUnserializeForInt(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";i:2147483647;}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";i:2147483647;s:11:"epochOffset";s:13:"1662744255000";}';
         $snowflake = unserialize($serialized);
 
-        $this->assertInstanceOf(TwitterSnowflake::class, $snowflake);
+        $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
         $this->assertSame(self::SNOWFLAKE_STRING, (string) $snowflake);
     }
 
     public function testUnserializeFailsWhenSnowflakeIsAnEmptyString(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:0:"";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";s:0:"";s:11:"epochOffset";s:13:"1662744255000";}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: ""');
@@ -112,7 +118,8 @@ class TwitterSnowflakeTest extends TestCase
 
     public function testUnserializeFailsForInvalidSnowflake(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\TwitterSnowflake":1:{s:9:"snowflake";s:6:"foobar";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
+            . '{s:9:"snowflake";s:6:"foobar";s:11:"epochOffset";s:13:"1662744255000";}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: "foobar"');
@@ -184,8 +191,14 @@ class TwitterSnowflakeTest extends TestCase
                 },
                 Comparison::Equal,
             ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
+            'with Snowflake from string' => [
+                new GenericSnowflake(self::SNOWFLAKE_STRING, self::EPOCH_OFFSET),
+                Comparison::Equal,
+            ],
+            'with Snowflake from int' => [
+                new GenericSnowflake(self::SNOWFLAKE_INT, self::EPOCH_OFFSET),
+                Comparison::Equal,
+            ],
             'with BinaryIdentifier' => [
                 new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
                 Comparison::Equal,
@@ -260,8 +273,14 @@ class TwitterSnowflakeTest extends TestCase
                 },
                 Comparison::Equal,
             ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
+            'with Snowflake from string' => [
+                new GenericSnowflake(self::SNOWFLAKE_STRING, self::EPOCH_OFFSET),
+                Comparison::Equal,
+            ],
+            'with Snowflake from int' => [
+                new GenericSnowflake(self::SNOWFLAKE_INT, self::EPOCH_OFFSET),
+                Comparison::Equal,
+            ],
             'with array' => [[], Comparison::NotEqual],
             'with BinaryIdentifier' => [
                 new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
@@ -308,7 +327,7 @@ class TwitterSnowflakeTest extends TestCase
     public function testGetDateTime(): void
     {
         $dateTime = new DateTimeImmutable();
-        $snowflake = (new TwitterSnowflakeFactory(123))->createFromDateTime($dateTime);
+        $snowflake = (new GenericSnowflakeFactory(123, 0))->createFromDateTime($dateTime);
         $snowflakeDate = $snowflake->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $snowflakeDate);
@@ -321,7 +340,7 @@ class TwitterSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithString->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2010-11-04 01:42:55.168', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2022-09-09 17:24:15.511', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
     public function testGetDateTimeFromIntSnowflake(): void
@@ -329,6 +348,6 @@ class TwitterSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2010-11-04 01:42:55.168', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2022-09-09 17:24:15.511', $dateTime->format('Y-m-d H:i:s.v'));
     }
 }
