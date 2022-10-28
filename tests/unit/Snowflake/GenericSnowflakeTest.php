@@ -350,4 +350,13 @@ class GenericSnowflakeTest extends TestCase
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-09-09 17:24:15.511', $dateTime->format('Y-m-d H:i:s.v'));
     }
+
+    public function testConstructorThrowsExceptionForInvalidEpochOffset(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid epoch offset: "foobar"');
+
+        /** @phpstan-ignore-next-line */
+        new GenericSnowflake(1243, 'foobar');
+    }
 }
