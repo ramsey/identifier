@@ -40,7 +40,6 @@ use function strlen;
 use function strspn;
 
 use const PHP_INT_MAX;
-use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
@@ -100,6 +99,11 @@ final class UlidFactory implements
     {
         if ($dateTime->getTimestamp() < 0) {
             throw new InvalidArgument('Timestamp may not be earlier than the Unix Epoch');
+        } elseif ((int) $dateTime->format('Uv') > 0x000ffffffffffff) {
+            throw new InvalidArgument(sprintf(
+                'The date exceeds the maximum value allowed for ULIDs: %s',
+                $dateTime->format('Y-m-d H:i:s.u P'),
+            ));
         }
 
         return new Ulid($this->bytesGenerator->bytes(dateTime: $dateTime));
@@ -133,7 +137,7 @@ final class UlidFactory implements
         if (
             is_string($identifier)
             && strspn($identifier, Format::MASK_INT) === strlen($identifier)
-            && $identifier <= (string) PHP_INT_MAX
+            && $identifier <= PHP_INT_MAX
         ) {
             $identifier = (int) $identifier;
         }
@@ -143,7 +147,7 @@ final class UlidFactory implements
                 throw new InvalidArgument('Unable to create a ULID from a negative integer');
             }
 
-            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J' : 'N', $identifier);
+            $bytes = pack('J', $identifier);
         } else {
             try {
                 $bytes = BigInteger::of($identifier)->toBytes(false);

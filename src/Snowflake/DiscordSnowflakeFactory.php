@@ -26,8 +26,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
@@ -43,8 +41,6 @@ final class DiscordSnowflakeFactory implements
     StringIdentifierFactory
 {
     use StandardFactory;
-
-    private readonly bool $is64Bit;
 
     /**
      * For performance, we'll prepare the worker and process ID bits and store
@@ -69,9 +65,7 @@ final class DiscordSnowflakeFactory implements
         private readonly int $processId,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
-        Os $os = new PhpOs(),
     ) {
-        $this->is64Bit = $os->getIntSize() >= 8;
         $this->workerProcessIdShifted = ($this->workerId & 0x1f) << 17 | ($this->processId & 0x1f) << 12;
     }
 
@@ -96,13 +90,7 @@ final class DiscordSnowflakeFactory implements
      */
     public function createFromDateTime(DateTimeInterface $dateTime): DiscordSnowflake
     {
-        $milliseconds = $dateTime->format('Uv');
-
-        if ($this->is64Bit) {
-            $milliseconds = (int) $milliseconds - (int) Epoch::Discord->value;
-        } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Discord->value);
-        }
+        $milliseconds = (int) $dateTime->format('Uv') - Epoch::Discord->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(
@@ -112,9 +100,10 @@ final class DiscordSnowflakeFactory implements
 
         $sequence = $this->sequence->value($this->workerId + $this->processId, $dateTime) & 0x0fff;
 
-        if ($this->is64Bit) {
-            /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 22 | $this->workerProcessIdShifted | $sequence;
+        $millisecondsShifted = $milliseconds << 22;
+
+        if ($millisecondsShifted > $milliseconds) {
+            $identifier = $millisecondsShifted | $this->workerProcessIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
@@ -151,10 +140,5 @@ final class DiscordSnowflakeFactory implements
         $value = $identifier;
 
         return new DiscordSnowflake($value);
-    }
-
-    protected function is64Bit(): bool
-    {
-        return $this->is64Bit;
     }
 }

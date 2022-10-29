@@ -30,6 +30,11 @@ use function strspn;
 trait Validation
 {
     /**
+     * The maximum possible value of a Snowflake (i.e., 0xffffffffffffffff)
+     */
+    private const UPPER_BOUNDS = '18446744073709551615';
+
+    /**
      * Returns true if the Snowflake is valid according to the given format
      */
     private function isValid(int | string $snowflake): bool
@@ -42,6 +47,14 @@ trait Validation
             return false;
         }
 
-        return strspn($snowflake, Format::MASK_INT) === strlen($snowflake);
+        if (strspn($snowflake, Format::MASK_INT) !== strlen($snowflake)) {
+            return false;
+        }
+
+        /**
+         * @psalm-suppress UndefinedConstant Psalm is not yet aware of
+         *     constants on traits in PHP 8.2.
+         */
+        return $snowflake <= self::UPPER_BOUNDS;
     }
 }

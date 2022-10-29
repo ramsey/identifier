@@ -29,13 +29,6 @@ interface Os
     public function fileGetContents(string $filename): string;
 
     /**
-     * Returns the integer size of the current system (i.e., PHP_INT_SIZE)
-     *
-     * @return positive-int
-     */
-    public function getIntSize(): int;
-
-    /**
      * Returns the operating system family of the current system
      * (i.e., PHP_OS_FAMILY)
      *

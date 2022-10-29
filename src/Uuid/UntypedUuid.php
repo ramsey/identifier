@@ -47,7 +47,7 @@ use function strspn;
  *
  * @psalm-external-mutation-free
  */
-final class UntypedUuid implements JsonSerializable, NodeBasedUuid
+final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
     use Standard;
 
@@ -82,8 +82,8 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid
             /**
              * @psalm-suppress ImpureMethodCall We know that everything returned
              *     from toTypedUuid() is immutable, but Psalm sees we're checking
-             *     for instances of TimeBasedUuidIdentifier, and it can't verify
-             *     that these instances are immutable.
+             *     for instances of TimeBasedUuid, and it can't verify that
+             *     these instances are immutable.
              */
             return $uuid->getDateTime();
         }
@@ -105,8 +105,8 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid
             /**
              * @psalm-suppress ImpureMethodCall We know that everything returned
              *     from toTypedUuid() is immutable, but Psalm sees we're checking
-             *     for instances of NodeBasedUuidIdentifier, and it can't verify
-             *     that these instances are immutable.
+             *     for instances of NodeBasedUuid, and it can't verify that
+             *     these instances are immutable.
              */
             return $uuid->getNode();
         }

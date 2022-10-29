@@ -39,7 +39,6 @@ use function strlen;
 use function strspn;
 
 use const PHP_INT_MAX;
-use const PHP_INT_SIZE;
 use const STR_PAD_LEFT;
 
 /**
@@ -104,7 +103,7 @@ final class UuidFactory implements
         if (
             is_string($identifier)
             && strspn($identifier, Format::MASK_INT) === strlen($identifier)
-            && $identifier <= (string) PHP_INT_MAX
+            && $identifier <= PHP_INT_MAX
         ) {
             $identifier = (int) $identifier;
         }
@@ -114,7 +113,7 @@ final class UuidFactory implements
                 throw new InvalidArgument('Unable to create a UUID from a negative integer');
             }
 
-            $bytes = pack(PHP_INT_SIZE >= 8 ? 'J' : 'N', $identifier);
+            $bytes = pack('J', $identifier);
         } else {
             try {
                 $bytes = BigInteger::of($identifier)->toBytes(false);

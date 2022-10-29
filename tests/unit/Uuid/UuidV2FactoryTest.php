@@ -139,15 +139,63 @@ class UuidV2FactoryTest extends TestCase
 
     public function testCreateFromDateTime(): void
     {
-        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.294208');
         $uuid = $this->factory->createFromDateTime($dateTime);
 
         $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
 
         // We lose up to 7+ minutes of time with UUID version 2.
-        $this->assertSame('2022-09-25T17:25:07+00:00', $uuid->getDateTime()->format('c'));
+        $this->assertSame('2022-09-25 17:25:07.294208', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
         $this->assertSame('3cf7-21ed', substr($uuid->toString(), 9, 9));
+    }
+
+    public function testCreateFromMaximumDateTime(): void
+    {
+        $dateTime = new DateTimeImmutable('5236-03-31 21:21:00.684697');
+        $uuid = $this->factory->createFromDateTime($dateTime);
+
+        $this->assertInstanceOf(UuidV2::class, $uuid);
+        $this->assertNotSame($dateTime, $uuid->getDateTime());
+
+        // We lose up to 7+ minutes of time with UUID version 2.
+        $this->assertSame('5236-03-31 21:13:51.187968', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+        $this->assertSame('ffff-2fff', substr($uuid->toString(), 9, 9));
+    }
+
+    public function testCreateFromMinimumDateTime(): void
+    {
+        $dateTime = new DateTimeImmutable('1582-10-15 00:00:00.000000');
+        $uuid = $this->factory->createFromDateTime($dateTime);
+
+        $this->assertInstanceOf(UuidV2::class, $uuid);
+        $this->assertNotSame($dateTime, $uuid->getDateTime());
+
+        // We lose up to 7+ minutes of time with UUID version 2.
+        $this->assertSame('1582-10-15 00:00:00.000000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+        $this->assertSame('0000-2000', substr($uuid->toString(), 9, 9));
+    }
+
+    public function testCreateFromDateTimeThrowsExceptionForTooEarlyDate(): void
+    {
+        $dateTime = new DateTimeImmutable('1582-10-14 23:59:59.999999');
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
+
+        $this->factory->createFromDateTime($dateTime);
+    }
+
+    public function testCreateFromDateTimeThrowsExceptionForTooLateDate(): void
+    {
+        $dateTime = new DateTimeImmutable('5236-03-31 21:21:00.684698');
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'The date exceeds the maximum value allowed for Gregorian time UUIDs: 5236-03-31 21:21:00.684698',
+        );
+
+        $this->factory->createFromDateTime($dateTime);
     }
 
     public function testCreateFromIntegerWithMaxInteger(): void

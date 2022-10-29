@@ -12,7 +12,6 @@ use function str_repeat;
 use function trim;
 
 use const DIRECTORY_SEPARATOR;
-use const PHP_INT_SIZE;
 use const PHP_OS_FAMILY;
 
 class PhpOsTest extends TestCase
@@ -29,11 +28,6 @@ class PhpOsTest extends TestCase
         $expectedContents = file_get_contents(__FILE__);
 
         $this->assertSame($expectedContents, $this->os->fileGetContents(__FILE__));
-    }
-
-    public function testGetIntSize(): void
-    {
-        $this->assertSame(PHP_INT_SIZE, $this->os->getIntSize());
     }
 
     public function testGetOsFamily(): void

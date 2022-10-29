@@ -95,16 +95,12 @@ trait Validation
             Format::FORMAT_STRING => $this->determineVariant((int) hexdec($uuid[19])),
             Format::FORMAT_HEX => $this->determineVariant((int) hexdec($uuid[16])),
             Format::FORMAT_BYTES => $this->determineVariant(
-                (
-                    function (string $uuid): int {
-                        /** @var positive-int[] $parts */
-                        $parts = unpack('n4', $uuid, 8);
+                (static function (string $uuid): int {
+                    /** @var positive-int[] $parts */
+                    $parts = unpack('n4', $uuid, 8);
 
-                        return $parts[1] >> 12;
-                    }
-                )(
-                    $uuid,
-                ),
+                    return $parts[1] >> 12;
+                })($uuid),
             ),
             default => null,
         };

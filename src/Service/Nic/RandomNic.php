@@ -85,6 +85,6 @@ final class RandomNic implements Nic
     public function generateAddress(): string
     {
         /** @var non-empty-string */
-        return sprintf('%06x%06x', random_int(0, 0xffffff) | 0x010000, random_int(0, 0xffffff));
+        return sprintf('%012x', random_int(0, 0xffffffffffff) | 0x010000000000);
     }
 }

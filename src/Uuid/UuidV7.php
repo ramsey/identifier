@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
 use Ramsey\Identifier\TimeBasedUuid;
+use Ramsey\Identifier\Uuid\Utility\Standard;
 use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 /**
@@ -32,6 +33,7 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  */
 final class UuidV7 implements JsonSerializable, TimeBasedUuid
 {
+    use Standard;
     use TimeBased;
 
     public function getVersion(): Version

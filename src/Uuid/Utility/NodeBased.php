@@ -27,8 +27,6 @@ use function substr;
  */
 trait NodeBased
 {
-    use TimeBased;
-
     /**
      * @return non-empty-string
      */

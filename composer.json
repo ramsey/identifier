@@ -19,7 +19,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
+        "php-64bit": "^8.2",
         "brick/math": "^0.10.2",
         "identifier/identifier": "dev-main",
         "stella-maris/clock": "^0.1.6"
@@ -91,7 +91,7 @@
             "@dev:analyze:phpstan",
             "@dev:analyze:psalm"
         ],
-        "dev:analyze:phpstan": "phpstan analyse --ansi",
+        "dev:analyze:phpstan": "phpstan analyse --ansi --memory-limit=1G",
         "dev:analyze:psalm": "psalm",
         "dev:build:clean": "git clean -fX build/",
         "dev:lint": [

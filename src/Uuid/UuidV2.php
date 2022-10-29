@@ -18,8 +18,11 @@ namespace Ramsey\Identifier\Uuid;
 
 use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuid;
+use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBased;
+use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 use function hexdec;
 use function substr;
@@ -50,11 +53,13 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV2 implements JsonSerializable, NodeBasedUuid
+final class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
-    use NodeBased {
+    use Standard {
         isValid as private baseIsValid;
     }
+    use NodeBased;
+    use TimeBased;
 
     /**
      * Returns the local domain to which the local identifier belongs

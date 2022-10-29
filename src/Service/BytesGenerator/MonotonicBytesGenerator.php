@@ -16,23 +16,16 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
-use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use StellaMaris\Clock\ClockInterface as Clock;
 
+use function assert;
 use function hash;
 use function pack;
 use function random_bytes;
-use function str_pad;
-use function strlen;
 use function substr;
-use function substr_replace;
 use function unpack;
-
-use const STR_PAD_LEFT;
 
 /**
  * A bytes generator that ensures the bytes it generates are always greater than
@@ -49,7 +42,7 @@ use const STR_PAD_LEFT;
  */
 final class MonotonicBytesGenerator implements BytesGenerator
 {
-    private static string $time = '';
+    private static ?int $time = null;
     private static ?string $seed = null;
     private static int $seedIndex = 0;
 
@@ -59,14 +52,10 @@ final class MonotonicBytesGenerator implements BytesGenerator
     /** @var int[] */
     private static array $seedParts;
 
-    private readonly int $intSize;
-
     public function __construct(
         private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
         private readonly Clock $clock = new SystemClock(),
-        Os $os = new PhpOs(),
     ) {
-        $this->intSize = $os->getIntSize();
     }
 
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
@@ -74,22 +63,16 @@ final class MonotonicBytesGenerator implements BytesGenerator
         $argDateTime = $dateTime;
         $dateTime = $argDateTime ?? $this->clock->now();
 
-        $time = $dateTime->format('Uv');
+        $time = (int) $dateTime->format('Uv');
 
-        if ($time > self::$time || ($argDateTime !== null && $time !== self::$time)) {
+        if (self::$time === null || $time > self::$time || ($argDateTime !== null && $time !== self::$time)) {
             $this->randomize($time);
         } else {
             $time = $this->increment();
         }
 
-        if ($this->intSize >= 8) {
-            $time = substr(pack('J', (int) $time), -6);
-        } else {
-            $time = str_pad(BigInteger::of($time)->toBytes(false), 6, "\x00", STR_PAD_LEFT);
-        }
-
-        /** @var non-empty-string $bytes */
-        $bytes = $time . pack('n*', self::$rand[1], self::$rand[2], self::$rand[3], self::$rand[4], self::$rand[5]);
+        $bytes = substr(pack('J', $time), -6)
+            . pack('n*', self::$rand[1], self::$rand[2], self::$rand[3], self::$rand[4], self::$rand[5]);
 
         /** @var non-empty-string */
         return match (true) {
@@ -99,7 +82,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
         };
     }
 
-    private function randomize(string $time): void
+    private function randomize(int $time): void
     {
         if (self::$seed === null) {
             $seed = $this->bytesGenerator->bytes();
@@ -135,7 +118,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
      *
      * @link https://twitter.com/nicolasgrekas/status/1583356938825261061 Tweet from Nicolas Grekas
      */
-    private function increment(): string
+    private function increment(): int
     {
         if (self::$seedIndex === 0 && self::$seed !== null) {
             self::$seed = hash('sha512', self::$seed, true);
@@ -158,20 +141,10 @@ final class MonotonicBytesGenerator implements BytesGenerator
         self::$rand[2] = 0xffff & $carry = self::$rand[2] + ($carry >> 16);
         self::$rand[1] += $carry >> 16;
 
+        assert(self::$time !== null);
+
         if (0xfc00 & self::$rand[1]) {
-            $time = self::$time;
-            $mtime = (int) substr($time, -9);
-
-            if ($this->intSize >= 8 || strlen($time) < 10) {
-                $time = (string) ((int) $time + 1);
-            } elseif ($mtime === 999999999) {
-                $time = (1 + (int) substr($time, 0, -9)) . '000000000';
-            } else {
-                $mtime++;
-                $time = substr_replace($time, str_pad((string) $mtime, 9, '0', STR_PAD_LEFT), -9);
-            }
-
-            $this->randomize($time);
+            $this->randomize(self::$time + 1);
         }
 
         return self::$time;

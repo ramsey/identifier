@@ -17,16 +17,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Utility;
 
 use Brick\Math\BigInteger;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 
 use function is_int;
 use function is_string;
 use function pack;
 use function sprintf;
 use function str_pad;
-use function strlen;
-use function strspn;
 
 use const STR_PAD_LEFT;
 
@@ -64,11 +60,8 @@ final class Format
      */
     public const MASK_INT = '0123456789';
 
-    private readonly bool $is64Bit;
-
-    public function __construct(private readonly Os $os = new PhpOs())
+    public function __construct()
     {
-        $this->is64Bit = $this->os->getIntSize() >= 8;
     }
 
     /**
@@ -80,20 +73,12 @@ final class Format
      */
     public function format(int | string $value, int $to): int | string
     {
-        if (
-            $this->is64Bit
-            && is_string($value)
-            && strspn($value, self::MASK_INT) === strlen($value)
-        ) {
-            /**
-             * @phpstan-ignore-next-line
-             * @psalm-suppress InvalidOperand
-             */
-            if (is_int($value + 0)) {
-                $value = (int) $value;
-            }
-        } elseif (!$this->is64Bit) {
-            $value = (string) $value;
+        /**
+         * @phpstan-ignore-next-line
+         * @psalm-suppress InvalidOperand
+         */
+        if (is_string($value) && is_int($value + 0)) {
+            $value = (int) $value;
         }
 
         return match ($to) {

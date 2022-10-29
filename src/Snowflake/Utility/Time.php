@@ -19,25 +19,18 @@ namespace Ramsey\Identifier\Snowflake\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeImmutable;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake;
 
+use function abs;
+use function intdiv;
+use function is_int;
 use function sprintf;
-use function substr;
 
 /**
  * @internal
  */
 final class Time
 {
-    private readonly bool $is64Bit;
-
-    public function __construct(private readonly Os $os = new PhpOs())
-    {
-        $this->is64Bit = $this->os->getIntSize() >= 8;
-    }
-
     /**
      * Returns a date-time instance created from the timestamp extracted from
      * a Snowflake
@@ -50,23 +43,25 @@ final class Time
         int | string $epochOffset,
         int $rightShifts,
     ): DateTimeImmutable {
-        if ($this->is64Bit) {
-            // Timestamp should be at least 4 characters for "division" to work.
-            $milliseconds = sprintf('%04s', ($snowflake->toInteger() >> $rightShifts) + $epochOffset);
+        $value = $snowflake->toInteger();
 
-            // Native division by 1_000 is faster, but it can cause precision
-            // headaches, so we'll manually "divide" by inserting a decimal.
-            $timestamp = substr($milliseconds, 0, -3) . '.' . substr($milliseconds, -3);
+        // We support unsigned, 64-bit integers, so $value might be greater than
+        // PHP_INT_MAX, in which case, it'll be a string, and we'll need to use
+        // BigInteger for the math.
+        if (is_int($value)) {
+            $milliseconds = (int) (($value >> $rightShifts) + $epochOffset);
+
+            $timestamp = sprintf(
+                '%d.%03d',
+                intdiv($milliseconds, 1000),
+                abs($milliseconds) % 1000,
+            );
         } else {
-            $timestamp = (string) BigInteger::of($snowflake->toString())
+            $timestamp = (string) BigInteger::of($value)
                 ->shiftedRight($rightShifts)
                 ->plus($epochOffset)
                 ->toBigDecimal()
-                ->dividedBy(
-                    1000,
-                    3,
-                    RoundingMode::HALF_UP,
-                );
+                ->dividedBy(1000, 3, RoundingMode::HALF_UP);
         }
 
         return new DateTimeImmutable('@' . $timestamp);

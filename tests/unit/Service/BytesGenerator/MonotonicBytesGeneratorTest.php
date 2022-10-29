@@ -8,7 +8,6 @@ use DateTimeImmutable;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
 
 use function strlen;
@@ -43,19 +42,6 @@ class MonotonicBytesGeneratorTest extends TestCase
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.123456');
         $bytesGenerator = new MonotonicBytesGenerator();
-        $bytes = $bytesGenerator->bytes(dateTime: $dateTime);
-
-        $this->assertSame("\x01\x83\x75\xb4\xe1\xdb", substr($bytes, 0, 6));
-    }
-
-    public function testBytesWithDateTimeOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.123456');
-        $bytesGenerator = new MonotonicBytesGenerator(os: $os);
         $bytes = $bytesGenerator->bytes(dateTime: $dateTime);
 
         $this->assertSame("\x01\x83\x75\xb4\xe1\xdb", substr($bytes, 0, 6));
@@ -105,59 +91,12 @@ class MonotonicBytesGeneratorTest extends TestCase
      * @runInSeparateProcess since values are stored statically on the class
      * @preserveGlobalState disabled
      */
-    public function testBytesEachUuidIsMonotonicallyIncreasingOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $bytesGenerator = new MonotonicBytesGenerator(os: $os);
-
-        $previous = $bytesGenerator->bytes();
-
-        for ($i = 0; $i < 25; $i++) {
-            $bytes = $bytesGenerator->bytes();
-            $this->assertTrue($previous < $bytes);
-            $previous = $bytes;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
     public function testBytesWithMaximumRandomSeedValue(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(
             bytesGenerator: new FixedBytesGenerator(
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
-        );
-
-        $previous = $bytesGenerator->bytes();
-
-        for ($i = 0; $i < 25; $i++) {
-            $bytes = $bytesGenerator->bytes();
-            $this->assertTrue($previous < $bytes);
-            $previous = $bytes;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testBytesWithMaximumRandomSeedValueOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $bytesGenerator = new MonotonicBytesGenerator(
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-            os: $os,
         );
 
         $previous = $bytesGenerator->bytes();
@@ -182,35 +121,6 @@ class MonotonicBytesGeneratorTest extends TestCase
                 "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             ),
             clock: new FrozenClock($date),
-        );
-
-        $previous = $bytesGenerator->bytes();
-
-        for ($i = 0; $i < 25; $i++) {
-            $bytes = $bytesGenerator->bytes();
-            $this->assertTrue($previous < $bytes);
-            $previous = $bytes;
-        }
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
-    public function testBytesWithMaximumRandomSeedValueWithTimeAtMaximumNinesOn32BitPath(): void
-    {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $date = new DateTimeImmutable('@1666999999.999');
-
-        $bytesGenerator = new MonotonicBytesGenerator(
-            bytesGenerator: new FixedBytesGenerator(
-                "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-            ),
-            clock: new FrozenClock($date),
-            os: $os,
         );
 
         $previous = $bytesGenerator->bytes();

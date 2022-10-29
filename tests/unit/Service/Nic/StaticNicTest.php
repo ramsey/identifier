@@ -6,10 +6,7 @@ namespace Ramsey\Test\Identifier\Service\Nic;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Nic\StaticNic;
-use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
-
-use const PHP_INT_SIZE;
 
 class StaticNicTest extends TestCase
 {
@@ -126,12 +123,8 @@ class StaticNicTest extends TestCase
         ];
     }
 
-    public function testGetAddress64Bit(): void
+    public function testGetAddress(): void
     {
-        if (PHP_INT_SIZE < 8) {
-            $this->markTestSkipped('Skipping on 32-bit build of PHP');
-        }
-
         $nic1 = new StaticNic(0xffff0000);
         $nic2 = new StaticNic(0x3c1239b4f540);
         $nic3 = new StaticNic(281474976710655);
@@ -139,20 +132,6 @@ class StaticNicTest extends TestCase
         $this->assertSame('0100ffff0000', $nic1->address());
         $this->assertSame('3d1239b4f540', $nic2->address());
         $this->assertSame('ffffffffffff', $nic3->address());
-    }
-
-    public function testGetAddress32Bit(): void
-    {
-        // Force use of the 32-bit code path.
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $nic1 = new StaticNic(2147483647, $os);
-        $nic2 = new StaticNic(0, $os);
-
-        $this->assertSame('01007fffffff', $nic1->address());
-        $this->assertSame('010000000000', $nic2->address());
     }
 
     /**

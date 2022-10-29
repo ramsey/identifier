@@ -18,12 +18,10 @@ use function serialize;
 use function sprintf;
 use function unserialize;
 
-use const PHP_INT_SIZE;
-
 class GenericSnowflakeTest extends TestCase
 {
-    private const SNOWFLAKE_INT = 2147483647;
-    private const SNOWFLAKE_STRING = '2147483647';
+    private const SNOWFLAKE_INT = 9223372036854775807;
+    private const SNOWFLAKE_STRING = '9223372036854775807';
     private const EPOCH_OFFSET = '1662744255000';
 
     private GenericSnowflake $snowflakeWithInt;
@@ -58,13 +56,16 @@ class GenericSnowflakeTest extends TestCase
             ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00"],
             ['value' => -1],
             ['value' => '-1'],
+
+            // This value is out of bounds.
+            ['value' => '18446744073709551616'],
         ];
     }
 
     public function testSerializeForString(): void
     {
         $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:10:"2147483647";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";s:13:"1662744255000";}';
         $serialized = serialize($this->snowflakeWithString);
 
         $this->assertSame($expected, $serialized);
@@ -73,7 +74,7 @@ class GenericSnowflakeTest extends TestCase
     public function testSerializeForInt(): void
     {
         $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";i:2147483647;s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";s:13:"1662744255000";}';
         $serialized = serialize($this->snowflakeWithInt);
 
         $this->assertSame($expected, $serialized);
@@ -88,7 +89,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeForString(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:10:"2147483647";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";s:13:"1662744255000";}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
@@ -98,7 +99,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeForInt(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";i:2147483647;s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";s:13:"1662744255000";}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
@@ -200,7 +201,7 @@ class GenericSnowflakeTest extends TestCase
                 Comparison::Equal,
             ],
             'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
+                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
                 Comparison::Equal,
             ],
         ];
@@ -283,7 +284,7 @@ class GenericSnowflakeTest extends TestCase
             ],
             'with array' => [[], Comparison::NotEqual],
             'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
+                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
                 Comparison::Equal,
             ],
         ];
@@ -303,25 +304,20 @@ class GenericSnowflakeTest extends TestCase
 
     public function testToBytes(): void
     {
-        $this->assertSame("\x00\x00\x00\x00\x7f\xff\xff\xff", $this->snowflakeWithString->toBytes());
-        $this->assertSame("\x00\x00\x00\x00\x7f\xff\xff\xff", $this->snowflakeWithInt->toBytes());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithString->toBytes());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->toBytes());
     }
 
     public function testToHexadecimal(): void
     {
-        $this->assertSame('000000007fffffff', $this->snowflakeWithString->toHexadecimal());
-        $this->assertSame('000000007fffffff', $this->snowflakeWithInt->toHexadecimal());
+        $this->assertSame('7fffffffffffffff', $this->snowflakeWithString->toHexadecimal());
+        $this->assertSame('7fffffffffffffff', $this->snowflakeWithInt->toHexadecimal());
     }
 
     public function testToInteger(): void
     {
-        if (PHP_INT_SIZE >= 8) {
-            $this->assertSame(2147483647, $this->snowflakeWithString->toInteger());
-            $this->assertSame(2147483647, $this->snowflakeWithInt->toInteger());
-        } else {
-            $this->assertSame('2147483647', $this->snowflakeWithString->toInteger());
-            $this->assertSame('2147483647', $this->snowflakeWithInt->toInteger());
-        }
+        $this->assertSame(9223372036854775807, $this->snowflakeWithString->toInteger());
+        $this->assertSame(9223372036854775807, $this->snowflakeWithInt->toInteger());
     }
 
     public function testGetDateTime(): void
@@ -340,7 +336,7 @@ class GenericSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithString->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2022-09-09 17:24:15.511', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2092-05-16 09:11:50.551', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
     public function testGetDateTimeFromIntSnowflake(): void
@@ -348,7 +344,7 @@ class GenericSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2022-09-09 17:24:15.511', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2092-05-16 09:11:50.551', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
     public function testConstructorThrowsExceptionForInvalidEpochOffset(): void
@@ -358,5 +354,14 @@ class GenericSnowflakeTest extends TestCase
 
         /** @phpstan-ignore-next-line */
         new GenericSnowflake(1243, 'foobar');
+    }
+
+    public function testGetDateTimeForMaxIdentifier(): void
+    {
+        $snowflake = new GenericSnowflake('18446744073709551615', self::EPOCH_OFFSET);
+        $dateTime = $snowflake->getDateTime();
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
+        $this->assertSame('2162-01-22 00:59:26.103', $dateTime->format('Y-m-d H:i:s.v'));
     }
 }

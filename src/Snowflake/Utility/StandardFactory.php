@@ -32,11 +32,6 @@ use function unpack;
 trait StandardFactory
 {
     /**
-     * Returns true if the system is 64-bit
-     */
-    abstract protected function is64Bit(): bool;
-
-    /**
      * @return int | numeric-string
      *
      * @throws InvalidArgument
@@ -47,16 +42,17 @@ trait StandardFactory
             throw new InvalidArgument('Identifier must be an 8-byte string');
         }
 
-        if ($this->is64Bit()) {
-            /** @var int[] $parts */
-            $parts = unpack('J', $identifier);
+        /** @var int[] $parts */
+        $parts = unpack('J', $identifier);
 
-            /** @var int<0, max> */
-            return $parts[1];
+        // Support unsigned 64-bit identifiers.
+        if ($parts[1] < 0) {
+            /** @var numeric-string */
+            return (string) BigInteger::fromBytes($identifier, false);
         }
 
-        /** @var numeric-string */
-        return (string) BigInteger::fromBytes($identifier);
+        /** @var int<0, max> */
+        return $parts[1];
     }
 
     /**
@@ -73,12 +69,13 @@ trait StandardFactory
             throw new InvalidArgument('Identifier must be a 16-character hexadecimal string');
         }
 
-        if ($this->is64Bit()) {
-            /** @var int<0, max> */
-            return hexdec($identifier);
+        // Support unsigned 64-bit identifiers.
+        if ($identifier > '7fffffffffffffff') {
+            /** @var numeric-string */
+            return (string) BigInteger::fromBase($identifier, 16);
         }
 
-        /** @var numeric-string */
-        return (string) BigInteger::fromBase($identifier, 16);
+        /** @var int<0, max> */
+        return hexdec($identifier);
     }
 }

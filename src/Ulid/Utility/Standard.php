@@ -30,13 +30,13 @@ use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
 use Stringable;
 
+use function abs;
 use function assert;
 use function bin2hex;
 use function gettype;
 use function hex2bin;
-use function hexdec;
+use function intdiv;
 use function is_scalar;
-use function number_format;
 use function sprintf;
 use function str_pad;
 use function strcasecmp;
@@ -46,6 +46,7 @@ use function strtolower;
 use function strtoupper;
 use function strtr;
 use function substr;
+use function unpack;
 
 use const STR_PAD_LEFT;
 
@@ -151,11 +152,18 @@ trait Standard
 
     public function getDateTime(): DateTimeImmutable
     {
-        $hex = $this->getFormat(Format::FORMAT_HEX);
-        $timestamp = sprintf('%012s', substr($hex, 0, 12));
-        $unixTimestamp = number_format(hexdec($timestamp) / 1000, 6, '.', '');
+        $bytes = $this->getFormat(Format::FORMAT_BYTES);
 
-        return new DateTimeImmutable('@' . $unixTimestamp);
+        /** @var int[] $parts */
+        $parts = unpack('J', "\x00\x00" . substr($bytes, 0, 6));
+
+        $timestamp = sprintf(
+            '%d.%03d',
+            intdiv($parts[1], 1000),
+            abs($parts[1]) % 1000,
+        );
+
+        return new DateTimeImmutable('@' . $timestamp);
     }
 
     /**

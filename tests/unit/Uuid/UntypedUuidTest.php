@@ -94,8 +94,8 @@ class UntypedUuidTest extends TestCase
 
         if ($expected['date'] instanceof DateTimeInterface) {
             $this->assertSame(
-                $expected['date']->format('Y-m-d H:i:s.u'),
-                $untypedUuid->getDateTime()->format('Y-m-d H:i:s.u'),
+                $expected['date']->format('Y-m-d H:i:s.v'),
+                $untypedUuid->getDateTime()->format('Y-m-d H:i:s.v'),
             );
         } else {
             try {

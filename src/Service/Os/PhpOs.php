@@ -25,7 +25,6 @@ use function is_readable;
 use function shell_exec;
 
 use const GLOB_NOSORT;
-use const PHP_INT_SIZE;
 use const PHP_OS_FAMILY;
 
 /**
@@ -58,11 +57,6 @@ class PhpOs implements Os
     public function fileGetContents(string $filename): string
     {
         return (string) file_get_contents($filename);
-    }
-
-    public function getIntSize(): int
-    {
-        return PHP_INT_SIZE;
     }
 
     public function getOsFamily(): string

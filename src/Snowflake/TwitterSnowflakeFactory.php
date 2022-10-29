@@ -26,8 +26,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
@@ -43,8 +41,6 @@ final class TwitterSnowflakeFactory implements
     StringIdentifierFactory
 {
     use StandardFactory;
-
-    private readonly bool $is64Bit;
 
     /**
      * For performance, we'll prepare the machine ID bits and store them
@@ -66,9 +62,7 @@ final class TwitterSnowflakeFactory implements
         private readonly int $machineId,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
-        Os $os = new PhpOs(),
     ) {
-        $this->is64Bit = $os->getIntSize() >= 8;
         $this->machineIdShifted = ($this->machineId & 0x03ff) << 12;
     }
 
@@ -93,13 +87,7 @@ final class TwitterSnowflakeFactory implements
      */
     public function createFromDateTime(DateTimeInterface $dateTime): TwitterSnowflake
     {
-        $milliseconds = $dateTime->format('Uv');
-
-        if ($this->is64Bit()) {
-            $milliseconds = (int) $milliseconds - (int) Epoch::Twitter->value;
-        } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Twitter->value);
-        }
+        $milliseconds = (int) $dateTime->format('Uv') - Epoch::Twitter->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(
@@ -109,9 +97,10 @@ final class TwitterSnowflakeFactory implements
 
         $sequence = $this->sequence->value($this->machineId, $dateTime) & 0x0fff;
 
-        if ($this->is64Bit()) {
-            /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 22 | $this->machineIdShifted | $sequence;
+        $millisecondsShifted = $milliseconds << 22;
+
+        if ($millisecondsShifted > $milliseconds) {
+            $identifier = $millisecondsShifted | $this->machineIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
@@ -148,10 +137,5 @@ final class TwitterSnowflakeFactory implements
         $value = $identifier;
 
         return new TwitterSnowflake($value);
-    }
-
-    protected function is64Bit(): bool
-    {
-        return $this->is64Bit;
     }
 }

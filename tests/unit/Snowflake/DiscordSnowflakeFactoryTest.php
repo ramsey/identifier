@@ -8,7 +8,6 @@ use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
-use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Snowflake\DiscordSnowflake;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
@@ -16,17 +15,12 @@ use Ramsey\Test\Identifier\TestCase;
 use function gmdate;
 use function sprintf;
 
-use const PHP_INT_MAX;
-use const PHP_INT_SIZE;
-
 class DiscordSnowflakeFactoryTest extends TestCase
 {
-    private Os $os32;
     private DiscordSnowflakeFactory $factory;
 
     protected function setUp(): void
     {
-        $this->os32 = $this->mockery(Os::class, ['getIntSize' => 4]);
         $this->factory = new DiscordSnowflakeFactory(15, 30);
     }
 
@@ -52,30 +46,13 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $this->assertSame('0000000000000000', $snowflake->toHexadecimal());
         $this->assertSame('0', $snowflake->toString());
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00", $snowflake->toBytes());
-
-        if (PHP_INT_SIZE >= 8) {
-            $this->assertSame(0, $snowflake->toInteger());
-        } else {
-            $this->assertSame('0', $snowflake->toInteger());
-        }
+        $this->assertSame(0, $snowflake->toInteger());
     }
 
     public function testCreateFromDateTime(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
         $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1));
-        $snowflake = $factory->createFromDateTime($dateTime);
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertNotSame($dateTime, $snowflake->getDateTime());
-        $this->assertSame('2022-09-25 17:32:12.345000', $snowflake->getDateTime()->format('Y-m-d H:i:s.u'));
-        $this->assertSame('0e34ba8cae422001', $snowflake->toHexadecimal());
-    }
-
-    public function testCreateFromDateTimeOn32Bit(): void
-    {
-        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
-        $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1), os: $this->os32);
         $snowflake = $factory->createFromDateTime($dateTime);
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
@@ -94,6 +71,14 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromBytesWithMaxValue(): void
     {
+        $snowflake = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\xff");
+
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
+        $this->assertSame('18446744073709551615', $snowflake->toString());
+    }
+
+    public function testCreateFromBytesWithPhpIntMaxValue(): void
+    {
         $snowflake = $this->factory->createFromBytes("\x7f\xff\xff\xff\xff\xff\xff\xff");
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
@@ -103,33 +88,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     public function testCreateFromBytesWithMinValue(): void
     {
         $snowflake = $this->factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00");
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('0', $snowflake->toString());
-    }
-
-    public function testCreateFromBytesOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromBytes("\x01\x83\x95\xab\x83\x9a\xdf\x27");
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('109095379866935079', $snowflake->toString());
-    }
-
-    public function testCreateFromBytesWithMaxValueOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromBytes("\x7f\xff\xff\xff\xff\xff\xff\xff");
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('9223372036854775807', $snowflake->toString());
-    }
-
-    public function testCreateFromBytesWithMinValueOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00");
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
@@ -153,6 +111,14 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromHexadecimalWithMaxValue(): void
     {
+        $snowflake = $this->factory->createFromHexadecimal('ffffffffffffffff');
+
+        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
+        $this->assertSame('18446744073709551615', $snowflake->toString());
+    }
+
+    public function testCreateFromHexadecimalWithPhpIntMaxValue(): void
+    {
         $snowflake = $this->factory->createFromHexadecimal('7fffffffffffffff');
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
@@ -162,33 +128,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     public function testCreateFromHexadecimalWithMinValue(): void
     {
         $snowflake = $this->factory->createFromHexadecimal('0000000000000000');
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('0', $snowflake->toString());
-    }
-
-    public function testCreateFromHexadecimalOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromHexadecimal('018395ab839adf27');
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('109095379866935079', $snowflake->toString());
-    }
-
-    public function testCreateFromHexadecimalWithMaxValueOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromHexadecimal('7fffffffffffffff');
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-        $this->assertSame('9223372036854775807', $snowflake->toString());
-    }
-
-    public function testCreateFromHexadecimalWithMinValueOn32Bit(): void
-    {
-        $factory = new DiscordSnowflakeFactory(1, 1, os: $this->os32);
-        $snowflake = $factory->createFromHexadecimal('0000000000000000');
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
@@ -244,25 +183,25 @@ class DiscordSnowflakeFactoryTest extends TestCase
      *
      * @dataProvider createFromIntegerProvider
      */
-    public function testCreateFromInteger(int | string $value): void
+    public function testCreateFromInteger(int | string $value, int | string $expected): void
     {
         $snowflake = $this->factory->createFromInteger($value);
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
+        $this->assertSame($expected, $snowflake->toInteger());
     }
 
     /**
-     * @return array<array{value: int | numeric-string}>
+     * @return array<array{value: int | numeric-string, expected: int | numeric-string}>
      */
     public function createFromIntegerProvider(): array
     {
         return [
-            ['value' => '340282366920937934553716840013076889599'],
-            ['value' => '0'],
-            ['value' => 0],
-            ['value' => '340282366920938463463374607431768211455'],
-            ['value' => PHP_INT_MAX],
-            ['value' => (string) PHP_INT_MAX],
+            ['value' => '18446744073709551615', 'expected' => '18446744073709551615'],
+            ['value' => '0', 'expected' => 0],
+            ['value' => 0, 'expected' => 0],
+            ['value' => 9223372036854775807, 'expected' => 9223372036854775807],
+            ['value' => '9223372036854775807', 'expected' => 9223372036854775807],
         ];
     }
 
@@ -317,5 +256,23 @@ class DiscordSnowflakeFactoryTest extends TestCase
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('2014-12-31 23:59:59.999'));
+    }
+
+    public function testCreateFromDateTimeForOutOfBoundsDateTime(): void
+    {
+        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenSequence(0x0fff));
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid Snowflake:');
+
+        $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.104'));
+    }
+
+    public function testCreateFromDateTimeWithMaxValuesReturnsMaxIdentifier(): void
+    {
+        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenSequence(0x0fff));
+        $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.103'));
+
+        $this->assertSame('18446744073709551615', $snowflake->toInteger());
     }
 }

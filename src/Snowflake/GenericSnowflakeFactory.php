@@ -27,8 +27,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
@@ -49,8 +47,6 @@ final class GenericSnowflakeFactory implements
 {
     use StandardFactory;
 
-    private readonly bool $is64Bit;
-
     /**
      * For performance, we'll prepare the node ID bits and store for later use.
      */
@@ -61,8 +57,8 @@ final class GenericSnowflakeFactory implements
      *
      * @param int $nodeId A 10-bit machine identifier to use when creating
      *     Snowflakes
-     * @param int | numeric-string $epochOffset The offset from the Unix Epoch
-     *     in milliseconds to use when creating Snowflakes
+     * @param int $epochOffset The offset from the Unix Epoch in milliseconds to
+     *     use when creating Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value
@@ -70,12 +66,10 @@ final class GenericSnowflakeFactory implements
      */
     public function __construct(
         private readonly int $nodeId,
-        private readonly int | string $epochOffset,
+        private readonly int $epochOffset,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
-        Os $os = new PhpOs(),
     ) {
-        $this->is64Bit = $os->getIntSize() >= 8;
         $this->nodeIdShifted = ($this->nodeId & 0x03ff) << 12;
     }
 
@@ -100,13 +94,7 @@ final class GenericSnowflakeFactory implements
      */
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake
     {
-        $milliseconds = $dateTime->format('Uv');
-
-        if ($this->is64Bit) {
-            $milliseconds = (int) $milliseconds - (int) $this->epochOffset;
-        } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus($this->epochOffset);
-        }
+        $milliseconds = (int) $dateTime->format('Uv') - $this->epochOffset;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
@@ -117,9 +105,10 @@ final class GenericSnowflakeFactory implements
 
         $sequence = $this->sequence->value($this->nodeId, $dateTime) & 0x0fff;
 
-        if ($this->is64Bit) {
-            /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 22 | $this->nodeIdShifted | $sequence;
+        $millisecondsShifted = $milliseconds << 22;
+
+        if ($millisecondsShifted > $milliseconds) {
+            $identifier = $millisecondsShifted | $this->nodeIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
@@ -156,11 +145,6 @@ final class GenericSnowflakeFactory implements
         $value = $identifier;
 
         return new GenericSnowflake($value, $this->epochOffset);
-    }
-
-    protected function is64Bit(): bool
-    {
-        return $this->is64Bit;
     }
 
     private function getEpochDate(): DateTimeImmutable

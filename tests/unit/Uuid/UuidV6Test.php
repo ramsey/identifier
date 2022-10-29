@@ -500,7 +500,7 @@ class UuidV6Test extends TestCase
         $dateTime = $this->uuidWithString->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('3960-10-02 03:47:43.500628', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromHexUuid(): void
@@ -508,7 +508,7 @@ class UuidV6Test extends TestCase
         $dateTime = $this->uuidWithHex->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('3960-10-02 03:47:43.500628', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromBytesUuid(): void
@@ -516,7 +516,7 @@ class UuidV6Test extends TestCase
         $dateTime = $this->uuidWithBytes->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('3960-10-02 03:47:43.500628', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetNode(): void
@@ -530,7 +530,7 @@ class UuidV6Test extends TestCase
     {
         $uuid = new Uuid\UuidV6('ffffffff-ffff-6fff-bfff-ffffffffffff');
 
-        $this->assertSame('5236-03-31 21:21:00.684698', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
+        $this->assertSame('5236-03-31 21:21:00.684697', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
 
     public function testMinimumDate(): void

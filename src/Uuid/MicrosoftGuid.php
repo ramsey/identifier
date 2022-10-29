@@ -21,10 +21,13 @@ use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\NodeBasedUuid;
+use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\NodeBased;
+use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 use function assert;
 use function bin2hex;
@@ -65,13 +68,17 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid
+final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
-    use NodeBased {
+    use Standard {
         compareTo as private baseCompareTo;
-        getDateTime as private baseGetDateTime;
         getFormat as private baseGetFormat;
+    }
+    use NodeBased {
         getNode as private baseGetNode;
+    }
+    use TimeBased {
+        getDateTime as private baseGetDateTime;
     }
 
     private readonly Binary $binary;

@@ -18,12 +18,10 @@ use function serialize;
 use function sprintf;
 use function unserialize;
 
-use const PHP_INT_SIZE;
-
 class DiscordSnowflakeTest extends TestCase
 {
-    private const SNOWFLAKE_INT = 2147483647;
-    private const SNOWFLAKE_STRING = '2147483647';
+    private const SNOWFLAKE_INT = 9223372036854775807;
+    private const SNOWFLAKE_STRING = '9223372036854775807';
 
     private DiscordSnowflake $snowflakeWithInt;
     private DiscordSnowflake $snowflakeWithString;
@@ -57,12 +55,16 @@ class DiscordSnowflakeTest extends TestCase
             ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00"],
             ['value' => -1],
             ['value' => '-1'],
+
+            // This value is out of bounds.
+            ['value' => '18446744073709551616'],
         ];
     }
 
     public function testSerializeForString(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:'
+            . '{s:9:"snowflake";s:19:"9223372036854775807";}';
         $serialized = serialize($this->snowflakeWithString);
 
         $this->assertSame($expected, $serialized);
@@ -70,7 +72,8 @@ class DiscordSnowflakeTest extends TestCase
 
     public function testSerializeForInt(): void
     {
-        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:'
+            . '{s:9:"snowflake";s:19:"9223372036854775807";}';
         $serialized = serialize($this->snowflakeWithInt);
 
         $this->assertSame($expected, $serialized);
@@ -84,7 +87,8 @@ class DiscordSnowflakeTest extends TestCase
 
     public function testUnserializeForString(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";s:10:"2147483647";}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:'
+            . '{s:9:"snowflake";s:19:"9223372036854775807";}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
@@ -93,7 +97,8 @@ class DiscordSnowflakeTest extends TestCase
 
     public function testUnserializeForInt(): void
     {
-        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:{s:9:"snowflake";i:2147483647;}';
+        $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\DiscordSnowflake":1:'
+            . '{s:9:"snowflake";i:9223372036854775807;}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
@@ -187,7 +192,7 @@ class DiscordSnowflakeTest extends TestCase
             'with Snowflake from string' => [new DiscordSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
             'with Snowflake from int' => [new DiscordSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
             'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
+                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
                 Comparison::Equal,
             ],
         ];
@@ -264,7 +269,7 @@ class DiscordSnowflakeTest extends TestCase
             'with Snowflake from int' => [new DiscordSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
             'with array' => [[], Comparison::NotEqual],
             'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x00\x00\x00\x00\x7f\xff\xff\xff"),
+                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
                 Comparison::Equal,
             ],
         ];
@@ -284,25 +289,20 @@ class DiscordSnowflakeTest extends TestCase
 
     public function testToBytes(): void
     {
-        $this->assertSame("\x00\x00\x00\x00\x7f\xff\xff\xff", $this->snowflakeWithString->toBytes());
-        $this->assertSame("\x00\x00\x00\x00\x7f\xff\xff\xff", $this->snowflakeWithInt->toBytes());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithString->toBytes());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->toBytes());
     }
 
     public function testToHexadecimal(): void
     {
-        $this->assertSame('000000007fffffff', $this->snowflakeWithString->toHexadecimal());
-        $this->assertSame('000000007fffffff', $this->snowflakeWithInt->toHexadecimal());
+        $this->assertSame('7fffffffffffffff', $this->snowflakeWithString->toHexadecimal());
+        $this->assertSame('7fffffffffffffff', $this->snowflakeWithInt->toHexadecimal());
     }
 
     public function testToInteger(): void
     {
-        if (PHP_INT_SIZE >= 8) {
-            $this->assertSame(2147483647, $this->snowflakeWithString->toInteger());
-            $this->assertSame(2147483647, $this->snowflakeWithInt->toInteger());
-        } else {
-            $this->assertSame('2147483647', $this->snowflakeWithString->toInteger());
-            $this->assertSame('2147483647', $this->snowflakeWithInt->toInteger());
-        }
+        $this->assertSame(9223372036854775807, $this->snowflakeWithString->toInteger());
+        $this->assertSame(9223372036854775807, $this->snowflakeWithInt->toInteger());
     }
 
     public function testGetDateTime(): void
@@ -321,7 +321,7 @@ class DiscordSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithString->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2015-01-01 00:00:00.511', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2084-09-06 15:47:35.551', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
     public function testGetDateTimeFromIntSnowflake(): void
@@ -329,6 +329,15 @@ class DiscordSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-        $this->assertSame('2015-01-01 00:00:00.511', $dateTime->format('Y-m-d H:i:s.v'));
+        $this->assertSame('2084-09-06 15:47:35.551', $dateTime->format('Y-m-d H:i:s.v'));
+    }
+
+    public function testGetDateTimeForMaxIdentifier(): void
+    {
+        $snowflake = new DiscordSnowflake('18446744073709551615');
+        $dateTime = $snowflake->getDateTime();
+
+        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
+        $this->assertSame('2154-05-15 07:35:11.103', $dateTime->format('Y-m-d H:i:s.v'));
     }
 }

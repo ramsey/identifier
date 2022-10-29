@@ -27,6 +27,8 @@ use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
+use function sprintf;
+
 /**
  * A factory for creating version 7, Unix Epoch time UUIDs
  */
@@ -63,6 +65,11 @@ final class UuidV7Factory implements
     {
         if ($dateTime !== null && $dateTime->getTimestamp() < 0) {
             throw new InvalidArgument('Timestamp may not be earlier than the Unix Epoch');
+        } elseif ($dateTime !== null && (int) $dateTime->format('Uv') > 0x000ffffffffffff) {
+            throw new InvalidArgument(sprintf(
+                'The date exceeds the maximum value allowed for Unix Epoch time UUIDs: %s',
+                $dateTime->format('Y-m-d H:i:s.u P'),
+            ));
         }
 
         $bytes = $this->bytesGenerator->bytes(dateTime: $dateTime);

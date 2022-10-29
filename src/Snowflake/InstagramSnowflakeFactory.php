@@ -26,8 +26,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use StellaMaris\Clock\ClockInterface as Clock;
 
@@ -43,8 +41,6 @@ final class InstagramSnowflakeFactory implements
     StringIdentifierFactory
 {
     use StandardFactory;
-
-    private readonly bool $is64Bit;
 
     /**
      * For performance, we'll prepare the shared ID bits and store them for repeated use.
@@ -65,9 +61,7 @@ final class InstagramSnowflakeFactory implements
         private readonly int $shardId,
         private readonly Clock $clock = new SystemClock(),
         private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
-        Os $os = new PhpOs(),
     ) {
-        $this->is64Bit = $os->getIntSize() >= 8;
         $this->shardIdShifted = ($this->shardId & 0x1fff) << 10;
     }
 
@@ -92,13 +86,7 @@ final class InstagramSnowflakeFactory implements
      */
     public function createFromDateTime(DateTimeInterface $dateTime): InstagramSnowflake
     {
-        $milliseconds = $dateTime->format('Uv');
-
-        if ($this->is64Bit) {
-            $milliseconds = (int) $milliseconds - (int) Epoch::Instagram->value;
-        } else {
-            $milliseconds = (string) BigInteger::of($milliseconds)->minus(Epoch::Instagram->value);
-        }
+        $milliseconds = (int) $dateTime->format('Uv') - Epoch::Instagram->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(
@@ -108,9 +96,10 @@ final class InstagramSnowflakeFactory implements
 
         $sequence = $this->sequence->value($this->shardId, $dateTime) & 0x03ff;
 
-        if ($this->is64Bit) {
-            /** @var int<0, max> $identifier */
-            $identifier = (int) $milliseconds << 23 | $this->shardIdShifted | $sequence;
+        $millisecondsShifted = $milliseconds << 23;
+
+        if ($millisecondsShifted > $milliseconds) {
+            $identifier = $millisecondsShifted | $this->shardIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
@@ -147,10 +136,5 @@ final class InstagramSnowflakeFactory implements
         $value = $identifier;
 
         return new InstagramSnowflake($value);
-    }
-
-    protected function is64Bit(): bool
-    {
-        return $this->is64Bit;
     }
 }

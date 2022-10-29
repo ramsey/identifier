@@ -27,8 +27,6 @@ use DateTimeImmutable;
  */
 trait TimeBased
 {
-    use Standard;
-
     public function getDateTime(): DateTimeImmutable
     {
         /** @psalm-suppress ImpureMethodCall */

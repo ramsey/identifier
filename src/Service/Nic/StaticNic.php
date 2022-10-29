@@ -17,8 +17,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Os\Os;
-use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Identifier\Uuid\Utility\Format;
 
 use function bin2hex;
@@ -51,7 +49,7 @@ final class StaticNic implements Nic
      *
      * @psalm-param int<0, max> | non-empty-string $address
      */
-    public function __construct(int | string $address, private readonly Os $os = new PhpOs())
+    public function __construct(int | string $address)
     {
         if (is_int($address)) {
             $address = $this->parseIntegerAddress($address);
@@ -72,16 +70,8 @@ final class StaticNic implements Nic
      */
     private function parseIntegerAddress(int $address): string
     {
-        if ($this->os->getIntSize() >= 8) {
-            /** @var non-empty-string */
-            return sprintf('%012s', dechex($address | 0x010000000000));
-        }
-
-        /** @var int[] $parts */
-        $parts = unpack('n2', pack('N', $address));
-
         /** @var non-empty-string */
-        return bin2hex(pack('n3', 0x0100, ...$parts));
+        return sprintf('%012s', dechex($address | 0x010000000000));
     }
 
     /**

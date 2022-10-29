@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Snowflake\Utility;
 
-use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 use Ramsey\Identifier\Snowflake\Utility\Time;
@@ -25,30 +24,6 @@ class TimeTest extends TestCase
     ): void {
         $snowflake = (new TwitterSnowflakeFactory(123))->createFromString($snowflake);
         $time = new Time();
-
-        $this->assertSame(
-            $expectedTime,
-            $time->getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.u'),
-        );
-    }
-
-    /**
-     * @param int | numeric-string $epochOffset
-     *
-     * @dataProvider getDateTimeForSnowflakeProvider
-     */
-    public function testGetDateTimeForSnowflakeOn32Bit(
-        string $snowflake,
-        int | string $epochOffset,
-        int $rightShifts,
-        string $expectedTime,
-    ): void {
-        $os = $this->mockery(Os::class, [
-            'getIntSize' => 4,
-        ]);
-
-        $snowflake = (new TwitterSnowflakeFactory(123))->createFromString($snowflake);
-        $time = new Time($os);
 
         $this->assertSame(
             $expectedTime,

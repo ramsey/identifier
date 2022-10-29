@@ -20,7 +20,7 @@ namespace Ramsey\Identifier;
  * Describes the interface of a UUID that includes a node identifier
  * (or MAC address)
  */
-interface NodeBasedUuid extends TimeBasedUuid
+interface NodeBasedUuid extends Uuid
 {
     /**
      * Returns a string representation of the node (usually the host MAC
