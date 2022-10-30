@@ -35,7 +35,6 @@ use function hex2bin;
 use function hexdec;
 use function sprintf;
 use function str_replace;
-use function strcmp;
 use function strlen;
 use function substr;
 
@@ -48,14 +47,13 @@ use function substr;
  * order.
  *
  * For backwards compatibility, Microsoft GUIDs may be encoded using the
- * "reserved Microsoft" {@see \Ramsey\Identifier\Uuid\Variant variant} bits.
- * However, in practice, they are often encoded as standard RFC 4122 variant
- * UUIDs and stored using the Microsoft GUID byte order. Since it is impossible
- * to determine whether the bytes for an RFC 4122 UUID are stored in the
- * standard network byte order or using Microsoft's GUID byte order,
- * applications using Microsoft GUIDs must take care to keep track of this
- * information or, alternately, encode the UUIDs as "reserved Microsoft" variant
- * UUIDs.
+ * "reserved Microsoft" {@see Variant variant} bits. However, in practice, they
+ * are often encoded as standard RFC 4122 variant UUIDs and stored using the
+ * Microsoft GUID byte order. Since it is impossible to determine whether the
+ * bytes for an RFC 4122 UUID are stored in the standard network byte order or
+ * using Microsoft's GUID byte order, applications using Microsoft GUIDs must
+ * take care to keep track of this information or, alternately, encode the UUIDs
+ * as "reserved Microsoft" variant UUIDs.
  *
  * ⚠️ WARNING: This class supports both "reserved Microsoft" and RFC 4122
  * variants. Please understand that, if using this class with RFC 4122 variants,
@@ -124,14 +122,14 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedU
     public function compareTo(mixed $other): int
     {
         if ($other instanceof MicrosoftGuid) {
-            return strcmp($this->toBytes(), $other->toBytes());
+            return $this->toBytes() <=> $other->toBytes();
         }
 
         // We need to compare with strings here, since Microsoft GUID bytes
         // are in a different order than UUID bytes.
         if ($other instanceof Uuid) {
             /** @psalm-suppress ImpureMethodCall UuidIdentifier doesn't make any purity guarantees. */
-            return strcmp($this->toString(), $other->toString());
+            return $this->toString() <=> $other->toString();
         }
 
         return $this->baseCompareTo($other);

@@ -32,7 +32,6 @@ use function is_scalar;
 use function sprintf;
 use function str_replace;
 use function strcasecmp;
-use function strcmp;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -109,7 +108,7 @@ trait Standard
         // comparisons.
         if ($other instanceof BinaryIdentifier && !$other instanceof MicrosoftGuid) {
             /** @psalm-suppress ImpureMethodCall BinaryIdentifier doesn't make any purity guarantees. */
-            return strcmp($this->toBytes(), $other->toBytes());
+            return $this->toBytes() <=> $other->toBytes();
         }
 
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {

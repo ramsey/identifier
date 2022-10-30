@@ -40,7 +40,6 @@ use function is_scalar;
 use function sprintf;
 use function str_pad;
 use function strcasecmp;
-use function strcmp;
 use function strlen;
 use function strtolower;
 use function strtoupper;
@@ -123,7 +122,7 @@ trait Standard
     {
         if ($other instanceof BinaryIdentifier) {
             /** @psalm-suppress ImpureMethodCall */
-            return strcmp($this->toBytes(), $other->toBytes());
+            return $this->toBytes() <=> $other->toBytes();
         }
 
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {

@@ -32,7 +32,6 @@ use function gettype;
 use function is_int;
 use function is_scalar;
 use function sprintf;
-use function strcmp;
 use function strlen;
 use function strspn;
 
@@ -111,11 +110,11 @@ final class GenericSnowflake implements JsonSerializable, Snowflake
     {
         if ($other instanceof BinaryIdentifier) {
             /** @psalm-suppress ImpureMethodCall */
-            return strcmp($this->toBytes(), $other->toBytes());
+            return $this->toBytes() <=> $other->toBytes();
         }
 
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            return strcmp((string) $this->snowflake, (string) $other);
+            return (string) $this->snowflake <=> (string) $other;
         }
 
         throw new NotComparable(sprintf(
