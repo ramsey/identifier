@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeImmutable;
-use StellaMaris\Clock\ClockInterface as Clock;
+use Psr\Clock\ClockInterface as Clock;
 
 /**
  * A clock that always returns a pre-defined date-time

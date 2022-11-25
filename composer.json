@@ -23,7 +23,7 @@
         "php-64bit": "^8.2",
         "brick/math": "^0.10.2",
         "identifier/identifier": "dev-main",
-        "stella-maris/clock": "^0.1.6"
+        "psr/clock": "^1.0"
     },
     "require-dev": {
         "captainhook/captainhook": "^5.10",

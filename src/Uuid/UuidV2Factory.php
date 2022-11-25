@@ -21,6 +21,7 @@ use Identifier\BinaryIdentifierFactory;
 use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
+use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
@@ -34,7 +35,6 @@ use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
-use StellaMaris\Clock\ClockInterface as Clock;
 
 use function hex2bin;
 use function pack;

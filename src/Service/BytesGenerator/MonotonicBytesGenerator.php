@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
+use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use StellaMaris\Clock\ClockInterface as Clock;
 
 use function assert;
 use function hash;
