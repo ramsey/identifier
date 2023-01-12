@@ -24,7 +24,8 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * Random, or version 4, UUIDs are randomly or pseudo-randomly generated 128-bit
  * integers
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1 Format
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1 RFC 4122: Format
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.4 rfc4122bis: UUID Version 4
  *
  * @psalm-immutable
  */

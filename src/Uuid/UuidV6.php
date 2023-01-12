@@ -27,7 +27,7 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  * Reordered time, or version 6, UUIDs include timestamp, clock sequence, and
  * node values that are combined into a 128-bit unsigned integer
  *
- * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.1 UUID Version 6
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.6 rfc4122bis: UUID Version 6
  *
  * @psalm-immutable
  */

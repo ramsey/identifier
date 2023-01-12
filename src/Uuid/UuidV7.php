@@ -27,7 +27,7 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  *
  * Version 7 UUIDs are designed to be monotonically increasing and sortable.
  *
- * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.2 UUID Version 7
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.7 rfc4122bis: UUID Version 7
  *
  * @psalm-immutable
  */

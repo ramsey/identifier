@@ -29,7 +29,7 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * according to their needs. As a result, the uniqueness of version 8 UUIDs is
  * implementation-specific and should not be assumed.
  *
- * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.3 UUID Version 8
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.8 rfc4122bis: UUID Version 8
  *
  * @psalm-immutable
  */

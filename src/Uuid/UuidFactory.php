@@ -316,8 +316,9 @@ final class UuidFactory implements
      * @param string $bytes A 16-byte octet string. This is an open blob of data
      *     that you may fill with 128 bits of information. Be aware, however,
      *     bits 48 through 51 will be replaced with the UUID version field, and
-     *     bits 64 and 65 will be replaced with the UUID variant. You MUST NOT
-     *     rely on these bits for your application needs.
+     *     bits 64 and 65 will be replaced with the UUID variant. Your
+     *     application SHOULD NOT set these bits, since they will be
+     *     overwritten.
      *
      * @throws InvalidArgument if $bytes is not a legal value
      */

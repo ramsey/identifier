@@ -34,7 +34,8 @@ namespace Ramsey\Identifier\Uuid;
  * 2), then the variant is for RFC 4122. Finally, if the first bit is 0,
  * then it's reserved for NCS, for backward compatibility.
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.1 RFC 4122, § 4.1.1
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.1 RFC 4122: Variant
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.1 rfc4122bis: Variant Field
  */
 enum Variant: int
 {

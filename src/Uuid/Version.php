@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Uuid;
 /**
  * The version number describes how the UUID was generated
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.3 RFC 4122, § 4.1.3
- * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-4 New UUID Formats, § 4
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.3 RFC 4122: Version
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.2 rfc4122bis: Version Field
  */
 enum Version: int
 {

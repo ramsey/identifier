@@ -27,7 +27,8 @@ use function sprintf;
  * call to address() within the same process. If a cache is provided, the same
  * address is used across processes.
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.5 Node IDs that Do Not Identify the Host
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
  */
 final class RandomNic implements Nic
 {

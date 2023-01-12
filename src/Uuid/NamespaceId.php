@@ -27,6 +27,9 @@ use Ramsey\Identifier\Uuid;
  * distinguished names. This list may be expanded in the future, and it's not
  * intended to limit other, specialized name space IDs for different
  * applications.
+ *
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#appendix-C RFC 4122: Some Name Space IDs
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#appendix-B.2 rfc4122bis: Some Name Space IDs
  */
 enum NamespaceId: string
 {

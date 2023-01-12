@@ -55,14 +55,17 @@ use function substr;
  * take care to keep track of this information or, alternately, encode the UUIDs
  * as "reserved Microsoft" variant UUIDs.
  *
- * ⚠️ WARNING: This class supports both "reserved Microsoft" and RFC 4122
- * variants. Please understand that, if using this class with RFC 4122 variants,
- * bytes will be treated as if they are in Microsoft's GUID byte order. This
- * might cause problems if your application receives UUID bytes stored or
- * transmitted in network byte order.
+ * > ⚠️ WARNING: This class supports both "reserved Microsoft" and RFC 4122
+ * > variants. Please understand that, if using this class with RFC 4122 variants,
+ * > bytes will be treated as if they are in Microsoft's GUID byte order. This
+ * > might cause problems if your application receives UUID bytes stored or
+ * > transmitted in network byte order.
  *
  * There is no difference between the string and hexadecimal representations of
  * Microsoft GUIDs and RFC 4122 UUIDs.
+ *
+ * @link https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid#remarks Micosoft documentation remarks on GUIDs
+ * @link https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-7.0#remarks Microsoft documentation remarks on GUID byte order
  *
  * @psalm-immutable
  */

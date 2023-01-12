@@ -27,7 +27,8 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node
  * values that are combined into a 128-bit unsigned integer
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1 Format
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1 RFC 4122: Format
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-uuid-version-1 rfc4122bis: UUID Version 1
  *
  * @psalm-immutable
  */

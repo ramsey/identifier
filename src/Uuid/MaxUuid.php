@@ -29,7 +29,7 @@ use function strlen;
  * The Max UUID is a special form of UUID that is specified to have all 128
  * bits set to one (1)
  *
- * @link https://datatracker.ietf.org/doc/html/draft-peabody-dispatch-new-uuid-format-04#section-5.4 Max UUID
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-max-uuid rfc4122bis: Max UUID
  *
  * @psalm-immutable
  */

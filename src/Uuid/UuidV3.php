@@ -25,7 +25,8 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * that are hashed into a 128-bit unsigned integer using the MD5 hashing
  * algorithm
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1 Format
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1 RFC 4122: Format
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.3 rfc4122bis: UUID Version 3
  *
  * @psalm-immutable
  */

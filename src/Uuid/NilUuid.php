@@ -29,7 +29,8 @@ use function strlen;
  * The Nil UUID is a special form of UUID that is specified to have all 128
  * bits set to zero (0)
  *
- * @link https://datatracker.ietf.org/doc/html/rfc4122#section-4.1.7 Nil UUID
+ * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.7 RFC 4122: Nil UUID
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-nil-uuid rfc4122bis: Nil UUID
  *
  * @psalm-immutable
  */

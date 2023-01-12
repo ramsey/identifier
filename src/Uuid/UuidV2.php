@@ -44,6 +44,7 @@ use function substr;
  * these bits to 0, so the maximum range of timestamp drift is 0x00000000
  * to 0xffffffff (counted in 100-nanosecond intervals).
  *
+ * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.2 rfc4122bis: UUID Version 2
  * @link https://publications.opengroup.org/c311 DCE 1.1: Authentication and Security Services
  * @link https://publications.opengroup.org/c706 DCE 1.1: Remote Procedure Call
  * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01 DCE 1.1: Auth & Sec, §5.2.1.1
