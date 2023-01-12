@@ -85,7 +85,7 @@ final class GenericSnowflake implements JsonSerializable, Snowflake
     /**
      * @return non-empty-string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->snowflake;
     }

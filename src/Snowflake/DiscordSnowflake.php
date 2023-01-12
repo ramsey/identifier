@@ -55,7 +55,7 @@ final class DiscordSnowflake implements JsonSerializable, Snowflake
     /**
      * @return non-empty-string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->snowflake->toString();
     }

@@ -171,8 +171,9 @@ trait Validation
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
      *
-     * @psalm-suppress InvalidPropertyFetch We never call this from a context
-     *     where getVersion() returns the `never` type, but Psalm thinks we might.
+     * @psalm-suppress MixedPropertyFetch Psalm is confused because there are a
+     *     few code paths where $this->getVersion() returns never, but we know
+     *     this function is not called under those conditions.
      */
     private function isValid(string $uuid, int $format): bool
     {
