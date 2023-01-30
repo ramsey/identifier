@@ -34,7 +34,7 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NilUuid implements JsonSerializable, Uuid
+final readonly class NilUuid implements JsonSerializable, Uuid
 {
     use Standard;
 
@@ -43,7 +43,7 @@ final class NilUuid implements JsonSerializable, Uuid
     /**
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $uuid = self::NIL)
+    public function __construct(private string $uuid = self::NIL)
     {
         $this->format = strlen($this->uuid);
 

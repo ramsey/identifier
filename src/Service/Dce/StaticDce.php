@@ -24,7 +24,7 @@ use function sprintf;
  * Provides pre-determined user, group, and organization IDs for generating
  * DCE Security (version 2) UUIDs
  */
-final class StaticDce implements Dce
+final readonly class StaticDce implements Dce
 {
     /**
      * Constructs a static DCE service
@@ -38,9 +38,9 @@ final class StaticDce implements Dce
      * @param int<0, max> | null $orgId An optional organization identifier
      */
     public function __construct(
-        private readonly ?int $userId = null,
-        private readonly ?int $groupId = null,
-        private readonly ?int $orgId = null,
+        private ?int $userId = null,
+        private ?int $groupId = null,
+        private ?int $orgId = null,
     ) {
     }
 

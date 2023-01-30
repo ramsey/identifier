@@ -69,7 +69,7 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
     use Standard {
         compareTo as private baseCompareTo;
@@ -82,14 +82,14 @@ final class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedU
         getDateTime as private baseGetDateTime;
     }
 
-    private readonly Binary $binary;
-    private readonly ?Variant $variant;
-    private readonly ?Version $version;
+    private Binary $binary;
+    private ?Variant $variant;
+    private ?Version $version;
 
     /**
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $uuid)
+    public function __construct(private string $uuid)
     {
         $this->format = strlen($this->uuid);
         $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);

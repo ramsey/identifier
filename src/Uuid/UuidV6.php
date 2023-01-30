@@ -31,7 +31,7 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  *
  * @psalm-immutable
  */
-final class UuidV6 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class UuidV6 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
     use Standard;
     use NodeBased;

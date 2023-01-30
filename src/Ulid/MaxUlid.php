@@ -18,7 +18,7 @@ namespace Ramsey\Identifier\Ulid;
 
 use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Ulid;
+use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\Utility\Standard;
 
 use function sprintf;
@@ -27,7 +27,7 @@ use function strlen;
 /**
  * @psalm-immutable
  */
-final class MaxUlid implements JsonSerializable, Ulid
+final readonly class MaxUlid implements JsonSerializable, UlidInterface
 {
     use Standard;
 
@@ -36,7 +36,7 @@ final class MaxUlid implements JsonSerializable, Ulid
     /**
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $ulid = self::MAX)
+    public function __construct(private string $ulid = self::MAX)
     {
         $this->format = strlen($this->ulid);
 

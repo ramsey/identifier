@@ -28,10 +28,10 @@ use function assert;
 /**
  * @psalm-immutable
  */
-final class InstagramSnowflake implements JsonSerializable, Snowflake
+final readonly class InstagramSnowflake implements JsonSerializable, Snowflake
 {
-    private readonly GenericSnowflake $snowflake;
-    private readonly Time $time;
+    private GenericSnowflake $snowflake;
+    private Time $time;
 
     /**
      * Constructs a Snowflake identifier using Discord's Unix Epoch offset

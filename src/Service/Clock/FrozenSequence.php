@@ -21,12 +21,12 @@ use DateTimeInterface;
 /**
  * A sequence that returns a pre-determined value as the clock sequence
  */
-final class FrozenSequence implements Sequence
+final readonly class FrozenSequence implements Sequence
 {
     /**
      * @param int<0, max> $value A pre-determined clock sequence value
      */
-    public function __construct(private readonly int $value)
+    public function __construct(private int $value)
     {
     }
 

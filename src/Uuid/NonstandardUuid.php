@@ -37,16 +37,16 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class NonstandardUuid implements JsonSerializable, Uuid
+final readonly class NonstandardUuid implements JsonSerializable, Uuid
 {
     use Standard;
 
-    private readonly ?Variant $variant;
+    private ?Variant $variant;
 
     /**
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $uuid)
+    public function __construct(private string $uuid)
     {
         $this->format = strlen($this->uuid);
         $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);

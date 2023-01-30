@@ -30,7 +30,7 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  *
  * @psalm-immutable
  */
-final class UuidV3 implements JsonSerializable, Uuid
+final readonly class UuidV3 implements JsonSerializable, Uuid
 {
     use Standard;
 

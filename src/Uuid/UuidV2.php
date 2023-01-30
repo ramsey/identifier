@@ -54,7 +54,7 @@ use function substr;
  *
  * @psalm-immutable
  */
-final class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
     use Standard {
         isValid as private baseIsValid;

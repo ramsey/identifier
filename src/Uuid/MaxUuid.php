@@ -33,7 +33,7 @@ use function strlen;
  *
  * @psalm-immutable
  */
-final class MaxUuid implements JsonSerializable, Uuid
+final readonly class MaxUuid implements JsonSerializable, Uuid
 {
     use Standard;
 
@@ -42,7 +42,7 @@ final class MaxUuid implements JsonSerializable, Uuid
     /**
      * @throws InvalidArgument
      */
-    public function __construct(private readonly string $uuid = self::MAX)
+    public function __construct(private string $uuid = self::MAX)
     {
         $this->format = strlen($this->uuid);
 

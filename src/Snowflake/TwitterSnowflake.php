@@ -27,9 +27,9 @@ use function assert;
 /**
  * @psalm-immutable
  */
-final class TwitterSnowflake implements JsonSerializable, Snowflake
+final readonly class TwitterSnowflake implements JsonSerializable, Snowflake
 {
-    private readonly GenericSnowflake $snowflake;
+    private GenericSnowflake $snowflake;
 
     /**
      * Constructs a Snowflake identifier using Discord's Unix Epoch offset

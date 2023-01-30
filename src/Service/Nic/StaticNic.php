@@ -36,12 +36,12 @@ use function unpack;
  * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
  */
-final class StaticNic implements Nic
+final readonly class StaticNic implements Nic
 {
     /**
      * @var non-empty-string
      */
-    private readonly string $address;
+    private string $address;
 
     /**
      * @param int<0, max> | string $address A 48-bit integer or hexadecimal string

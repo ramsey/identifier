@@ -38,12 +38,12 @@ use function strspn;
 /**
  * @psalm-immutable
  */
-final class GenericSnowflake implements JsonSerializable, Snowflake
+final readonly class GenericSnowflake implements JsonSerializable, Snowflake
 {
     use Validation;
 
-    private readonly Format $format;
-    private readonly Time $time;
+    private Format $format;
+    private Time $time;
 
     /**
      * Constructs a {@see Snowflake} instance
@@ -56,8 +56,8 @@ final class GenericSnowflake implements JsonSerializable, Snowflake
      * @throws InvalidArgument
      */
     public function __construct(
-        private readonly int | string $snowflake,
-        private readonly int | string $epochOffset,
+        private int | string $snowflake,
+        private int | string $epochOffset,
     ) {
         if (!$this->isValid($this->snowflake)) {
             throw new InvalidArgument(sprintf('Invalid Snowflake: "%s"', $this->snowflake));
