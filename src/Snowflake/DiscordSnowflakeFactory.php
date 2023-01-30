@@ -44,10 +44,10 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     /**
      * Constructs a factory for creating Discord Snowflakes
      *
-     * @param int $workerId A 5-bit worker identifier to use when creating
-     *     Snowflakes
-     * @param int $processId A 5-bit process identifier to use when creating
-     *     Snowflakes
+     * @param int<0, 31> $workerId A 5-bit worker identifier to use when
+     *     creating Snowflakes
+     * @param int<0, 31> $processId A 5-bit process identifier to use when
+     *     creating Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value

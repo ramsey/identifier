@@ -44,8 +44,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     /**
      * Constructs a factory for creating Twitter Snowflakes
      *
-     * @param int $machineId A 10-bit machine identifier to use when creating
-     *     Snowflakes
+     * @param int<0, 1023> $machineId A 10-bit machine identifier to use when
+     *     creating Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value

@@ -308,7 +308,7 @@ class DiscordSnowflakeTest extends TestCase
     public function testGetDateTime(): void
     {
         $dateTime = new DateTimeImmutable();
-        $snowflake = (new DiscordSnowflakeFactory(123, 456))->createFromDateTime($dateTime);
+        $snowflake = (new DiscordSnowflakeFactory(12, 31))->createFromDateTime($dateTime);
         $snowflakeDate = $snowflake->getDateTime();
 
         $this->assertInstanceOf(DateTimeImmutable::class, $snowflakeDate);

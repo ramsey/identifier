@@ -48,8 +48,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     /**
      * Constructs a factory for creating Snowflakes
      *
-     * @param int $nodeId A 10-bit machine identifier to use when creating
-     *     Snowflakes
+     * @param int<0, 1023> $nodeId A 10-bit machine identifier to use when
+     *     creating Snowflakes
      * @param int $epochOffset The offset from the Unix Epoch in milliseconds to
      *     use when creating Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;

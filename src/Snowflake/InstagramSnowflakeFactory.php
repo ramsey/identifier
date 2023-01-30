@@ -43,8 +43,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     /**
      * Constructs a factory for creating Instagram Snowflakes
      *
-     * @param int $shardId A 13-bit shard identifier to use when creating
-     *     Snowflakes
+     * @param int<0, 8191> $shardId A 13-bit shard identifier to use when
+     *     creating Snowflakes
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value
