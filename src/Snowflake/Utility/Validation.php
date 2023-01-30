@@ -51,10 +51,6 @@ trait Validation
             return false;
         }
 
-        /**
-         * @psalm-suppress UndefinedConstant Psalm is not yet aware of
-         *     constants on traits in PHP 8.2.
-         */
         return $snowflake <= self::UPPER_BOUNDS;
     }
 }
