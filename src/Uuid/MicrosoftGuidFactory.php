@@ -18,15 +18,13 @@ namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
+use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 use Throwable;
 
 use function sprintf;
@@ -42,14 +40,11 @@ use const STR_PAD_LEFT;
  * UUIDs using the Microsoft GUID binary encoding. See {@see MicrosoftGuid}
  * for more information on this encoding.
  */
-final class MicrosoftGuidFactory implements
-    BinaryIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
+    private Binary $binary;
 
     /**
      * Constructs a factory for creating Microsoft GUIDs
@@ -58,7 +53,7 @@ final class MicrosoftGuidFactory implements
      *     generate bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(
-        private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
+        private BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
     ) {
         $this->binary = new Binary();
     }
@@ -78,6 +73,15 @@ final class MicrosoftGuidFactory implements
     {
         /** @var MicrosoftGuid */
         return $this->createFromBytesInternal($identifier);
+    }
+
+    /**
+     * @throws InvalidArgument
+     */
+    public function createFromHexadecimal(string $identifier): MicrosoftGuid
+    {
+        /** @var MicrosoftGuid */
+        return $this->createFromHexadecimalInternal($identifier);
     }
 
     /**

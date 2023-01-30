@@ -20,15 +20,13 @@ use Brick\Math\BigInteger;
 use Brick\Math\Exception\MathException;
 use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Validation;
+use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
 use function is_int;
 use function is_string;
@@ -44,10 +42,7 @@ use const STR_PAD_LEFT;
 /**
  * A factory for creating UUIDs
  */
-final class UuidFactory implements
-    BinaryIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class UuidFactory implements UuidFactoryInterface
 {
     use Validation;
 

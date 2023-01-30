@@ -18,27 +18,20 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A factory that generates Snowflakes according to Discord's rules
  *
  * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes
  */
-final class DiscordSnowflakeFactory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class DiscordSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 

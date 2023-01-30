@@ -17,13 +17,10 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
+use Ramsey\Identifier\TimeBasedUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 
@@ -32,11 +29,7 @@ use function sprintf;
 /**
  * A factory for creating version 7, Unix Epoch time UUIDs
  */
-final class UuidV7Factory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class UuidV7Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
@@ -93,6 +86,15 @@ final class UuidV7Factory implements
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV7
     {
         return $this->create(dateTime: $dateTime);
+    }
+
+    /**
+     * @throws InvalidArgument
+     */
+    public function createFromHexadecimal(string $identifier): UuidV7
+    {
+        /** @var UuidV7 */
+        return $this->createFromHexadecimalInternal($identifier);
     }
 
     /**

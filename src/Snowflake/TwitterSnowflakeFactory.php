@@ -18,27 +18,20 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A factory that generates Snowflakes according to Twitter's rules
  *
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes
  */
-final class TwitterSnowflakeFactory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class TwitterSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 

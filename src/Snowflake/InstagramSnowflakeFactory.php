@@ -18,27 +18,20 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\SnowflakeFactory;
 
 /**
  * A factory that generates Snowflakes according to Instagram's rules
  *
  * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes
  */
-final class InstagramSnowflakeFactory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class InstagramSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 

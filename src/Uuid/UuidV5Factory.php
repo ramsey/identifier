@@ -16,13 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use Identifier\BinaryIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
+use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
 use function hash;
 use function substr;
@@ -30,7 +28,7 @@ use function substr;
 /**
  * A factory for creating version 5, name-based (SHA-1) UUIDs
  */
-final class UuidV5Factory implements BinaryIdentifierFactory, IntegerIdentifierFactory, StringIdentifierFactory
+final class UuidV5Factory implements UuidFactoryInterface
 {
     use StandardFactory;
 
@@ -68,6 +66,15 @@ final class UuidV5Factory implements BinaryIdentifierFactory, IntegerIdentifierF
     {
         /** @var UuidV5 */
         return $this->createFromBytesInternal($identifier);
+    }
+
+    /**
+     * @throws InvalidArgument
+     */
+    public function createFromHexadecimal(string $identifier): UuidV5
+    {
+        /** @var UuidV5 */
+        return $this->createFromHexadecimalInternal($identifier);
     }
 
     /**

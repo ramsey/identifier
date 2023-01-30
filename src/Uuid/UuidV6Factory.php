@@ -17,10 +17,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
@@ -29,6 +25,7 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
+use Ramsey\Identifier\TimeBasedUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 use Ramsey\Identifier\Uuid\Utility\Time;
@@ -42,11 +39,7 @@ use function substr;
 /**
  * A factory for creating version 6, reordered time UUIDs
  */
-final class UuidV6Factory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class UuidV6Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
@@ -123,6 +116,15 @@ final class UuidV6Factory implements
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV6
     {
         return $this->create(dateTime: $dateTime);
+    }
+
+    /**
+     * @throws InvalidArgument
+     */
+    public function createFromHexadecimal(string $identifier): UuidV6
+    {
+        /** @var UuidV6 */
+        return $this->createFromHexadecimalInternal($identifier);
     }
 
     /**

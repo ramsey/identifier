@@ -19,10 +19,6 @@ namespace Ramsey\Identifier\Snowflake;
 use Brick\Math\BigInteger;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
-use Identifier\DateTimeIdentifierFactory;
-use Identifier\IntegerIdentifierFactory;
-use Identifier\StringIdentifierFactory;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Sequence;
@@ -30,6 +26,7 @@ use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\SnowflakeFactory;
 
 use function sprintf;
 use function substr;
@@ -39,11 +36,7 @@ use function substr;
  *
  * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflakes
  */
-final class GenericSnowflakeFactory implements
-    BinaryIdentifierFactory,
-    DateTimeIdentifierFactory,
-    IntegerIdentifierFactory,
-    StringIdentifierFactory
+final class GenericSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 

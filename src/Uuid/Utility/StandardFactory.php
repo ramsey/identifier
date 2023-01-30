@@ -59,6 +59,22 @@ trait StandardFactory
     }
 
     /**
+     * @throws InvalidArgument
+     */
+    private function createFromHexadecimalInternal(string $identifier): Uuid
+    {
+        if (
+            strlen($identifier) === Format::FORMAT_HEX
+            && $this->hasValidFormat($identifier, Format::FORMAT_HEX)
+        ) {
+            /** @var Uuid */
+            return new ($this->getUuidClass())($identifier);
+        }
+
+        throw new InvalidArgument('Identifier must be a 32-character hexadecimal string');
+    }
+
+    /**
      * The minimum integer value for a version 1 UUID is 75567087097951178194944.
      * As such, there's no need to use better performing math for integers less
      * than PHP_INT_MAX, since those integers can never be valid RFC 4122 UUIDs.
