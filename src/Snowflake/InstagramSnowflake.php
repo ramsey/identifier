@@ -34,7 +34,7 @@ final readonly class InstagramSnowflake implements JsonSerializable, Snowflake
     private Time $time;
 
     /**
-     * Constructs a Snowflake identifier using Discord's Unix Epoch offset
+     * Constructs a Snowflake identifier using Instagram's Unix Epoch offset
      *
      * @param int | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form

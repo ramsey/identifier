@@ -32,7 +32,7 @@ final readonly class TwitterSnowflake implements JsonSerializable, Snowflake
     private GenericSnowflake $snowflake;
 
     /**
-     * Constructs a Snowflake identifier using Discord's Unix Epoch offset
+     * Constructs a Snowflake identifier using Twitter's Unix Epoch offset
      *
      * @param int | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form
