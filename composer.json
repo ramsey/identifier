@@ -28,7 +28,7 @@
     "require-dev": {
         "captainhook/captainhook": "^5.10",
         "captainhook/plugin-composer": "^5.3",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
         "ergebnis/composer-normalize": "^2.28",
         "hamcrest/hamcrest-php": "^2.0",
         "mockery/mockery": "^1.5",
