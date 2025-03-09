@@ -121,8 +121,7 @@ final class UuidStringConversionBench
     private UuidFactory $factory;
 
     /**
-     * @var Uuid[]
-     * @psalm-var non-empty-list<Uuid>
+     * @var non-empty-list<Uuid>
      */
     private array $promiscuousUuids;
 
@@ -131,8 +130,7 @@ final class UuidStringConversionBench
     private string $uuidBytes;
 
     /**
-     * @var string[]
-     * @psalm-var non-empty-list<string>
+     * @var non-empty-list<string>
      */
     private array $promiscuousUuidsBytes;
 

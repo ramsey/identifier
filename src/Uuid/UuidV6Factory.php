@@ -66,7 +66,7 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
+     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal
      *     string representing the hardware address of the machine where this
      *     identifier was generated
      * @param int<0, 16383> | null $clockSequence A 14-bit number used to help
@@ -76,8 +76,6 @@ final class UuidV6Factory implements TimeBasedUuidFactory
      *     creating the identifier
      *
      * @throws InvalidArgument
-     *
-     * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function create(
         int | string | null $node = null,
@@ -91,7 +89,7 @@ final class UuidV6Factory implements TimeBasedUuidFactory
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
         $timeHex = bin2hex($timeBytes);
 
-        /** @psalm-var non-empty-string $bytes */
+        /** @var non-empty-string $bytes */
         $bytes = hex2bin(substr($timeHex, 1, 12) . '0' . substr($timeHex, -3))
             . pack('n', $clockSequence)
             . hex2bin(sprintf('%012s', $node));
@@ -145,9 +143,6 @@ final class UuidV6Factory implements TimeBasedUuidFactory
         return $this->createFromStringInternal($identifier);
     }
 
-    /**
-     * @psalm-mutation-free
-     */
     protected function getVersion(): Version
     {
         return Version::ReorderedGregorianTime;

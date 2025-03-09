@@ -52,7 +52,7 @@ final class UuidV5Factory implements UuidFactoryInterface
             throw new InvalidArgument('$name cannot be null when creating version 5 UUIDs');
         }
 
-        /** @psalm-var non-empty-string $bytes */
+        /** @var non-empty-string $bytes */
         $bytes = substr(hash('sha1', $namespace->toBytes() . $name, true), 0, 16);
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::HashSha1);
 
@@ -95,9 +95,6 @@ final class UuidV5Factory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
-    /**
-     * @psalm-mutation-free
-     */
     protected function getVersion(): Version
     {
         return Version::HashSha1;

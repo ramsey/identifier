@@ -79,7 +79,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
      *     to the local domain specified in $localDomain; if no identifier is
      *     provided, the factory will attempt to obtain a suitable local ID for
      *     the domain (e.g., the UID or GID of the user running the script)
-     * @param int<0, max> | string | null $node A 48-bit integer or hexadecimal
+     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal
      *     string representing the hardware address of the machine where this
      *     identifier was generated
      * @param int<0, 63> | null $clockSequence A 6-bit number used to help
@@ -90,8 +90,6 @@ final class UuidV2Factory implements TimeBasedUuidFactory
      *
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
-     *
-     * @psalm-param int<0, max> | non-empty-string | null $node
      */
     public function create(
         DceDomain $localDomain = DceDomain::Person,
@@ -169,9 +167,6 @@ final class UuidV2Factory implements TimeBasedUuidFactory
         return $this->createFromStringInternal($identifier);
     }
 
-    /**
-     * @psalm-mutation-free
-     */
     protected function getVersion(): Version
     {
         return Version::DceSecurity;

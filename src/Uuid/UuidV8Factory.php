@@ -106,9 +106,6 @@ final class UuidV8Factory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
-    /**
-     * @psalm-mutation-free
-     */
     protected function getVersion(): Version
     {
         return Version::Custom;

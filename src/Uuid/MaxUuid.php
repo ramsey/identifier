@@ -30,8 +30,6 @@ use function strlen;
  * bits set to one (1)
  *
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-max-uuid rfc4122bis: Max UUID
- *
- * @psalm-immutable
  */
 final readonly class MaxUuid implements JsonSerializable, Uuid
 {

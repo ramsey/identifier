@@ -35,9 +35,6 @@ use function sprintf;
 use function strlen;
 use function strspn;
 
-/**
- * @psalm-immutable
- */
 final readonly class GenericSnowflake implements JsonSerializable, Snowflake
 {
     use Validation;
@@ -109,7 +106,6 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
     public function compareTo(mixed $other): int
     {
         if ($other instanceof BinaryIdentifier) {
-            /** @psalm-suppress ImpureMethodCall */
             return $this->toBytes() <=> $other->toBytes();
         }
 
@@ -134,7 +130,6 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
 
     public function getDateTime(): DateTimeImmutable
     {
-        /** @psalm-suppress ImpureMethodCall */
         return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, 22);
     }
 
@@ -151,10 +146,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toBytes(): string
     {
-        /**
-         * @psalm-suppress ImpureMethodCall
-         * @var non-empty-string
-         */
+        /** @var non-empty-string */
         return $this->format->format($this->snowflake, Format::FORMAT_BYTES);
     }
 
@@ -163,10 +155,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toHexadecimal(): string
     {
-        /**
-         * @psalm-suppress ImpureMethodCall
-         * @var non-empty-string
-         */
+        /** @var non-empty-string */
         return $this->format->format($this->snowflake, Format::FORMAT_HEX);
     }
 
@@ -175,10 +164,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toInteger(): int | string
     {
-        /**
-         * @psalm-suppress ImpureMethodCall
-         * @var int<0, max> | numeric-string
-         */
+        /** @var int<0, max> | numeric-string */
         return $this->format->format($this->snowflake, Format::FORMAT_INT);
     }
 

@@ -24,9 +24,6 @@ use Ramsey\Identifier\Ulid\Utility\Standard;
 use function sprintf;
 use function strlen;
 
-/**
- * @psalm-immutable
- */
 final readonly class NilUlid implements JsonSerializable, UlidInterface
 {
     use Standard;

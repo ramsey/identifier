@@ -66,8 +66,6 @@ use function substr;
  *
  * @link https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid#remarks Micosoft documentation remarks on GUIDs
  * @link https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-7.0#remarks Microsoft documentation remarks on GUID byte order
- *
- * @psalm-immutable
  */
 final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
@@ -131,7 +129,6 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
         // We need to compare with strings here, since Microsoft GUID bytes
         // are in a different order than UUID bytes.
         if ($other instanceof Uuid) {
-            /** @psalm-suppress ImpureMethodCall UuidIdentifier doesn't make any purity guarantees. */
             return $this->toString() <=> $other->toString();
         }
 
@@ -249,13 +246,13 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
     }
 
     /**
-     * @return non-empty-string
+     * @param 36 | 32 | 16 $formatToReturn
      *
-     * @psalm-param 36 | 32 | 16 $formatToReturn
+     * @return non-empty-string
      */
     protected function getFormat(int $formatToReturn, ?string $uuid = null): string
     {
-        /** @psalm-var 36 | 32 | 16 $formatOfUuid */
+        /** @var 36 | 32 | 16 $formatOfUuid */
         $formatOfUuid = $uuid ? strlen($uuid) : $this->format;
         $uuid ??= $this->uuid;
 

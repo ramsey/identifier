@@ -40,8 +40,6 @@ use function substr;
  * This internal trait provides functionality common to all types of UUIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait Standard
 {
@@ -107,7 +105,6 @@ trait Standard
         // representations might be identical, so we'll skip MicrosoftGuid bytes
         // comparisons.
         if ($other instanceof BinaryIdentifier && !$other instanceof MicrosoftGuid) {
-            /** @psalm-suppress ImpureMethodCall BinaryIdentifier doesn't make any purity guarantees. */
             return $this->toBytes() <=> $other->toBytes();
         }
 
@@ -169,7 +166,7 @@ trait Standard
      */
     public function toInteger(): int | string
     {
-        /** @psalm-var numeric-string */
+        /** @var numeric-string */
         return BigInteger::fromBase($this->getFormat(Format::FORMAT_HEX), 16)->__toString();
     }
 
@@ -190,13 +187,13 @@ trait Standard
     }
 
     /**
-     * @return non-empty-string
+     * @param 36 | 32 | 16 $formatToReturn
      *
-     * @psalm-param 36 | 32 | 16 $formatToReturn
+     * @return non-empty-string
      */
     private function getFormat(int $formatToReturn, ?string $uuid = null): string
     {
-        /** @psalm-var 36 | 32 | 16 $formatOfUuid */
+        /** @var 36 | 32 | 16 $formatOfUuid */
         $formatOfUuid = $uuid ? strlen($uuid) : $this->format;
         $uuid ??= $this->uuid;
 

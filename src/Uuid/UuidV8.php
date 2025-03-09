@@ -30,8 +30,6 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * implementation-specific and should not be assumed.
  *
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.8 rfc4122bis: UUID Version 8
- *
- * @psalm-immutable
  */
 final readonly class UuidV8 implements JsonSerializable, Uuid
 {

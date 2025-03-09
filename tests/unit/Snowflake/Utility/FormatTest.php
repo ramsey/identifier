@@ -11,9 +11,8 @@ class FormatTest extends TestCase
 {
     /**
      * @param int<0, max> | numeric-string $value
+     * @param Format::FORMAT_* $to
      * @param int<0, max> | string $expected
-     *
-     * @psalm-param Format::FORMAT_* $to
      *
      * @dataProvider formatProvider
      */

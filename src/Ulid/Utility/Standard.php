@@ -53,8 +53,6 @@ use const STR_PAD_LEFT;
  * This internal trait provides functionality common to all types of ULIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait Standard
 {
@@ -121,7 +119,6 @@ trait Standard
     public function compareTo(mixed $other): int
     {
         if ($other instanceof BinaryIdentifier) {
-            /** @psalm-suppress ImpureMethodCall */
             return $this->toBytes() <=> $other->toBytes();
         }
 
@@ -228,7 +225,6 @@ trait Standard
      */
     public function toUuid(): Uuid
     {
-        /** @psalm-suppress ImpureMethodCall */
         return (new UuidFactory())->createFromBytes($this->toBytes())->toTypedUuid();
     }
 
@@ -251,16 +247,13 @@ trait Standard
     }
 
     /**
-     * @return non-empty-string
+     * @param 32 | 26 | 16 $formatToReturn
      *
-     * @psalm-param 32 | 26 | 16 $formatToReturn
-     * @psalm-suppress ImpureMethodCall Psalm sees the static calls to
-     *     BigInteger and cannot verify whether these mutate state, so it
-     *     complains about impure method calls.
+     * @return non-empty-string
      */
     private function getFormat(int $formatToReturn, ?string $ulid = null): string
     {
-        /** @psalm-var 32 | 26 | 16 $formatOfUlid */
+        /** @var 32 | 26 | 16 $formatOfUlid */
         $formatOfUlid = $ulid ? strlen($ulid) : $this->format;
         $ulid ??= $this->ulid;
 

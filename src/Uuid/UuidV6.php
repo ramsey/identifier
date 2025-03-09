@@ -28,8 +28,6 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  * node values that are combined into a 128-bit unsigned integer
  *
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.6 rfc4122bis: UUID Version 6
- *
- * @psalm-immutable
  */
 final readonly class UuidV6 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {

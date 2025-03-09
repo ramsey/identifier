@@ -32,7 +32,7 @@ interface Os
      * Returns the operating system family of the current system
      * (i.e., PHP_OS_FAMILY)
      *
-     * @psalm-return "Windows" | "BSD" | "Darwin" | "Solaris" | "Linux" | "Unknown"
+     * @return "Windows" | "BSD" | "Darwin" | "Solaris" | "Linux" | "Unknown"
      */
     public function getOsFamily(): string;
 

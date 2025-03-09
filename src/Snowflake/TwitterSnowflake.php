@@ -24,9 +24,6 @@ use Ramsey\Identifier\Snowflake;
 
 use function assert;
 
-/**
- * @psalm-immutable
- */
 final readonly class TwitterSnowflake implements JsonSerializable, Snowflake
 {
     private GenericSnowflake $snowflake;

@@ -34,8 +34,6 @@ use function strlen;
  * its bits rearranged for reasons such as sortability. Without knowing which
  * rearrangement algorithm was used, it is impossible to determine the UUID's
  * original layout, so we treat it as a "nonstandard" UUID.
- *
- * @psalm-immutable
  */
 final readonly class NonstandardUuid implements JsonSerializable, Uuid
 {

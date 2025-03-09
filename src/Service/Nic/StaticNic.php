@@ -44,11 +44,9 @@ final readonly class StaticNic implements Nic
     private string $address;
 
     /**
-     * @param int<0, max> | string $address A 48-bit integer or hexadecimal string
+     * @param int<0, max> | non-empty-string $address A 48-bit integer or hexadecimal string
      *
      * @throws InvalidArgument
-     *
-     * @psalm-param int<0, max> | non-empty-string $address
      */
     public function __construct(int | string $address)
     {

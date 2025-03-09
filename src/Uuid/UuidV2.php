@@ -51,8 +51,6 @@ use function substr;
  * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01 DCE 1.1: Auth & Sec, §11.5.1.1
  * @link https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm DCE 1.1: RPC, Appendix A
  * @link https://github.com/google/uuid Go package for UUIDs (includes DCE implementation)
- *
- * @psalm-immutable
  */
 final readonly class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {

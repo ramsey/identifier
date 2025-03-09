@@ -121,8 +121,7 @@ final class UlidStringConversionBench
     private UlidFactory $factory;
 
     /**
-     * @var array<Ulid>
-     * @psalm-var non-empty-list<Ulid>
+     * @var non-empty-list<Ulid>
      */
     private array $promiscuousUlids;
 
@@ -131,8 +130,7 @@ final class UlidStringConversionBench
     private string $ulidBytes;
 
     /**
-     * @var string[]
-     * @psalm-var non-empty-list<string>
+     * @var non-empty-list<string>
      */
     private array $promiscuousUlidsBytes;
 

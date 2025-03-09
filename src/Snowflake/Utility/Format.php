@@ -75,7 +75,6 @@ final class Format
     {
         /**
          * @phpstan-ignore-next-line
-         * @psalm-suppress InvalidOperand
          */
         if (is_string($value) && is_int($value + 0)) {
             $value = (int) $value;

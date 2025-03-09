@@ -27,14 +27,12 @@ interface BytesGenerator
     /**
      * Generates an n-length string of bytes
      *
-     * @param int $length The number of bytes to generate
+     * @param positive-int $length The number of bytes to generate
      * @param DateTimeInterface | null $dateTime An optional date-time instance
      *     to use when generating the bytes; not all generators will need or use
      *     this parameter
      *
      * @return non-empty-string
-     *
-     * @psalm-param positive-int $length
      */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string;
 }

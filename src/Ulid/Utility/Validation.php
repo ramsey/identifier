@@ -27,8 +27,6 @@ use function strtr;
  * This internal trait provides common validation functionality for ULIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait Validation
 {

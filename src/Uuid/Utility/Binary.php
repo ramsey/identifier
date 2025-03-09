@@ -42,8 +42,6 @@ final class Binary
      * @return non-empty-string A 16-byte string with the UUID version and variant applied
      *
      * @throws InvalidArgument
-     *
-     * @psalm-pure
      */
     public function applyVersionAndVariant(
         string $bytes,

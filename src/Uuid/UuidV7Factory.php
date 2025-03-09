@@ -115,9 +115,6 @@ final class UuidV7Factory implements TimeBasedUuidFactory
         return $this->createFromStringInternal($identifier);
     }
 
-    /**
-     * @psalm-mutation-free
-     */
     protected function getVersion(): Version
     {
         return Version::UnixTime;

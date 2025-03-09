@@ -92,11 +92,6 @@ trait StandardFactory
         try {
             return $this->createFromBytesInternal(str_pad($bigInteger->toBytes(false), 16, "\x00", STR_PAD_LEFT));
         } catch (Throwable $exception) {
-            /**
-             * @psalm-suppress MixedPropertyFetch,MixedArgument Psalm knows that
-             *     $this->getVersion() returns never in some code paths, but it
-             *     doesn't in this context, so this is safe.
-             */
             throw new InvalidArgument(
                 sprintf('Invalid version %d UUID: %s', $this->getVersion()->value, $identifier),
                 0,

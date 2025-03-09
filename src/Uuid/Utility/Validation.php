@@ -34,8 +34,6 @@ use const PHP_INT_MIN;
  * This internal trait provides common validation functionality for RFC 4122 UUIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait Validation
 {
@@ -171,10 +169,6 @@ trait Validation
      * Validates a UUID according to the RFC 4122 layout
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
-     *
-     * @psalm-suppress MixedPropertyFetch Psalm is confused because there are a
-     *     few code paths where $this->getVersion() returns never, but we know
-     *     this function is not called under those conditions.
      */
     private function isValid(string $uuid, int $format): bool
     {

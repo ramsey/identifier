@@ -29,8 +29,6 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  *
  * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1 RFC 4122: Format
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-uuid-version-1 rfc4122bis: UUID Version 1
- *
- * @psalm-immutable
  */
 final readonly class UuidV1 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {

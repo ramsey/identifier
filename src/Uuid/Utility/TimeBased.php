@@ -22,14 +22,11 @@ use DateTimeImmutable;
  * This internal trait provides functionality common to time-based UUIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait TimeBased
 {
     public function getDateTime(): DateTimeImmutable
     {
-        /** @psalm-suppress ImpureMethodCall */
         return (new Time())->getDateTimeForUuid($this);
     }
 }

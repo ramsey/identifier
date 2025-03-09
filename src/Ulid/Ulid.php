@@ -20,9 +20,6 @@ use JsonSerializable;
 use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\Utility\Standard;
 
-/**
- * @psalm-immutable
- */
 final readonly class Ulid implements JsonSerializable, UlidInterface
 {
     use Standard;

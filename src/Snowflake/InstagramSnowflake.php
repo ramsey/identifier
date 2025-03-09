@@ -25,9 +25,6 @@ use Ramsey\Identifier\Snowflake\Utility\Time;
 
 use function assert;
 
-/**
- * @psalm-immutable
- */
 final readonly class InstagramSnowflake implements JsonSerializable, Snowflake
 {
     private GenericSnowflake $snowflake;
@@ -90,7 +87,6 @@ final readonly class InstagramSnowflake implements JsonSerializable, Snowflake
 
     public function getDateTime(): DateTimeImmutable
     {
-        /** @psalm-suppress ImpureMethodCall */
         return $this->time->getDateTimeForSnowflake($this, Epoch::Instagram->value, 23);
     }
 

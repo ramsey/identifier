@@ -24,8 +24,6 @@ use function strspn;
  * This internal trait provides common validation functionality for Snowflakes
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait Validation
 {

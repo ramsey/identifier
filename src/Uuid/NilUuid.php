@@ -31,8 +31,6 @@ use function strlen;
  *
  * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.7 RFC 4122: Nil UUID
  * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-nil-uuid rfc4122bis: Nil UUID
- *
- * @psalm-immutable
  */
 final readonly class NilUuid implements JsonSerializable, Uuid
 {

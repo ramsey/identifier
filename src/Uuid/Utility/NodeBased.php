@@ -22,8 +22,6 @@ use function substr;
  * This internal trait provides functionality common to node-based UUIDs
  *
  * @internal
- *
- * @psalm-immutable
  */
 trait NodeBased
 {

@@ -44,8 +44,6 @@ use function strspn;
  *
  * To access a typed version (e.g., {@see UuidV1}, {@see UuidV4}, etc.), call
  * {@see self::toTypedUuid()} on any UntypedUuid instance.
- *
- * @psalm-external-mutation-free
  */
 final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
 {
@@ -79,12 +77,6 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
         $uuid = $this->toTypedUuid();
 
         if ($uuid instanceof TimeBasedUuid) {
-            /**
-             * @psalm-suppress ImpureMethodCall We know that everything returned
-             *     from toTypedUuid() is immutable, but Psalm sees we're checking
-             *     for instances of TimeBasedUuid, and it can't verify that
-             *     these instances are immutable.
-             */
             return $uuid->getDateTime();
         }
 
@@ -102,12 +94,6 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
         $uuid = $this->toTypedUuid();
 
         if ($uuid instanceof NodeBasedUuid) {
-            /**
-             * @psalm-suppress ImpureMethodCall We know that everything returned
-             *     from toTypedUuid() is immutable, but Psalm sees we're checking
-             *     for instances of NodeBasedUuid, and it can't verify that
-             *     these instances are immutable.
-             */
             return $uuid->getNode();
         }
 

@@ -85,7 +85,6 @@ class PhpOs implements Os
         // Redirect stderr to stdout.
         $command .= ' 2>&1';
 
-        /** @psalm-suppress ForbiddenCode */
         return (string) @shell_exec($command);
     }
 }
