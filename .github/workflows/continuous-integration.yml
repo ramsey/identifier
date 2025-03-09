@@ -28,16 +28,16 @@ jobs:
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v3.3.0"
+        uses: "actions/checkout@v4"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.22.0"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "latest"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.2.0"
+        uses: "ramsey/composer-install@v3"
 
       - name: "Check syntax (php-parallel-lint)"
         run: "composer dev:lint:syntax"
@@ -51,16 +51,16 @@ jobs:
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v3.3.0"
+        uses: "actions/checkout@v4"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.22.0"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
+          php-version: "latest"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.2.0"
+        uses: "ramsey/composer-install@v3"
 
       - name: "Statically analyze code (PHPStan)"
         run: "composer dev:analyze:phpstan"
@@ -72,53 +72,91 @@ jobs:
 
     strategy:
       matrix:
-        os: ["macos-latest", "ubuntu-latest", "windows-latest"]
+        os:
+          - "macos-latest"
+          - "ubuntu-latest"
+          - "windows-latest"
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v3.3.0"
+        uses: "actions/checkout@v4"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.22.0"
+        uses: "shivammathur/setup-php@v2"
         with:
-          php-version: "8.2"
-          coverage: "pcov"
-          ini-values: "memory_limit=-1"
+          php-version: "latest"
+          coverage: "xdebug"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.2.0"
+        uses: "ramsey/composer-install@v3"
 
       - name: "Run unit tests (PHPUnit)"
         run: "composer dev:test:coverage:ci"
 
       - name: "Publish coverage report to Codecov"
-        uses: "codecov/codecov-action@v3.1.1"
+        uses: "codecov/codecov-action@v5"
+
+  code-coverage-freebsd:
+    name: "Code coverage (freebsd)"
+    needs: ["coding-standards", "static-analysis"]
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@v4"
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "latest"
+          coverage: "xdebug"
+
+      - name: "Install dependencies (Composer)"
+        uses: "ramsey/composer-install@v3"
+
+      - name: "Run unit tests on FreeBSD (PHPUnit)"
+        uses: "vmactions/freebsd-vm@v1"
+        with:
+          usesh: true
+          prepare: |
+            pkg update
+            pkg install -y php83 php83-bcmath php83-composer \
+              php83-gmp php83-pecl-uuid php83-pecl-xdebug \
+              php83-zip php83-zlib
+            sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
+          run: "composer dev:test:coverage:ci"
+
+      - name: "Publish coverage report to Codecov"
+        uses: "codecov/codecov-action@v5"
 
   benchmark:
     name: "Benchmark"
-    needs: ["code-coverage"]
+    needs: ["code-coverage", "code-coverage-freebsd"]
     runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
-        php: ["8.2"]
+        php:
+          - "8.2"
+          - "8.3"
+          - "8.4"
 
     steps:
       - name: "Configure Git"
         run: "git config --global safe.directory '*'"
 
       - name: "Checkout repository"
-        uses: "actions/checkout@v3.3.0"
+        uses: "actions/checkout@v3"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.22.0"
+        uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php }}"
           coverage: "none"
           ini-values: "memory_limit=-1"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.2.0"
+        uses: "ramsey/composer-install@v2"
 
       - name: "Run benchmark (PHPBench)"
         run: |
@@ -126,74 +164,45 @@ jobs:
           composer dev:test:bench:ci
 
       - name: "Upload benchmark artifacts"
-        uses: "actions/upload-artifact@v3.1.1"
+        uses: "actions/upload-artifact@v4"
         with:
           name: "Benchmark (PHP ${{ matrix.php }})"
           path: "build/bench/"
 
   unit-tests:
     name: "Unit tests"
-    needs: ["code-coverage"]
+    needs: ["code-coverage", "code-coverage-freebsd"]
     runs-on: "${{ matrix.os }}"
 
     strategy:
       fail-fast: false
       matrix:
-        php: ["8.2"]
-        os: ["macos-latest", "ubuntu-latest", "windows-latest"]
-        composer-deps: ["lowest", "highest"]
+        php:
+          - "8.2"
+          - "8.3"
+          - "8.4"
+        os:
+          - "macos-latest"
+          - "ubuntu-latest"
+          - "windows-latest"
+        composer-deps:
+          - "lowest"
+          - "highest"
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v3.3.0"
+        uses: "actions/checkout@v3"
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@2.22.0"
+        uses: "shivammathur/setup-php@v2"
         with:
           php-version: "${{ matrix.php }}"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@2.2.0"
+        uses: "ramsey/composer-install@v3"
         with:
           dependency-versions: "${{ matrix.composer-deps }}"
 
       - name: "Run unit tests (PHPUnit)"
         run: "composer dev:test:unit"
-
-# Commenting out until PHP 8.2 is available on FreeBSD
-#
-#  code-coverage-freebsd:
-#    name: "Code coverage (freebsd)"
-#    needs: ["coding-standards", "static-analysis"]
-#    runs-on: "macos-12"
-#
-#    steps:
-#      - name: "Checkout repository"
-#        uses: "actions/checkout@v3.3.0"
-#
-#      - name: "Install PHP"
-#        uses: "shivammathur/setup-php@2.22.0"
-#        with:
-#          php-version: "8.2"
-#          coverage: "pcov"
-#          ini-values: "memory_limit=-1"
-#
-#      - name: "Install dependencies (Composer)"
-#        uses: "ramsey/composer-install@2.2.0"
-#
-#      - name: "Run unit tests on FreeBSD (PHPUnit)"
-#        uses: "vmactions/freebsd-vm@v0.2.9"
-#        with:
-#          usesh: true
-#          prepare: |
-#            pkg update
-#            pkg install -y php81 php81-bcmath php81-composer2 php81-dom \
-#              php81-gmp php81-pecl-uuid php81-pecl-xdebug php81-simplexml \
-#              php81-tokenizer php81-xml php81-xmlreader php81-xmlwriter \
-#              php81-zip php81-zlib
-#            sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
-#          run: "composer dev:test:coverage:ci"
-#
-#      - name: "Publish coverage report to Codecov"
-#        uses: "codecov/codecov-action@v3.1.1"
