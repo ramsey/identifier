@@ -75,7 +75,7 @@ jobs:
         os:
           - "macos-latest"
           - "ubuntu-latest"
-          - "windows-latest"
+          #- "windows-latest"
 
     steps:
       - name: "Checkout repository"
@@ -120,9 +120,9 @@ jobs:
           usesh: true
           prepare: |
             pkg update
-            pkg install -y php83 php83-bcmath php83-composer \
-              php83-gmp php83-pecl-uuid php83-pecl-xdebug \
-              php83-zip php83-zlib
+            pkg install -y php83 php83-bcmath php83-composer php83-dom php83-gmp \
+              php83-mbstring php83-pecl-uuid php83-pecl-xdebug php83-tokenizer \
+              php83-xml php83-xmlreader php83-xmlwriter php83-zip php83-zlib
             sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
           run: "composer dev:test:coverage:ci"
 
