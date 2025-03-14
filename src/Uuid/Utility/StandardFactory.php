@@ -29,7 +29,7 @@ use function strlen;
 use const STR_PAD_LEFT;
 
 /**
- * This internal trait provides common factory functionality for RFC 4122 UUIDs
+ * This internal trait provides common factory functionality for RFC 9562 UUIDs
  *
  * @internal
  */
@@ -50,7 +50,7 @@ trait StandardFactory
      */
     private function createFromBytesInternal(string $identifier): Uuid
     {
-        if (strlen($identifier) === Format::FORMAT_BYTES) {
+        if (strlen($identifier) === Format::Bytes->value) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
@@ -64,8 +64,8 @@ trait StandardFactory
     private function createFromHexadecimalInternal(string $identifier): Uuid
     {
         if (
-            strlen($identifier) === Format::FORMAT_HEX
-            && $this->hasValidFormat($identifier, Format::FORMAT_HEX)
+            strlen($identifier) === Format::Hex->value
+            && $this->hasValidFormat($identifier, Format::Hex)
         ) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
@@ -77,7 +77,7 @@ trait StandardFactory
     /**
      * The minimum integer value for a version 1 UUID is 75567087097951178194944.
      * As such, there's no need to use better performing math for integers less
-     * than PHP_INT_MAX, since those integers can never be valid RFC 4122 UUIDs.
+     * than PHP_INT_MAX, since those integers can never be valid RFC 9562 UUIDs.
      *
      * @throws InvalidArgument
      */
@@ -106,8 +106,8 @@ trait StandardFactory
     private function createFromStringInternal(string $identifier): Uuid
     {
         if (
-            strlen($identifier) === Format::FORMAT_STRING
-            && $this->hasValidFormat($identifier, Format::FORMAT_STRING)
+            strlen($identifier) === Format::String->value
+            && $this->hasValidFormat($identifier, Format::String)
         ) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);

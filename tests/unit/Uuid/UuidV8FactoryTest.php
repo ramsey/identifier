@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\UuidV8;
 use Ramsey\Identifier\Uuid\UuidV8Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -22,7 +21,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->create("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
     }
 
@@ -30,7 +28,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->create("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('ffffffff-ffff-8fff-bfff-ffffffffffff', $uuid->toString());
     }
 
@@ -54,7 +51,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x8f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('ffffffff-ffff-8fff-8fff-ffffffffffff', $uuid->toString());
     }
 
@@ -80,7 +76,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('340282366920937934553716840013076889599');
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('ffffffff-ffff-8fff-bfff-ffffffffffff', $uuid->toString());
     }
 
@@ -88,7 +83,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('604472133179351442128896');
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
     }
 
@@ -113,7 +107,6 @@ class UuidV8FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromString('ffffffff-ffff-8fff-8fff-ffffffffffff');
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('ffffffff-ffff-8fff-8fff-ffffffffffff', $uuid->toString());
     }
 

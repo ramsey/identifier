@@ -19,12 +19,11 @@ namespace Ramsey\Identifier\Ulid\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\Exception\IntegerOverflowException;
 use DateTimeImmutable;
-use Identifier\BinaryIdentifier;
+use Identifier\BytesIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
@@ -58,8 +57,10 @@ trait Standard
 {
     use Validation;
 
+    private const CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+
     private readonly string $ulid;
-    private readonly int $format;
+    private readonly ?Format $format;
 
     /**
      * Constructs a {@see \Ramsey\Identifier\Ulid} instance
@@ -72,9 +73,9 @@ trait Standard
     public function __construct(string $ulid)
     {
         $original = $ulid;
-        $this->format = strlen($ulid);
+        $this->format = Format::tryFrom(strlen($ulid));
 
-        if ($this->format === Format::FORMAT_ULID) {
+        if ($this->format === Format::Ulid) {
             $ulid = strtr($ulid, 'IiLlOo', '111100');
         }
 
@@ -96,9 +97,9 @@ trait Standard
     /**
      * @return non-empty-string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->getFormat(Format::FORMAT_ULID);
+        return $this->getFormat(Format::Ulid);
     }
 
     /**
@@ -118,14 +119,14 @@ trait Standard
      */
     public function compareTo(mixed $other): int
     {
-        if ($other instanceof BinaryIdentifier) {
+        if ($other instanceof BytesIdentifier) {
             return $this->toBytes() <=> $other->toBytes();
         }
 
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
-            if ($this->isValid($other, strlen($other))) {
-                $other = $this->getFormat(Format::FORMAT_ULID, strtr($other, 'IiLlOo', '111100'));
+            if ($this->isValid($other, Format::tryFrom(strlen($other)))) {
+                $other = $this->getFormat(Format::Ulid, strtr($other, 'IiLlOo', '111100'));
             }
 
             return strcasecmp($this->toString(), $other);
@@ -148,7 +149,7 @@ trait Standard
 
     public function getDateTime(): DateTimeImmutable
     {
-        $bytes = $this->getFormat(Format::FORMAT_BYTES);
+        $bytes = $this->getFormat(Format::Bytes);
 
         /** @var int[] $parts */
         $parts = unpack('J', "\x00\x00" . substr($bytes, 0, 6));
@@ -167,7 +168,7 @@ trait Standard
      */
     public function jsonSerialize(): string
     {
-        return $this->getFormat(Format::FORMAT_ULID);
+        return $this->getFormat(Format::Ulid);
     }
 
     /**
@@ -175,7 +176,7 @@ trait Standard
      */
     public function toBytes(): string
     {
-        return $this->getFormat(Format::FORMAT_BYTES);
+        return $this->getFormat(Format::Bytes);
     }
 
     /**
@@ -183,7 +184,7 @@ trait Standard
      */
     public function toHexadecimal(): string
     {
-        return $this->getFormat(Format::FORMAT_HEX);
+        return $this->getFormat(Format::Hex);
     }
 
     /**
@@ -192,15 +193,15 @@ trait Standard
     public function toInteger(): int | string
     {
         $bigInteger = BigInteger::fromArbitraryBase(
-            $this->getFormat(Format::FORMAT_ULID),
-            Format::CROCKFORD32_ALPHABET,
+            $this->getFormat(Format::Ulid),
+            self::CROCKFORD32_ALPHABET,
         );
 
         try {
             return $bigInteger->toInt();
         } catch (IntegerOverflowException) {
             /** @var numeric-string */
-            return $bigInteger->__toString();
+            return (string) $bigInteger;
         }
     }
 
@@ -209,7 +210,7 @@ trait Standard
      */
     public function toString(): string
     {
-        return $this->getFormat(Format::FORMAT_ULID);
+        return $this->getFormat(Format::Ulid);
     }
 
     /**
@@ -220,7 +221,7 @@ trait Standard
      *
      * This method returns a UUID instance that has the same bytes as the ULID
      * from which it was created. As a result, the UUID might not be a valid
-     * RFC 4122 variant UUID. If this is the case, the resulting UUID will be of
+     * RFC 9562 variant UUID. If this is the case, the resulting UUID will be of
      * the type {@see \Ramsey\Identifier\Uuid\NonstandardUuid NonstandardUuid}.
      */
     public function toUuid(): Uuid
@@ -247,46 +248,58 @@ trait Standard
     }
 
     /**
-     * @param 32 | 26 | 16 $formatToReturn
-     *
      * @return non-empty-string
      */
-    private function getFormat(int $formatToReturn, ?string $ulid = null): string
+    private function getFormat(?Format $formatToReturn, ?string $ulid = null): string
     {
-        /** @var 32 | 26 | 16 $formatOfUlid */
-        $formatOfUlid = $ulid ? strlen($ulid) : $this->format;
+        $formatOfUlid = null;
+        if ($ulid !== null) {
+            $formatOfUlid = Format::tryFrom(strlen($ulid));
+        }
+
+        $formatOfUlid ??= $this->format;
         $ulid ??= $this->ulid;
+
+        if ($formatOfUlid === null) {
+            throw new InvalidArgument('Invalid ULID format');
+        }
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
-            Format::FORMAT_ULID => match ($formatOfUlid) {
-                Format::FORMAT_ULID => strtoupper($ulid),
-                Format::FORMAT_HEX => sprintf(
-                    '%026s',
-                    BigInteger::fromBase($ulid, 16)->toArbitraryBase(Format::CROCKFORD32_ALPHABET),
-                ),
-                Format::FORMAT_BYTES => sprintf(
-                    '%026s',
-                    BigInteger::fromBytes($ulid, false)->toArbitraryBase(Format::CROCKFORD32_ALPHABET),
-                ),
-            },
-            Format::FORMAT_HEX => match ($formatOfUlid) {
-                Format::FORMAT_ULID => sprintf(
-                    '%032s',
-                    BigInteger::fromArbitraryBase(strtoupper($ulid), Format::CROCKFORD32_ALPHABET)->toBase(16),
-                ),
-                Format::FORMAT_HEX => strtolower($ulid),
-                Format::FORMAT_BYTES => bin2hex($ulid),
-            },
-            Format::FORMAT_BYTES => match ($formatOfUlid) {
-                Format::FORMAT_ULID => str_pad(
-                    BigInteger::fromArbitraryBase(strtoupper($ulid), Format::CROCKFORD32_ALPHABET)->toBytes(false),
+            Format::Bytes => match ($formatOfUlid) {
+                Format::Bytes => $ulid,
+                Format::Hex => (string) hex2bin($ulid),
+                Format::Ulid => str_pad(
+                    BigInteger::fromArbitraryBase(strtoupper($ulid), self::CROCKFORD32_ALPHABET)->toBytes(false),
                     16,
                     "\x00",
                     STR_PAD_LEFT,
                 ),
-                Format::FORMAT_HEX => (string) hex2bin($ulid),
-                Format::FORMAT_BYTES => $ulid,
+            },
+            Format::Hex => match ($formatOfUlid) {
+                Format::Bytes => bin2hex($ulid),
+                Format::Hex => strtolower($ulid),
+                Format::Ulid => sprintf(
+                    '%032s',
+                    BigInteger::fromArbitraryBase(strtoupper($ulid), self::CROCKFORD32_ALPHABET)->toBase(16),
+                ),
+            },
+            Format::Ulid => match ($formatOfUlid) {
+                Format::Bytes => sprintf(
+                    '%026s',
+                    BigInteger::fromBytes($ulid, false)->toArbitraryBase(self::CROCKFORD32_ALPHABET),
+                ),
+                Format::Hex => sprintf(
+                    '%026s',
+                    BigInteger::fromBase($ulid, 16)->toArbitraryBase(self::CROCKFORD32_ALPHABET),
+                ),
+                Format::Ulid => strtoupper($ulid),
+            },
+            null => match ($formatOfUlid) {
+                Format::Bytes => BigInteger::fromBytes($ulid, false)->toBase(10),
+                Format::Hex => BigInteger::fromBase($ulid, 16)->toBase(10),
+                Format::Ulid => BigInteger::fromArbitraryBase(strtoupper($ulid), self::CROCKFORD32_ALPHABET)
+                    ->toBase(10),
             },
         };
     }

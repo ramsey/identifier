@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Nic;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Test\Identifier\TestCase;
@@ -12,9 +13,8 @@ class StaticNicTest extends TestCase
 {
     /**
      * @param int<0, max> | non-empty-string $staticAddress
-     *
-     * @dataProvider addressProvider
      */
+    #[DataProvider('addressProvider')]
     public function testAddress(int | string $staticAddress, string $expected): void
     {
         $nic = new StaticNic($staticAddress);
@@ -23,9 +23,9 @@ class StaticNicTest extends TestCase
     }
 
     /**
-     * @return array<array{staticAddress: int<0, max> | non-empty-string, expected: string}>
+     * @return list<array{staticAddress: int<0, max> | non-empty-string, expected: string}>
      */
-    public function addressProvider(): array
+    public static function addressProvider(): array
     {
         return [
             [
@@ -136,9 +136,8 @@ class StaticNicTest extends TestCase
 
     /**
      * @param non-empty-string $value
-     *
-     * @dataProvider invalidAddressProvider
      */
+    #[DataProvider('invalidAddressProvider')]
     public function testGetAddressThrowsException(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -148,9 +147,9 @@ class StaticNicTest extends TestCase
     }
 
     /**
-     * @return array<array{value: non-empty-string}>
+     * @return list<array{value: non-empty-string}>
      */
-    public function invalidAddressProvider(): array
+    public static function invalidAddressProvider(): array
     {
         return [
             [

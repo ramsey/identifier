@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Service\Clock;
 use DateTimeInterface;
 
 /**
- * Defines a clock sequence interface for obtaining a clock sequence value, for
- * the purpose of avoiding duplicates or collisions
+ * Derives a clock sequence value, for the purpose of avoiding duplicates or
+ * collisions
  */
 interface Sequence
 {

@@ -17,6 +17,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
@@ -70,7 +72,14 @@ final class SystemNic implements Nic
     public function address(): string
     {
         if (self::$address === null) {
-            self::$address = $this->getAddressFromCache();
+            try {
+                self::$address = $this->getAddressFromCache();
+            } catch (InvalidArgumentException $cacheException) {
+                throw new MacAddressNotFound(
+                    message: 'Unable to retrieve MAC address from cache',
+                    previous: $cacheException,
+                );
+            }
         }
 
         return self::$address;
@@ -78,6 +87,8 @@ final class SystemNic implements Nic
 
     /**
      * @return non-empty-string
+     *
+     * @throws InvalidArgumentException
      */
     private function getAddressFromCache(): string
     {

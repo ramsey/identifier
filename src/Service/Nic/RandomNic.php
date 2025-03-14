@@ -17,18 +17,19 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 
 use function random_int;
 use function sprintf;
 
 /**
  * A NIC that generates a random MAC address and sets the multicast bit,
- * according to RFC 4122, section 4.5. The address is stored and reused for each
+ * according to RFC 9562, section 6.10. The address is stored and reused for each
  * call to address() within the same process. If a cache is provided, the same
  * address is used across processes.
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
  */
 final class RandomNic implements Nic
 {
@@ -58,7 +59,14 @@ final class RandomNic implements Nic
     public function address(): string
     {
         if (self::$address === null) {
-            self::$address = $this->getAddressFromCache();
+            try {
+                self::$address = $this->getAddressFromCache();
+            } catch (InvalidArgumentException $cacheException) {
+                throw new MacAddressNotFound(
+                    message: 'Unable to retrieve MAC address from cache',
+                    previous: $cacheException,
+                );
+            }
         }
 
         return self::$address;
@@ -66,6 +74,8 @@ final class RandomNic implements Nic
 
     /**
      * @return non-empty-string
+     *
+     * @throws InvalidArgumentException
      */
     private function getAddressFromCache(): string
     {

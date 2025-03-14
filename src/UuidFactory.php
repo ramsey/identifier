@@ -16,16 +16,16 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier;
 
-use Identifier\BinaryIdentifierFactory;
+use Identifier\BytesIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * Describes the interface of a factory for creating UUIDs
+ * A factory for creating UUIDs
  */
 interface UuidFactory extends
-    BinaryIdentifierFactory,
+    BytesIdentifierFactory,
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {

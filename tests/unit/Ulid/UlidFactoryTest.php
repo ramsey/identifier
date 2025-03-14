@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Ulid;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
@@ -31,17 +34,8 @@ class UlidFactoryTest extends TestCase
         $this->factory = new UlidFactory();
     }
 
-    public function testCreate(): void
-    {
-        $ulid = $this->factory->create();
-
-        $this->assertInstanceOf(Ulid::class, $ulid);
-    }
-
-    /**
-     * @runInSeparateProcess since values are stored statically on the MonotonicBytesGenerator
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new UlidFactory(
@@ -53,7 +47,6 @@ class UlidFactoryTest extends TestCase
 
         $ulid = $factory->create();
 
-        $this->assertInstanceOf(Ulid::class, $ulid);
         $this->assertSame('00000000000000000000000000', $ulid->toString());
     }
 
@@ -62,7 +55,6 @@ class UlidFactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
         $ulid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(Ulid::class, $ulid);
         $this->assertNotSame($dateTime, $ulid->getDateTime());
         $this->assertSame('2022-09-25T17:32:12+00:00', $ulid->getDateTime()->format('c'));
         $this->assertSame('01GDTV9RB0', substr($ulid->toString(), 0, 10));
@@ -164,9 +156,7 @@ class UlidFactoryTest extends TestCase
         $this->factory->createFromInteger('-9223372036854775809');
     }
 
-    /**
-     * @dataProvider createFromIntegerInvalidIntegerProvider
-     */
+    #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -177,9 +167,9 @@ class UlidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: int | string}>
+     * @return list<array{input: int | string}>
      */
-    public function createFromIntegerInvalidIntegerProvider(): array
+    public static function createFromIntegerInvalidIntegerProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -193,9 +183,8 @@ class UlidFactoryTest extends TestCase
     /**
      * @param int | numeric-string $value
      * @param class-string $expectedType
-     *
-     * @dataProvider createFromIntegerProvider
      */
+    #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, string $expectedType): void
     {
         $ulid = $this->factory->createFromInteger($value);
@@ -204,9 +193,9 @@ class UlidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string}>
+     * @return list<array{value: int | numeric-string, expectedType: class-string}>
      */
-    public function createFromIntegerProvider(): array
+    public static function createFromIntegerProvider(): array
     {
         return [
             [
@@ -284,16 +273,6 @@ class UlidFactoryTest extends TestCase
         $this->factory->createFromString('ffffffff-ffff-7fff-8fff-fffffffffffff');
     }
 
-    public function testMax(): void
-    {
-        $this->assertInstanceOf(MaxUlid::class, $this->factory->max());
-    }
-
-    public function testNil(): void
-    {
-        $this->assertInstanceOf(NilUlid::class, $this->factory->nil());
-    }
-
     public function testCreateEachUlidIsMonotonicallyIncreasing(): void
     {
         $previous = $this->factory->create();
@@ -326,7 +305,6 @@ class UlidFactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.294208');
         $ulid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(Ulid::class, $ulid);
         $this->assertNotSame($dateTime, $ulid->getDateTime());
         $this->assertSame('2022-09-25 17:32:12.294000', $ulid->getDateTime()->format('Y-m-d H:i:s.u'));
         $this->assertSame('01GDTV9RM6', substr($ulid->toString(), 0, 10));
@@ -337,7 +315,6 @@ class UlidFactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('@281474976710.655000');
         $ulid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(Ulid::class, $ulid);
         $this->assertNotSame($dateTime, $ulid->getDateTime());
 
         $this->assertSame('10889-08-02 05:31:50.655000', $ulid->getDateTime()->format('Y-m-d H:i:s.u'));
@@ -349,7 +326,6 @@ class UlidFactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('1970-01-01 00:00:00.000000');
         $ulid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(Ulid::class, $ulid);
         $this->assertNotSame($dateTime, $ulid->getDateTime());
 
         // We lose up to 7+ minutes of time with UUID version 2.
@@ -379,9 +355,7 @@ class UlidFactoryTest extends TestCase
         $this->factory->createFromDateTime($dateTime);
     }
 
-    /**
-     * @dataProvider createFromUuidProvider
-     */
+    #[DataProvider('createFromUuidProvider')]
     public function testCreateFromUuid(string $bytes): void
     {
         $ulidFactory = new UlidFactory();
@@ -394,9 +368,9 @@ class UlidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{bytes: string}>
+     * @return list<array{bytes: string}>
      */
-    public function createFromUuidProvider(): array
+    public static function createFromUuidProvider(): array
     {
         return [
             // Max UUID

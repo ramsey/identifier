@@ -23,71 +23,79 @@ use function is_string;
 use function pack;
 use function sprintf;
 use function str_pad;
+use function strlen;
+use function strspn;
 
 use const STR_PAD_LEFT;
 
 /**
  * @internal
  */
-final class Format
+enum Format: int
 {
     /**
      * Bytes representation
      */
-    public const FORMAT_BYTES = 8;
+    case Bytes = 8;
 
     /**
      * Hexadecimal representation
      */
-    public const FORMAT_HEX = 16;
-
-    /**
-     * String integer representation
-     *
-     * This has a value of `-1`, since the string integers that make up
-     * Snowflakes will have varying string lengths, unlike bytes or hex
-     * representations which have fixed lengths.
-     */
-    public const FORMAT_INT = -1;
-
-    /**
-     * A mask used with functions like {@see strspn()} to validate hexadecimal strings
-     */
-    public const MASK_HEX = '0123456789abcdefABCDEF';
-
-    /**
-     * A mask used with functions like {@see strspn()} to validate string integers
-     */
-    public const MASK_INT = '0123456789';
-
-    public function __construct()
-    {
-    }
+    case Hex = 16;
 
     /**
      * Formats a Snowflake identifier from its integer or numeric string form
-     * into {@see self::FORMAT_HEX}, {@see self::FORMAT_BYTES}, or
-     * {@see self::FORMAT_INT} forms.
-     *
-     * @param self::FORMAT_* $to
+     * into {@see self::Hex}, {@see self::Bytes}, or int forms.
      */
-    public function format(int | string $value, int $to): int | string
+    public static function format(int | string $value, ?self $to): int | string
     {
-        /**
-         * @phpstan-ignore-next-line
-         */
-        if (is_string($value) && is_int($value + 0)) {
+        if (is_string($value) && self::isStringInt($value) && is_int($value + 0)) {
             $value = (int) $value;
         }
 
         return match ($to) {
-            self::FORMAT_HEX => is_int($value)
+            self::Hex => is_int($value)
                 ? sprintf('%016x', $value)
                 : sprintf('%016s', BigInteger::of($value)->toBase(16)),
-            self::FORMAT_BYTES => is_int($value)
+            self::Bytes => is_int($value)
                 ? pack('J', $value)
                 : str_pad(BigInteger::of($value)->toBytes(false), 8, "\x00", STR_PAD_LEFT),
             default => $value,
         };
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    public static function formatBytes(int | string $value): string
+    {
+        /** @var non-empty-string */
+        return self::format($value, self::Bytes);
+    }
+
+    /**
+     * @return non-empty-string
+     */
+    public static function formatHex(int | string $value): string
+    {
+        /** @var non-empty-string */
+        return self::format($value, self::Hex);
+    }
+
+    /**
+     * @return int<0, max> | numeric-string
+     */
+    public static function formatInt(int | string $value): int | string
+    {
+        /** @var int<0, max> | numeric-string */
+        return self::format($value, null);
+    }
+
+    /**
+     * @phpstan-assert-if-true numeric-string $value
+     */
+    private static function isStringInt(string $value): bool
+    {
+        return strspn($value, Mask::INT) === strlen($value);
     }
 }

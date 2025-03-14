@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Nic;
 
 use Mockery;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Service\Os\Os;
@@ -16,10 +18,8 @@ use function substr;
 
 class SystemNicTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddress(): void
     {
         $nic = new SystemNic();
@@ -35,10 +35,8 @@ class SystemNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -52,10 +50,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('aabbccddeeff', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -75,10 +71,8 @@ class SystemNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressOnWindows(): void
     {
         $ipconfig = <<<'IPCONFIG'
@@ -130,10 +124,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('080027B842C6', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressOnDarwin(): void
     {
         $ifconfig = <<<'IFCONFIG'
@@ -181,10 +173,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('ec358638c8c2', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressOnBsd(): void
     {
         $netstat = <<<'NETSTAT'
@@ -208,10 +198,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('080027d060a0', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressOnLinux(): void
     {
         $os = $this->mockery(Os::class, [
@@ -238,10 +226,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('fedcba987654', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressOnLinuxFallsBackToNetstat(): void
     {
         $netstat = <<<'NETSTAT'
@@ -293,10 +279,8 @@ class SystemNicTest extends TestCase
         $this->assertSame('fedcba987654', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressUsesRandomNicIfAddressNotFound(): void
     {
         $netstat = <<<'NETSTAT'
@@ -329,10 +313,8 @@ class SystemNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressUsesRandomNicIfAddressNotFoundWithCache(): void
     {
         $netstat = <<<'NETSTAT'

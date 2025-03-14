@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier;
 
-use Identifier\BinaryIdentifier;
+use Identifier\BytesIdentifier;
 use Ramsey\Identifier\Exception\BadMethodCall;
 
-class MockBinaryIdentifier implements BinaryIdentifier
+readonly class MockBinaryIdentifier implements BytesIdentifier
 {
-    public function __construct(private readonly string $bytes)
+    public function __construct(private string $bytes)
     {
     }
 
@@ -29,6 +29,16 @@ class MockBinaryIdentifier implements BinaryIdentifier
     }
 
     public function toString(): never
+    {
+        throw new BadMethodCall();
+    }
+
+    public function jsonSerialize(): string
+    {
+        throw new BadMethodCall();
+    }
+
+    public function __toString(): string
     {
         throw new BadMethodCall();
     }

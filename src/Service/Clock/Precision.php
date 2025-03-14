@@ -14,12 +14,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier\Service\Clock;
 
-use Ramsey\Identifier\Ulid as UlidInterface;
-use Ramsey\Identifier\Ulid\Utility\Standard;
-
-final readonly class Ulid implements UlidInterface
+/**
+ * Precision formats for clock sequences
+ */
+enum Precision: string
 {
-    use Standard;
+    case Microsecond = 'Uu';
+    case Millisecond = 'Uv';
 }

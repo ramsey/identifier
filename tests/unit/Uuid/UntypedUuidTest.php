@@ -7,6 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -37,10 +38,21 @@ class UntypedUuidTest extends TestCase
 {
     /**
      * @param non-empty-string $value
-     * @param array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)} $expected
-     *
-     * @dataProvider provideValidUuids
+     * @param array{
+     *     type: class-string<Uuid>,
+     *     variant: (Variant | class-string<Exception>),
+     *     version: (Version | class-string<Exception>),
+     *     json: string,
+     *     string: string,
+     *     bytes: string,
+     *     hex: string,
+     *     int: (int | string),
+     *     urn: string,
+     *     node: (string | class-string<Exception>),
+     *     date: (DateTimeInterface | class-string<Exception>),
+     * } $expected
      */
+    #[DataProvider('provideValidUuids')]
     public function testUntypedUuids(string $value, array $expected): void
     {
         $untypedUuid = new UntypedUuid($value);
@@ -110,9 +122,24 @@ class UntypedUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: array{type: class-string<Uuid>, variant: (Variant|class-string<Exception>), version: (Version|class-string<Exception>), json: string, string: string, bytes: string, hex: string, int: (int|string), urn: string, node: (string|class-string<Exception>), date: (DateTimeInterface|class-string<Exception>)}}>
+     * @return array<string, array{
+     *     value: string,
+     *     expected: array{
+     *         type: class-string<Uuid>,
+     *         variant: (Variant | class-string<Exception>),
+     *         version: (Version | class-string<Exception>),
+     *         json: string,
+     *         string: string,
+     *         bytes: string,
+     *         hex: string,
+     *         int: (int | string),
+     *         urn: string,
+     *         node: (string | class-string<Exception>),
+     *         date: (DateTimeInterface | class-string<Exception>),
+     *     },
+     * }>
      */
-    public function provideValidUuids(): array
+    public static function provideValidUuids(): array
     {
         $expectedMax = [
             'type' => MaxUuid::class,

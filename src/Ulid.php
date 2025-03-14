@@ -16,17 +16,16 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier;
 
-use Identifier\BinaryIdentifier;
+use Identifier\BytesIdentifier;
 use Identifier\DateTimeIdentifier;
 use Identifier\IntegerIdentifier;
 
 /**
- * Describes the interface of a universally unique lexicographically sortable
- * identifier (ULID)
+ * A universally unique lexicographically sortable identifier (ULID)
  *
  * @link https://github.com/ulid/spec ULID Specification
  */
-interface Ulid extends BinaryIdentifier, DateTimeIdentifier, IntegerIdentifier
+interface Ulid extends BytesIdentifier, DateTimeIdentifier, IntegerIdentifier
 {
     /**
      * Returns a string representation of the ULID encoded as hexadecimal digits

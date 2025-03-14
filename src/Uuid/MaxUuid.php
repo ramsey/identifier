@@ -16,10 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function sprintf;
@@ -29,9 +29,9 @@ use function strlen;
  * The Max UUID is a special form of UUID that is specified to have all 128
  * bits set to one (1)
  *
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-max-uuid rfc4122bis: Max UUID
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10: Max UUID
  */
-final readonly class MaxUuid implements JsonSerializable, Uuid
+final readonly class MaxUuid implements Uuid
 {
     use Standard;
 
@@ -42,7 +42,7 @@ final readonly class MaxUuid implements JsonSerializable, Uuid
      */
     public function __construct(private string $uuid = self::MAX)
     {
-        $this->format = strlen($this->uuid);
+        $this->format = Format::tryFrom(strlen($this->uuid));
 
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid Max UUID: "%s"', $this->uuid));
@@ -51,9 +51,9 @@ final readonly class MaxUuid implements JsonSerializable, Uuid
 
     public function getVariant(): Variant
     {
-        // Max UUIDs are defined according to the rules of RFC 4122, so they are
-        // an RFC 4122 variant of UUID.
-        return Variant::Rfc4122;
+        // Max UUIDs are defined according to the rules of RFC 9562, so they are
+        // an RFC 9562 variant of UUID.
+        return Variant::Rfc9562;
     }
 
     /**
@@ -64,7 +64,7 @@ final readonly class MaxUuid implements JsonSerializable, Uuid
         throw new BadMethodCall('Max UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, int $format): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
         return $this->isMax($uuid, $format);
     }

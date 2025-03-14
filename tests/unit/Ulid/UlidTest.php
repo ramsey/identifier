@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
-use DateTimeImmutable;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid\MaxUlid;
@@ -41,9 +42,7 @@ class UlidTest extends TestCase
         $this->ulidWithBytes = new Ulid(self::ULID_BYTES);
     }
 
-    /**
-     * @dataProvider invalidUlidsProvider
-     */
+    #[DataProvider('invalidUlidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -53,9 +52,9 @@ class UlidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUlidsProvider(): array
+    public static function invalidUlidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -178,9 +177,7 @@ class UlidTest extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -203,16 +200,14 @@ class UlidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         $factory = new UlidFactory();
 
@@ -273,9 +268,7 @@ class UlidTest extends TestCase
         $this->ulidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -292,16 +285,14 @@ class UlidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         $factory = new UlidFactory();
 
@@ -391,9 +382,7 @@ class UlidTest extends TestCase
         $this->assertSame($int, $this->ulidWithBytes->toInteger());
     }
 
-    /**
-     * @dataProvider valuesForUppercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForUppercaseConversionTestProvider')]
     public function testUppercaseConversion(string $value, string $expected): void
     {
         $ulid = new Ulid($value);
@@ -403,9 +392,9 @@ class UlidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForUppercaseConversionTestProvider(): array
+    public static function valuesForUppercaseConversionTestProvider(): array
     {
         return [
             [
@@ -427,7 +416,6 @@ class UlidTest extends TestCase
     {
         $dateTime = $this->ulidWithString->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
     }
 
@@ -435,7 +423,6 @@ class UlidTest extends TestCase
     {
         $dateTime = $this->ulidWithHex->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
     }
 
@@ -443,7 +430,6 @@ class UlidTest extends TestCase
     {
         $dateTime = $this->ulidWithBytes->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2022-02-22T19:22:22+00:00', $dateTime->format('c'));
     }
 

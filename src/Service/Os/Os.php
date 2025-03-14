@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Os;
 
 /**
- * Defines an interface used to interact with the operating system
+ * An operating system
  */
 interface Os
 {

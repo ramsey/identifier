@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -14,9 +15,8 @@ class FrozenSequenceTest extends TestCase
 {
     /**
      * @param int<0, max> $value
-     *
-     * @dataProvider clockSequenceProvider
      */
+    #[DataProvider('clockSequenceProvider')]
     public function testNext(int $value): void
     {
         $sequence = new FrozenSequence($value);
@@ -25,9 +25,9 @@ class FrozenSequenceTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int<0, max>}>
+     * @return list<array{value: int<0, max>}>
      */
-    public function clockSequenceProvider(): array
+    public static function clockSequenceProvider(): array
     {
         return [
             ['value' => 0],

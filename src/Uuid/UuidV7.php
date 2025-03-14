@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 use Ramsey\Identifier\Uuid\Utility\TimeBased;
@@ -27,9 +26,9 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  *
  * Version 7 UUIDs are designed to be monotonically increasing and sortable.
  *
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.7 rfc4122bis: UUID Version 7
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.7 RFC 9562, section 5.7. UUID Version 7
  */
-final readonly class UuidV7 implements JsonSerializable, TimeBasedUuid
+final readonly class UuidV7 implements TimeBasedUuid
 {
     use Standard;
     use TimeBased;

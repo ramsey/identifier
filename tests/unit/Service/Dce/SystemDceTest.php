@@ -6,6 +6,9 @@ namespace Ramsey\Test\Identifier\Service\Dce;
 
 use Hamcrest\Type\IsInteger;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\SystemDce;
@@ -33,10 +36,8 @@ class SystemDceTest extends TestCase
         $dce->orgId();
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupId(): void
     {
         $dce = new SystemDce();
@@ -44,10 +45,8 @@ class SystemDceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $dce->groupId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -61,10 +60,8 @@ class SystemDceTest extends TestCase
         $this->assertSame(5001, $dce->groupId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -80,10 +77,8 @@ class SystemDceTest extends TestCase
         $this->assertSame($groupId, $dce->groupId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -101,10 +96,8 @@ class SystemDceTest extends TestCase
         $dce->groupId();
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdPosix(): void
     {
         $os = $this->mockery(Os::class);
@@ -116,10 +109,8 @@ class SystemDceTest extends TestCase
         $this->assertSame(42, $dce->groupId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdNotFoundPosix(): void
     {
         $os = $this->mockery(Os::class);
@@ -138,11 +129,9 @@ class SystemDceTest extends TestCase
         $dce->groupId();
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     * @dataProvider provideWindowsGroupValues
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[DataProvider('provideWindowsGroupValues')]
     public function testGroupIdWindows(
         string $netUserResponse,
         ?string $wmicGroupResponse = null,
@@ -183,9 +172,9 @@ class SystemDceTest extends TestCase
     }
 
     /**
-     * @return array<array{netUserResponse: string, wmicGroupResponse?: string, expectedGroup?: string, expectedId?: int}>
+     * @return list<array{netUserResponse: string, wmicGroupResponse?: string, expectedGroup?: string, expectedId?: int}>
      */
-    public function provideWindowsGroupValues(): array
+    public static function provideWindowsGroupValues(): array
     {
         return [
             [
@@ -238,10 +227,8 @@ class SystemDceTest extends TestCase
         ];
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserId(): void
     {
         $dce = new SystemDce();
@@ -249,10 +236,8 @@ class SystemDceTest extends TestCase
         $this->assertGreaterThanOrEqual(0, $dce->userId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -266,10 +251,8 @@ class SystemDceTest extends TestCase
         $this->assertSame(6001, $dce->userId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -285,10 +268,8 @@ class SystemDceTest extends TestCase
         $this->assertSame($userId, $dce->userId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -306,10 +287,8 @@ class SystemDceTest extends TestCase
         $dce->userId();
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdPosix(): void
     {
         $os = $this->mockery(Os::class);
@@ -321,10 +300,8 @@ class SystemDceTest extends TestCase
         $this->assertSame(142, $dce->userId());
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdNotFoundPosix(): void
     {
         $os = $this->mockery(Os::class);
@@ -343,11 +320,9 @@ class SystemDceTest extends TestCase
         $dce->userId();
     }
 
-    /**
-     * @runInSeparateProcess since the identifier is stored statically on the class
-     * @preserveGlobalState disabled
-     * @dataProvider provideWindowsUserValues
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[DataProvider('provideWindowsUserValues')]
     public function testUserIdWindows(
         string $whoamiResponse,
         ?int $expectedId = null,
@@ -376,9 +351,9 @@ class SystemDceTest extends TestCase
     }
 
     /**
-     * @return array<array{whoamiResponse: string, expectedId?: int}>
+     * @return list<array{whoamiResponse: string, expectedId?: int}>
      */
-    public function provideWindowsUserValues(): array
+    public static function provideWindowsUserValues(): array
     {
         return [
             [

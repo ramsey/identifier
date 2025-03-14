@@ -14,12 +14,25 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier\Ulid\Utility;
 
-use Ramsey\Identifier\Ulid as UlidInterface;
-use Ramsey\Identifier\Ulid\Utility\Standard;
-
-final readonly class Ulid implements UlidInterface
+/**
+ * @internal
+ */
+enum Format: int
 {
-    use Standard;
+    /**
+     * Bytes representation
+     */
+    case Bytes = 16;
+
+    /**
+     * Hexadecimal representation
+     */
+    case Hex = 32;
+
+    /**
+     * ULID representation
+     */
+    case Ulid = 26;
 }

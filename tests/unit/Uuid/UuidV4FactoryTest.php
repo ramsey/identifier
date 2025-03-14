@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\UuidV4;
 use Ramsey\Identifier\Uuid\UuidV4Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -18,18 +17,10 @@ class UuidV4FactoryTest extends TestCase
         $this->factory = new UuidV4Factory();
     }
 
-    public function testCreate(): void
-    {
-        $uuid = $this->factory->create();
-
-        $this->assertInstanceOf(UuidV4::class, $uuid);
-    }
-
     public function testCreateFromBytes(): void
     {
         $uuid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x4f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(UuidV4::class, $uuid);
         $this->assertSame('ffffffff-ffff-4fff-8fff-ffffffffffff', $uuid->toString());
     }
 
@@ -55,7 +46,6 @@ class UuidV4FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('340282366920937632322261936355783213055');
 
-        $this->assertInstanceOf(UuidV4::class, $uuid);
         $this->assertSame('ffffffff-ffff-4fff-bfff-ffffffffffff', $uuid->toString());
     }
 
@@ -63,7 +53,6 @@ class UuidV4FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('302240678275694148452352');
 
-        $this->assertInstanceOf(UuidV4::class, $uuid);
         $this->assertSame('00000000-0000-4000-8000-000000000000', $uuid->toString());
     }
 
@@ -88,7 +77,6 @@ class UuidV4FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromString('ffffffff-ffff-4fff-8fff-ffffffffffff');
 
-        $this->assertInstanceOf(UuidV4::class, $uuid);
         $this->assertSame('ffffffff-ffff-4fff-8fff-ffffffffffff', $uuid->toString());
     }
 

@@ -19,8 +19,26 @@ namespace Ramsey\Identifier\Uuid;
 /**
  * The version number describes how the UUID was generated
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.3 RFC 4122: Version
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.2 rfc4122bis: Version Field
+ * | **Msb0** | **Msb1** | **Msb2** | **Msb3** | **Version** | **Description**                                             |
+ * | :------: | :------: | :------: | :------: | :---------: | :---------------------------------------------------------- |
+ * |     0    |    0     |    0     |    0     |      0      | Unused                                                      |
+ * |     0    |    0     |    0     |    1     |      1      | The Gregorian time-based UUID                               |
+ * |     0    |    0     |    1     |    0     |      2      | Reserved for DCE Security version                           |
+ * |     0    |    0     |    1     |    1     |      3      | The name-based version that uses MD5 hashing                |
+ * |     0    |    1     |    0     |    0     |      4      | The randomly or pseudo-randomly generated version           |
+ * |     0    |    1     |    0     |    1     |      5      | The name-based version that uses SHA-1 hashing              |
+ * |     0    |    1     |    1     |    0     |      6      | Reordered Gregorian time-based UUID                         |
+ * |     0    |    1     |    1     |    1     |      7      | Unix Epoch time-based UUID                                  |
+ * |     1    |    0     |    0     |    0     |      8      | Reserved for custom UUID formats                            |
+ * |     1    |    0     |    0     |    1     |      9      | Reserved for future definition                              |
+ * |     1    |    0     |    1     |    0     |     10      | Reserved for future definition                              |
+ * |     1    |    0     |    1     |    1     |     11      | Reserved for future definition                              |
+ * |     1    |    1     |    0     |    0     |     12      | Reserved for future definition                              |
+ * |     1    |    1     |    0     |    1     |     13      | Reserved for future definition                              |
+ * |     1    |    1     |    1     |    0     |     14      | Reserved for future definition                              |
+ * |     1    |    1     |    1     |    1     |     15      | Reserved for future definition                              |
+ *
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Verson Field
  */
 enum Version: int
 {

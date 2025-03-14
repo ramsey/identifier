@@ -6,7 +6,6 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\UuidV4Factory;
-use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV5Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -28,8 +27,6 @@ class UuidV5FactoryTest extends TestCase
 
         // Two version 5 UUIDs created in the same namespace with the
         // same name must be equal.
-        $this->assertInstanceOf(UuidV5::class, $uuid1);
-        $this->assertInstanceOf(UuidV5::class, $uuid2);
         $this->assertTrue($uuid1->equals($uuid2));
     }
 
@@ -55,7 +52,6 @@ class UuidV5FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x5f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(UuidV5::class, $uuid);
         $this->assertSame('ffffffff-ffff-5fff-8fff-ffffffffffff', $uuid->toString());
     }
 
@@ -81,7 +77,6 @@ class UuidV5FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('340282366920937707880125662270106632191');
 
-        $this->assertInstanceOf(UuidV5::class, $uuid);
         $this->assertSame('ffffffff-ffff-5fff-bfff-ffffffffffff', $uuid->toString());
     }
 
@@ -89,7 +84,6 @@ class UuidV5FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('377798542001608471871488');
 
-        $this->assertInstanceOf(UuidV5::class, $uuid);
         $this->assertSame('00000000-0000-5000-8000-000000000000', $uuid->toString());
     }
 
@@ -114,7 +108,6 @@ class UuidV5FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromString('ffffffff-ffff-5fff-8fff-ffffffffffff');
 
-        $this->assertInstanceOf(UuidV5::class, $uuid);
         $this->assertSame('ffffffff-ffff-5fff-8fff-ffffffffffff', $uuid->toString());
     }
 

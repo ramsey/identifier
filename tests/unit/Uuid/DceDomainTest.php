@@ -4,23 +4,22 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Test\Identifier\TestCase;
 
 class DceDomainTest extends TestCase
 {
-    /**
-     * @dataProvider provideEnumCases
-     */
+    #[DataProvider('provideEnumCases')]
     public function testEnumCases(int $value, string $expectedCase): void
     {
         $this->assertSame($expectedCase, DceDomain::from($value)->name);
     }
 
     /**
-     * @return array<array{value: int, expectedCase: string}>
+     * @return list<array{value: int, expectedCase: string}>
      */
-    public function provideEnumCases(): array
+    public static function provideEnumCases(): array
     {
         return [
             [
@@ -38,18 +37,16 @@ class DceDomainTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider dceStringNameProvider
-     */
+    #[DataProvider('dceStringNameProvider')]
     public function testDceStringName(DceDomain $domain, string $expected): void
     {
         $this->assertSame($expected, $domain->dceStringName());
     }
 
     /**
-     * @return array<array{domain: DceDomain, expected: string}>
+     * @return list<array{domain: DceDomain, expected: string}>
      */
-    public function dceStringNameProvider(): array
+    public static function dceStringNameProvider(): array
     {
         return [
             [

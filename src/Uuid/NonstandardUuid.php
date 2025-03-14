@@ -20,6 +20,7 @@ use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function assert;
@@ -28,9 +29,9 @@ use function strlen;
 
 /**
  * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
- * version bits set according to RFC 4122
+ * version bits set according to RFC 9562
  *
- * It is possible a nonstandard UUID was generated according to RFC 4122 but had
+ * It is possible a nonstandard UUID was generated according to RFC 9562 but had
  * its bits rearranged for reasons such as sortability. Without knowing which
  * rearrangement algorithm was used, it is impossible to determine the UUID's
  * original layout, so we treat it as a "nonstandard" UUID.
@@ -46,7 +47,7 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
      */
     public function __construct(private string $uuid)
     {
-        $this->format = strlen($this->uuid);
+        $this->format = Format::tryFrom(strlen($this->uuid));
         $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
 
         if (!$this->isValid($this->uuid, $this->format)) {
@@ -69,7 +70,7 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
         throw new BadMethodCall('Nonstandard UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, int $format): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
         if (!$this->hasValidFormat($uuid, $format)) {
             return false;
@@ -79,7 +80,7 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
             return false;
         }
 
-        if ($this->variant !== Variant::Rfc4122 && $this->variant !== Variant::ReservedMicrosoft) {
+        if ($this->variant !== Variant::Rfc9562 && $this->variant !== Variant::ReservedMicrosoft) {
             return true;
         }
 

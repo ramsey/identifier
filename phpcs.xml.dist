@@ -8,13 +8,7 @@
     <file>./src</file>
     <file>./tests</file>
 
-    <rule ref="Ramsey">
-        <!-- Exclude for now, since PHP CodeSniffer is not yet aware of readonly classes. -->
-        <!-- See: https://github.com/squizlabs/PHP_CodeSniffer/issues/3727 -->
-        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols"/>
-    </rule>
-
-    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration"/>
+    <rule ref="Ramsey"/>
 
     <!-- Allow duplicate spaces in comments -->
     <rule ref="SlevomatCodingStandard.Whitespaces.DuplicateSpaces">

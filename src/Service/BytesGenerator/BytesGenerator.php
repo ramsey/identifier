@@ -19,8 +19,7 @@ namespace Ramsey\Identifier\Service\BytesGenerator;
 use DateTimeInterface;
 
 /**
- * Defines a bytes generator interface for generating bytes used to create
- * identifiers
+ * Generates bytes used to create identifiers
  */
 interface BytesGenerator
 {

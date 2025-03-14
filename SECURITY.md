@@ -29,9 +29,9 @@ contribution of external security researchers.
 If you believe you've found a security issue in software that is maintained in
 this repository, we encourage you to notify us.
 
-| Version | In scope | Source code |
-| ------- | :------: | ----------- |
-| latest  | ✅        | https://github.com/ramsey/identifier |
+| Version | In scope | Source code                          |
+|---------|:--------:|--------------------------------------|
+| latest  |    ✅     | https://github.com/ramsey/identifier |
 
 ## How to Submit a Report
 

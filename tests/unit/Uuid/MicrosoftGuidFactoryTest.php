@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\MicrosoftGuidFactory;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
@@ -33,7 +33,6 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->create();
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
         $this->assertSame(Version::Random, $guid->getVersion());
     }
@@ -42,7 +41,6 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\x3f\xcf\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame('ffffffff-ffff-3fff-cfff-ffffffffffff', $guid->toString());
         $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
         $this->assertSame(Version::HashMd5, $guid->getVersion());
@@ -70,7 +68,6 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->createFromInteger('340282366920937934556022683022290583551');
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame('ffffffff-ffff-8fff-dfff-ffffffffffff', $guid->toString());
         $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
         $this->assertSame(Version::Custom, $guid->getVersion());
@@ -80,7 +77,6 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->createFromInteger('75571698783969605582848');
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame('00000000-0000-1000-c000-000000000000', $guid->toString());
     }
 
@@ -105,7 +101,6 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->createFromString('ffffffff-ffff-4fff-cfff-ffffffffffff');
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame('ffffffff-ffff-4fff-cfff-ffffffffffff', $guid->toString());
     }
 
@@ -125,10 +120,8 @@ class MicrosoftGuidFactoryTest extends TestCase
         $this->factory->createFromString('ffff-ffffffff-4fff-dfff-ffffffffffff');
     }
 
-    /**
-     * @dataProvider createFromRfc4122Provider
-     */
-    public function testCreateFromRfc4122(
+    #[DataProvider('createFromRfc9562Provider')]
+    public function testCreateFromRfc9562(
         string $uuidValue,
         string $expectedGuidValue,
     ): void {
@@ -140,7 +133,6 @@ class MicrosoftGuidFactoryTest extends TestCase
 
         $guid = $this->factory->createFromRfc4122($typedUuid);
 
-        $this->assertInstanceOf(MicrosoftGuid::class, $guid);
         $this->assertSame($expectedGuidValue, $guid->toString());
         $this->assertFalse($guid->equals($uuid));
     }
@@ -148,7 +140,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     /**
      * @return array<string, array{uuidValue: string, expectedGuidValue: string}>
      */
-    public function createFromRfc4122Provider(): array
+    public static function createFromRfc9562Provider(): array
     {
         return [
             'v1 UUID to GUID' => [

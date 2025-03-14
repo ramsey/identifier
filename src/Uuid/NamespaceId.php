@@ -22,14 +22,13 @@ use Ramsey\Identifier\Uuid;
  * Version 3 and 5 UUIDs use name space IDs to ensure uniqueness of name-based
  * identifiers within a unique name space
  *
- * RFC 4122 defines name space IDs for names created for the domain name system
+ * RFC 9562 defines name space IDs for names created for the domain name system
  * (DNS), uniform resource locators (URLs), ISO object IDs (OIDs) and X.500
  * distinguished names. This list may be expanded in the future, and it's not
  * intended to limit other, specialized name space IDs for different
  * applications.
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#appendix-C RFC 4122: Some Name Space IDs
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#appendix-B.2 rfc4122bis: Some Name Space IDs
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.6 RFC 9562, section 6.6. Namespace ID Usage and Allocation
  */
 enum NamespaceId: string
 {

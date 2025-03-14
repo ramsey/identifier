@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
-use Ramsey\Identifier\Snowflake\DiscordSnowflake;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -24,13 +24,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $this->factory = new DiscordSnowflakeFactory(15, 30);
     }
 
-    public function testCreate(): void
-    {
-        $snowflake = $this->factory->create();
-
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
-    }
-
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new DiscordSnowflakeFactory(
@@ -42,7 +35,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
         $snowflake = $factory->create();
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0000000000000000', $snowflake->toHexadecimal());
         $this->assertSame('0', $snowflake->toString());
         $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00", $snowflake->toBytes());
@@ -55,7 +47,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1));
         $snowflake = $factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertNotSame($dateTime, $snowflake->getDateTime());
         $this->assertSame('2022-09-25 17:32:12.345000', $snowflake->getDateTime()->format('Y-m-d H:i:s.u'));
         $this->assertSame('0e34ba8cae422001', $snowflake->toHexadecimal());
@@ -65,7 +56,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\x01\x83\x95\xab\x83\x9a\xdf\x27");
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
@@ -73,7 +63,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('18446744073709551615', $snowflake->toString());
     }
 
@@ -81,7 +70,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\x7f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
@@ -89,7 +77,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00");
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
@@ -105,7 +92,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('018395ab839adf27');
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('109095379866935079', $snowflake->toString());
     }
 
@@ -113,7 +99,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('ffffffffffffffff');
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('18446744073709551615', $snowflake->toString());
     }
 
@@ -121,7 +106,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('7fffffffffffffff');
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('9223372036854775807', $snowflake->toString());
     }
 
@@ -129,7 +113,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromHexadecimal('0000000000000000');
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('0', $snowflake->toString());
     }
 
@@ -149,9 +132,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $this->factory->createFromHexadecimal('fffffffffffffffg');
     }
 
-    /**
-     * @dataProvider createFromIntegerInvalidIntegerProvider
-     */
+    #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -162,9 +143,9 @@ class DiscordSnowflakeFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: int | string}>
+     * @return list<array{input: int | string}>
      */
-    public function createFromIntegerInvalidIntegerProvider(): array
+    public static function createFromIntegerInvalidIntegerProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -180,21 +161,19 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     *
-     * @dataProvider createFromIntegerProvider
      */
+    #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, int | string $expected): void
     {
         $snowflake = $this->factory->createFromInteger($value);
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame($expected, $snowflake->toInteger());
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expected: int | numeric-string}>
+     * @return list<array{value: int | numeric-string, expected: int | numeric-string}>
      */
-    public function createFromIntegerProvider(): array
+    public static function createFromIntegerProvider(): array
     {
         return [
             ['value' => '18446744073709551615', 'expected' => '18446744073709551615'],
@@ -209,7 +188,6 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $snowflake = $this->factory->createFromString('2147483647');
 
-        $this->assertInstanceOf(DiscordSnowflake::class, $snowflake);
         $this->assertSame('2147483647', $snowflake->toString());
     }
 

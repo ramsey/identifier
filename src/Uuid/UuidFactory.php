@@ -25,6 +25,7 @@ use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\Mask;
 use Ramsey\Identifier\Uuid\Utility\Validation;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
@@ -71,7 +72,7 @@ final class UuidFactory implements UuidFactoryInterface
      */
     public function createFromBytes(string $identifier): UntypedUuid
     {
-        if (strlen($identifier) === Format::FORMAT_BYTES) {
+        if (strlen($identifier) === Format::Bytes->value) {
             return new UntypedUuid($identifier);
         }
 
@@ -83,7 +84,7 @@ final class UuidFactory implements UuidFactoryInterface
      */
     public function createFromHexadecimal(string $identifier): UntypedUuid
     {
-        if (strlen($identifier) === Format::FORMAT_HEX) {
+        if (strlen($identifier) === Format::Hex->value) {
             return new UntypedUuid($identifier);
         }
 
@@ -97,7 +98,7 @@ final class UuidFactory implements UuidFactoryInterface
     {
         if (
             is_string($identifier)
-            && strspn($identifier, Format::MASK_INT) === strlen($identifier)
+            && strspn($identifier, Mask::INT) === strlen($identifier)
             && $identifier <= PHP_INT_MAX
         ) {
             $identifier = (int) $identifier;
@@ -218,9 +219,9 @@ final class UuidFactory implements UuidFactoryInterface
     {
         if (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
-                Format::FORMAT_STRING => $this->createFromString($namespace),
-                Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
-                Format::FORMAT_BYTES => $this->createFromBytes($namespace),
+                Format::String->value => $this->createFromString($namespace),
+                Format::Hex->value => $this->createFromHexadecimal($namespace),
+                Format::Bytes->value => $this->createFromBytes($namespace),
                 default => throw new InvalidArgument(sprintf('Invalid UUID namespace: "%s"', $namespace)),
             };
         }
@@ -250,9 +251,9 @@ final class UuidFactory implements UuidFactoryInterface
     {
         if (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
-                Format::FORMAT_STRING => $this->createFromString($namespace),
-                Format::FORMAT_HEX => $this->createFromHexadecimal($namespace),
-                Format::FORMAT_BYTES => $this->createFromBytes($namespace),
+                Format::String->value => $this->createFromString($namespace),
+                Format::Hex->value => $this->createFromHexadecimal($namespace),
+                Format::Bytes->value => $this->createFromBytes($namespace),
                 default => throw new InvalidArgument(sprintf('Invalid UUID namespace: "%s"', $namespace)),
             };
         }
@@ -318,6 +319,6 @@ final class UuidFactory implements UuidFactoryInterface
 
     protected function getVersion(): never
     {
-        throw new BadMethodCall('method called out of context'); // @codeCoverageIgnore
+        throw new BadMethodCall('method called out of context');
     }
 }

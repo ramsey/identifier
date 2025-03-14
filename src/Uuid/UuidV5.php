@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
@@ -25,10 +24,9 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * that are hashed into a 128-bit unsigned integer using the SHA-1 hashing
  * algorithm
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1 RFC 4122: Format
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.5 rfc4122bis: UUID Version 5
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.5 RFC 9562, section 5.5. UUID Version 5
  */
-final readonly class UuidV5 implements JsonSerializable, Uuid
+final readonly class UuidV5 implements Uuid
 {
     use Standard;
 

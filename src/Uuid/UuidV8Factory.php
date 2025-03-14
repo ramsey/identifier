@@ -21,7 +21,6 @@ use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
-use function assert;
 use function strlen;
 
 /**
@@ -62,8 +61,6 @@ final class UuidV8Factory implements UuidFactoryInterface
         if (strlen($bytes) !== 16) {
             throw new InvalidArgument('$bytes must be a 16-byte octet string');
         }
-
-        assert($bytes !== '');
 
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Custom);
 

@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Dce;
 
 use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
@@ -82,13 +83,18 @@ final class SystemDce implements Dce
     public function groupId(): int
     {
         if (self::$groupId === null) {
-            $groupId = $this->getSystemGidFromCache();
+            try {
+                $groupId = $this->getSystemGidFromCache();
+            } catch (InvalidArgumentException $cacheException) {
+                $groupId = null;
+            }
 
             if ($groupId === null) {
                 throw new DceIdentifierNotFound(
-                    'Unable to get a group identifier using the system DCE '
-                    . 'service; please provide a custom identifier or use '
-                    . 'a different DCE service class',
+                    message: 'Unable to get a group identifier using the system DCE '
+                        . 'service; please provide a custom identifier or use '
+                        . 'a different DCE service class',
+                    previous: $cacheException ?? null,
                 );
             }
 
@@ -119,13 +125,18 @@ final class SystemDce implements Dce
     public function userId(): int
     {
         if (self::$userId === null) {
-            $userId = $this->getSystemUidFromCache();
+            try {
+                $userId = $this->getSystemUidFromCache();
+            } catch (InvalidArgumentException $cacheException) {
+                $userId = null;
+            }
 
             if ($userId === null) {
                 throw new DceIdentifierNotFound(
-                    'Unable to get a user identifier using the system DCE '
-                    . 'service; please provide a custom identifier or use '
-                    . 'a different DCE service class',
+                    message: 'Unable to get a user identifier using the system DCE '
+                        . 'service; please provide a custom identifier or use '
+                        . 'a different DCE service class',
+                    previous: $cacheException ?? null,
                 );
             }
 
@@ -170,6 +181,8 @@ final class SystemDce implements Dce
 
     /**
      * @return int<0, max> | null
+     *
+     * @throws InvalidArgumentException
      */
     private function getSystemGidFromCache(): ?int
     {
@@ -201,6 +214,8 @@ final class SystemDce implements Dce
 
     /**
      * @return int<0, max> | null
+     *
+     * @throws InvalidArgumentException
      */
     private function getSystemUidFromCache(): ?int
     {
@@ -240,7 +255,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        /** @var string[] $userGroups */
+        /** @var list<string> $userGroups */
         $userGroups = preg_split('/\s{2,}/', $response, -1, PREG_SPLIT_NO_EMPTY);
 
         $firstGroup = trim($userGroups[1] ?? '', "* \t\n\r\0\x0B");
@@ -255,7 +270,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        /** @var string[] $userGroup */
+        /** @var list<string> $userGroup */
         $userGroup = preg_split('/\s{2,}/', $response, -1, PREG_SPLIT_NO_EMPTY);
 
         $sid = $userGroup[1] ?? '';
@@ -280,8 +295,8 @@ final class SystemDce implements Dce
      * domain.
      *
      * @link https://www.lifewire.com/what-is-an-sid-number-2626005 What Is an SID Number?
-     * @link https://bit.ly/30vE7NM Well-known SID Structures
-     * @link https://bit.ly/2FWcYKJ Well-known security identifiers in Windows operating systems
+     * @link https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/81d92bba-d22b-4a8c-908a-554ab29148ab Well-known SID Structures
+     * @link https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers Well-known security identifiers in Windows operating systems
      * @link https://www.windows-commandline.com/get-sid-of-user/ Get SID of user
      *
      * @return int<0, max> | null
@@ -294,7 +309,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        $sid = str_getcsv(trim($response))[1] ?? '';
+        $sid = str_getcsv(string: trim($response), escape: '')[1] ?? '';
 
         if (($lastHyphen = strrpos($sid, '-')) === false) {
             return null;

@@ -19,23 +19,22 @@ namespace Ramsey\Identifier\Uuid;
 /**
  * The variant number describes the layout of the UUID
  *
- *     Msb0  Msb1  Msb2  Description
- *      0     x     x    Reserved, NCS backward compatibility.
- *      1     0     x    The variant specified in this document.
- *      1     1     0    Reserved, Microsoft Corporation backward
- *                       compatibility
- *      1     1     1    Reserved for future definition.
+ * | **Msb0** | **Msb1** | **Msb2** | **Msb3** | **Variant** | **Description**                                             |
+ * | :------: | :------: | :------: | :------: | :---------: | :---------------------------------------------------------- |
+ * |     0    |    x     |    x     |    x     |     1-7     | Reserved, NCS backward compatibility, and includes Nil UUID |
+ * |     1    |    0     |    x     |    x     |  8-9, A-B   | The variant specified in this document                      |
+ * |     1    |    1     |    0     |    x     |     C-D     | Reserved, Microsoft Corporation backward compatibility      |
+ * |     1    |    1     |    1     |    x     |     E-F     | Reserved for future definition, and includes Max UUID       |
  *
  * In reading this table, we find that, if the first 3 bits of the variant field
  * are all 1s (i.e., the decimal value 7), then the variant is reserved for
  * future definition. If the first three bits are two 1s followed by a 0 (i.e.,
  * the decimal value 6), then the variant is reserved for Microsoft
  * Corporation. If the first two bits are a 1 and 0 (i.e., the decimal value
- * 2), then the variant is for RFC 4122. Finally, if the first bit is 0,
+ * 2), then the variant is for RFC 9562. Finally, if the first bit is 0,
  * then it's reserved for NCS, for backward compatibility.
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.1 RFC 4122: Variant
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.1 rfc4122bis: Variant Field
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field
  */
 enum Variant: int
 {
@@ -45,9 +44,9 @@ enum Variant: int
     case ReservedNcs = 0;
 
     /**
-     * The UUID layout specified in RFC 4122
+     * The UUID layout specified in RFC 9562
      */
-    case Rfc4122 = 2;
+    case Rfc9562 = 2;
 
     /**
      * Reserved, Microsoft Corporation backward compatibility
@@ -58,4 +57,9 @@ enum Variant: int
      * Reserved for future definition
      */
     case ReservedFuture = 7;
+
+    /**
+     * Alias for {@see self::Rfc9562}
+     */
+    public const Rfc4122 = self::Rfc9562; // phpcs:ignore
 }

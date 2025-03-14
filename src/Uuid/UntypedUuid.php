@@ -17,13 +17,13 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
-use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\Mask;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function assert;
@@ -45,7 +45,7 @@ use function strspn;
  * To access a typed version (e.g., {@see UuidV1}, {@see UuidV4}, etc.), call
  * {@see self::toTypedUuid()} on any UntypedUuid instance.
  */
-final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard;
 
@@ -54,15 +54,14 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
     private ?Variant $variant = null;
     private ?Version $version = null;
 
-    // phpcs:ignore
-    private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null;
+    private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore
 
     /**
      * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid)
     {
-        $this->format = strlen($this->uuid);
+        $this->format = Format::tryFrom(strlen($this->uuid));
 
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid UUID: "%s"', $this->uuid));
@@ -82,7 +81,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
 
         throw new BadMethodCall(sprintf(
             'Cannot call getDateTime() on untyped UUID "%s"',
-            $this->getFormat(Format::FORMAT_STRING),
+            $this->getFormat(Format::String),
         ));
     }
 
@@ -99,7 +98,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
 
         throw new BadMethodCall(sprintf(
             'Cannot call getNode() on untyped UUID "%s"',
-            $this->getFormat(Format::FORMAT_STRING),
+            $this->getFormat(Format::String),
         ));
     }
 
@@ -107,7 +106,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
     {
         if ($this->variant === null) {
             if ($this->isMax($this->uuid, $this->format) || $this->isNil($this->uuid, $this->format)) {
-                $this->variant = Variant::Rfc4122;
+                $this->variant = Variant::Rfc9562;
             } else {
                 $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
             }
@@ -125,7 +124,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
     {
         $variant = $this->getVariant();
 
-        if ($this->version === null && ($variant === Variant::Rfc4122 || $variant === Variant::ReservedMicrosoft)) {
+        if ($this->version === null && ($variant === Variant::Rfc9562 || $variant === Variant::ReservedMicrosoft)) {
             $this->version = Version::tryFrom(
                 (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::ReservedMicrosoft),
             );
@@ -134,7 +133,7 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
         return $this->version
             ?? throw new CannotDetermineVersion(sprintf(
                 'Unable to determine version of untyped UUID "%s"',
-                $this->getFormat(Format::FORMAT_STRING),
+                $this->getFormat(Format::String),
             ));
     }
 
@@ -154,8 +153,8 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
             $variant = $this->getVariant();
 
             $this->typedUuid = match (true) {
-                $version === Version::V1 && $variant === Variant::Rfc4122 => new UuidV1($this->uuid),
-                $version === Version::V2 && $variant === Variant::Rfc4122 => (
+                $version === Version::V1 && $variant === Variant::Rfc9562 => new UuidV1($this->uuid),
+                $version === Version::V2 && $variant === Variant::Rfc9562 => (
                     static function (string $uuid): UuidV2 | NonstandardUuid {
                         try {
                             return new UuidV2($uuid);
@@ -164,12 +163,12 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
                         }
                     }
                 )($this->uuid),
-                $version === Version::V3 && $variant === Variant::Rfc4122 => new UuidV3($this->uuid),
-                $version === Version::V4 && $variant === Variant::Rfc4122 => new UuidV4($this->uuid),
-                $version === Version::V5 && $variant === Variant::Rfc4122 => new UuidV5($this->uuid),
-                $version === Version::V6 && $variant === Variant::Rfc4122 => new UuidV6($this->uuid),
-                $version === Version::V7 && $variant === Variant::Rfc4122 => new UuidV7($this->uuid),
-                $version === Version::V8 && $variant === Variant::Rfc4122 => new UuidV8($this->uuid),
+                $version === Version::V3 && $variant === Variant::Rfc9562 => new UuidV3($this->uuid),
+                $version === Version::V4 && $variant === Variant::Rfc9562 => new UuidV4($this->uuid),
+                $version === Version::V5 && $variant === Variant::Rfc9562 => new UuidV5($this->uuid),
+                $version === Version::V6 && $variant === Variant::Rfc9562 => new UuidV6($this->uuid),
+                $version === Version::V7 && $variant === Variant::Rfc9562 => new UuidV7($this->uuid),
+                $version === Version::V8 && $variant === Variant::Rfc9562 => new UuidV8($this->uuid),
                 $version !== null && $variant === Variant::ReservedMicrosoft => new MicrosoftGuid($this->uuid),
                 $this->isMax($this->uuid, $this->format) => new MaxUuid(),
                 $this->isNil($this->uuid, $this->format) => new NilUuid(),
@@ -180,12 +179,12 @@ final class UntypedUuid implements JsonSerializable, NodeBasedUuid, TimeBasedUui
         return $this->typedUuid;
     }
 
-    private function isValid(string $uuid, int $format): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
         return match ($format) {
-            Format::FORMAT_STRING => preg_match(self::VALID_UUID, $uuid) === 1,
-            Format::FORMAT_HEX => strspn($uuid, Format::MASK_HEX) === 32,
-            Format::FORMAT_BYTES => true,
+            Format::Bytes => true,
+            Format::Hex => strspn($uuid, Mask::HEX) === 32,
+            Format::String => preg_match(self::VALID_UUID, $uuid) === 1,
             default => false,
         };
     }

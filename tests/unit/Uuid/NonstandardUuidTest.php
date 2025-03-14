@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
@@ -37,9 +39,7 @@ class NonstandardUuidTest extends TestCase
         $this->uuidWithBytes = new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_BYTES);
     }
 
-    /**
-     * @dataProvider invalidUuidsProvider
-     */
+    #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -49,9 +49,9 @@ class NonstandardUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUuidsProvider(): array
+    public static function invalidUuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -122,20 +122,19 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider nonstandardUuidProvider
-     */
+    #[DataProvider('nonstandardUuidProvider')]
     public function testSucceedsForNonstandardUuids(string $value): void
     {
         $uuid = new Uuid\NonstandardUuid($value);
 
+        /** @phpstan-ignore-next-line */
         $this->assertInstanceOf(Uuid\NonstandardUuid::class, $uuid);
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function nonstandardUuidProvider(): array
+    public static function nonstandardUuidProvider(): array
     {
         return [
             // These 16 bytes don't form a standard UUID, but they are a valid
@@ -268,9 +267,7 @@ class NonstandardUuidTest extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -293,16 +290,14 @@ class NonstandardUuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -371,9 +366,7 @@ class NonstandardUuidTest extends TestCase
         $this->uuidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -390,16 +383,14 @@ class NonstandardUuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -524,9 +515,7 @@ class NonstandardUuidTest extends TestCase
         $this->assertSame('urn:uuid:' . self::UUID_NONSTANDARD_STRING, $this->uuidWithBytes->toUrn());
     }
 
-    /**
-     * @dataProvider allVariantsProvider
-     */
+    #[DataProvider('allVariantsProvider')]
     public function testAllVariants(string $uuid, Variant $expected): void
     {
         $uuid = new Uuid\NonstandardUuid($uuid);
@@ -537,7 +526,7 @@ class NonstandardUuidTest extends TestCase
     /**
      * @return array<string, array{string, Variant}>
      */
-    public function allVariantsProvider(): array
+    public static function allVariantsProvider(): array
     {
         return [
             'string: reserved NCS: 0' => ['27433d43-011d-0a6a-0161-1550863792c9', Variant::ReservedNcs],
@@ -683,9 +672,7 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider invalidNonstandardProvider
-     */
+    #[DataProvider('invalidNonstandardProvider')]
     public function testInvalidNonstandard(string $uuid): void
     {
         $this->expectException(InvalidArgument::class);
@@ -697,7 +684,7 @@ class NonstandardUuidTest extends TestCase
     /**
      * @return array<string, array{string}>
      */
-    public function invalidNonstandardProvider(): array
+    public static function invalidNonstandardProvider(): array
     {
         return [
             // The variant character is "8".
@@ -878,9 +865,7 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider valuesForLowercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\NonstandardUuid($value);
@@ -890,9 +875,9 @@ class NonstandardUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Clock;
 
-use DateTimeImmutable;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -15,7 +14,6 @@ class SystemClockTest extends TestCase
         $service = new SystemClock();
         $dateTime = $service->now();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertNotSame($dateTime, $service->now());
     }
 }

@@ -9,7 +9,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Identifier\Service\Nic\StaticNic;
-use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV1Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -24,13 +23,6 @@ class UuidV1FactoryTest extends TestCase
         $this->factory = new UuidV1Factory();
     }
 
-    public function testCreate(): void
-    {
-        $uuid = $this->factory->create();
-
-        $this->assertInstanceOf(UuidV1::class, $uuid);
-    }
-
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new UuidV1Factory(
@@ -41,7 +33,6 @@ class UuidV1FactoryTest extends TestCase
 
         $uuid = $factory->create();
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('00000000-0000-1000-8000-010000000000', $uuid->toString());
     }
 
@@ -49,7 +40,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->create(clockSequence: 0x3321);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('321', substr($uuid->toString(), 20, 3));
     }
 
@@ -57,7 +47,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->create(node: '3c1239b4f540');
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('3d1239b4f540', substr($uuid->toString(), -12));
     }
 
@@ -66,7 +55,6 @@ class UuidV1FactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
         $uuid = $this->factory->create(dateTime: $dateTime);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
         $this->assertSame('2022-09-25T17:32:12+00:00', $uuid->getDateTime()->format('c'));
         $this->assertSame('fd24f600-3cf7-11ed', substr($uuid->toString(), 0, 18));
@@ -77,7 +65,6 @@ class UuidV1FactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12');
         $uuid = $this->factory->create('3c1239b4f540', 0x3321, $dateTime);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('fd24f600-3cf7-11ed-b321-3d1239b4f540', $uuid->toString());
     }
 
@@ -85,7 +72,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('ffffffff-ffff-1fff-8fff-ffffffffffff', $uuid->toString());
     }
 
@@ -112,7 +98,6 @@ class UuidV1FactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.294208');
         $uuid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
         $this->assertSame('2022-09-25 17:32:12.294208', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
         $this->assertSame('fd51da80-3cf7-11ed', substr($uuid->toString(), 0, 18));
@@ -123,7 +108,6 @@ class UuidV1FactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('5236-03-31 21:21:00.684697');
         $uuid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
 
         $this->assertSame('5236-03-31 21:21:00.684697', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
@@ -135,7 +119,6 @@ class UuidV1FactoryTest extends TestCase
         $dateTime = new DateTimeImmutable('1582-10-15 00:00:00.000000');
         $uuid = $this->factory->createFromDateTime($dateTime);
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertNotSame($dateTime, $uuid->getDateTime());
 
         $this->assertSame('1582-10-15 00:00:00.000000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
@@ -168,7 +151,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('340282366920937405648670758612812955647');
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('ffffffff-ffff-1fff-bfff-ffffffffffff', $uuid->toString());
     }
 
@@ -176,7 +158,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromInteger('75567087097951178194944');
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('00000000-0000-1000-8000-000000000000', $uuid->toString());
     }
 
@@ -201,7 +182,6 @@ class UuidV1FactoryTest extends TestCase
     {
         $uuid = $this->factory->createFromString('ffffffff-ffff-1fff-8fff-ffffffffffff');
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('ffffffff-ffff-1fff-8fff-ffffffffffff', $uuid->toString());
     }
 

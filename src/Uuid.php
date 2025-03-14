@@ -16,31 +16,29 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier;
 
-use Identifier\BinaryIdentifier;
+use Identifier\BytesIdentifier;
 use Identifier\IntegerIdentifier;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 
 /**
- * Describes the interface of a universally unique identifier (UUID)
+ * A universally unique identifier (UUID)
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html RFC 4122
+ * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562: Universally Unique IDentifiers (UUIDs)
  */
-interface Uuid extends BinaryIdentifier, IntegerIdentifier
+interface Uuid extends BytesIdentifier, IntegerIdentifier
 {
     /**
      * Returns the variant of this UUID, describing the layout of the UUID
      *
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.1 RFC 4122: Variant
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.1 rfc4122bis: Variant Field
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field
      */
     public function getVariant(): Variant;
 
     /**
      * Returns the version of this UUID, describing how the UUID was generated
      *
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.3 RFC 4122: Version
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-4.2 rfc4122bis: Version Field
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Version Field
      */
     public function getVersion(): Version;
 
@@ -52,9 +50,8 @@ interface Uuid extends BinaryIdentifier, IntegerIdentifier
     /**
      * Returns the string standard representation of the UUID as a URN
      *
-     * @link http://en.wikipedia.org/wiki/Uniform_Resource_Name Uniform Resource Name
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-3 RFC 4122: Namespace Registration Template
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#appendix-A rfc4122bis: Namespace Registration Template
+     * @link https://www.rfc-editor.org/rfc/rfc9562#figure-4 RFC 9562, Figure 4: Example URN Namespace for UUID
+     * @link https://www.rfc-editor.org/rfc/rfc8141 RFC 8141: Uniform Resource Names (URNs)
      *
      * @return non-empty-string
      */

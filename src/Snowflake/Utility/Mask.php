@@ -14,12 +14,24 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid;
+namespace Ramsey\Identifier\Snowflake\Utility;
 
-use Ramsey\Identifier\Ulid as UlidInterface;
-use Ramsey\Identifier\Ulid\Utility\Standard;
-
-final readonly class Ulid implements UlidInterface
+/**
+ * @internal
+ */
+final class Mask
 {
-    use Standard;
+    /**
+     * A mask used with functions like {@see strspn()} to validate hexadecimal strings
+     */
+    public const HEX = '0123456789abcdefABCDEF';
+
+    /**
+     * A mask used with functions like {@see strspn()} to validate string integers
+     */
+    public const INT = '0123456789';
+
+    private function __construct()
+    {
+    }
 }

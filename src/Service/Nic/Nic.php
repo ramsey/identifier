@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 /**
- * Defines a network interface controller (NIC) for obtaining a MAC address
+ * Derives a MAC address from a network interface controller (NIC)
  *
  * @link https://en.wikipedia.org/wiki/MAC_address MAC address
  */
@@ -28,10 +28,9 @@ interface Nic
      *
      * This value must not include any separator characters. If not using the
      * MAC address of the host where the identifier is created, the value should
-     * set the multicast bit. See RFC 4122, section 4.5 for more details.
+     * set the multicast bit. See RFC 9562, section 6.10, for more details.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
      *
      * @return non-empty-string
      */

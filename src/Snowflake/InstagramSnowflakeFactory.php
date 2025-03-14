@@ -20,6 +20,7 @@ use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
@@ -48,12 +49,13 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence}
+     *     to prevent collisions; defaults to {@see StatefulSequence} with
+     *     millisecond precision
      */
     public function __construct(
         private readonly int $shardId,
         private readonly Clock $clock = new SystemClock(),
-        private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
+        private readonly Sequence $sequence = new StatefulSequence(precision: Precision::Millisecond),
     ) {
         $this->shardIdShifted = ($this->shardId & 0x1fff) << 10;
     }

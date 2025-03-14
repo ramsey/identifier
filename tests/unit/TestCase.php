@@ -20,19 +20,14 @@ abstract class TestCase extends PHPUnitTestCase
      * Configures and returns a mock object
      *
      * @param class-string<T> $class
-     * @param mixed ...$arguments
      *
      * @return T & MockInterface
      *
      * @template T
-     *
-     * phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
      */
-    public function mockery(string $class, ...$arguments)
+    public function mockery(string $class, mixed ...$arguments): MockInterface
     {
-        /** @var T & MockInterface $mock */
-        $mock = Mockery::mock($class, ...$arguments);
-
-        return $mock;
+        /** @var T & MockInterface */
+        return Mockery::mock($class, ...$arguments);
     }
 }

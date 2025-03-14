@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid\Utility;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Variant;
@@ -17,9 +18,8 @@ class BinaryTest extends TestCase
 {
     /**
      * @param non-empty-string $bytes
-     *
-     * @dataProvider versionAndVariantBytesProvider
      */
+    #[DataProvider('versionAndVariantBytesProvider')]
     public function testApplyVersionAndVariant(
         string $bytes,
         ?Version $version,
@@ -36,9 +36,9 @@ class BinaryTest extends TestCase
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, version: Version | null, variant: Variant, expectedBytes: string}>
+     * @return list<array{bytes: non-empty-string, version: Version | null, variant: Variant, expectedBytes: string}>
      */
-    public function versionAndVariantBytesProvider(): array
+    public static function versionAndVariantBytesProvider(): array
     {
         return [
             [

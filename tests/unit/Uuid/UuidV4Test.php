@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid\Ulid;
@@ -37,9 +39,7 @@ class UuidV4Test extends TestCase
         $this->uuidWithBytes = new Uuid\UuidV4(self::UUID_V4_BYTES);
     }
 
-    /**
-     * @dataProvider invalidUuidsProvider
-     */
+    #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -49,9 +49,9 @@ class UuidV4Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUuidsProvider(): array
+    public static function invalidUuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -233,9 +233,7 @@ class UuidV4Test extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -258,16 +256,14 @@ class UuidV4Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -325,9 +321,7 @@ class UuidV4Test extends TestCase
         $this->uuidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -344,16 +338,14 @@ class UuidV4Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -462,9 +454,7 @@ class UuidV4Test extends TestCase
         $this->assertSame('urn:uuid:' . self::UUID_V4_STRING, $this->uuidWithBytes->toUrn());
     }
 
-    /**
-     * @dataProvider valuesForLowercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\UuidV4($value);
@@ -474,9 +464,9 @@ class UuidV4Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [

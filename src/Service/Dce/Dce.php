@@ -20,15 +20,16 @@ use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Uuid\UuidV2;
 
 /**
- * Defines a Distributed Computing Environment (DCE) interface for getting
- * system group, user, and organization identifiers
+ * Provides system group, user, and organization identifiers for use with
+ * Distributed Computing Environment (DCE) specifications
  *
+ * @link https://publications.opengroup.org/c311 DCE 1.1: Authentication and Security Services
  * @see UuidV2
  */
 interface Dce
 {
     /**
-     * Returns a group identifier for the system
+     * Returns a group identifier (i.e., GID) for the system
      *
      * @link https://en.wikipedia.org/wiki/Group_identifier Group identifier
      *
@@ -48,7 +49,7 @@ interface Dce
     public function orgId(): int;
 
     /**
-     * Returns a user identifier for the system
+     * Returns a user identifier (i.e., UID) for the system
      *
      * @link https://en.wikipedia.org/wiki/User_identifier User identifier
      *

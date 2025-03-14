@@ -115,7 +115,7 @@ final class Time
             Version::DceSecurity => $this->getTimestampDceSecurity($bytes),
             Version::ReorderedGregorianTime => $this->getTimestampReorderedGregorian($bytes),
             Version::UnixTime => $this->getTimestampUnix($bytes),
-            default => throw new BadMethodCall('method called out of context'), // @codeCoverageIgnore
+            default => throw new BadMethodCall('method called out of context'),
         };
     }
 

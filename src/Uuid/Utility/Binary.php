@@ -30,13 +30,13 @@ use function unpack;
 final class Binary
 {
     /**
-     * Applies the RFC 4122 version number and variant field to the 128-bit
+     * Applies the RFC 9562 version number and variant field to the 128-bit
      * integer (as a 16-byte string) provided
      *
      * @param non-empty-string $bytes A 128-bit integer (16-byte string) to
-     *     which the RFC 4122 version number and variant field will be applied,
+     *     which the RFC 9562 version number and variant field will be applied,
      *     making the number a valid UUID
-     * @param Version | null $version The RFC 4122 version to apply
+     * @param Version | null $version The RFC 9562 version to apply
      * @param Variant $variant The variant to apply
      *
      * @return non-empty-string A 16-byte string with the UUID version and variant applied
@@ -46,7 +46,7 @@ final class Binary
     public function applyVersionAndVariant(
         string $bytes,
         ?Version $version,
-        Variant $variant = Variant::Rfc4122,
+        Variant $variant = Variant::Rfc9562,
     ): string {
         if (strlen($bytes) !== 16) {
             throw new InvalidArgument('$bytes must be a a 16-byte string');
@@ -62,7 +62,7 @@ final class Binary
 
         $parts[5] = match ($variant) {
             Variant::ReservedNcs => $parts[5] & 0x7fff,
-            Variant::Rfc4122 => $parts[5] & 0x3fff | 0x8000,
+            Variant::Rfc9562 => $parts[5] & 0x3fff | 0x8000,
             Variant::ReservedMicrosoft => $parts[5] & 0x1fff | 0xc000,
             Variant::ReservedFuture => $parts[5] & 0x1fff | 0xe000,
         };

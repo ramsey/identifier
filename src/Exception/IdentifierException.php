@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Exception;
 use Identifier\Exception\IdentifierException as BaseIdentifierException;
 
 /**
- * Describes a common interface for all exceptions thrown by ramsey/identifier
+ * Thrown when an exception occurs in ramsey/identifier
  */
 interface IdentifierException extends BaseIdentifierException
 {

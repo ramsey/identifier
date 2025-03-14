@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\Format;
@@ -44,7 +43,7 @@ use function substr;
  * these bits to 0, so the maximum range of timestamp drift is 0x00000000
  * to 0xffffffff (counted in 100-nanosecond intervals).
  *
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.2 rfc4122bis: UUID Version 2
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.2 RFC 9562, section 5.2. UUID Version 2
  * @link https://publications.opengroup.org/c311 DCE 1.1: Authentication and Security Services
  * @link https://publications.opengroup.org/c706 DCE 1.1: Remote Procedure Call
  * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap5.htm#tagcjh_08_02_01_01 DCE 1.1: Auth & Sec, §5.2.1.1
@@ -52,7 +51,7 @@ use function substr;
  * @link https://pubs.opengroup.org/onlinepubs/9629399/apdxa.htm DCE 1.1: RPC, Appendix A
  * @link https://github.com/google/uuid Go package for UUIDs (includes DCE implementation)
  */
-final readonly class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class UuidV2 implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard {
         isValid as private baseIsValid;
@@ -84,7 +83,7 @@ final readonly class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBase
      */
     public function getLocalIdentifier(): int
     {
-        return (int) hexdec(substr($this->getFormat(Format::FORMAT_STRING), 0, 8));
+        return (int) hexdec(substr($this->getFormat(Format::String), 0, 8));
     }
 
     public function getVersion(): Version
@@ -92,7 +91,7 @@ final readonly class UuidV2 implements JsonSerializable, NodeBasedUuid, TimeBase
         return Version::DceSecurity;
     }
 
-    protected function isValid(string $uuid, int $format): bool
+    protected function isValid(string $uuid, ?Format $format): bool
     {
         return $this->baseIsValid($uuid, $format)
             && $this->getLocalDomainFromUuid($uuid, $format) !== null;

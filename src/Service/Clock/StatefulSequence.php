@@ -30,16 +30,6 @@ use const PHP_INT_MAX;
 final class StatefulSequence implements Sequence
 {
     /**
-     * Use microsecond precision when comparing the date-time
-     */
-    public const PRECISION_USEC = 'Uu';
-
-    /**
-     * Use millisecond precision when comparing the date-time
-     */
-    public const PRECISION_MSEC = 'Uv';
-
-    /**
      * @var int<0, max>
      */
     private int $clockSeq;
@@ -54,14 +44,14 @@ final class StatefulSequence implements Sequence
      *     identifying the machine
      * @param DateTimeInterface | null $initialDateTime An initial date-time
      *     value to prevent clock sequence collisions if the time runs backwards
-     * @param self::PRECISION_* $precision Whether to compare the date-time
+     * @param Precision $precision Whether to compare the date-time
      *     using microseconds or milliseconds
      */
     public function __construct(
         ?int $initialClockSeq = null,
         int | string | null $initialNode = null,
         ?DateTimeInterface $initialDateTime = null,
-        private readonly string $precision = self::PRECISION_USEC,
+        private readonly Precision $precision = Precision::Microsecond,
     ) {
         $this->clockSeq = $initialClockSeq ?? random_int(0, PHP_INT_MAX);
         $this->lastNode = $initialNode;
@@ -75,7 +65,7 @@ final class StatefulSequence implements Sequence
             $this->clockSeq = random_int(0, PHP_INT_MAX);
         }
 
-        if ($dateTime->format($this->precision) <= $this->lastTime->format($this->precision)) {
+        if ($dateTime->format($this->precision->value) <= $this->lastTime->format($this->precision->value)) {
             if ($this->clockSeq === PHP_INT_MAX) {
                 // Roll over the clock sequence.
                 $this->clockSeq = 0;

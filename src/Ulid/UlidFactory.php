@@ -23,10 +23,11 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
+use Ramsey\Identifier\Ulid\Utility\Format;
+use Ramsey\Identifier\Ulid\Utility\Mask;
 use Ramsey\Identifier\Ulid\Utility\Validation;
 use Ramsey\Identifier\UlidFactory as UlidFactoryInterface;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Format;
 
 use function is_int;
 use function is_string;
@@ -70,15 +71,15 @@ final class UlidFactory implements UlidFactoryInterface
      */
     public function createFromBytes(string $identifier): MaxUlid | NilUlid | Ulid
     {
-        if ($this->isMax($identifier, Format::FORMAT_BYTES)) {
+        if ($this->isMax($identifier, Format::Bytes)) {
             return new MaxUlid();
         }
 
-        if ($this->isNil($identifier, Format::FORMAT_BYTES)) {
+        if ($this->isNil($identifier, Format::Bytes)) {
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::FORMAT_BYTES) {
+        if (strlen($identifier) === Format::Bytes->value) {
             return new Ulid($identifier);
         }
 
@@ -107,15 +108,15 @@ final class UlidFactory implements UlidFactoryInterface
      */
     public function createFromHexadecimal(string $identifier): MaxUlid | NilUlid | Ulid
     {
-        if ($this->isMax($identifier, Format::FORMAT_HEX)) {
+        if ($this->isMax($identifier, Format::Hex)) {
             return new MaxUlid();
         }
 
-        if ($this->isNil($identifier, Format::FORMAT_HEX)) {
+        if ($this->isNil($identifier, Format::Hex)) {
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::FORMAT_HEX && $this->isValid($identifier, Format::FORMAT_HEX)) {
+        if (strlen($identifier) === Format::Hex->value && $this->isValid($identifier, Format::Hex)) {
             return new Ulid($identifier);
         }
 
@@ -129,7 +130,7 @@ final class UlidFactory implements UlidFactoryInterface
     {
         if (
             is_string($identifier)
-            && strspn($identifier, Format::MASK_INT) === strlen($identifier)
+            && strspn($identifier, Mask::INT) === strlen($identifier)
             && $identifier <= PHP_INT_MAX
         ) {
             $identifier = (int) $identifier;
@@ -163,15 +164,15 @@ final class UlidFactory implements UlidFactoryInterface
      */
     public function createFromString(string $identifier): MaxUlid | NilUlid | Ulid
     {
-        if ($this->isMax($identifier, Format::FORMAT_ULID)) {
+        if ($this->isMax($identifier, Format::Ulid)) {
             return new MaxUlid();
         }
 
-        if ($this->isNil($identifier, Format::FORMAT_ULID)) {
+        if ($this->isNil($identifier, Format::Ulid)) {
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::FORMAT_ULID && $this->isValid($identifier, Format::FORMAT_ULID)) {
+        if (strlen($identifier) === Format::Ulid->value && $this->isValid($identifier, Format::Ulid)) {
             return new Ulid($identifier);
         }
 

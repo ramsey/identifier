@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Nic;
 
 use Mockery;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Test\Identifier\TestCase;
@@ -15,10 +17,8 @@ use function substr;
 
 class RandomNicTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddress(): void
     {
         $nic = new RandomNic();
@@ -34,10 +34,8 @@ class RandomNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -51,10 +49,8 @@ class RandomNicTest extends TestCase
         $this->assertSame('aabbccddeeff', $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
@@ -74,10 +70,8 @@ class RandomNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
-    /**
-     * @runInSeparateProcess since the address is stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressStoredInCacheIsSomehowAnEmptyString(): void
     {
         $cache = $this->mockery(CacheInterface::class);

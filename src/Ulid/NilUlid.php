@@ -16,15 +16,15 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Ulid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid as UlidInterface;
+use Ramsey\Identifier\Ulid\Utility\Format;
 use Ramsey\Identifier\Ulid\Utility\Standard;
 
 use function sprintf;
 use function strlen;
 
-final readonly class NilUlid implements JsonSerializable, UlidInterface
+final readonly class NilUlid implements UlidInterface
 {
     use Standard;
 
@@ -35,14 +35,14 @@ final readonly class NilUlid implements JsonSerializable, UlidInterface
      */
     public function __construct(private string $ulid = self::NIL)
     {
-        $this->format = strlen($this->ulid);
+        $this->format = Format::tryFrom(strlen($ulid));
 
         if (!$this->isValid($this->ulid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid Nil ULID: "%s"', $this->ulid));
         }
     }
 
-    private function isValid(string $ulid, int $format): bool
+    private function isValid(string $ulid, ?Format $format): bool
     {
         return $this->isNil($ulid, $format);
     }

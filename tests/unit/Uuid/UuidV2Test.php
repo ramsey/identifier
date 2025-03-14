@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use DateTimeImmutable;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid\Ulid;
@@ -39,9 +40,7 @@ class UuidV2Test extends TestCase
         $this->uuidWithBytes = new Uuid\UuidV2(self::UUID_V2_BYTES);
     }
 
-    /**
-     * @dataProvider invalidUuidsProvider
-     */
+    #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -51,9 +50,9 @@ class UuidV2Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUuidsProvider(): array
+    public static function invalidUuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -240,9 +239,7 @@ class UuidV2Test extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -265,16 +262,14 @@ class UuidV2Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -332,9 +327,7 @@ class UuidV2Test extends TestCase
         $this->uuidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -351,16 +344,14 @@ class UuidV2Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -473,8 +464,6 @@ class UuidV2Test extends TestCase
     {
         $dateTime = $this->uuidWithString->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-
         // v2 UUIDs have a loss of fidelity in the timestamp.
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
     }
@@ -483,8 +472,6 @@ class UuidV2Test extends TestCase
     {
         $dateTime = $this->uuidWithHex->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
-
         // v2 UUIDs have a loss of fidelity in the timestamp.
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
     }
@@ -492,8 +479,6 @@ class UuidV2Test extends TestCase
     public function testGetDateTimeFromBytesUuid(): void
     {
         $dateTime = $this->uuidWithBytes->getDateTime();
-
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
@@ -520,9 +505,7 @@ class UuidV2Test extends TestCase
         $this->assertSame(658718019, $this->uuidWithBytes->getLocalIdentifier());
     }
 
-    /**
-     * @dataProvider valuesForLowercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\UuidV2($value);
@@ -532,9 +515,9 @@ class UuidV2Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [

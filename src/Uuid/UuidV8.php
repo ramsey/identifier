@@ -16,12 +16,11 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 /**
- * Version 8, Custom UUIDs provide an RFC 4122 compatible format for
+ * Version 8, Custom UUIDs provide an RFC 9562 compatible format for
  * experimental or vendor-specific uses
  *
  * The only requirement for version 8 UUIDs is that the version and variant bits
@@ -29,9 +28,9 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
  * according to their needs. As a result, the uniqueness of version 8 UUIDs is
  * implementation-specific and should not be assumed.
  *
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.8 rfc4122bis: UUID Version 8
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.8 RFC 9562, section 5.8. UUID Version 8
  */
-final readonly class UuidV8 implements JsonSerializable, Uuid
+final readonly class UuidV8 implements Uuid
 {
     use Standard;
 

@@ -28,8 +28,8 @@ use function substr;
 use function unpack;
 
 /**
- * A bytes generator that ensures the bytes it generates are always greater than
- * the value of the previous bytes it generated
+ * A bytes generator that ensures the bytes generated are always greater than
+ * the value of the previous bytes generated
  *
  * Code and concepts within this class are borrowed from the symfony/uid package
  * and are used under the terms of the MIT license distributed with symfony/uid.
@@ -37,8 +37,8 @@ use function unpack;
  * symfony/uid is copyright (c) Fabien Potencier.
  *
  * @link https://symfony.com/components/Uid Symfony Uid component
- * @link https://github.com/symfony/uid/blob/4f9f537e57261519808a7ce1d941490736522bbc/UuidV7.php Symfony UuidV7 class
- * @link https://github.com/symfony/uid/blob/6.2/LICENSE MIT License
+ * @link https://github.com/symfony/uid/blob/v7.2.0/UuidV7.php Symfony UuidV7 class
+ * @link https://github.com/symfony/uid/blob/7.2/LICENSE MIT License
  */
 final class MonotonicBytesGenerator implements BytesGenerator
 {
@@ -85,7 +85,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
     private function randomize(int $time): void
     {
         if (self::$seed === null) {
-            $seed = $this->bytesGenerator->bytes();
+            $seed = $this->bytesGenerator->bytes(16);
             self::$seed = $seed;
         } else {
             $seed = $this->bytesGenerator->bytes(10);
@@ -113,10 +113,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
      *
      * self::$rand holds the random part of the UUID, split into 5 x 16-bit
      * numbers for x86 portability. We increment this random part by the next
-     * 24-bit number in the self::$seedParts list and decrement
-     * self::$seedIndex.
-     *
-     * @link https://twitter.com/nicolasgrekas/status/1583356938825261061 Tweet from Nicolas Grekas
+     * 24-bit number in the self::$seedParts list and decrement self::$seedIndex.
      */
     private function increment(): int
     {
@@ -135,7 +132,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
             self::$seedIndex = 21;
         }
 
-        self::$rand[5] = 0xffff & $carry = self::$rand[5] + (self::$seedParts[self::$seedIndex--] & 0xffffff);
+        self::$rand[5] = 0xffff & $carry = self::$rand[5] + 1 + (self::$seedParts[self::$seedIndex--] & 0xffffff);
         self::$rand[4] = 0xffff & $carry = self::$rand[4] + ($carry >> 16);
         self::$rand[3] = 0xffff & $carry = self::$rand[3] + ($carry >> 16);
         self::$rand[2] = 0xffff & $carry = self::$rand[2] + ($carry >> 16);

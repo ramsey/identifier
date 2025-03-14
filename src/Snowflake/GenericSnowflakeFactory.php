@@ -21,6 +21,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\Sequence;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
@@ -55,13 +56,14 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
      * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence}
+     *     to prevent collisions; defaults to {@see StatefulSequence} with
+     *     millisecond precision
      */
     public function __construct(
         private readonly int $nodeId,
         private readonly int $epochOffset,
         private readonly Clock $clock = new SystemClock(),
-        private readonly Sequence $sequence = new StatefulSequence(precision: StatefulSequence::PRECISION_MSEC),
+        private readonly Sequence $sequence = new StatefulSequence(precision: Precision::Millisecond),
     ) {
         $this->nodeIdShifted = ($this->nodeId & 0x03ff) << 12;
     }

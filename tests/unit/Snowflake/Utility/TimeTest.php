@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Snowflake\Utility;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 use Ramsey\Identifier\Snowflake\Utility\Time;
@@ -13,9 +14,8 @@ class TimeTest extends TestCase
 {
     /**
      * @param int | numeric-string $epochOffset
-     *
-     * @dataProvider getDateTimeForSnowflakeProvider
      */
+    #[DataProvider('getDateTimeForSnowflakeProvider')]
     public function testGetDateTimeForSnowflake(
         string $snowflake,
         int | string $epochOffset,
@@ -32,9 +32,9 @@ class TimeTest extends TestCase
     }
 
     /**
-     * @return array<array{snowflake: string, epochOffset: int | string, rightShifts: int, expectedTime: string}>
+     * @return list<array{snowflake: string, epochOffset: int | string, rightShifts: int, expectedTime: string}>
      */
-    public function getDateTimeForSnowflakeProvider(): array
+    public static function getDateTimeForSnowflakeProvider(): array
     {
         return [
             [

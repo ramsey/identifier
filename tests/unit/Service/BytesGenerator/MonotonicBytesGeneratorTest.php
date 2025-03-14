@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
@@ -15,10 +17,8 @@ use function substr;
 
 class MonotonicBytesGeneratorTest extends TestCase
 {
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testBytesWithFactoryInitializedValues(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(
@@ -87,10 +87,8 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame(5, strlen($bytesGenerator->bytes(5)));
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testBytesWithMaximumRandomSeedValue(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(
@@ -108,10 +106,8 @@ class MonotonicBytesGeneratorTest extends TestCase
         }
     }
 
-    /**
-     * @runInSeparateProcess since values are stored statically on the class
-     * @preserveGlobalState disabled
-     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testBytesWithMaximumRandomSeedValueWithTimeAtMaximumNines(): void
     {
         $date = new DateTimeImmutable('@1666999999.999');

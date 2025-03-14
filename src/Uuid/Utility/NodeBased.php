@@ -31,6 +31,6 @@ trait NodeBased
     public function getNode(): string
     {
         /** @var non-empty-string */
-        return substr($this->getFormat(Format::FORMAT_HEX), -12);
+        return substr($this->getFormat(Format::Hex), -12);
     }
 }

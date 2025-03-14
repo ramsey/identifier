@@ -16,10 +16,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Utility\Format;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 use function sprintf;
@@ -29,10 +29,9 @@ use function strlen;
  * The Nil UUID is a special form of UUID that is specified to have all 128
  * bits set to zero (0)
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.7 RFC 4122: Nil UUID
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#name-nil-uuid rfc4122bis: Nil UUID
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 RFC 9562, section 5.9. Nil UUID
  */
-final readonly class NilUuid implements JsonSerializable, Uuid
+final readonly class NilUuid implements Uuid
 {
     use Standard;
 
@@ -43,7 +42,7 @@ final readonly class NilUuid implements JsonSerializable, Uuid
      */
     public function __construct(private string $uuid = self::NIL)
     {
-        $this->format = strlen($this->uuid);
+        $this->format = Format::tryFrom(strlen($this->uuid));
 
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
@@ -52,9 +51,9 @@ final readonly class NilUuid implements JsonSerializable, Uuid
 
     public function getVariant(): Variant
     {
-        // Nil UUIDs are defined according to the rules of RFC 4122, so they are
-        // an RFC 4122 variant of UUID.
-        return Variant::Rfc4122;
+        // Nil UUIDs are defined according to the rules of RFC 9562, so they are
+        // an RFC 9562 variant of UUID.
+        return Variant::Rfc9562;
     }
 
     /**
@@ -65,7 +64,7 @@ final readonly class NilUuid implements JsonSerializable, Uuid
         throw new BadMethodCall('Nil UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, int $format): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
         return $this->isNil($uuid, $format);
     }

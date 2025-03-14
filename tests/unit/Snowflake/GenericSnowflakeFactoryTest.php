@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
@@ -155,9 +156,7 @@ class GenericSnowflakeFactoryTest extends TestCase
         $this->factory->createFromHexadecimal('fffffffffffffffg');
     }
 
-    /**
-     * @dataProvider createFromIntegerInvalidIntegerProvider
-     */
+    #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -168,9 +167,9 @@ class GenericSnowflakeFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: int | string}>
+     * @return list<array{input: int | string}>
      */
-    public function createFromIntegerInvalidIntegerProvider(): array
+    public static function createFromIntegerInvalidIntegerProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -186,9 +185,8 @@ class GenericSnowflakeFactoryTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     *
-     * @dataProvider createFromIntegerProvider
      */
+    #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, int | string $expected): void
     {
         $snowflake = $this->factory->createFromInteger($value);
@@ -198,9 +196,9 @@ class GenericSnowflakeFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expected: int | numeric-string}>
+     * @return list<array{value: int | numeric-string, expected: int | numeric-string}>
      */
-    public function createFromIntegerProvider(): array
+    public static function createFromIntegerProvider(): array
     {
         return [
             ['value' => '18446744073709551615', 'expected' => '18446744073709551615'],

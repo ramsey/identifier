@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
-use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Identifier\Uuid\UuidV2;
@@ -37,28 +37,21 @@ class UuidFactoryTest extends TestCase
         $this->factory = new UuidFactory();
     }
 
-    public function testCreate(): void
-    {
-        $this->assertInstanceOf(UuidV4::class, $this->factory->create());
-    }
-
     /**
      * @param class-string<Uuid> $expectedType
-     *
-     * @dataProvider createFromBytesProvider
      */
+    #[DataProvider('createFromBytesProvider')]
     public function testCreateFromBytes(string $bytes, string $expectedType): void
     {
         $uuid = $this->factory->createFromBytes($bytes);
 
-        $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, expectedType: class-string<Uuid>}>
+     * @return list<array{bytes: non-empty-string, expectedType: class-string<Uuid>}>
      */
-    public function createFromBytesProvider(): array
+    public static function createFromBytesProvider(): array
     {
         return [
             [
@@ -108,9 +101,7 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider createFromBytesInvalidInputProvider
-     */
+    #[DataProvider('createFromBytesInvalidInputProvider')]
     public function testCreateFromBytesThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -120,9 +111,9 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: string}>
+     * @return list<array{input: string}>
      */
-    public function createFromBytesInvalidInputProvider(): array
+    public static function createFromBytesInvalidInputProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"],
@@ -136,21 +127,19 @@ class UuidFactoryTest extends TestCase
 
     /**
      * @param class-string<Uuid> $expectedType
-     *
-     * @dataProvider createFromHexadecimalProvider
      */
+    #[DataProvider('createFromHexadecimalProvider')]
     public function testCreateFromHexadecimal(string $hexadecimal, string $expectedType): void
     {
         $uuid = $this->factory->createFromHexadecimal($hexadecimal);
 
-        $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{hexadecimal: non-empty-string, expectedType: class-string<Uuid>}>
+     * @return list<array{hexadecimal: non-empty-string, expectedType: class-string<Uuid>}>
      */
-    public function createFromHexadecimalProvider(): array
+    public static function createFromHexadecimalProvider(): array
     {
         return [
             [
@@ -200,9 +189,7 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider createFromHexadecimalInvalidInputProvider
-     */
+    #[DataProvider('createFromHexadecimalInvalidInputProvider')]
     public function testCreateFromHexadecimalThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -212,9 +199,9 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: string}>
+     * @return list<array{input: string}>
      */
-    public function createFromHexadecimalInvalidInputProvider(): array
+    public static function createFromHexadecimalInvalidInputProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -241,9 +228,7 @@ class UuidFactoryTest extends TestCase
         $this->factory->createFromInteger('-9223372036854775809');
     }
 
-    /**
-     * @dataProvider createFromIntegerInvalidIntegerProvider
-     */
+    #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -254,9 +239,9 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: int | string}>
+     * @return list<array{input: int | string}>
      */
-    public function createFromIntegerInvalidIntegerProvider(): array
+    public static function createFromIntegerInvalidIntegerProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -269,21 +254,19 @@ class UuidFactoryTest extends TestCase
     /**
      * @param int | numeric-string $value
      * @param class-string<Uuid> $expectedType
-     *
-     * @dataProvider createFromIntegerProvider
      */
+    #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, string $expectedType): void
     {
         $uuid = $this->factory->createFromInteger($value);
 
-        $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{value: int | numeric-string, expectedType: class-string<Uuid>}>
+     * @return list<array{value: int | numeric-string, expectedType: class-string<Uuid>}>
      */
-    public function createFromIntegerProvider(): array
+    public static function createFromIntegerProvider(): array
     {
         return [
             [
@@ -343,21 +326,19 @@ class UuidFactoryTest extends TestCase
 
     /**
      * @param class-string<Uuid> $expectedType
-     *
-     * @dataProvider createFromStringProvider
      */
+    #[DataProvider('createFromStringProvider')]
     public function testCreateFromString(string $value, string $expectedType): void
     {
         $uuid = $this->factory->createFromString($value);
 
-        $this->assertInstanceOf(UntypedUuid::class, $uuid);
         $this->assertInstanceOf($expectedType, $uuid->toTypedUuid());
     }
 
     /**
-     * @return array<array{value: non-empty-string, expectedType: class-string<Uuid>}>
+     * @return list<array{value: non-empty-string, expectedType: class-string<Uuid>}>
      */
-    public function createFromStringProvider(): array
+    public static function createFromStringProvider(): array
     {
         return [
             [
@@ -407,9 +388,7 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider createFromStringInvalidInputProvider
-     */
+    #[DataProvider('createFromStringInvalidInputProvider')]
     public function testCreateFromStringThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
@@ -419,9 +398,9 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<array{input: string}>
+     * @return list<array{input: string}>
      */
-    public function createFromStringInvalidInputProvider(): array
+    public static function createFromStringInvalidInputProvider(): array
     {
         return [
             ['input' => "\0\0\0\0\0\0\x10\0\xa0\0\0\0\0\0\0\0"],
@@ -431,39 +410,17 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
-    public function testMax(): void
-    {
-        $this->assertInstanceOf(MaxUuid::class, $this->factory->max());
-    }
-
-    public function testNil(): void
-    {
-        $this->assertInstanceOf(NilUuid::class, $this->factory->nil());
-    }
-
-    public function testUuid1(): void
-    {
-        $this->assertInstanceOf(UuidV1::class, $this->factory->v1());
-    }
-
     public function testUuid1WithParams(): void
     {
         $uuid = $this->factory->v1('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
-        $this->assertInstanceOf(UuidV1::class, $uuid);
         $this->assertSame('00000000-0000-1000-8000-010000000000', $uuid->toString());
-    }
-
-    public function testUuid2(): void
-    {
-        $this->assertInstanceOf(UuidV2::class, $this->factory->v2());
     }
 
     public function testUuid2WithParams(): void
     {
         $uuid = $this->factory->v2(DceDomain::Org, 54321, '0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
-        $this->assertInstanceOf(UuidV2::class, $uuid);
         $this->assertSame('0000d431-0000-2000-8002-010000000000', $uuid->toString());
     }
 
@@ -476,10 +433,6 @@ class UuidFactoryTest extends TestCase
         $u3 = $this->factory->v3("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
         $u4 = $this->factory->v3($this->factory->createFromString('00000000-0000-1000-a000-000000000000'), $name);
 
-        $this->assertInstanceOf(UuidV3::class, $u1);
-        $this->assertInstanceOf(UuidV3::class, $u2);
-        $this->assertInstanceOf(UuidV3::class, $u3);
-        $this->assertInstanceOf(UuidV3::class, $u4);
         $this->assertSame('f541b9be-817b-3b15-9fb1-4647a6569948', $u1->toString());
         $this->assertTrue($u1->equals($u2));
         $this->assertTrue($u2->equals($u3));
@@ -495,11 +448,6 @@ class UuidFactoryTest extends TestCase
         $this->factory->v3('foobar', '');
     }
 
-    public function testUuid4(): void
-    {
-        $this->assertInstanceOf(UuidV4::class, $this->factory->v4());
-    }
-
     public function testUuid5(): void
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
@@ -509,10 +457,6 @@ class UuidFactoryTest extends TestCase
         $u3 = $this->factory->v5("\x00\x00\x00\x00\x00\x00\x10\x00\xa0\x00\x00\x00\x00\x00\x00\x00", $name);
         $u4 = $this->factory->v5($this->factory->createFromString('00000000-0000-1000-a000-000000000000'), $name);
 
-        $this->assertInstanceOf(UuidV5::class, $u1);
-        $this->assertInstanceOf(UuidV5::class, $u2);
-        $this->assertInstanceOf(UuidV5::class, $u3);
-        $this->assertInstanceOf(UuidV5::class, $u4);
         $this->assertSame('ed97768f-7db1-56b5-88d3-6ad216860509', $u1->toString());
         $this->assertTrue($u1->equals($u2));
         $this->assertTrue($u2->equals($u3));
@@ -528,29 +472,17 @@ class UuidFactoryTest extends TestCase
         $this->factory->v5('foobar', '');
     }
 
-    public function testUuid6(): void
-    {
-        $this->assertInstanceOf(UuidV6::class, $this->factory->v6());
-    }
-
     public function testUuid6WithParams(): void
     {
         $uuid = $this->factory->v6('0', 0, new DateTimeImmutable('1582-10-15 00:00:00'));
 
-        $this->assertInstanceOf(UuidV6::class, $uuid);
         $this->assertSame('00000000-0000-6000-8000-010000000000', $uuid->toString());
-    }
-
-    public function testUuid7(): void
-    {
-        $this->assertInstanceOf(UuidV7::class, $this->factory->v7());
     }
 
     public function testUuid7WithParams(): void
     {
         $uuid = $this->factory->v7(new DateTimeImmutable('1970-01-01 00:00:00'));
 
-        $this->assertInstanceOf(UuidV7::class, $uuid);
         $this->assertSame('00000000-0000-7', substr($uuid->toString(), 0, 15));
     }
 
@@ -558,7 +490,6 @@ class UuidFactoryTest extends TestCase
     {
         $uuid = $this->factory->v8("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
-        $this->assertInstanceOf(UuidV8::class, $uuid);
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
     }
 }

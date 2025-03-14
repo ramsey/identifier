@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use DateTimeImmutable;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
@@ -40,9 +41,7 @@ class MicrosoftGuidTest extends TestCase
         $this->guidWithBytes = new Uuid\MicrosoftGuid(self::GUID_BYTES);
     }
 
-    /**
-     * @dataProvider invalidGuidsProvider
-     */
+    #[DataProvider('invalidGuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidGuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -52,9 +51,9 @@ class MicrosoftGuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidGuidsProvider(): array
+    public static function invalidGuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -74,11 +73,13 @@ class MicrosoftGuidTest extends TestCase
             ['value' => '00000000-0000-0000-0000-00000000'],
 
             // Valid Nil UUID:
+            ['value' => '0'],
             ['value' => '00000000-0000-0000-0000-000000000000'],
             ['value' => '00000000000000000000000000000000'],
             ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
 
             // Valid Max UUID:
+            ['value' => '340282366920938463463374607431768211455'],
             ['value' => 'ffffffff-ffff-ffff-ffff-ffffffffffff'],
             ['value' => 'ffffffffffffffffffffffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"],
@@ -116,20 +117,19 @@ class MicrosoftGuidTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider microsoftGuidProvider
-     */
+    #[DataProvider('microsoftGuidProvider')]
     public function testSucceedsForMicrosoftGuids(string $value): void
     {
         $uuid = new Uuid\MicrosoftGuid($value);
 
+        /** @phpstan-ignore-next-line */
         $this->assertInstanceOf(Uuid\MicrosoftGuid::class, $uuid);
     }
 
     /**
      * @return array<array{value: string, messageValue?: string}>
      */
-    public function microsoftGuidProvider(): array
+    public static function microsoftGuidProvider(): array
     {
         return [
             // Valid version 1 UUID (with GUID bytes):
@@ -284,9 +284,7 @@ class MicrosoftGuidTest extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -309,16 +307,14 @@ class MicrosoftGuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Untested comparison type');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -386,9 +382,7 @@ class MicrosoftGuidTest extends TestCase
         $this->guidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -405,16 +399,14 @@ class MicrosoftGuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Untested equality comparison type');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -559,9 +551,7 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame('urn:uuid:' . self::GUID_STRING, $this->guidWithBytes->toUrn());
     }
 
-    /**
-     * @dataProvider valuesForLowercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\MicrosoftGuid($value);
@@ -573,7 +563,7 @@ class MicrosoftGuidTest extends TestCase
     /**
      * @return array<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [
@@ -604,9 +594,6 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame(Version::GregorianTime, $guidWithString->getVersion());
         $this->assertSame(Version::GregorianTime, $guidWithHex->getVersion());
         $this->assertSame(Version::GregorianTime, $guidWithBytes->getVersion());
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
@@ -628,9 +615,6 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame(Version::DceSecurity, $guidWithString->getVersion());
         $this->assertSame(Version::DceSecurity, $guidWithHex->getVersion());
         $this->assertSame(Version::DceSecurity, $guidWithBytes->getVersion());
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:46:37.628825', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
@@ -658,9 +642,6 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame(Version::ReorderedGregorianTime, $guidWithString->getVersion());
         $this->assertSame(Version::ReorderedGregorianTime, $guidWithHex->getVersion());
         $this->assertSame(Version::ReorderedGregorianTime, $guidWithBytes->getVersion());
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
@@ -682,9 +663,6 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame(Version::UnixTime, $guidWithString->getVersion());
         $this->assertSame(Version::UnixTime, $guidWithHex->getVersion());
         $this->assertSame(Version::UnixTime, $guidWithBytes->getVersion());
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithString);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithHex);
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTimeForGuidWithBytes);
         $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithString->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithHex->format('Y-m-d H:i:s.u'));
         $this->assertSame('3960-10-02 03:47:43.500000', $dateTimeForGuidWithBytes->format('Y-m-d H:i:s.u'));
@@ -724,17 +702,16 @@ class MicrosoftGuidTest extends TestCase
 
     /**
      * @param class-string $expectedInstanceOf
-     *
-     * @dataProvider toRfc4122Provider
      */
-    public function testToRfc4122(
+    #[DataProvider('toRfcProvider')]
+    public function testToRfc(
         string $guidValue,
         string $expectedInstanceOf,
         string $expectedUuidValue,
         bool $expectedEquality,
     ): void {
         $guid = new Uuid\MicrosoftGuid($guidValue);
-        $uuid = $guid->toRfc4122();
+        $uuid = $guid->toRfc();
 
         $this->assertInstanceOf($expectedInstanceOf, $uuid);
         $this->assertSame($expectedUuidValue, $uuid->toString());
@@ -744,7 +721,7 @@ class MicrosoftGuidTest extends TestCase
     /**
      * @return array<string, array{guidValue: string, expectedInstanceOf: class-string, expectedUuidValue: string, expectedEquality: bool}>
      */
-    public function toRfc4122Provider(): array
+    public static function toRfcProvider(): array
     {
         return [
             'v1 UUID to UUID' => [
@@ -813,7 +790,6 @@ class MicrosoftGuidTest extends TestCase
                 'expectedUuidValue' => 'ffffffff-ffff-3fff-8fff-ffffffffffff',
                 'expectedEquality' => false,
             ],
-
             'v4 GUID to UUID' => [
                 'guidValue' => 'ffffffff-ffff-4fff-cfff-ffffffffffff',
                 'expectedInstanceOf' => Uuid\UuidV4::class,

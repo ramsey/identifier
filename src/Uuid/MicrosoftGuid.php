@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Brick\Math\BigInteger;
 use DateTimeImmutable;
-use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\NodeBasedUuid;
@@ -39,35 +39,36 @@ use function strlen;
 use function substr;
 
 /**
- * Microsoft GUIDs are identical to RFC 4122 UUIDs, except for the endianness of
+ * Microsoft GUIDs are identical to RFC 9562 UUIDs, except for the endianness of
  * the most-significant 8 bytes when stored or transmitted in binary form. While
- * RFC 4122 UUIDs use "network," or big-endian, byte order for all 16 bytes,
+ * RFC 9562 UUIDs use "network," or big-endian, byte order for all 16 bytes,
  * Microsoft GUIDs store the most-significant 8 bytes in "native," or
  * little-endian, byte order and the least-significant 8 bytes in network byte
  * order.
  *
  * For backwards compatibility, Microsoft GUIDs may be encoded using the
  * "reserved Microsoft" {@see Variant variant} bits. However, in practice, they
- * are often encoded as standard RFC 4122 variant UUIDs and stored using the
+ * are often encoded as standard RFC 9562 variant UUIDs and stored using the
  * Microsoft GUID byte order. Since it is impossible to determine whether the
- * bytes for an RFC 4122 UUID are stored in the standard network byte order or
+ * bytes for an RFC 9562 UUID are stored in the standard network byte order or
  * using Microsoft's GUID byte order, applications using Microsoft GUIDs must
  * take care to keep track of this information or, alternately, encode the UUIDs
  * as "reserved Microsoft" variant UUIDs.
  *
- * > ⚠️ WARNING: This class supports both "reserved Microsoft" and RFC 4122
- * > variants. Please understand that, if using this class with RFC 4122 variants,
+ * > [!WARNING]
+ * > This class supports both "reserved Microsoft" and RFC 9562 variants.
+ * > Please understand that, if using this class with RFC 9562 variants,
  * > bytes will be treated as if they are in Microsoft's GUID byte order. This
  * > might cause problems if your application receives UUID bytes stored or
  * > transmitted in network byte order.
  *
  * There is no difference between the string and hexadecimal representations of
- * Microsoft GUIDs and RFC 4122 UUIDs.
+ * Microsoft GUIDs and RFC 9562 UUIDs.
  *
  * @link https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid#remarks Micosoft documentation remarks on GUIDs
  * @link https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-7.0#remarks Microsoft documentation remarks on GUID byte order
  */
-final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard {
         compareTo as private baseCompareTo;
@@ -89,7 +90,7 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
      */
     public function __construct(private string $uuid)
     {
-        $this->format = strlen($this->uuid);
+        $this->format = Format::tryFrom(strlen($this->uuid));
         $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
         $this->version = Version::tryFrom((int) $this->getVersionFromUuid($this->uuid, $this->format, true));
 
@@ -183,7 +184,7 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
     public function getLocalIdentifier(): int
     {
         return match ($this->getVersion()) {
-            Version::DceSecurity => (int) hexdec(substr($this->getFormat(Format::FORMAT_STRING), 0, 8)),
+            Version::DceSecurity => (int) hexdec(substr($this->getFormat(Format::String), 0, 8)),
             default => throw new BadMethodCall(sprintf(
                 'Version %d GUIDs do not contain local identifier values',
                 $this->getVersion()->value,
@@ -222,13 +223,13 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
     }
 
     /**
-     * Returns an RFC 4122 variant version of this Microsoft GUID
+     * Returns an RFC 9562 variant version of this Microsoft GUID
      *
-     * The new UUID returned will be of the RFC 4122 variant. If this GUID is
+     * The new UUID returned will be of the RFC 9562 variant. If this GUID is
      * of the "reserved Microsoft" variant, this means some bits will change,
      * and the two values will not be equal.
      */
-    public function toRfc4122(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
+    public function toRfc(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
         $bytes = $this->swapBytes($this->toBytes());
         $bytes = $this->binary->applyVersionAndVariant($bytes, $this->getVersion());
@@ -246,41 +247,51 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
     }
 
     /**
-     * @param 36 | 32 | 16 $formatToReturn
-     *
      * @return non-empty-string
      */
-    protected function getFormat(int $formatToReturn, ?string $uuid = null): string
+    protected function getFormat(?Format $formatToReturn, ?string $uuid = null): string
     {
-        /** @var 36 | 32 | 16 $formatOfUuid */
-        $formatOfUuid = $uuid ? strlen($uuid) : $this->format;
+        $formatOfUuid = null;
+        if ($uuid !== null) {
+            $formatOfUuid = Format::tryFrom(strlen($uuid));
+        }
+
+        $formatOfUuid ??= $this->format;
         $uuid ??= $this->uuid;
+
+        if ($formatOfUuid === null) {
+            throw new InvalidArgument('Invalid UUID format');
+        }
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
-            Format::FORMAT_STRING => match ($formatOfUuid) {
-                Format::FORMAT_STRING, Format::FORMAT_HEX => $this->baseGetFormat(Format::FORMAT_STRING, $uuid),
-                Format::FORMAT_BYTES => $this->toStringFromHex(bin2hex($this->swapBytes($uuid))),
+            Format::Bytes => match ($formatOfUuid) {
+                Format::Bytes => $uuid,
+                Format::Hex => $this->swapBytes((string) hex2bin($uuid)),
+                Format::String => $this->swapBytes((string) hex2bin(str_replace('-', '', $uuid))),
             },
-            Format::FORMAT_HEX => match ($formatOfUuid) {
-                Format::FORMAT_STRING, Format::FORMAT_HEX => $this->baseGetFormat(Format::FORMAT_HEX, $uuid),
-                Format::FORMAT_BYTES => bin2hex($this->swapBytes($uuid)),
+            Format::Hex => match ($formatOfUuid) {
+                Format::Bytes => bin2hex($this->swapBytes($uuid)),
+                Format::Hex, Format::String => $this->baseGetFormat(Format::Hex, $uuid),
             },
-            Format::FORMAT_BYTES => match ($formatOfUuid) {
-                Format::FORMAT_STRING => $this->swapBytes((string) hex2bin(str_replace('-', '', $uuid))),
-                Format::FORMAT_HEX => $this->swapBytes((string) hex2bin($uuid)),
-                Format::FORMAT_BYTES => $uuid,
+            Format::String => match ($formatOfUuid) {
+                Format::Bytes => $this->toStringFromHex(bin2hex($this->swapBytes($uuid))),
+                Format::Hex, Format::String => $this->baseGetFormat(Format::String, $uuid),
+            },
+            default => match ($formatOfUuid) {
+                Format::Bytes => BigInteger::fromBytes($this->swapBytes($uuid), false)->toBase(10),
+                Format::Hex, Format::String => $this->baseGetFormat(null, $uuid),
             },
         };
     }
 
-    private function isValid(string $uuid, int $format): bool
+    private function isValid(string $uuid, ?Format $format): bool
     {
-        // We'll assume RFC 4122 as valid GUIDs and trust that, if a developer
+        // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer
         // is using MicrosoftGuid, it's because they know the bytes of the time
         // fields are stored in "native" (little-endian) byte order.
         return $this->hasValidFormat($uuid, $format)
-            && ($this->variant === Variant::ReservedMicrosoft || $this->variant === Variant::Rfc4122)
+            && ($this->variant === Variant::ReservedMicrosoft || $this->variant === Variant::Rfc9562)
             && $this->version !== null;
     }
 
@@ -295,10 +306,9 @@ final readonly class MicrosoftGuid implements JsonSerializable, NodeBasedUuid, T
     private function swapBytes(string $bytes): string
     {
         if (strlen($bytes) !== 16) {
-            throw new BadMethodCall('swapBytes() called out of context'); // @codeCoverageIgnore
+            throw new BadMethodCall('swapBytes() called out of context');
         }
 
-        /** @var non-empty-string */
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]
             . $bytes[5] . $bytes[4]
             . $bytes[7] . $bytes[6]

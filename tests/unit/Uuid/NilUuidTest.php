@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
@@ -36,9 +38,7 @@ class NilUuidTest extends TestCase
         $this->nilUuidWithBytes = new Uuid\NilUuid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
     }
 
-    /**
-     * @dataProvider invalidUuidsProvider
-     */
+    #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -48,9 +48,9 @@ class NilUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUuidsProvider(): array
+    public static function invalidUuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -207,9 +207,7 @@ class NilUuidTest extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -235,16 +233,14 @@ class NilUuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Untested comparison type');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -303,9 +299,7 @@ class NilUuidTest extends TestCase
         $this->nilUuid->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -324,16 +318,14 @@ class NilUuidTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Untested comparison type');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -456,9 +448,8 @@ class NilUuidTest extends TestCase
     /**
      * Yes, yes. There's no real "lowercase" conversion with a Nil UUID, but
      * we're also testing the equality/comparison check with hex/bytes.
-     *
-     * @dataProvider valuesForLowercaseConversionTestProvider
      */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\NilUuid($value);
@@ -468,9 +459,9 @@ class NilUuidTest extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [

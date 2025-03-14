@@ -45,7 +45,7 @@ trait Validation
             return false;
         }
 
-        if (strspn($snowflake, Format::MASK_INT) !== strlen($snowflake)) {
+        if (strspn($snowflake, Mask::INT) !== strlen($snowflake)) {
             return false;
         }
 

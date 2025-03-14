@@ -17,8 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier;
 
 /**
- * Describes the interface of a UUID that includes a node identifier
- * (or MAC address)
+ * A UUID that includes a node identifier (or MAC address)
  */
 interface NodeBasedUuid extends Uuid
 {
@@ -29,11 +28,9 @@ interface NodeBasedUuid extends Uuid
      * If the node has the multicast bit set, this indicates it was randomly
      * generated, rather than identifying a host machine.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.1.6 RFC 4122: Node
-     * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.1 rfc4122bis: UUID Version 1
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.6 rfc4122bis: UUID Version 6
-     * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.1 RFC 9562, section 5.1. UUID Version 1
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.6 RFC 9562, section 5.6. UUID Version 6
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
      *
      * @return non-empty-string
      */

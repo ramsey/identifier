@@ -4,24 +4,23 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Uuid\NamespaceId;
 use Ramsey\Identifier\Uuid\UuidV1;
 use Ramsey\Test\Identifier\TestCase;
 
 class NamespaceIdTest extends TestCase
 {
-    /**
-     * @dataProvider provideEnumCases
-     */
+    #[DataProvider('provideEnumCases')]
     public function testEnumCases(string $value, string $expectedCase): void
     {
         $this->assertSame($expectedCase, NamespaceId::from($value)->name);
     }
 
     /**
-     * @return array<array{value: string, expectedCase: string}>
+     * @return list<array{value: string, expectedCase: string}>
      */
-    public function provideEnumCases(): array
+    public static function provideEnumCases(): array
     {
         return [
             [
@@ -43,9 +42,7 @@ class NamespaceIdTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider uuidProvider
-     */
+    #[DataProvider('uuidProvider')]
     public function testUuid(NamespaceId $ns, string $expected): void
     {
         $uuid = $ns->uuid();
@@ -55,9 +52,9 @@ class NamespaceIdTest extends TestCase
     }
 
     /**
-     * @return array<array{ns: NamespaceId, expected: string}>
+     * @return list<array{ns: NamespaceId, expected: string}>
      */
-    public function uuidProvider(): array
+    public static function uuidProvider(): array
     {
         return [
             [

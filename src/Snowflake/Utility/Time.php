@@ -19,6 +19,7 @@ namespace Ramsey\Identifier\Snowflake\Utility;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeImmutable;
+use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Snowflake;
 
 use function abs;
@@ -37,6 +38,8 @@ final class Time
      *
      * @param int | numeric-string $epochOffset The number of milliseconds from
      *     the Unix Epoch to offset the starting epoch for this Snowflake
+     *
+     * @throws OutOfRange
      */
     public function getDateTimeForSnowflake(
         Snowflake $snowflake,

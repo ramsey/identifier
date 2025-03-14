@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\Format;
+use Ramsey\Identifier\Uuid\Utility\Mask;
 
 use function bin2hex;
 use function dechex;
@@ -31,10 +31,9 @@ use function unpack;
 
 /**
  * A NIC that provides a pre-determined MAC address and sets the multicast bit,
- * according to RFC 4122, section 4.5
+ * according to RFC 9562, section 6.10.
  *
- * @link https://www.rfc-editor.org/rfc/rfc4122.html#section-4.5 RFC 4122: Node IDs that Do Not Identify the Host
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-6.9 rfc4122bis: UUIDs that Do Not Identify the Host
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
  */
 final readonly class StaticNic implements Nic
 {
@@ -80,7 +79,7 @@ final readonly class StaticNic implements Nic
      */
     private function parseHexadecimalAddress(string $address): string
     {
-        if (strspn($address, Format::MASK_HEX) !== strlen($address) || strlen($address) > 12) {
+        if (strspn($address, Mask::HEX) !== strlen($address) || strlen($address) > 12) {
             throw new InvalidArgument('Address must be a 48-bit integer or hexadecimal string');
         }
 

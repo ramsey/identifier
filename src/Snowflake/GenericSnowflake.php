@@ -17,12 +17,13 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
-use Identifier\BinaryIdentifier;
-use JsonSerializable;
+use Identifier\BytesIdentifier;
+use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\Format;
+use Ramsey\Identifier\Snowflake\Utility\Mask;
 use Ramsey\Identifier\Snowflake\Utility\Time;
 use Ramsey\Identifier\Snowflake\Utility\Validation;
 use Stringable;
@@ -35,11 +36,10 @@ use function sprintf;
 use function strlen;
 use function strspn;
 
-final readonly class GenericSnowflake implements JsonSerializable, Snowflake
+final readonly class GenericSnowflake implements Snowflake
 {
     use Validation;
 
-    private Format $format;
     private Time $time;
 
     /**
@@ -60,14 +60,10 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
             throw new InvalidArgument(sprintf('Invalid Snowflake: "%s"', $this->snowflake));
         }
 
-        if (
-            !is_int($this->epochOffset)
-            && strspn($this->epochOffset, Format::MASK_INT) !== strlen($this->epochOffset)
-        ) {
+        if (!is_int($this->epochOffset) && strspn($this->epochOffset, Mask::INT) !== strlen($this->epochOffset)) {
             throw new InvalidArgument(sprintf('Invalid epoch offset: "%s"', $this->epochOffset));
         }
 
-        $this->format = new Format();
         $this->time = new Time();
     }
 
@@ -105,7 +101,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function compareTo(mixed $other): int
     {
-        if ($other instanceof BinaryIdentifier) {
+        if ($other instanceof BytesIdentifier) {
             return $this->toBytes() <=> $other->toBytes();
         }
 
@@ -128,6 +124,9 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
         }
     }
 
+    /**
+     * @throws OutOfRange
+     */
     public function getDateTime(): DateTimeImmutable
     {
         return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, 22);
@@ -146,8 +145,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toBytes(): string
     {
-        /** @var non-empty-string */
-        return $this->format->format($this->snowflake, Format::FORMAT_BYTES);
+        return Format::formatBytes($this->snowflake);
     }
 
     /**
@@ -155,8 +153,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toHexadecimal(): string
     {
-        /** @var non-empty-string */
-        return $this->format->format($this->snowflake, Format::FORMAT_HEX);
+        return Format::formatHex($this->snowflake);
     }
 
     /**
@@ -164,8 +161,7 @@ final readonly class GenericSnowflake implements JsonSerializable, Snowflake
      */
     public function toInteger(): int | string
     {
-        /** @var int<0, max> | numeric-string */
-        return $this->format->format($this->snowflake, Format::FORMAT_INT);
+        return Format::formatInt($this->snowflake);
     }
 
     /**

@@ -16,7 +16,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Utility\NodeBased;
@@ -27,9 +26,9 @@ use Ramsey\Identifier\Uuid\Utility\TimeBased;
  * Reordered time, or version 6, UUIDs include timestamp, clock sequence, and
  * node values that are combined into a 128-bit unsigned integer
  *
- * @link https://www.ietf.org/archive/id/draft-ietf-uuidrev-rfc4122bis-00.html#section-5.6 rfc4122bis: UUID Version 6
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.6 RFC 9562, section 5.6. UUID Version 6
  */
-final readonly class UuidV6 implements JsonSerializable, NodeBasedUuid, TimeBasedUuid
+final readonly class UuidV6 implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard;
     use NodeBased;

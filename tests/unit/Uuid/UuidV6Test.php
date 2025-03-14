@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
-use DateTimeImmutable;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid\Ulid;
@@ -38,9 +39,7 @@ class UuidV6Test extends TestCase
         $this->uuidWithBytes = new Uuid\UuidV6(self::UUID_V6_BYTES);
     }
 
-    /**
-     * @dataProvider invalidUuidsProvider
-     */
+    #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -50,9 +49,9 @@ class UuidV6Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, messageValue?: string}>
+     * @return list<array{value: string, messageValue?: string}>
      */
-    public function invalidUuidsProvider(): array
+    public static function invalidUuidsProvider(): array
     {
         return [
             ['value' => ''],
@@ -234,9 +233,7 @@ class UuidV6Test extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -259,16 +256,14 @@ class UuidV6Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -326,9 +321,7 @@ class UuidV6Test extends TestCase
         $this->uuidWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -345,16 +338,14 @@ class UuidV6Test extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -463,9 +454,7 @@ class UuidV6Test extends TestCase
         $this->assertSame('urn:uuid:' . self::UUID_V6_STRING, $this->uuidWithBytes->toUrn());
     }
 
-    /**
-     * @dataProvider valuesForLowercaseConversionTestProvider
-     */
+    #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
         $uuid = new Uuid\UuidV6($value);
@@ -475,9 +464,9 @@ class UuidV6Test extends TestCase
     }
 
     /**
-     * @return array<array{value: string, expected: string}>
+     * @return list<array{value: string, expected: string}>
      */
-    public function valuesForLowercaseConversionTestProvider(): array
+    public static function valuesForLowercaseConversionTestProvider(): array
     {
         return [
             [
@@ -499,7 +488,6 @@ class UuidV6Test extends TestCase
     {
         $dateTime = $this->uuidWithString->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
@@ -507,7 +495,6 @@ class UuidV6Test extends TestCase
     {
         $dateTime = $this->uuidWithHex->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
@@ -515,7 +502,6 @@ class UuidV6Test extends TestCase
     {
         $dateTime = $this->uuidWithBytes->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('3960-10-02 03:47:43.500627', $dateTime->format('Y-m-d H:i:s.u'));
     }
 

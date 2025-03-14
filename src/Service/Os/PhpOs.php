@@ -18,6 +18,7 @@ namespace Ramsey\Identifier\Service\Os;
 
 use Ramsey\Identifier\Exception\MissingFunction;
 
+use function escapeshellcmd;
 use function file_get_contents;
 use function function_exists;
 use function glob;
@@ -38,19 +39,19 @@ class PhpOs implements Os
     public function __construct()
     {
         if (!function_exists('shell_exec')) {
-            throw new MissingFunction('shell_exec() is not available on this system'); // @codeCoverageIgnore
+            throw new MissingFunction('shell_exec() is not available on this system');
         }
 
         if (!function_exists('file_get_contents')) {
-            throw new MissingFunction('file_get_contents() is not available on this system'); // @codeCoverageIgnore
+            throw new MissingFunction('file_get_contents() is not available on this system');
         }
 
         if (!function_exists('glob')) {
-            throw new MissingFunction('glob() is not available on this system'); // @codeCoverageIgnore
+            throw new MissingFunction('glob() is not available on this system');
         }
 
         if (!function_exists('is_readable')) {
-            throw new MissingFunction('is_readable() is not available on this system'); // @codeCoverageIgnore
+            throw new MissingFunction('is_readable() is not available on this system');
         }
     }
 
@@ -82,6 +83,8 @@ class PhpOs implements Os
 
     public function run(string $command): string
     {
+        $command = escapeshellcmd($command);
+
         // Redirect stderr to stdout.
         $command .= ' 2>&1';
 

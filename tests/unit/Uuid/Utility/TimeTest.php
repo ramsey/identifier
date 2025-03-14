@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid\Utility;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Utility\Time;
 use Ramsey\Identifier\Uuid\UuidFactory;
@@ -16,9 +17,7 @@ use function sprintf;
 
 class TimeTest extends TestCase
 {
-    /**
-     * @dataProvider timeBytesForGregorianEpochProvider
-     */
+    #[DataProvider('timeBytesForGregorianEpochProvider')]
     public function testGetTimeBytesForGregorianEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
         $bytes = (new Time())->getTimeBytesForGregorianEpoch($dateTime);
@@ -31,9 +30,9 @@ class TimeTest extends TestCase
     }
 
     /**
-     * @return array<array{dateTime: DateTimeInterface, expectedBytes: non-empty-string}>
+     * @return list<array{dateTime: DateTimeInterface, expectedBytes: non-empty-string}>
      */
-    public function timeBytesForGregorianEpochProvider(): array
+    public static function timeBytesForGregorianEpochProvider(): array
     {
         return [
             [
@@ -77,9 +76,7 @@ class TimeTest extends TestCase
         (new Time())->getTimeBytesForGregorianEpoch($dateTime);
     }
 
-    /**
-     * @dataProvider getDateTimeForUuidProvider
-     */
+    #[DataProvider('getDateTimeForUuidProvider')]
     public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
     {
         $uuid = (new UuidFactory())->createFromString($uuid);
@@ -91,7 +88,7 @@ class TimeTest extends TestCase
     /**
      * @return array<string, array{uuid: string, expectedTime: string}>
      */
-    public function getDateTimeForUuidProvider(): array
+    public static function getDateTimeForUuidProvider(): array
     {
         return [
             'v1 UUID' => [

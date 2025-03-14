@@ -17,17 +17,17 @@ declare(strict_types=1);
 namespace Ramsey\Identifier;
 
 use DateTimeInterface;
-use Identifier\BinaryIdentifierFactory;
+use Identifier\BytesIdentifierFactory;
 use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * Describes the interface of a factory for creating Snowflake IDs
+ * A factory for creating ULIDs
  */
 interface UlidFactory extends
-    BinaryIdentifierFactory,
+    BytesIdentifierFactory,
     DateTimeIdentifierFactory,
     IntegerIdentifierFactory,
     StringIdentifierFactory

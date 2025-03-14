@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -13,9 +14,8 @@ class FixedBytesGeneratorTest extends TestCase
      * @param non-empty-string $bytes
      * @param int<1, max> $length
      * @param non-empty-string $expectedBytes
-     *
-     * @dataProvider bytesProvider
      */
+    #[DataProvider('bytesProvider')]
     public function testBytes(string $bytes, int $length, string $expectedBytes): void
     {
         $bytesGenerator = new FixedBytesGenerator($bytes);
@@ -24,9 +24,9 @@ class FixedBytesGeneratorTest extends TestCase
     }
 
     /**
-     * @return array<array{bytes: non-empty-string, length: int<1, max>, expectedBytes: non-empty-string}>
+     * @return list<array{bytes: non-empty-string, length: int<1, max>, expectedBytes: non-empty-string}>
      */
-    public function bytesProvider(): array
+    public static function bytesProvider(): array
     {
         return [
             [

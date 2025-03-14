@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use Exception;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
@@ -35,9 +37,8 @@ class GenericSnowflakeTest extends TestCase
 
     /**
      * @param int | numeric-string $value
-     *
-     * @dataProvider invalidSnowflakesProvider
      */
+    #[DataProvider('invalidSnowflakesProvider')]
     public function testConstructorThrowsExceptionForInvalidSnowflake(int | string $value): void
     {
         $this->expectException(InvalidArgument::class);
@@ -47,9 +48,9 @@ class GenericSnowflakeTest extends TestCase
     }
 
     /**
-     * @return array<array{value: int | string}>
+     * @return list<array{value: int | string}>
      */
-    public function invalidSnowflakesProvider(): array
+    public static function invalidSnowflakesProvider(): array
     {
         return [
             ['value' => ''],
@@ -128,9 +129,7 @@ class GenericSnowflakeTest extends TestCase
         unserialize($serialized);
     }
 
-    /**
-     * @dataProvider compareToProvider
-     */
+    #[DataProvider('compareToProvider')]
     public function testCompareTo(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -150,16 +149,14 @@ class GenericSnowflakeTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function compareToProvider(): array
+    public static function compareToProvider(): array
     {
         return [
             'with null' => [null, Comparison::GreaterThan],
@@ -215,9 +212,7 @@ class GenericSnowflakeTest extends TestCase
         $this->snowflakeWithString->compareTo([]);
     }
 
-    /**
-     * @dataProvider equalsProvider
-     */
+    #[DataProvider('equalsProvider')]
     public function testEquals(mixed $other, Comparison $comparison): void
     {
         switch ($comparison) {
@@ -232,16 +227,14 @@ class GenericSnowflakeTest extends TestCase
 
                 break;
             default:
-                $this->markAsRisky();
-
-                break;
+                throw new Exception('Invalid comparison');
         }
     }
 
     /**
      * @return array<string, array{mixed, Comparison}>
      */
-    public function equalsProvider(): array
+    public static function equalsProvider(): array
     {
         return [
             'with null' => [null, Comparison::NotEqual],
@@ -326,7 +319,6 @@ class GenericSnowflakeTest extends TestCase
         $snowflake = (new GenericSnowflakeFactory(123, 0))->createFromDateTime($dateTime);
         $snowflakeDate = $snowflake->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $snowflakeDate);
         $this->assertNotSame($dateTime, $snowflakeDate);
         $this->assertSame($dateTime->format('Y-m-d H:i:s.v'), $snowflakeDate->format('Y-m-d H:i:s.v'));
     }
@@ -335,7 +327,6 @@ class GenericSnowflakeTest extends TestCase
     {
         $dateTime = $this->snowflakeWithString->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2092-05-16 09:11:50.551', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
@@ -343,7 +334,6 @@ class GenericSnowflakeTest extends TestCase
     {
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2092-05-16 09:11:50.551', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
@@ -361,7 +351,6 @@ class GenericSnowflakeTest extends TestCase
         $snowflake = new GenericSnowflake('18446744073709551615', self::EPOCH_OFFSET);
         $dateTime = $snowflake->getDateTime();
 
-        $this->assertInstanceOf(DateTimeImmutable::class, $dateTime);
         $this->assertSame('2162-01-22 00:59:26.103', $dateTime->format('Y-m-d H:i:s.v'));
     }
 }

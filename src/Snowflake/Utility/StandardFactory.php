@@ -32,13 +32,13 @@ use function unpack;
 trait StandardFactory
 {
     /**
-     * @return int | numeric-string
+     * @return int<0, max> | numeric-string
      *
      * @throws InvalidArgument
      */
     private function convertFromBytes(string $identifier): int | string
     {
-        if (strlen($identifier) !== Format::FORMAT_BYTES) {
+        if (strlen($identifier) !== Format::Bytes->value) {
             throw new InvalidArgument('Identifier must be an 8-byte string');
         }
 
@@ -56,16 +56,13 @@ trait StandardFactory
     }
 
     /**
-     * @return int | numeric-string
+     * @return int<0, max> | numeric-string
      *
      * @throws InvalidArgument
      */
     private function convertFromHexadecimal(string $identifier): int | string
     {
-        if (
-            strlen($identifier) !== Format::FORMAT_HEX
-            || strspn($identifier, Format::MASK_HEX) !== strlen($identifier)
-        ) {
+        if (strlen($identifier) !== Format::Hex->value || strspn($identifier, Mask::HEX) !== strlen($identifier)) {
             throw new InvalidArgument('Identifier must be a 16-character hexadecimal string');
         }
 
