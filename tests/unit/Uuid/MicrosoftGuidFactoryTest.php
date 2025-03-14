@@ -177,4 +177,32 @@ class MicrosoftGuidFactoryTest extends TestCase
             ],
         ];
     }
+
+    public function testCreateFromHexadecimal(): void
+    {
+        $uuid = $this->factory->createFromHexadecimal('27433d43011d4a6ac1611550863792c9');
+
+        $this->assertSame('27433d43-011d-4a6a-c161-1550863792c9', $uuid->toString());
+    }
+
+    #[DataProvider('createFromHexadecimalThrowsExceptionProvider')]
+    public function testCreateFromHexadecimalThrowsExceptionForInvalidHexadecimal(string $hexadecimal): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
+
+        $this->factory->createFromHexadecimal($hexadecimal);
+    }
+
+    /**
+     * @return array<string, array{hexadecimal: string}>
+     */
+    public static function createFromHexadecimalThrowsExceptionProvider(): array
+    {
+        return [
+            'too short' => ['hexadecimal' => '27433d43011d4a6ac1611550863792c'],
+            'too long' => ['hexadecimal' => '27433d43011d4a6ac1611550863792c9a'],
+            'not hexadecimal' => ['hexadecimal' => '27433d43011d4a6ac1611550863792cg'],
+        ];
+    }
 }

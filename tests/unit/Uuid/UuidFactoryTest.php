@@ -448,6 +448,13 @@ class UuidFactoryTest extends TestCase
         $this->factory->v3('foobar', '');
     }
 
+    public function testUuid4(): void
+    {
+        $uuid = $this->factory->v4();
+
+        $this->assertSame(Uuid\Version::Random, $uuid->getVersion());
+    }
+
     public function testUuid5(): void
     {
         $name = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
@@ -491,5 +498,26 @@ class UuidFactoryTest extends TestCase
         $uuid = $this->factory->v8("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
 
         $this->assertSame('00000000-0000-8000-8000-000000000000', $uuid->toString());
+    }
+
+    public function testCreate(): void
+    {
+        $uuid = $this->factory->create();
+
+        $this->assertSame(Uuid\Version::Random, $uuid->getVersion());
+    }
+
+    public function testMax(): void
+    {
+        $uuid = $this->factory->max();
+
+        $this->assertSame('ffffffff-ffff-ffff-ffff-ffffffffffff', $uuid->toString());
+    }
+
+    public function testNil(): void
+    {
+        $uuid = $this->factory->nil();
+
+        $this->assertSame('00000000-0000-0000-0000-000000000000', $uuid->toString());
     }
 }

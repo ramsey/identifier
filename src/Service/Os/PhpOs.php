@@ -39,19 +39,19 @@ class PhpOs implements Os
     public function __construct()
     {
         if (!function_exists('shell_exec')) {
-            throw new MissingFunction('shell_exec() is not available on this system');
+            throw new MissingFunction('shell_exec() is not available on this system'); // @codeCoverageIgnore
         }
 
         if (!function_exists('file_get_contents')) {
-            throw new MissingFunction('file_get_contents() is not available on this system');
+            throw new MissingFunction('file_get_contents() is not available on this system'); // @codeCoverageIgnore
         }
 
         if (!function_exists('glob')) {
-            throw new MissingFunction('glob() is not available on this system');
+            throw new MissingFunction('glob() is not available on this system'); // @codeCoverageIgnore
         }
 
         if (!function_exists('is_readable')) {
-            throw new MissingFunction('is_readable() is not available on this system');
+            throw new MissingFunction('is_readable() is not available on this system'); // @codeCoverageIgnore
         }
     }
 

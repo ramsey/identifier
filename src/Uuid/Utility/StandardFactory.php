@@ -24,7 +24,6 @@ use Throwable;
 
 use function sprintf;
 use function str_pad;
-use function strlen;
 
 use const STR_PAD_LEFT;
 
@@ -50,7 +49,7 @@ trait StandardFactory
      */
     private function createFromBytesInternal(string $identifier): Uuid
     {
-        if (strlen($identifier) === Format::Bytes->value) {
+        if ($this->hasValidFormat($identifier, Format::Bytes)) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
@@ -63,10 +62,7 @@ trait StandardFactory
      */
     private function createFromHexadecimalInternal(string $identifier): Uuid
     {
-        if (
-            strlen($identifier) === Format::Hex->value
-            && $this->hasValidFormat($identifier, Format::Hex)
-        ) {
+        if ($this->hasValidFormat($identifier, Format::Hex)) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }
@@ -105,10 +101,7 @@ trait StandardFactory
      */
     private function createFromStringInternal(string $identifier): Uuid
     {
-        if (
-            strlen($identifier) === Format::String->value
-            && $this->hasValidFormat($identifier, Format::String)
-        ) {
+        if ($this->hasValidFormat($identifier, Format::String)) {
             /** @var Uuid */
             return new ($this->getUuidClass())($identifier);
         }

@@ -163,7 +163,7 @@ class UntypedUuidTest extends TestCase
             'string' => '00000000-0000-0000-0000-000000000000',
             'bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             'hex' => '00000000000000000000000000000000',
-            'int' => '0',
+            'int' => 0,
             'urn' => 'urn:uuid:00000000-0000-0000-0000-000000000000',
             'node' => BadMethodCall::class,
             'date' => BadMethodCall::class,

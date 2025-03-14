@@ -16,16 +16,13 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid\Utility;
 
-use Brick\Math\BigInteger;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
-use Throwable;
 
 use function count;
 use function explode;
 use function hexdec;
-use function str_pad;
 use function strlen;
 use function strspn;
 use function strtolower;
@@ -33,7 +30,6 @@ use function substr;
 use function unpack;
 
 use const PHP_INT_MIN;
-use const STR_PAD_LEFT;
 
 /**
  * This internal trait provides common validation functionality for RFC 9562 UUIDs
@@ -181,15 +177,6 @@ trait Validation
             && strlen($format[3]) === 4
             && strlen($format[4]) === 12
             && strspn($uuid, "-$mask") === Format::String->value;
-    }
-
-    private function fromIntToBytes(string $value): ?string
-    {
-        try {
-            return str_pad(BigInteger::fromBase($value, 10)->toBytes(false), 16, "\0", STR_PAD_LEFT);
-        } catch (Throwable) {
-            return null;
-        }
     }
 
     private function getLocalDomainFromBytes(string $bytes): int

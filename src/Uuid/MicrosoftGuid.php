@@ -257,11 +257,9 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         }
 
         $formatOfUuid ??= $this->format;
-        $uuid ??= $this->uuid;
+        assert($formatOfUuid !== null);
 
-        if ($formatOfUuid === null) {
-            throw new InvalidArgument('Invalid UUID format');
-        }
+        $uuid ??= $this->uuid;
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
@@ -305,9 +303,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      */
     private function swapBytes(string $bytes): string
     {
-        if (strlen($bytes) !== 16) {
-            throw new BadMethodCall('swapBytes() called out of context');
-        }
+        assert(strlen($bytes) === 16);
 
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]
             . $bytes[5] . $bytes[4]

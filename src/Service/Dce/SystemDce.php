@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Dce;
 
+use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
-use Psr\SimpleCache\InvalidArgumentException;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
@@ -85,7 +85,7 @@ final class SystemDce implements Dce
         if (self::$groupId === null) {
             try {
                 $groupId = $this->getSystemGidFromCache();
-            } catch (InvalidArgumentException $cacheException) {
+            } catch (CacheException $cacheException) {
                 $groupId = null;
             }
 
@@ -127,7 +127,7 @@ final class SystemDce implements Dce
         if (self::$userId === null) {
             try {
                 $userId = $this->getSystemUidFromCache();
-            } catch (InvalidArgumentException $cacheException) {
+            } catch (CacheException $cacheException) {
                 $userId = null;
             }
 
@@ -182,7 +182,7 @@ final class SystemDce implements Dce
     /**
      * @return int<0, max> | null
      *
-     * @throws InvalidArgumentException
+     * @throws CacheException
      */
     private function getSystemGidFromCache(): ?int
     {
@@ -215,7 +215,7 @@ final class SystemDce implements Dce
     /**
      * @return int<0, max> | null
      *
-     * @throws InvalidArgumentException
+     * @throws CacheException
      */
     private function getSystemUidFromCache(): ?int
     {

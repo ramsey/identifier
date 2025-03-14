@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenSequence;
@@ -231,5 +232,33 @@ class UuidV2FactoryTest extends TestCase
         $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
 
         $this->factory->createFromString('ffff-ffffffff-2fff-8f00-ffffffffffff');
+    }
+
+    public function testCreateFromHexadecimal(): void
+    {
+        $uuid = $this->factory->createFromHexadecimal('27433d43011d2a6a91001550863792c9');
+
+        $this->assertSame('27433d43-011d-2a6a-9100-1550863792c9', $uuid->toString());
+    }
+
+    #[DataProvider('createFromHexadecimalThrowsExceptionProvider')]
+    public function testCreateFromHexadecimalThrowsExceptionForInvalidHexadecimal(string $hexadecimal): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
+
+        $this->factory->createFromHexadecimal($hexadecimal);
+    }
+
+    /**
+     * @return array<string, array{hexadecimal: string}>
+     */
+    public static function createFromHexadecimalThrowsExceptionProvider(): array
+    {
+        return [
+            'too short' => ['hexadecimal' => '27433d43011d2a6a91001550863792c'],
+            'too long' => ['hexadecimal' => '27433d43011d2a6a91001550863792c9a'],
+            'not hexadecimal' => ['hexadecimal' => '27433d43011d2a6a91001550863792cg'],
+        ];
     }
 }

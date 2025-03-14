@@ -36,6 +36,8 @@ use function strlen;
 use function strtolower;
 use function substr;
 
+use const PHP_INT_MAX;
+
 /**
  * This internal trait provides functionality common to all types of UUIDs
  *
@@ -166,8 +168,14 @@ trait Standard
      */
     public function toInteger(): int | string
     {
-        /** @var numeric-string */
-        return $this->getFormat(null);
+        /** @var numeric-string $uuidInteger */
+        $uuidInteger = $this->getFormat(null);
+
+        if ($uuidInteger <= PHP_INT_MAX) {
+            return (int) $uuidInteger;
+        }
+
+        return $uuidInteger;
     }
 
     /**
@@ -197,11 +205,9 @@ trait Standard
         }
 
         $formatOfUuid ??= $this->format;
-        $uuid ??= $this->uuid;
+        assert($formatOfUuid !== null);
 
-        if ($formatOfUuid === null) {
-            throw new InvalidArgument('Invalid UUID format');
-        }
+        $uuid ??= $this->uuid;
 
         /** @var non-empty-string */
         return match ($formatToReturn) {

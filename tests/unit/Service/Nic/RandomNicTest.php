@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Nic;
 
+use Exception;
 use Mockery;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -89,5 +92,21 @@ class RandomNicTest extends TestCase
         // This second assertion tests that the cache get() and set() methods
         // are not called again, and that we still get the same address.
         $this->assertSame($address, $nic->address());
+    }
+
+    public function testAddressThrowsExceptionFromCache(): void
+    {
+        $exception = new class extends Exception implements CacheException {
+        };
+
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->expects('get')->with('__ramsey_id_random_addr')->andThrow($exception);
+
+        $nic = new RandomNic($cache);
+
+        $this->expectException(MacAddressNotFound::class);
+        $this->expectExceptionMessage('Unable to retrieve MAC address from cache');
+
+        $nic->address();
     }
 }

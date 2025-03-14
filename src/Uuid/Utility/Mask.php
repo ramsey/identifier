@@ -31,6 +31,9 @@ final class Mask
      */
     public const INT = '0123456789';
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }

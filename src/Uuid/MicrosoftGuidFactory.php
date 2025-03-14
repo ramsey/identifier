@@ -146,6 +146,9 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
         return $this->createFromStringInternal($identifier);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getVersion(): never
     {
         throw new BadMethodCall('getVersion() called out of context');

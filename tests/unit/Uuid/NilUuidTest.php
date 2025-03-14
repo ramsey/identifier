@@ -431,10 +431,10 @@ class NilUuidTest extends TestCase
 
     public function testToInteger(): void
     {
-        $this->assertSame('0', $this->nilUuid->toInteger());
-        $this->assertSame('0', $this->nilUuidWithString->toInteger());
-        $this->assertSame('0', $this->nilUuidWithHex->toInteger());
-        $this->assertSame('0', $this->nilUuidWithBytes->toInteger());
+        $this->assertSame(0, $this->nilUuid->toInteger());
+        $this->assertSame(0, $this->nilUuidWithString->toInteger());
+        $this->assertSame(0, $this->nilUuidWithHex->toInteger());
+        $this->assertSame(0, $this->nilUuidWithBytes->toInteger());
     }
 
     public function testToUrn(): void

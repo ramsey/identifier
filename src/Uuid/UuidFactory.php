@@ -317,6 +317,9 @@ final class UuidFactory implements UuidFactoryInterface
         return $this->v8Factory->create($bytes);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     protected function getVersion(): never
     {
         throw new BadMethodCall('method called out of context');

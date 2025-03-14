@@ -403,4 +403,18 @@ class UlidFactoryTest extends TestCase
             ['bytes' => "\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33"],
         ];
     }
+
+    public function testMax(): void
+    {
+        $ulid = $this->factory->max();
+
+        $this->assertSame('7ZZZZZZZZZZZZZZZZZZZZZZZZZ', $ulid->toString());
+    }
+
+    public function testNil(): void
+    {
+        $ulid = $this->factory->nil();
+
+        $this->assertSame('00000000000000000000000000', $ulid->toString());
+    }
 }

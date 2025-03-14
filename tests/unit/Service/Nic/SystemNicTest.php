@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Nic;
 
+use Exception;
 use Mockery;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
@@ -352,5 +355,21 @@ class SystemNicTest extends TestCase
 
         // Called again returns the same MAC address.
         $this->assertSame($address, $nic->address());
+    }
+
+    public function testAddressThrowsExceptionFromCache(): void
+    {
+        $exception = new class extends Exception implements CacheException {
+        };
+
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->expects('get')->with('__ramsey_id_system_addr')->andThrow($exception);
+
+        $nic = new SystemNic($cache);
+
+        $this->expectException(MacAddressNotFound::class);
+        $this->expectExceptionMessage('Unable to retrieve MAC address from cache');
+
+        $nic->address();
     }
 }

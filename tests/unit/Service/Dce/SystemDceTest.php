@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Dce;
 
+use Exception;
 use Hamcrest\Type\IsInteger;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\SystemDce;
@@ -75,6 +77,25 @@ class SystemDceTest extends TestCase
 
         // Assert subsequent calls do not attempt to fetch from cache.
         $this->assertSame($groupId, $dce->groupId());
+    }
+
+    public function testGroupIdFromCacheThrowsException(): void
+    {
+        $exception = new class extends Exception implements CacheException {
+        };
+
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->expects('get')->with('__ramsey_id_gid')->andThrow($exception);
+
+        $dce = new SystemDce(cache: $cache);
+
+        $this->expectException(DceIdentifierNotFound::class);
+        $this->expectExceptionMessage(
+            'Unable to get a group identifier using the system DCE service; please provide a custom identifier '
+            . 'or use a different DCE service class',
+        );
+
+        $dce->groupId();
     }
 
     #[RunInSeparateProcess]
@@ -266,6 +287,25 @@ class SystemDceTest extends TestCase
 
         // Assert subsequent calls do not attempt to fetch from cache.
         $this->assertSame($userId, $dce->userId());
+    }
+
+    public function testUserIdFromCacheThrowsException(): void
+    {
+        $exception = new class extends Exception implements CacheException {
+        };
+
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->expects('get')->with('__ramsey_id_uid')->andThrow($exception);
+
+        $dce = new SystemDce(cache: $cache);
+
+        $this->expectException(DceIdentifierNotFound::class);
+        $this->expectExceptionMessage(
+            'Unable to get a user identifier using the system DCE service; please provide a custom identifier '
+            . 'or use a different DCE service class',
+        );
+
+        $dce->userId();
     }
 
     #[RunInSeparateProcess]

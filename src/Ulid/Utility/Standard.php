@@ -17,7 +17,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid\Utility;
 
 use Brick\Math\BigInteger;
-use Brick\Math\Exception\IntegerOverflowException;
 use DateTimeImmutable;
 use Identifier\BytesIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -46,6 +45,7 @@ use function strtr;
 use function substr;
 use function unpack;
 
+use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
@@ -192,17 +192,14 @@ trait Standard
      */
     public function toInteger(): int | string
     {
-        $bigInteger = BigInteger::fromArbitraryBase(
-            $this->getFormat(Format::Ulid),
-            self::CROCKFORD32_ALPHABET,
-        );
+        /** @var numeric-string $ulidInteger */
+        $ulidInteger = $this->getFormat(null);
 
-        try {
-            return $bigInteger->toInt();
-        } catch (IntegerOverflowException) {
-            /** @var numeric-string */
-            return (string) $bigInteger;
+        if ($ulidInteger <= PHP_INT_MAX) {
+            return (int) $ulidInteger;
         }
+
+        return $ulidInteger;
     }
 
     /**
@@ -258,11 +255,9 @@ trait Standard
         }
 
         $formatOfUlid ??= $this->format;
-        $ulid ??= $this->ulid;
+        assert($formatOfUlid !== null);
 
-        if ($formatOfUlid === null) {
-            throw new InvalidArgument('Invalid ULID format');
-        }
+        $ulid ??= $this->ulid;
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
