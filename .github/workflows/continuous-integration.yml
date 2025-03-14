@@ -123,9 +123,13 @@ jobs:
             pkg install -y php84 php84-bcmath php84-composer php84-dom \
               php84-gmp php84-mbstring php84-pecl-uuid php84-tokenizer \
               php84-xml php84-xmlreader php84-xmlwriter php84-zip php84-zlib
-            pecl install xdebug
+            pkg install -y autoconf automake libtool m4 gcc
+            curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
+            chmod +x /usr/local/bin/pie
+            pie install xdebug/xdebug
             sh -c 'echo "zend_extension=xdebug" > /usr/local/etc/php/ext-20-xdebug.ini'
             sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
+            php --version
           run: "composer dev:test:coverage:ci"
 
       - name: "Publish coverage report to Codecov"
