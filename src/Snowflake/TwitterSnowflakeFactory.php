@@ -27,6 +27,8 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
+use function sprintf;
+
 /**
  * A factory that generates Snowflakes according to Twitter's rules
  *
@@ -85,9 +87,10 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
         $milliseconds = (int) $dateTime->format('Uv') - Epoch::Twitter->value;
 
         if ($milliseconds < 0) {
-            throw new InvalidArgument(
-                'Timestamp may not be earlier than the Twitter epoch, 2010-11-04 01:42:54.657 +00:00',
-            );
+            throw new InvalidArgument(sprintf(
+                'Timestamp may not be earlier than the Twitter epoch, %s',
+                Epoch::Twitter->toIso8601(),
+            ));
         }
 
         $sequence = $this->sequence->value($this->machineId, $dateTime) & 0x0fff;

@@ -27,6 +27,8 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
+use function sprintf;
+
 /**
  * A factory that generates Snowflakes according to Instagram's rules
  *
@@ -84,9 +86,10 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
         $milliseconds = (int) $dateTime->format('Uv') - Epoch::Instagram->value;
 
         if ($milliseconds < 0) {
-            throw new InvalidArgument(
-                'Timestamp may not be earlier than the Instagram epoch, 2011-08-24 21:07:01.721 +00:00',
-            );
+            throw new InvalidArgument(sprintf(
+                'Timestamp may not be earlier than the Instagram epoch, %s',
+                Epoch::Instagram->toIso8601(),
+            ));
         }
 
         $sequence = $this->sequence->value($this->shardId, $dateTime) & 0x03ff;

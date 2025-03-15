@@ -94,7 +94,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
                 'Timestamp may not be earlier than the epoch, %s',
-                $this->getEpochDate()->format('Y-m-d H:i:s.v P'),
+                $this->getEpochDate()->format(Epoch::ISO_EXTENDED_FORMAT),
             ));
         }
 

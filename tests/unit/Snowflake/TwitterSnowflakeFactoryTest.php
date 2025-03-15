@@ -229,7 +229,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Twitter epoch, 2010-11-04 01:42:54.657 +00:00',
+            'Timestamp may not be earlier than the Twitter epoch, 2010-11-04T01:42:54.657Z',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('2010-11-04 01:42:54.656'));

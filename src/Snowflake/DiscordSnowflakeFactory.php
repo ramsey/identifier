@@ -27,6 +27,8 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
+use function sprintf;
+
 /**
  * A factory that generates Snowflakes according to Discord's rules
  *
@@ -88,9 +90,10 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
         $milliseconds = (int) $dateTime->format('Uv') - Epoch::Discord->value;
 
         if ($milliseconds < 0) {
-            throw new InvalidArgument(
-                'Timestamp may not be earlier than the Discord epoch, 2015-01-01 00:00:00.000 +00:00',
-            );
+            throw new InvalidArgument(sprintf(
+                'Timestamp may not be earlier than the Discord epoch, %s',
+                Epoch::Discord->toIso8601(),
+            ));
         }
 
         $sequence = $this->sequence->value($this->workerId + $this->processId, $dateTime) & 0x0fff;

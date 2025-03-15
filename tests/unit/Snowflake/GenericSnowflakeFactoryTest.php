@@ -256,7 +256,7 @@ class GenericSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the epoch, 2000-01-01 00:00:00.000 +00:00',
+            'Timestamp may not be earlier than the epoch, 2000-01-01T00:00:00.000Z',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('1999-12-31 23:59:59.999'));

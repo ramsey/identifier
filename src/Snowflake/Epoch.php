@@ -16,6 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Snowflake;
 
+use DateTimeImmutable;
+
 /**
  * Well-known Snowflake epochs
  */
@@ -56,4 +58,17 @@ enum Epoch: int
      * @link https://github.com/twitter-archive/snowflake/blob/snowflake-2010/src/main/scala/com/twitter/service/snowflake/IdWorker.scala#L25 Twitter Snowflakes
      */
     case Twitter = 1288834974657;
+
+    /**
+     * ISO 8601 extended format (includes millisecond precision)
+     */
+    public const ISO_EXTENDED_FORMAT = 'Y-m-d\TH:i:s.vp';
+
+    /**
+     * Returns the epoch as a date-time string in ISO 8601 extended format.
+     */
+    public function toIso8601(): string
+    {
+        return (new DateTimeImmutable('@' . $this->value / 1000))->format(self::ISO_EXTENDED_FORMAT);
+    }
 }
