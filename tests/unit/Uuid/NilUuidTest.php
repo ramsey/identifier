@@ -379,10 +379,10 @@ class NilUuidTest extends TestCase
 
     public function testGetVariant(): void
     {
-        $this->assertSame(Variant::Rfc4122, $this->nilUuid->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->nilUuidWithString->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->nilUuidWithHex->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->nilUuidWithBytes->getVariant());
+        $this->assertSame(Variant::Ncs, $this->nilUuid->getVariant());
+        $this->assertSame(Variant::Ncs, $this->nilUuidWithString->getVariant());
+        $this->assertSame(Variant::Ncs, $this->nilUuidWithHex->getVariant());
+        $this->assertSame(Variant::Ncs, $this->nilUuidWithBytes->getVariant());
     }
 
     public function testGetVersionThrowsException(): void

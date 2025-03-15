@@ -49,11 +49,16 @@ final readonly class MaxUuid implements Uuid
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * According to RFC 9562 sections {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 5.10}, the Max UUID falls within the range
+     * of the future variant.
+     */
     public function getVariant(): Variant
     {
-        // Max UUIDs are defined according to the rules of RFC 9562, so they are
-        // an RFC 9562 variant of UUID.
-        return Variant::Rfc9562;
+        return Variant::Future;
     }
 
     /**

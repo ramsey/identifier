@@ -383,10 +383,10 @@ class MaxUuidTest extends TestCase
 
     public function testGetVariant(): void
     {
-        $this->assertSame(Variant::Rfc4122, $this->maxUuid->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->maxUuidWithString->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->maxUuidWithHex->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->maxUuidWithBytes->getVariant());
+        $this->assertSame(Variant::Future, $this->maxUuid->getVariant());
+        $this->assertSame(Variant::Future, $this->maxUuidWithString->getVariant());
+        $this->assertSame(Variant::Future, $this->maxUuidWithHex->getVariant());
+        $this->assertSame(Variant::Future, $this->maxUuidWithBytes->getVariant());
     }
 
     public function testGetVersionThrowsException(): void

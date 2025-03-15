@@ -49,11 +49,16 @@ final readonly class NilUuid implements Uuid
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * According to RFC 9562 sections {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 5.9}, the Nil UUID falls within the range
+     * of the Apollo NCS variant.
+     */
     public function getVariant(): Variant
     {
-        // Nil UUIDs are defined according to the rules of RFC 9562, so they are
-        // an RFC 9562 variant of UUID.
-        return Variant::Rfc9562;
+        return Variant::Ncs;
     }
 
     /**
