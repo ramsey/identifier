@@ -122,25 +122,25 @@ class BinaryTest extends TestCase
             [
                 'bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
                 'version' => null,
-                'variant' => Variant::ReservedNcs,
+                'variant' => Variant::Ncs,
                 'expectedBytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             ],
             [
                 'bytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11",
                 'version' => null,
-                'variant' => Variant::ReservedNcs,
+                'variant' => Variant::Ncs,
                 'expectedBytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11",
             ],
             [
                 'bytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88",
                 'version' => null,
-                'variant' => Variant::ReservedNcs,
+                'variant' => Variant::Ncs,
                 'expectedBytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\x08\x88\x88\x88\x88\x88\x88\x88",
             ],
             [
                 'bytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99",
                 'version' => null,
-                'variant' => Variant::ReservedNcs,
+                'variant' => Variant::Ncs,
                 'expectedBytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\x19\x99\x99\x99\x99\x99\x99\x99",
             ],
             [

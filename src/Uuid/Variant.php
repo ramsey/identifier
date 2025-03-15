@@ -39,9 +39,10 @@ namespace Ramsey\Identifier\Uuid;
 enum Variant: int
 {
     /**
-     * Reserved, NCS backward compatibility
+     * Reserved. Network Computing System (NCS) backward compatibility, and includes Nil UUID as per
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 RFC 9562, section 5.9}.
      */
-    case ReservedNcs = 0;
+    case Ncs = 0;
 
     /**
      * The UUID layout specified in RFC 9562

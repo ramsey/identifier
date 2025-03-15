@@ -454,9 +454,9 @@ class NonstandardUuidTest extends TestCase
 
     public function testGetVariant(): void
     {
-        $this->assertSame(Variant::ReservedNcs, $this->uuidWithString->getVariant());
-        $this->assertSame(Variant::ReservedNcs, $this->uuidWithHex->getVariant());
-        $this->assertSame(Variant::ReservedNcs, $this->uuidWithBytes->getVariant());
+        $this->assertSame(Variant::Ncs, $this->uuidWithString->getVariant());
+        $this->assertSame(Variant::Ncs, $this->uuidWithHex->getVariant());
+        $this->assertSame(Variant::Ncs, $this->uuidWithBytes->getVariant());
     }
 
     public function testGetVersionThrowsException(): void
@@ -529,14 +529,14 @@ class NonstandardUuidTest extends TestCase
     public static function allVariantsProvider(): array
     {
         return [
-            'string: reserved NCS: 0' => ['27433d43-011d-0a6a-0161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 1' => ['27433d43-011d-0a6a-1161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 2' => ['27433d43-011d-0a6a-2161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 3' => ['27433d43-011d-0a6a-3161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 4' => ['27433d43-011d-0a6a-4161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 5' => ['27433d43-011d-0a6a-5161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 6' => ['27433d43-011d-0a6a-6161-1550863792c9', Variant::ReservedNcs],
-            'string: reserved NCS: 7' => ['27433d43-011d-0a6a-7161-1550863792c9', Variant::ReservedNcs],
+            'string: reserved NCS: 0' => ['27433d43-011d-0a6a-0161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 1' => ['27433d43-011d-0a6a-1161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 2' => ['27433d43-011d-0a6a-2161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 3' => ['27433d43-011d-0a6a-3161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 4' => ['27433d43-011d-0a6a-4161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 5' => ['27433d43-011d-0a6a-5161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 6' => ['27433d43-011d-0a6a-6161-1550863792c9', Variant::Ncs],
+            'string: reserved NCS: 7' => ['27433d43-011d-0a6a-7161-1550863792c9', Variant::Ncs],
             'string: RFC 4122: 8, version 0' => ['27433d43-011d-0a6a-8161-1550863792c9', Variant::Rfc4122],
             'string: RFC 4122: 9, version 0' => ['27433d43-011d-0a6a-9161-1550863792c9', Variant::Rfc4122],
             'string: RFC 4122: a, version 0' => ['27433d43-011d-0a6a-a161-1550863792c9', Variant::Rfc4122],
@@ -553,14 +553,14 @@ class NonstandardUuidTest extends TestCase
             'string: reserved future: e' => ['27433d43-011d-0a6a-e161-1550863792c9', Variant::ReservedFuture],
             'string: reserved future: f' => ['27433d43-011d-0a6a-f161-1550863792c9', Variant::ReservedFuture],
 
-            'hex: reserved NCS: 0' => ['27433d43011d0a6a01611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 1' => ['27433d43011d0a6a11611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 2' => ['27433d43011d0a6a21611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 3' => ['27433d43011d0a6a31611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 4' => ['27433d43011d0a6a41611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 5' => ['27433d43011d0a6a51611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 6' => ['27433d43011d0a6a61611550863792c9', Variant::ReservedNcs],
-            'hex: reserved NCS: 7' => ['27433d43011d0a6a71611550863792c9', Variant::ReservedNcs],
+            'hex: reserved NCS: 0' => ['27433d43011d0a6a01611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 1' => ['27433d43011d0a6a11611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 2' => ['27433d43011d0a6a21611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 3' => ['27433d43011d0a6a31611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 4' => ['27433d43011d0a6a41611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 5' => ['27433d43011d0a6a51611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 6' => ['27433d43011d0a6a61611550863792c9', Variant::Ncs],
+            'hex: reserved NCS: 7' => ['27433d43011d0a6a71611550863792c9', Variant::Ncs],
             'hex: RFC 4122: 8, version 0' => ['27433d43011d0a6a81611550863792c9', Variant::Rfc4122],
             'hex: RFC 4122: 9, version 0' => ['27433d43011d0a6a91611550863792c9', Variant::Rfc4122],
             'hex: RFC 4122: a, version 0' => ['27433d43011d0a6aa1611550863792c9', Variant::Rfc4122],
@@ -579,35 +579,35 @@ class NonstandardUuidTest extends TestCase
 
             'bytes: reserved NCS: 0' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x01\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 1' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x11\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 2' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x21\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 3' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x31\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 4' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x41\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 5' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x51\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 6' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x61\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: reserved NCS: 7' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x71\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedNcs,
+                Variant::Ncs,
             ],
             'bytes: RFC 4122: 8, version 0' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x81\x61\x15\x50\x86\x37\x92\xc9",

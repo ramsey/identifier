@@ -283,7 +283,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedNonstandard = [
             'type' => NonstandardUuid::class,
-            'variant' => Variant::ReservedNcs,
+            'variant' => Variant::Ncs,
             'version' => CannotDetermineVersion::class,
             'json' => '"88b46f48-2fc8-3ce3-1056-b1b6a94e4207"',
             'string' => '88b46f48-2fc8-3ce3-1056-b1b6a94e4207',

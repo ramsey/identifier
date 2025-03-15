@@ -59,7 +59,7 @@ trait Validation
             $value >> 1 === 7 => Variant::ReservedFuture,
             $value >> 1 === 6 => Variant::ReservedMicrosoft,
             $value >> 2 === 2 => Variant::Rfc9562,
-            default => Variant::ReservedNcs,
+            default => Variant::Ncs,
         };
     }
 
