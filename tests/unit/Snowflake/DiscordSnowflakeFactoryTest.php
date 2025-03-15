@@ -12,7 +12,6 @@ use Ramsey\Identifier\Service\Clock\FrozenSequence;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
-use function gmdate;
 use function sprintf;
 
 class DiscordSnowflakeFactoryTest extends TestCase
@@ -205,9 +204,15 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
         for ($i = 0; $i < 25; $i++) {
             $snowflake = $this->factory->create();
-            $now = gmdate('Y-m-d H:i');
-            $this->assertTrue($snowflake->compareTo($previous) > 0);
-            $this->assertSame($now, $snowflake->getDateTime()->format('Y-m-d H:i'));
+            $this->assertTrue(
+                $snowflake->compareTo($previous) > 0,
+                sprintf(
+                    'Expected %s to be greater than %s at iteration %d',
+                    $snowflake->toInteger(),
+                    $previous->toInteger(),
+                    $i,
+                ),
+            );
             $previous = $snowflake;
         }
     }
@@ -220,8 +225,16 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
         for ($i = 0; $i < 25; $i++) {
             $snowflake = $this->factory->createFromDateTime($dateTime);
-            $this->assertTrue($snowflake->compareTo($previous) > 0);
-            $this->assertSame($dateTime->format('Y-m-d H:i'), $snowflake->getDateTime()->format('Y-m-d H:i'));
+            $this->assertTrue(
+                $snowflake->compareTo($previous) > 0,
+                sprintf(
+                    'Expected %s to be greater than %s at iteration %d',
+                    $snowflake->toInteger(),
+                    $previous->toInteger(),
+                    $i,
+                ),
+            );
+            $this->assertSame($dateTime->format('Y-m-d H:i:s'), $snowflake->getDateTime()->format('Y-m-d H:i:s'));
             $previous = $snowflake;
         }
     }
