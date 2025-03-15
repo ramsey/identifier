@@ -146,25 +146,25 @@ class BinaryTest extends TestCase
             [
                 'bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
                 'version' => null,
-                'variant' => Variant::ReservedMicrosoft,
+                'variant' => Variant::Microsoft,
                 'expectedBytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\xc0\x00\x00\x00\x00\x00\x00\x00",
             ],
             [
                 'bytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11",
                 'version' => null,
-                'variant' => Variant::ReservedMicrosoft,
+                'variant' => Variant::Microsoft,
                 'expectedBytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\xd1\x11\x11\x11\x11\x11\x11\x11",
             ],
             [
                 'bytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88",
                 'version' => null,
-                'variant' => Variant::ReservedMicrosoft,
+                'variant' => Variant::Microsoft,
                 'expectedBytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\xc8\x88\x88\x88\x88\x88\x88\x88",
             ],
             [
                 'bytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99",
                 'version' => null,
-                'variant' => Variant::ReservedMicrosoft,
+                'variant' => Variant::Microsoft,
                 'expectedBytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\xd9\x99\x99\x99\x99\x99\x99\x99",
             ],
             [

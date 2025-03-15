@@ -289,7 +289,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         // is using MicrosoftGuid, it's because they know the bytes of the time
         // fields are stored in "native" (little-endian) byte order.
         return $this->hasValidFormat($uuid, $format)
-            && ($this->variant === Variant::ReservedMicrosoft || $this->variant === Variant::Rfc9562)
+            && ($this->variant === Variant::Microsoft || $this->variant === Variant::Rfc9562)
             && $this->version !== null;
     }
 

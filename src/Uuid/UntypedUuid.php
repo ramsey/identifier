@@ -124,9 +124,9 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     {
         $variant = $this->getVariant();
 
-        if ($this->version === null && ($variant === Variant::Rfc9562 || $variant === Variant::ReservedMicrosoft)) {
+        if ($this->version === null && ($variant === Variant::Rfc9562 || $variant === Variant::Microsoft)) {
             $this->version = Version::tryFrom(
-                (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::ReservedMicrosoft),
+                (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::Microsoft),
             );
         }
 
@@ -169,7 +169,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
                 $version === Version::V6 && $variant === Variant::Rfc9562 => new UuidV6($this->uuid),
                 $version === Version::V7 && $variant === Variant::Rfc9562 => new UuidV7($this->uuid),
                 $version === Version::V8 && $variant === Variant::Rfc9562 => new UuidV8($this->uuid),
-                $version !== null && $variant === Variant::ReservedMicrosoft => new MicrosoftGuid($this->uuid),
+                $version !== null && $variant === Variant::Microsoft => new MicrosoftGuid($this->uuid),
                 $this->isMax($this->uuid, $this->format) => new MaxUuid(),
                 $this->isNil($this->uuid, $this->format) => new NilUuid(),
                 default => new NonstandardUuid($this->uuid),

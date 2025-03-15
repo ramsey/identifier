@@ -80,11 +80,11 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
             return false;
         }
 
-        if ($this->variant !== Variant::Rfc9562 && $this->variant !== Variant::ReservedMicrosoft) {
+        if ($this->variant !== Variant::Rfc9562 && $this->variant !== Variant::Microsoft) {
             return true;
         }
 
-        $version = $this->getVersionFromUuid($uuid, $format, $this->variant === Variant::ReservedMicrosoft);
+        $version = $this->getVersionFromUuid($uuid, $format, $this->variant === Variant::Microsoft);
 
         // Version 2 UUIDs that do not have a proper domain are nonstandard.
         if ($version === 2 && $this->getLocalDomainFromUuid($uuid, $format) === null) {

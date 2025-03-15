@@ -548,8 +548,8 @@ class NonstandardUuidTest extends TestCase
             'string: RFC 4122: 8, version d' => ['27433d43-011d-da6a-8161-1550863792c9', Variant::Rfc4122],
             'string: RFC 4122: 8, version e' => ['27433d43-011d-ea6a-8161-1550863792c9', Variant::Rfc4122],
             'string: RFC 4122: 8, version f' => ['27433d43-011d-fa6a-8161-1550863792c9', Variant::Rfc4122],
-            'string: reserved Microsoft: c' => ['27433d43-011d-0a6a-c161-1550863792c9', Variant::ReservedMicrosoft],
-            'string: reserved Microsoft: d' => ['27433d43-011d-0a6a-d161-1550863792c9', Variant::ReservedMicrosoft],
+            'string: reserved Microsoft: c' => ['27433d43-011d-0a6a-c161-1550863792c9', Variant::Microsoft],
+            'string: reserved Microsoft: d' => ['27433d43-011d-0a6a-d161-1550863792c9', Variant::Microsoft],
             'string: reserved future: e' => ['27433d43-011d-0a6a-e161-1550863792c9', Variant::ReservedFuture],
             'string: reserved future: f' => ['27433d43-011d-0a6a-f161-1550863792c9', Variant::ReservedFuture],
 
@@ -572,8 +572,8 @@ class NonstandardUuidTest extends TestCase
             'hex: RFC 4122: 8, version d' => ['27433d43011dda6a81611550863792c9', Variant::Rfc4122],
             'hex: RFC 4122: 8, version e' => ['27433d43011dea6a81611550863792c9', Variant::Rfc4122],
             'hex: RFC 4122: 8, version f' => ['27433d43011dfa6a81611550863792c9', Variant::Rfc4122],
-            'hex: reserved Microsoft: c' => ['27433d43011d0a6ac1611550863792c9', Variant::ReservedMicrosoft],
-            'hex: reserved Microsoft: d' => ['27433d43011d0a6ad1611550863792c9', Variant::ReservedMicrosoft],
+            'hex: reserved Microsoft: c' => ['27433d43011d0a6ac1611550863792c9', Variant::Microsoft],
+            'hex: reserved Microsoft: d' => ['27433d43011d0a6ad1611550863792c9', Variant::Microsoft],
             'hex: reserved future: e' => ['27433d43011d0a6ae1611550863792c9', Variant::ReservedFuture],
             'hex: reserved future: f' => ['27433d43011d0a6af1611550863792c9', Variant::ReservedFuture],
 
@@ -655,11 +655,11 @@ class NonstandardUuidTest extends TestCase
             ],
             'bytes: reserved Microsoft: c' => [
                 "\x27\x43\x3d\x43\x01\x1d\x6a\x0a\xc1\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedMicrosoft,
+                Variant::Microsoft,
             ],
             'bytes: reserved Microsoft: d' => [
                 "\x27\x43\x3d\x43\x01\x1d\x6a\x0a\xd1\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedMicrosoft,
+                Variant::Microsoft,
             ],
             'bytes: reserved future: e' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xe1\x61\x15\x50\x86\x37\x92\xc9",

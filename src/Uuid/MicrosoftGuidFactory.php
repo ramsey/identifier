@@ -61,7 +61,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     public function create(): MicrosoftGuid
     {
         $bytes = $this->bytesGenerator->bytes();
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random, Variant::ReservedMicrosoft);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random, Variant::Microsoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));
     }
@@ -123,7 +123,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
         $bytes = $this->binary->applyVersionAndVariant(
             $uuid->toBytes(),
             $uuid->getVersion(),
-            Variant::ReservedMicrosoft,
+            Variant::Microsoft,
         );
 
         return new MicrosoftGuid($this->swapBytes($bytes));

@@ -33,7 +33,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     {
         $guid = $this->factory->create();
 
-        $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
+        $this->assertSame(Variant::Microsoft, $guid->getVariant());
         $this->assertSame(Version::Random, $guid->getVersion());
     }
 
@@ -42,7 +42,7 @@ class MicrosoftGuidFactoryTest extends TestCase
         $guid = $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\x3f\xcf\xff\xff\xff\xff\xff\xff\xff");
 
         $this->assertSame('ffffffff-ffff-3fff-cfff-ffffffffffff', $guid->toString());
-        $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
+        $this->assertSame(Variant::Microsoft, $guid->getVariant());
         $this->assertSame(Version::HashMd5, $guid->getVersion());
     }
 
@@ -69,7 +69,7 @@ class MicrosoftGuidFactoryTest extends TestCase
         $guid = $this->factory->createFromInteger('340282366920937934556022683022290583551');
 
         $this->assertSame('ffffffff-ffff-8fff-dfff-ffffffffffff', $guid->toString());
-        $this->assertSame(Variant::ReservedMicrosoft, $guid->getVariant());
+        $this->assertSame(Variant::Microsoft, $guid->getVariant());
         $this->assertSame(Version::Custom, $guid->getVersion());
     }
 

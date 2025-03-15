@@ -50,9 +50,9 @@ enum Variant: int
     case Rfc9562 = 2;
 
     /**
-     * Reserved, Microsoft Corporation backward compatibility
+     * Reserved. Microsoft Corporation backward compatibility.
      */
-    case ReservedMicrosoft = 6;
+    case Microsoft = 6;
 
     /**
      * Reserved for future definition
