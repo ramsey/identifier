@@ -80,7 +80,7 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
             return false;
         }
 
-        if ($this->variant !== Variant::Rfc9562 && $this->variant !== Variant::Microsoft) {
+        if ($this->variant !== Variant::Rfc && $this->variant !== Variant::Microsoft) {
             return true;
         }
 

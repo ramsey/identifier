@@ -106,7 +106,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     {
         if ($this->variant === null) {
             if ($this->isMax($this->uuid, $this->format) || $this->isNil($this->uuid, $this->format)) {
-                $this->variant = Variant::Rfc9562;
+                $this->variant = Variant::Rfc;
             } else {
                 $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
             }
@@ -124,7 +124,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     {
         $variant = $this->getVariant();
 
-        if ($this->version === null && ($variant === Variant::Rfc9562 || $variant === Variant::Microsoft)) {
+        if ($this->version === null && ($variant === Variant::Rfc || $variant === Variant::Microsoft)) {
             $this->version = Version::tryFrom(
                 (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::Microsoft),
             );
@@ -153,8 +153,8 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
             $variant = $this->getVariant();
 
             $this->typedUuid = match (true) {
-                $version === Version::V1 && $variant === Variant::Rfc9562 => new UuidV1($this->uuid),
-                $version === Version::V2 && $variant === Variant::Rfc9562 => (
+                $version === Version::V1 && $variant === Variant::Rfc => new UuidV1($this->uuid),
+                $version === Version::V2 && $variant === Variant::Rfc => (
                     static function (string $uuid): UuidV2 | NonstandardUuid {
                         try {
                             return new UuidV2($uuid);
@@ -163,12 +163,12 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
                         }
                     }
                 )($this->uuid),
-                $version === Version::V3 && $variant === Variant::Rfc9562 => new UuidV3($this->uuid),
-                $version === Version::V4 && $variant === Variant::Rfc9562 => new UuidV4($this->uuid),
-                $version === Version::V5 && $variant === Variant::Rfc9562 => new UuidV5($this->uuid),
-                $version === Version::V6 && $variant === Variant::Rfc9562 => new UuidV6($this->uuid),
-                $version === Version::V7 && $variant === Variant::Rfc9562 => new UuidV7($this->uuid),
-                $version === Version::V8 && $variant === Variant::Rfc9562 => new UuidV8($this->uuid),
+                $version === Version::V3 && $variant === Variant::Rfc => new UuidV3($this->uuid),
+                $version === Version::V4 && $variant === Variant::Rfc => new UuidV4($this->uuid),
+                $version === Version::V5 && $variant === Variant::Rfc => new UuidV5($this->uuid),
+                $version === Version::V6 && $variant === Variant::Rfc => new UuidV6($this->uuid),
+                $version === Version::V7 && $variant === Variant::Rfc => new UuidV7($this->uuid),
+                $version === Version::V8 && $variant === Variant::Rfc => new UuidV8($this->uuid),
                 $version !== null && $variant === Variant::Microsoft => new MicrosoftGuid($this->uuid),
                 $this->isMax($this->uuid, $this->format) => new MaxUuid(),
                 $this->isNil($this->uuid, $this->format) => new NilUuid(),

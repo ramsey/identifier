@@ -120,8 +120,8 @@ class MicrosoftGuidFactoryTest extends TestCase
         $this->factory->createFromString('ffff-ffffffff-4fff-dfff-ffffffffffff');
     }
 
-    #[DataProvider('createFromRfc9562Provider')]
-    public function testCreateFromRfc9562(
+    #[DataProvider('createFromRfcProvider')]
+    public function testCreateFromRfc(
         string $uuidValue,
         string $expectedGuidValue,
     ): void {
@@ -131,7 +131,7 @@ class MicrosoftGuidFactoryTest extends TestCase
         /** @var UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $typedUuid */
         $typedUuid = $uuid->toTypedUuid();
 
-        $guid = $this->factory->createFromRfc4122($typedUuid);
+        $guid = $this->factory->createFromRfc($typedUuid);
 
         $this->assertSame($expectedGuidValue, $guid->toString());
         $this->assertFalse($guid->equals($uuid));
@@ -140,7 +140,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     /**
      * @return array<string, array{uuidValue: string, expectedGuidValue: string}>
      */
-    public static function createFromRfc9562Provider(): array
+    public static function createFromRfcProvider(): array
     {
         return [
             'v1 UUID to GUID' => [

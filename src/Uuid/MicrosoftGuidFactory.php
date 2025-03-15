@@ -118,7 +118,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
      *
      * @param UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid The UUID to convert to a Microsoft GUID
      */
-    public function createFromRfc9562(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid // phpcs:ignore
+    public function createFromRfc(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid // phpcs:ignore
     {
         $bytes = $this->binary->applyVersionAndVariant(
             $uuid->toBytes(),
@@ -127,14 +127,6 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
         );
 
         return new MicrosoftGuid($this->swapBytes($bytes));
-    }
-
-    /**
-     * Alias of {@see self::createFromRfc9562()}
-     */
-    public function createFromRfc4122(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid // phpcs:ignore
-    {
-        return $this->createFromRfc9562($uuid);
     }
 
     /**

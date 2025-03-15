@@ -46,7 +46,7 @@ final class Binary
     public function applyVersionAndVariant(
         string $bytes,
         ?Version $version,
-        Variant $variant = Variant::Rfc9562,
+        Variant $variant = Variant::Rfc,
     ): string {
         if (strlen($bytes) !== 16) {
             throw new InvalidArgument('$bytes must be a a 16-byte string');
@@ -62,7 +62,7 @@ final class Binary
 
         $parts[5] = match ($variant) {
             Variant::Ncs => $parts[5] & 0x7fff,
-            Variant::Rfc9562 => $parts[5] & 0x3fff | 0x8000,
+            Variant::Rfc => $parts[5] & 0x3fff | 0x8000,
             Variant::Microsoft => $parts[5] & 0x1fff | 0xc000,
             Variant::Future => $parts[5] & 0x1fff | 0xe000,
         };

@@ -143,7 +143,7 @@ class UntypedUuidTest extends TestCase
     {
         $expectedMax = [
             'type' => MaxUuid::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => CannotDetermineVersion::class,
             'json' => '"ffffffff-ffff-ffff-ffff-ffffffffffff"',
             'string' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
@@ -157,7 +157,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedNil = [
             'type' => NilUuid::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => CannotDetermineVersion::class,
             'json' => '"00000000-0000-0000-0000-000000000000"',
             'string' => '00000000-0000-0000-0000-000000000000',
@@ -171,7 +171,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV1 = [
             'type' => UuidV1::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::GregorianTime,
             'json' => '"637c935a-4107-11ed-b878-0242ac120002"',
             'string' => '637c935a-4107-11ed-b878-0242ac120002',
@@ -185,7 +185,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV2 = [
             'type' => UuidV2::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::DceSecurity,
             'json' => '"0001e240-4103-21ed-8001-0100499602d2"',
             'string' => '0001e240-4103-21ed-8001-0100499602d2',
@@ -199,7 +199,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV3 = [
             'type' => UuidV3::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::NameMd5,
             'json' => '"0d7f3039-f255-332a-b432-61905e2d036d"',
             'string' => '0d7f3039-f255-332a-b432-61905e2d036d',
@@ -213,7 +213,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV4 = [
             'type' => UuidV4::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::Random,
             'json' => '"0b94395a-0002-49cf-8fcf-af141d60af90"',
             'string' => '0b94395a-0002-49cf-8fcf-af141d60af90',
@@ -227,7 +227,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV5 = [
             'type' => UuidV5::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::NameSha1,
             'json' => '"0d7f3039-f255-532a-b432-61905e2d036d"',
             'string' => '0d7f3039-f255-532a-b432-61905e2d036d',
@@ -241,7 +241,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV6 = [
             'type' => UuidV6::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::ReorderedGregorianTime,
             'json' => '"1ed41076-37c9-635a-b878-0242ac120002"',
             'string' => '1ed41076-37c9-635a-b878-0242ac120002',
@@ -255,7 +255,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV7 = [
             'type' => UuidV7::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::UnixTime,
             'json' => '"01839050-b198-71ed-b878-0242ac120002"',
             'string' => '01839050-b198-71ed-b878-0242ac120002',
@@ -269,7 +269,7 @@ class UntypedUuidTest extends TestCase
 
         $expectedV8 = [
             'type' => UuidV8::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::Custom,
             'json' => '"0b94395a-0002-89cf-8fcf-af141d60af90"',
             'string' => '0b94395a-0002-89cf-8fcf-af141d60af90',
@@ -299,7 +299,7 @@ class UntypedUuidTest extends TestCase
         // should be converted to a NonstandardUuid.
         $expectedNonstandardV2 = [
             'type' => NonstandardUuid::class,
-            'variant' => Variant::Rfc4122,
+            'variant' => Variant::Rfc,
             'version' => Version::DceSecurity,
             'json' => '"0001e240-4103-21ed-80ff-0100499602d2"',
             'string' => '0001e240-4103-21ed-80ff-0100499602d2',

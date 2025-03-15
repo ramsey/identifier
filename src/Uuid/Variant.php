@@ -47,7 +47,7 @@ enum Variant: int
     /**
      * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562}.
      */
-    case Rfc9562 = 0b10;
+    case Rfc = 0b10;
 
     /**
      * Reserved. Microsoft Corporation backward compatibility.
@@ -61,7 +61,17 @@ enum Variant: int
     case Future = 0b111;
 
     /**
-     * Alias for {@see self::Rfc9562}
+     * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562} and previously in
+     * {@link https://www.rfc-editor.org/rfc/rfc4122 RFC 4122}.
+     *
+     * An alias for {@see self::Rfc}.
      */
-    public const Rfc4122 = self::Rfc9562; // phpcs:ignore
+    public const Rfc4122 = self::Rfc; // phpcs:ignore
+
+    /**
+     * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562}.
+     *
+     * An alias for {@see self::Rfc}.
+     */
+    public const Rfc9562 = self::Rfc; // phpcs:ignore
 }

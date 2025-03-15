@@ -474,15 +474,15 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame(Variant::Microsoft, $this->guidWithBytes->getVariant());
     }
 
-    public function testGetVariantForRfc4122Guid(): void
+    public function testGetVariantForRfc9562Guid(): void
     {
         $guidWithString = new Uuid\MicrosoftGuid('ffffffff-ffff-4fff-9fff-ffffffffffff');
         $guidWithHex = new Uuid\MicrosoftGuid('ffffffffffff4fff9fffffffffffffff');
         $guidWithBytes = new Uuid\MicrosoftGuid("\xff\xff\xff\xff\xff\xff\xff\x4f\x9f\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertSame(Variant::Rfc4122, $guidWithString->getVariant());
-        $this->assertSame(Variant::Rfc4122, $guidWithHex->getVariant());
-        $this->assertSame(Variant::Rfc4122, $guidWithBytes->getVariant());
+        $this->assertSame(Variant::Rfc, $guidWithString->getVariant());
+        $this->assertSame(Variant::Rfc, $guidWithHex->getVariant());
+        $this->assertSame(Variant::Rfc, $guidWithBytes->getVariant());
     }
 
     public function testGetVersion(): void

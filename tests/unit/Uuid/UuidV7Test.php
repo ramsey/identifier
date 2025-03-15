@@ -398,9 +398,9 @@ class UuidV7Test extends TestCase
 
     public function testGetVariant(): void
     {
-        $this->assertSame(Variant::Rfc4122, $this->uuidWithString->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->uuidWithHex->getVariant());
-        $this->assertSame(Variant::Rfc4122, $this->uuidWithBytes->getVariant());
+        $this->assertSame(Variant::Rfc, $this->uuidWithString->getVariant());
+        $this->assertSame(Variant::Rfc, $this->uuidWithHex->getVariant());
+        $this->assertSame(Variant::Rfc, $this->uuidWithBytes->getVariant());
     }
 
     public function testGetVersion(): void

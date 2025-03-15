@@ -136,7 +136,7 @@ trait Standard
 
     public function getVariant(): Variant
     {
-        return Variant::Rfc9562;
+        return Variant::Rfc;
     }
 
     /**

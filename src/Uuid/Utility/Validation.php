@@ -58,7 +58,7 @@ trait Validation
         return match (true) {
             $value >> 1 === 0b111 => Variant::Future,
             $value >> 1 === 0b110 => Variant::Microsoft,
-            $value >> 2 === 0b10 => Variant::Rfc9562,
+            $value >> 2 === 0b10 => Variant::Rfc,
             default => Variant::Ncs,
         };
     }
@@ -156,7 +156,7 @@ trait Validation
     private function isValid(string $uuid, ?Format $format): bool
     {
         return $this->hasValidFormat($uuid, $format)
-            && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc9562
+            && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc
             && $this->getVersionFromUuid($uuid, $format) === $this->getVersion()->value;
     }
 
