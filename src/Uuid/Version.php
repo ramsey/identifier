@@ -55,7 +55,7 @@ enum Version: int
     /**
      * The name-based version specified in RFC 9562 that uses MD5 hashing.
      */
-    case HashMd5 = 0b0011;
+    case NameMd5 = 0b0011;
 
     /**
      * The randomly or pseudorandomly generated version specified in RFC 9562.
@@ -65,7 +65,7 @@ enum Version: int
     /**
      * The name-based version specified in RFC 9562 that uses SHA-1 hashing.
      */
-    case HashSha1 = 0b0101;
+    case NameSha1 = 0b0101;
 
     /**
      * Reordered Gregorian time-based UUID specified in RFC 9562.
@@ -93,9 +93,9 @@ enum Version: int
     public const V2 = self::DceSecurity;
 
     /**
-     * Alias for {@see self::HashMd5}
+     * Alias for {@see self::NameMd5}
      */
-    public const V3 = self::HashMd5;
+    public const V3 = self::NameMd5;
 
     /**
      * Alias for {@see self::Random}
@@ -103,9 +103,9 @@ enum Version: int
     public const V4 = self::Random;
 
     /**
-     * Alias for {@see self::HashSha1}
+     * Alias for {@see self::NameSha1}
      */
-    public const V5 = self::HashSha1;
+    public const V5 = self::NameSha1;
 
     /**
      * Alias for {@see self::ReorderedGregorianTime}

@@ -54,7 +54,7 @@ final class UuidV5Factory implements UuidFactoryInterface
 
         /** @var non-empty-string $bytes */
         $bytes = substr(hash('sha1', $namespace->toBytes() . $name, true), 0, 16);
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::HashSha1);
+        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::NameSha1);
 
         return new UuidV5($bytes);
     }
@@ -97,7 +97,7 @@ final class UuidV5Factory implements UuidFactoryInterface
 
     protected function getVersion(): Version
     {
-        return Version::HashSha1;
+        return Version::NameSha1;
     }
 
     protected function getUuidClass(): string

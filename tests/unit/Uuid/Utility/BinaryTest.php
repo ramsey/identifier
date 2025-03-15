@@ -55,7 +55,7 @@ class BinaryTest extends TestCase
             ],
             [
                 'bytes' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-                'version' => Version::HashMd5,
+                'version' => Version::NameMd5,
                 'variant' => Variant::Rfc4122,
                 'expectedBytes' => "\xff\xff\xff\xff\xff\xff\x3f\xff\xbf\xff\xff\xff\xff\xff\xff\xff",
             ],
@@ -67,7 +67,7 @@ class BinaryTest extends TestCase
             ],
             [
                 'bytes' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
-                'version' => Version::HashSha1,
+                'version' => Version::NameSha1,
                 'variant' => Variant::Rfc4122,
                 'expectedBytes' => "\xff\xff\xff\xff\xff\xff\x5f\xff\xbf\xff\xff\xff\xff\xff\xff\xff",
             ],

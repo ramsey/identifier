@@ -32,6 +32,6 @@ final readonly class UuidV5 implements Uuid
 
     public function getVersion(): Version
     {
-        return Version::HashSha1;
+        return Version::NameSha1;
     }
 }

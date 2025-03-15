@@ -43,7 +43,7 @@ class MicrosoftGuidFactoryTest extends TestCase
 
         $this->assertSame('ffffffff-ffff-3fff-cfff-ffffffffffff', $guid->toString());
         $this->assertSame(Variant::Microsoft, $guid->getVariant());
-        $this->assertSame(Version::HashMd5, $guid->getVersion());
+        $this->assertSame(Version::NameMd5, $guid->getVersion());
     }
 
     public function testCreateFromBytesThrowsException(): void

@@ -200,7 +200,7 @@ class UntypedUuidTest extends TestCase
         $expectedV3 = [
             'type' => UuidV3::class,
             'variant' => Variant::Rfc4122,
-            'version' => Version::HashMd5,
+            'version' => Version::NameMd5,
             'json' => '"0d7f3039-f255-332a-b432-61905e2d036d"',
             'string' => '0d7f3039-f255-332a-b432-61905e2d036d',
             'bytes' => "\x0d\x7f\x30\x39\xf2\x55\x33\x2a\xb4\x32\x61\x90\x5e\x2d\x03\x6d",
@@ -228,7 +228,7 @@ class UntypedUuidTest extends TestCase
         $expectedV5 = [
             'type' => UuidV5::class,
             'variant' => Variant::Rfc4122,
-            'version' => Version::HashSha1,
+            'version' => Version::NameSha1,
             'json' => '"0d7f3039-f255-532a-b432-61905e2d036d"',
             'string' => '0d7f3039-f255-532a-b432-61905e2d036d',
             'bytes' => "\x0d\x7f\x30\x39\xf2\x55\x53\x2a\xb4\x32\x61\x90\x5e\x2d\x03\x6d",

@@ -406,9 +406,9 @@ class UuidV3Test extends TestCase
 
     public function testGetVersion(): void
     {
-        $this->assertSame(Version::HashMd5, $this->uuidWithString->getVersion());
-        $this->assertSame(Version::HashMd5, $this->uuidWithHex->getVersion());
-        $this->assertSame(Version::HashMd5, $this->uuidWithBytes->getVersion());
+        $this->assertSame(Version::NameMd5, $this->uuidWithString->getVersion());
+        $this->assertSame(Version::NameMd5, $this->uuidWithHex->getVersion());
+        $this->assertSame(Version::NameMd5, $this->uuidWithBytes->getVersion());
     }
 
     public function testJsonSerialize(): void

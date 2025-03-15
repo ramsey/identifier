@@ -498,9 +498,9 @@ class MicrosoftGuidTest extends TestCase
         $guidWithHex = new Uuid\MicrosoftGuid('ffffffffffff5fffcfffffffffffffff');
         $guidWithBytes = new Uuid\MicrosoftGuid("\xff\xff\xff\xff\xff\xff\xff\x5f\xcf\xff\xff\xff\xff\xff\xff\xff");
 
-        $this->assertSame(Version::HashSha1, $guidWithString->getVersion());
-        $this->assertSame(Version::HashSha1, $guidWithHex->getVersion());
-        $this->assertSame(Version::HashSha1, $guidWithBytes->getVersion());
+        $this->assertSame(Version::NameSha1, $guidWithString->getVersion());
+        $this->assertSame(Version::NameSha1, $guidWithHex->getVersion());
+        $this->assertSame(Version::NameSha1, $guidWithBytes->getVersion());
     }
 
     public function testJsonSerialize(): void
