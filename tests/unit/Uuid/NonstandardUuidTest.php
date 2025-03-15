@@ -550,8 +550,8 @@ class NonstandardUuidTest extends TestCase
             'string: RFC 4122: 8, version f' => ['27433d43-011d-fa6a-8161-1550863792c9', Variant::Rfc4122],
             'string: reserved Microsoft: c' => ['27433d43-011d-0a6a-c161-1550863792c9', Variant::Microsoft],
             'string: reserved Microsoft: d' => ['27433d43-011d-0a6a-d161-1550863792c9', Variant::Microsoft],
-            'string: reserved future: e' => ['27433d43-011d-0a6a-e161-1550863792c9', Variant::ReservedFuture],
-            'string: reserved future: f' => ['27433d43-011d-0a6a-f161-1550863792c9', Variant::ReservedFuture],
+            'string: reserved future: e' => ['27433d43-011d-0a6a-e161-1550863792c9', Variant::Future],
+            'string: reserved future: f' => ['27433d43-011d-0a6a-f161-1550863792c9', Variant::Future],
 
             'hex: reserved NCS: 0' => ['27433d43011d0a6a01611550863792c9', Variant::Ncs],
             'hex: reserved NCS: 1' => ['27433d43011d0a6a11611550863792c9', Variant::Ncs],
@@ -574,8 +574,8 @@ class NonstandardUuidTest extends TestCase
             'hex: RFC 4122: 8, version f' => ['27433d43011dfa6a81611550863792c9', Variant::Rfc4122],
             'hex: reserved Microsoft: c' => ['27433d43011d0a6ac1611550863792c9', Variant::Microsoft],
             'hex: reserved Microsoft: d' => ['27433d43011d0a6ad1611550863792c9', Variant::Microsoft],
-            'hex: reserved future: e' => ['27433d43011d0a6ae1611550863792c9', Variant::ReservedFuture],
-            'hex: reserved future: f' => ['27433d43011d0a6af1611550863792c9', Variant::ReservedFuture],
+            'hex: reserved future: e' => ['27433d43011d0a6ae1611550863792c9', Variant::Future],
+            'hex: reserved future: f' => ['27433d43011d0a6af1611550863792c9', Variant::Future],
 
             'bytes: reserved NCS: 0' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x01\x61\x15\x50\x86\x37\x92\xc9",
@@ -663,11 +663,11 @@ class NonstandardUuidTest extends TestCase
             ],
             'bytes: reserved future: e' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xe1\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedFuture,
+                Variant::Future,
             ],
             'bytes: reserved future: f' => [
                 "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xf1\x61\x15\x50\x86\x37\x92\xc9",
-                Variant::ReservedFuture,
+                Variant::Future,
             ],
         ];
     }

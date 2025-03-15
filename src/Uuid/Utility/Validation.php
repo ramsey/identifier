@@ -56,7 +56,7 @@ trait Validation
     private function determineVariant(int $value): Variant
     {
         return match (true) {
-            $value >> 1 === 7 => Variant::ReservedFuture,
+            $value >> 1 === 7 => Variant::Future,
             $value >> 1 === 6 => Variant::Microsoft,
             $value >> 2 === 2 => Variant::Rfc9562,
             default => Variant::Ncs,

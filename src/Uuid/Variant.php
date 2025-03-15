@@ -55,9 +55,10 @@ enum Variant: int
     case Microsoft = 6;
 
     /**
-     * Reserved for future definition
+     * Reserved for future definition and includes Max UUID as per
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10}.
      */
-    case ReservedFuture = 7;
+    case Future = 7;
 
     /**
      * Alias for {@see self::Rfc9562}

@@ -170,25 +170,25 @@ class BinaryTest extends TestCase
             [
                 'bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
                 'version' => null,
-                'variant' => Variant::ReservedFuture,
+                'variant' => Variant::Future,
                 'expectedBytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\xe0\x00\x00\x00\x00\x00\x00\x00",
             ],
             [
                 'bytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11\x11",
                 'version' => null,
-                'variant' => Variant::ReservedFuture,
+                'variant' => Variant::Future,
                 'expectedBytes' => "\x11\x11\x11\x11\x11\x11\x11\x11\xf1\x11\x11\x11\x11\x11\x11\x11",
             ],
             [
                 'bytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88\x88",
                 'version' => null,
-                'variant' => Variant::ReservedFuture,
+                'variant' => Variant::Future,
                 'expectedBytes' => "\x88\x88\x88\x88\x88\x88\x88\x88\xe8\x88\x88\x88\x88\x88\x88\x88",
             ],
             [
                 'bytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99\x99",
                 'version' => null,
-                'variant' => Variant::ReservedFuture,
+                'variant' => Variant::Future,
                 'expectedBytes' => "\x99\x99\x99\x99\x99\x99\x99\x99\xf9\x99\x99\x99\x99\x99\x99\x99",
             ],
             [

@@ -64,7 +64,7 @@ final class Binary
             Variant::Ncs => $parts[5] & 0x7fff,
             Variant::Rfc9562 => $parts[5] & 0x3fff | 0x8000,
             Variant::Microsoft => $parts[5] & 0x1fff | 0xc000,
-            Variant::ReservedFuture => $parts[5] & 0x1fff | 0xe000,
+            Variant::Future => $parts[5] & 0x1fff | 0xe000,
         };
 
         /** @var non-empty-string */
