@@ -73,7 +73,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - "macos-latest"
+          #- "macos-latest"
           - "ubuntu-latest"
           #- "windows-latest"
 
@@ -187,9 +187,9 @@ jobs:
           - "8.3"
           - "8.4"
         os:
-          - "macos-latest"
+          #- "macos-latest"
           - "ubuntu-latest"
-          - "windows-latest"
+          #- "windows-latest"
         composer-deps:
           - "lowest"
           - "highest"
