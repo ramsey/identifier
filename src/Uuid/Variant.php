@@ -42,23 +42,23 @@ enum Variant: int
      * Reserved. Network Computing System (NCS) backward compatibility, and includes Nil UUID as per
      * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 RFC 9562, section 5.9}.
      */
-    case Ncs = 0;
+    case Ncs = 0b0;
 
     /**
-     * The UUID layout specified in RFC 9562
+     * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562}.
      */
-    case Rfc9562 = 2;
+    case Rfc9562 = 0b10;
 
     /**
      * Reserved. Microsoft Corporation backward compatibility.
      */
-    case Microsoft = 6;
+    case Microsoft = 0b110;
 
     /**
      * Reserved for future definition and includes Max UUID as per
      * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10}.
      */
-    case Future = 7;
+    case Future = 0b111;
 
     /**
      * Alias for {@see self::Rfc9562}

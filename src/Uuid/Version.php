@@ -43,44 +43,44 @@ namespace Ramsey\Identifier\Uuid;
 enum Version: int
 {
     /**
-     * Gregorian time-based UUID
+     * The Gregorian time-based UUID specified in RFC 9562.
      */
-    case GregorianTime = 1;
+    case GregorianTime = 0b0001;
 
     /**
-     * DCE Security version UUID
+     * Reserved for DCE Security version, with embedded POSIX UUIDs.
      */
-    case DceSecurity = 2;
+    case DceSecurity = 0b0010;
 
     /**
-     * Name-based UUID that uses MD5 hashing
+     * The name-based version specified in RFC 9562 that uses MD5 hashing.
      */
-    case HashMd5 = 3;
+    case HashMd5 = 0b0011;
 
     /**
-     * Randomly or pseudo-randomly generated UUID
+     * The randomly or pseudorandomly generated version specified in RFC 9562.
      */
-    case Random = 4;
+    case Random = 0b0100;
 
     /**
-     * Name-based UUID that uses SHA-1 hashing
+     * The name-based version specified in RFC 9562 that uses SHA-1 hashing.
      */
-    case HashSha1 = 5;
+    case HashSha1 = 0b0101;
 
     /**
-     * Reordered Gregorian time-based UUID
+     * Reordered Gregorian time-based UUID specified in RFC 9562.
      */
-    case ReorderedGregorianTime = 6;
+    case ReorderedGregorianTime = 0b0110;
 
     /**
-     * Unix Epoch time-based UUID
+     * Unix Epoch time-based UUID specified in RFC 9562.
      */
-    case UnixTime = 7;
+    case UnixTime = 0b0111;
 
     /**
-     * Reserved for custom UUID formats
+     * Reserved for custom UUID formats specified in RFC 9562.
      */
-    case Custom = 8;
+    case Custom = 0b1000;
 
     /**
      * Alias for {@see self::GregorianTime}
