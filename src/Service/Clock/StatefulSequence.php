@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Clock;
 
-use DateTimeImmutable;
 use DateTimeInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function random_int;
 
@@ -30,15 +30,21 @@ use const PHP_INT_MAX;
 final class StatefulSequence implements Sequence
 {
     /**
+     * The current value of this sequence.
+     *
      * @var int<0, max>
      */
-    private int $clockSeq;
-
-    private int | string | null $lastNode;
-    private DateTimeInterface $lastTime;
+    private static int $sequence = 0;
 
     /**
-     * @param int<0, max> | null $initialClockSeq An initial clock sequence
+     * The current state of the sequence is a kind of cache key. As long as it
+     * doesn't change, we will increment the sequence value. When this changes,
+     * the sequence value starts over at zero.
+     */
+    private static ?string $stateKey = null;
+
+    /**
+     * @param int<0, max> | null $initialSequence An initial clock sequence
      *     value; if no value is provided, one will be randomly generated
      * @param int | non-empty-string | null $initialNode An initial node value
      *     identifying the machine
@@ -48,35 +54,64 @@ final class StatefulSequence implements Sequence
      *     using microseconds or milliseconds
      */
     public function __construct(
-        ?int $initialClockSeq = null,
+        ?int $initialSequence = null,
         int | string | null $initialNode = null,
         ?DateTimeInterface $initialDateTime = null,
         private readonly Precision $precision = Precision::Microsecond,
     ) {
-        $this->clockSeq = $initialClockSeq ?? random_int(0, PHP_INT_MAX);
-        $this->lastNode = $initialNode;
-        $this->lastTime = $initialDateTime ?? new DateTimeImmutable();
+        if ($initialNode !== null && $initialDateTime === null) {
+            throw new InvalidArgument('When specifying an initial node, you must also specify an initial date-time');
+        }
+
+        if ($initialNode === null && $initialDateTime !== null) {
+            throw new InvalidArgument('When specifying an initial date-time, you must also specify an initial node');
+        }
+
+        $this->setSequence($this->buildStateKey($initialNode, $initialDateTime), $initialSequence);
     }
 
     public function value(int | string $node, DateTimeInterface $dateTime): int
     {
-        if ($this->lastNode !== null && $node !== $this->lastNode) {
-            // If the node has changed, regenerate the clock sequence.
-            $this->clockSeq = random_int(0, PHP_INT_MAX);
+        $stateKey = $this->buildStateKey($node, $dateTime);
+
+        // If the state key is null, then we can proceed to increment the sequence
+        // value because it should be the initial sequence set when instantiating
+        // this class. However, if the state key is not null, and it has changed,
+        // we need to reset the sequence.
+        if (self::$stateKey !== null && self::$stateKey !== $stateKey) {
+            $this->setSequence($stateKey, null);
         }
 
-        if ($dateTime->format($this->precision->value) <= $this->lastTime->format($this->precision->value)) {
-            if ($this->clockSeq === PHP_INT_MAX) {
-                // Roll over the clock sequence.
-                $this->clockSeq = 0;
-            } else {
-                $this->clockSeq++;
-            }
+        // While the state is the same, increment the sequence.
+        if (self::$sequence === PHP_INT_MAX) {
+            // Roll over the sequence.
+            self::$sequence = 0;
+        } else {
+            self::$sequence++;
         }
 
-        $this->lastNode = $node;
-        $this->lastTime = clone $dateTime;
+        if (self::$stateKey === null) {
+            self::$stateKey = $stateKey;
+        }
 
-        return $this->clockSeq;
+        return self::$sequence;
+    }
+
+    /**
+     * @param int<0, max> | null $sequence
+     */
+    private function setSequence(?string $stateKey, ?int $sequence): void
+    {
+        self::$stateKey = $stateKey;
+        self::$sequence = $sequence ?? random_int(0, PHP_INT_MAX);
+    }
+
+    private function buildStateKey(int | string | null $node, ?DateTimeInterface $dateTime): ?string
+    {
+        if ($node === null || $dateTime === null) {
+            return null;
+        }
+
+        return $node . '_' . $dateTime->format($this->precision->value);
     }
 }
