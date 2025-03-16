@@ -16,8 +16,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Clock;
 
+use DateTimeImmutable;
 use DateTimeInterface;
-use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function random_int;
 
@@ -48,7 +48,7 @@ final class StatefulSequence implements Sequence
      *     value; if no value is provided, one will be randomly generated
      * @param int | non-empty-string | null $initialNode An initial node value
      *     identifying the machine
-     * @param DateTimeInterface | null $initialDateTime An initial date-time
+     * @param DateTimeInterface $initialDateTime An initial date-time
      *     value to prevent clock sequence collisions if the time runs backwards
      * @param Precision $precision Whether to compare the date-time
      *     using microseconds or milliseconds
@@ -56,17 +56,9 @@ final class StatefulSequence implements Sequence
     public function __construct(
         ?int $initialSequence = null,
         int | string | null $initialNode = null,
-        ?DateTimeInterface $initialDateTime = null,
+        DateTimeInterface $initialDateTime = new DateTimeImmutable(),
         private readonly Precision $precision = Precision::Microsecond,
     ) {
-        if ($initialNode !== null && $initialDateTime === null) {
-            throw new InvalidArgument('When specifying an initial node, you must also specify an initial date-time');
-        }
-
-        if ($initialNode === null && $initialDateTime !== null) {
-            throw new InvalidArgument('When specifying an initial date-time, you must also specify an initial node');
-        }
-
         $this->setSequence($this->buildStateKey($initialNode, $initialDateTime), $initialSequence);
     }
 
@@ -106,9 +98,9 @@ final class StatefulSequence implements Sequence
         self::$sequence = $sequence ?? random_int(0, PHP_INT_MAX);
     }
 
-    private function buildStateKey(int | string | null $node, ?DateTimeInterface $dateTime): ?string
+    private function buildStateKey(int | string | null $node, DateTimeInterface $dateTime): ?string
     {
-        if ($node === null || $dateTime === null) {
+        if ($node === null) {
             return null;
         }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
-use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Test\Identifier\TestCase;
@@ -93,22 +92,6 @@ class StatefulSequenceTest extends TestCase
             $this->assertNotSame($lastValue + 1, $value);
             $lastValue = $value;
         }
-    }
-
-    public function testConstructorWhenNodeIsNotNullAndDateIsNull(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('When specifying an initial node, you must also specify an initial date-time');
-
-        new StatefulSequence(initialSequence: 0, initialNode: '010000000000');
-    }
-
-    public function testConstructorWhenNodeIsNullAndDateIsNotNull(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('When specifying an initial date-time, you must also specify an initial node');
-
-        new StatefulSequence(initialSequence: 0, initialDateTime: new DateTimeImmutable());
     }
 
     public function testValueIncreasesFromInitialSequenceWhenNodeAndDateNotOriginallyProvided(): void
