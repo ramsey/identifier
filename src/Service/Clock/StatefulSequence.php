@@ -59,7 +59,10 @@ final class StatefulSequence implements Sequence
         DateTimeInterface $initialDateTime = new DateTimeImmutable(),
         private readonly Precision $precision = Precision::Microsecond,
     ) {
-        $this->setSequence($this->buildStateKey($initialNode, $initialDateTime), $initialSequence);
+        // Only set the initial sequence if it's not already set.
+        if (self::$sequence === 0 && self::$stateKey === null) {
+            $this->setSequence($this->buildStateKey($initialNode, $initialDateTime), $initialSequence);
+        }
     }
 
     public function value(int | string $node, DateTimeInterface $dateTime): int

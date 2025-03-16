@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Test\Identifier\TestCase;
@@ -13,6 +15,8 @@ use const PHP_INT_MAX;
 
 class StatefulSequenceTest extends TestCase
 {
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testValueIncreasesWhenNodeAndDateRemainTheSameWithMicrosecondPrecision(): void
     {
         $lastValue = 10;
@@ -27,6 +31,8 @@ class StatefulSequenceTest extends TestCase
         }
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testValueIncreasesWhenNodeAndDateRemainTheSameWithMillisecondPrecision(): void
     {
         $lastValue = 10;
@@ -41,6 +47,8 @@ class StatefulSequenceTest extends TestCase
         }
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testValueRollsOverIfItReachesIntMax(): void
     {
         $node = '010000000000';
@@ -54,6 +62,8 @@ class StatefulSequenceTest extends TestCase
         $this->assertSame(2, $sequence->value($node, $date));
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testSequenceResetsWhenNodeChanges(): void
     {
         $node = 0;
@@ -73,6 +83,8 @@ class StatefulSequenceTest extends TestCase
         }
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testSequenceResetsWhenDateChanges(): void
     {
         $node = '010000000000';
@@ -94,6 +106,8 @@ class StatefulSequenceTest extends TestCase
         }
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testValueIncreasesFromInitialSequenceWhenNodeAndDateNotOriginallyProvided(): void
     {
         $lastValue = 100;
@@ -108,6 +122,8 @@ class StatefulSequenceTest extends TestCase
         }
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testValueIncreasesFromInitialRandomSequenceWhenNoValuesOriginallyProvided(): void
     {
         $node = '010000000000';
@@ -119,6 +135,26 @@ class StatefulSequenceTest extends TestCase
 
         for ($i = 0; $i < 50; $i++) {
             $value = $sequence->value($node, $date);
+            $this->assertSame($lastValue + 1, $value);
+            $lastValue = $value;
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testStateIsPreservedAcrossInstances(): void
+    {
+        $node = '010000000000';
+        $date = new DateTimeImmutable('2022-10-20 23:08:36.123456');
+        $sequence = new StatefulSequence();
+
+        // Get our first value in the sequence.
+        $lastValue = $sequence->value($node, $date);
+
+        for ($i = 0; $i < 50; $i++) {
+            // We'll set initial values to ensure these do not affect the global state of the sequence.
+            $newSequence = new StatefulSequence(42 + $i, $i, new DateTimeImmutable());
+            $value = $newSequence->value($node, $date);
             $this->assertSame($lastValue + 1, $value);
             $lastValue = $value;
         }
