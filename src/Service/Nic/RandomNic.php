@@ -36,7 +36,7 @@ final class RandomNic implements Nic
     /**
      * Key to use when caching the address value in a PSR-16 cache instance
      */
-    private const CACHE_KEY = '__ramsey_id_random_addr';
+    private const CACHE_KEY = '__ramsey_id_random_nic';
 
     /**
      * The address, stored statically for better performance

@@ -42,7 +42,7 @@ class RandomNicTest extends TestCase
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_addr')->andReturn('aabbccddeeff');
+        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturn('aabbccddeeff');
 
         $nic = new RandomNic($cache);
 
@@ -57,10 +57,10 @@ class RandomNicTest extends TestCase
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_addr')->andReturnNull();
+        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturnNull();
         $cache
             ->expects('set')
-            ->with('__ramsey_id_random_addr', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_random_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new RandomNic($cache);
@@ -78,10 +78,10 @@ class RandomNicTest extends TestCase
     public function testAddressStoredInCacheIsSomehowAnEmptyString(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_addr')->andReturn('');
+        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturn('');
         $cache
             ->expects('set')
-            ->with('__ramsey_id_random_addr', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_random_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new RandomNic($cache);
@@ -100,7 +100,7 @@ class RandomNicTest extends TestCase
         };
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_addr')->andThrow($exception);
+        $cache->expects('get')->with('__ramsey_id_random_nic')->andThrow($exception);
 
         $nic = new RandomNic($cache);
 

@@ -52,7 +52,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_gid')->andReturn(5001);
+        $cache->expects('get')->with('__ramsey_id_system_dce_gid')->andReturn(5001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -67,8 +67,8 @@ class SystemDceTest extends TestCase
     public function testGroupIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_gid')->andReturnNull();
-        $cache->expects('set')->with('__ramsey_id_gid', new IsInteger())->andReturnTrue();
+        $cache->expects('get')->with('__ramsey_id_system_dce_gid')->andReturnNull();
+        $cache->expects('set')->with('__ramsey_id_system_dce_gid', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $groupId = $dce->groupId();
@@ -85,7 +85,7 @@ class SystemDceTest extends TestCase
         };
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_gid')->andThrow($exception);
+        $cache->expects('get')->with('__ramsey_id_system_dce_gid')->andThrow($exception);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -103,7 +103,7 @@ class SystemDceTest extends TestCase
     public function testGroupIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_gid')->andReturn(-1);
+        $cache->expects('get')->with('__ramsey_id_system_dce_gid')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -262,7 +262,7 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_uid')->andReturn(6001);
+        $cache->expects('get')->with('__ramsey_id_system_dce_uid')->andReturn(6001);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -277,8 +277,8 @@ class SystemDceTest extends TestCase
     public function testUserIdFromCacheSetsIdentifierOnCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_uid')->andReturnNull();
-        $cache->expects('set')->with('__ramsey_id_uid', new IsInteger())->andReturnTrue();
+        $cache->expects('get')->with('__ramsey_id_system_dce_uid')->andReturnNull();
+        $cache->expects('set')->with('__ramsey_id_system_dce_uid', new IsInteger())->andReturnTrue();
 
         $dce = new SystemDce(cache: $cache);
         $userId = $dce->userId();
@@ -295,7 +295,7 @@ class SystemDceTest extends TestCase
         };
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_uid')->andThrow($exception);
+        $cache->expects('get')->with('__ramsey_id_system_dce_uid')->andThrow($exception);
 
         $dce = new SystemDce(cache: $cache);
 
@@ -313,7 +313,7 @@ class SystemDceTest extends TestCase
     public function testUserIdThrowsExceptionWhenIdentifierNotFound(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_uid')->andReturn(-1);
+        $cache->expects('get')->with('__ramsey_id_system_dce_uid')->andReturn(-1);
 
         $dce = new SystemDce(cache: $cache);
 

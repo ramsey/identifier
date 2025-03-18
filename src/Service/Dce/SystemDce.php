@@ -44,12 +44,12 @@ final class SystemDce implements Dce
     /**
      * Key to use when caching the GID value in a PSR-16 cache instance
      */
-    private const GID_CACHE_KEY = '__ramsey_id_gid';
+    private const GID_CACHE_KEY = '__ramsey_id_system_dce_gid';
 
     /**
      * Key to use when caching the UID value in a PSR-16 cache instance
      */
-    private const UID_CACHE_KEY = '__ramsey_id_uid';
+    private const UID_CACHE_KEY = '__ramsey_id_system_dce_uid';
 
     /**
      * @var int<0, max> | null
