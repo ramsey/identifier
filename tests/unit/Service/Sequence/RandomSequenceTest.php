@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Service\Clock;
+namespace Ramsey\Test\Identifier\Service\Sequence;
 
-use DateTimeImmutable;
-use Ramsey\Identifier\Service\Clock\RandomSequence;
+use Ramsey\Identifier\Service\Sequence\RandomSequence;
 use Ramsey\Test\Identifier\TestCase;
 
 class RandomSequenceTest extends TestCase
@@ -14,6 +13,6 @@ class RandomSequenceTest extends TestCase
     {
         $sequence = new RandomSequence();
 
-        $this->assertIsInt($sequence->value('010000000000', new DateTimeImmutable()));
+        $this->assertIsInt($sequence->next());
     }
 }
