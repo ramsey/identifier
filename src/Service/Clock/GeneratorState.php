@@ -16,22 +16,21 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Clock;
 
-use DateTimeInterface;
-
 /**
- * A sequence that returns a pre-determined value as the clock sequence
+ * A value object for storing and passing the generator state for clock sequences.
+ *
+ * @internal
  */
-final readonly class FrozenSequence implements Sequence
+final class GeneratorState
 {
     /**
-     * @param int<0, max> $value A pre-determined clock sequence value
+     * @param non-empty-string $node
+     * @param int<0, max> $sequence
      */
-    public function __construct(private int $value)
-    {
-    }
-
-    public function value(int | string $node, DateTimeInterface $dateTime): int
-    {
-        return $this->value;
+    public function __construct(
+        public string $node,
+        public int $sequence,
+        public int $timestamp,
+    ) {
     }
 }

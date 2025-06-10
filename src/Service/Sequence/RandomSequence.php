@@ -30,8 +30,28 @@ use const PHP_INT_MIN;
  */
 final class RandomSequence implements Sequence
 {
+    private int $current;
+
+    /**
+     * @param int $min The minimum value allowed in this random sequence (inclusive)
+     * @param int $max The maximum value allowed in this random sequence (inclusive)
+     */
+    public function __construct(
+        private readonly int $min = PHP_INT_MIN,
+        private readonly int $max = PHP_INT_MAX,
+    ) {
+        // Initialize the random sequence.
+        $this->current = random_int($this->min, $this->max);
+    }
+
+    public function current(?string $state = null): int
+    {
+        // This method should always return the previously generated "next" value without "advancing" the sequence.
+        return $this->current;
+    }
+
     public function next(?string $state = null): int
     {
-        return random_int(PHP_INT_MIN, PHP_INT_MAX);
+        return $this->current = random_int($this->min, $this->max);
     }
 }

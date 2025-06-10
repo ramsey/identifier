@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Service\Sequence;
+namespace Ramsey\Test\Identifier\Service\Clock;
 
-use Ramsey\Identifier\Service\Sequence\RandomSequence;
+use Ramsey\Identifier\Service\Clock\RandomClockSequence;
 use Ramsey\Test\Identifier\TestCase;
 
-class RandomSequenceTest extends TestCase
+class RandomClockSequenceTest extends TestCase
 {
     public function testValue(): void
     {
-        $sequence = new RandomSequence();
+        $sequence = new RandomClockSequence();
         $current = $sequence->current();
         $next = $sequence->next();
 

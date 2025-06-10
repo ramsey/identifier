@@ -20,8 +20,8 @@ use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Clock\Sequence;
-use Ramsey\Identifier\Service\Clock\StatefulSequence;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
+use Ramsey\Identifier\Service\Clock\RandomClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Dce\Dce;
 use Ramsey\Identifier\Service\Dce\SystemDce;
@@ -45,6 +45,11 @@ final class UuidV2Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
+    /**
+     * The maximum value of the clock sequence before it must roll over to zero.
+     */
+    private const CLOCK_SEQ_MAX = 0x4000;
+
     private readonly Binary $binary;
     private readonly Time $time;
 
@@ -64,7 +69,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly Dce $dce = new SystemDce(),
         private readonly Nic $nic = new SystemNic(),
-        private readonly Sequence $sequence = new StatefulSequence(),
+        private readonly ClockSequence $sequence = new RandomClockSequence(),
     ) {
         $this->binary = new Binary();
         $this->time = new Time();
@@ -106,7 +111,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
 
         $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
         $dateTime = $dateTime ?? $this->clock->now();
-        $clockSequence = ($clockSequence ?? $this->sequence->value($node, $dateTime)) % 16384;
+        $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % self::CLOCK_SEQ_MAX;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
 

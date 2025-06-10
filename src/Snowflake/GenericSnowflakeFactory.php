@@ -21,9 +21,9 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
+use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\Precision;
-use Ramsey\Identifier\Service\Clock\Sequence;
-use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
@@ -40,6 +40,12 @@ use function substr;
 final class GenericSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
+
+    /**
+     * We increase this value each time our clock sequence rolls over and add the value to the milliseconds to ensure
+     * the values are monotonically increasing.
+     */
+    private int $clockSequenceCounter = 0;
 
     /**
      * For performance, we'll prepare the node ID bits and store for later use.
@@ -63,7 +69,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         private readonly int $nodeId,
         private readonly int $epochOffset,
         private readonly Clock $clock = new SystemClock(),
-        private readonly Sequence $sequence = new StatefulSequence(precision: Precision::Millisecond),
+        private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
         $this->nodeIdShifted = ($this->nodeId & 0x03ff) << 12;
     }
@@ -89,7 +95,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake
     {
-        $milliseconds = (int) $dateTime->format('Uv') - $this->epochOffset;
+        $milliseconds = (int) $dateTime->format(Precision::Millisecond->value) - $this->epochOffset;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
@@ -98,9 +104,16 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->value($this->nodeId, $dateTime) & 0x0fff;
+        $sequence = $this->sequence->next((string) $this->nodeId, $dateTime) & 0x0fff;
 
+        // Increase the milliseconds by the current value of the clock sequence counter.
+        $milliseconds += $this->clockSequenceCounter;
         $millisecondsShifted = $milliseconds << 22;
+
+        if ($sequence === 0x0fff) {
+            // If the sequence is currently 0x0fff, bump the clock sequence counter, since we're rolling over.
+            $this->clockSequenceCounter++;
+        }
 
         if ($millisecondsShifted > $milliseconds) {
             $identifier = $millisecondsShifted | $this->nodeIdShifted | $sequence;

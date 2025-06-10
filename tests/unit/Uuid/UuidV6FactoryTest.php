@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Clock\FrozenSequence;
+use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Uuid\UuidV6Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -29,7 +29,7 @@ class UuidV6FactoryTest extends TestCase
         $factory = new UuidV6Factory(
             new FrozenClock(new DateTimeImmutable('1582-10-15 00:00:00')),
             new StaticNic(0),
-            new FrozenSequence(0),
+            new FrozenClockSequence(0),
         );
 
         $uuid = $factory->create();

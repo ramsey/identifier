@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Clock\FrozenSequence;
+use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -29,7 +29,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
             0,
             0,
             new FrozenClock(new DateTimeImmutable('2015-01-01 00:00:00.000')),
-            new FrozenSequence(0),
+            new FrozenClockSequence(0),
         );
 
         $snowflake = $factory->create();
@@ -43,7 +43,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
     public function testCreateFromDateTime(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
-        $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenSequence(1));
+        $factory = new DiscordSnowflakeFactory(1, 2, sequence: new FrozenClockSequence(1));
         $snowflake = $factory->createFromDateTime($dateTime);
 
         $this->assertNotSame($dateTime, $snowflake->getDateTime());
@@ -200,42 +200,45 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     public function testCreateEachSnowflakeIsMonotonicallyIncreasing(): void
     {
-        $previous = $this->factory->create();
+        $factory = new DiscordSnowflakeFactory(15, 30);
+        $previous = $factory->create();
 
-        for ($i = 0; $i < 25; $i++) {
-            $snowflake = $this->factory->create();
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        for ($i = 0; $i < 8191; $i++) {
+            $current = $factory->create();
             $this->assertTrue(
-                $snowflake->compareTo($previous) > 0,
+                $current->compareTo($previous) > 0,
                 sprintf(
                     'Expected %s to be greater than %s at iteration %d',
-                    $snowflake->toInteger(),
+                    $current->toInteger(),
                     $previous->toInteger(),
                     $i,
                 ),
             );
-            $previous = $snowflake;
+            $previous = $current;
         }
     }
 
     public function testCreateEachSnowflakeFromSameDateTimeIsMonotonicallyIncreasing(): void
     {
+        $factory = new DiscordSnowflakeFactory(15, 30);
         $dateTime = new DateTimeImmutable();
+        $previous = $factory->createFromDateTime($dateTime);
 
-        $previous = $this->factory->createFromDateTime($dateTime);
-
-        for ($i = 0; $i < 25; $i++) {
-            $snowflake = $this->factory->createFromDateTime($dateTime);
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        for ($i = 0; $i < 8191; $i++) {
+            $current = $factory->createFromDateTime($dateTime);
             $this->assertTrue(
-                $snowflake->compareTo($previous) > 0,
+                $current->compareTo($previous) > 0,
                 sprintf(
                     'Expected %s to be greater than %s at iteration %d',
-                    $snowflake->toInteger(),
+                    $current->toInteger(),
                     $previous->toInteger(),
                     $i,
                 ),
             );
-            $this->assertSame($dateTime->format('Y-m-d H:i:s'), $snowflake->getDateTime()->format('Y-m-d H:i:s'));
-            $previous = $snowflake;
+            $this->assertSame($dateTime->format('Y-m-d H:i:s'), $current->getDateTime()->format('Y-m-d H:i:s'));
+            $previous = $current;
         }
     }
 
@@ -251,7 +254,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromDateTimeForOutOfBoundsDateTime(): void
     {
-        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenSequence(0x0fff));
+        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenClockSequence(0x0fff));
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake:');
@@ -261,7 +264,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromDateTimeWithMaxValuesReturnsMaxIdentifier(): void
     {
-        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenSequence(0x0fff));
+        $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenClockSequence(0x0fff));
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.103'));
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());

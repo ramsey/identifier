@@ -20,9 +20,9 @@ use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
+use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\Precision;
-use Ramsey\Identifier\Service\Clock\Sequence;
-use Ramsey\Identifier\Service\Clock\StatefulSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
@@ -45,6 +45,12 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     private readonly int $workerProcessIdShifted;
 
     /**
+     * We increase this value each time our clock sequence rolls over and add the value to the milliseconds to ensure
+     * the values are monotonically increasing.
+     */
+    private int $clockSequenceCounter = 0;
+
+    /**
      * Constructs a factory for creating Discord Snowflakes
      *
      * @param int<0, 31> $workerId A 5-bit worker identifier to use when
@@ -61,7 +67,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
         private readonly int $workerId,
         private readonly int $processId,
         private readonly Clock $clock = new SystemClock(),
-        private readonly Sequence $sequence = new StatefulSequence(precision: Precision::Millisecond),
+        private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
         $this->workerProcessIdShifted = ($this->workerId & 0x1f) << 17 | ($this->processId & 0x1f) << 12;
     }
@@ -87,7 +93,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): DiscordSnowflake
     {
-        $milliseconds = (int) $dateTime->format('Uv') - Epoch::Discord->value;
+        $milliseconds = (int) $dateTime->format(Precision::Millisecond->value) - Epoch::Discord->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
@@ -96,9 +102,16 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->value($this->workerId + $this->processId, $dateTime) & 0x0fff;
+        $sequence = $this->sequence->next((string) ($this->workerId + $this->processId), $dateTime) & 0x0fff;
 
+        // Increase the milliseconds by the current value of the clock sequence counter.
+        $milliseconds += $this->clockSequenceCounter;
         $millisecondsShifted = $milliseconds << 22;
+
+        if ($sequence === 0x0fff) {
+            // If the sequence is currently 0x0fff, bump the clock sequence counter, since we're rolling over.
+            $this->clockSequenceCounter++;
+        }
 
         if ($millisecondsShifted > $milliseconds) {
             $identifier = $millisecondsShifted | $this->workerProcessIdShifted | $sequence;

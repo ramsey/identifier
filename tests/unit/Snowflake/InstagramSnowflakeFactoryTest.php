@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
-use Ramsey\Identifier\Service\Clock\FrozenSequence;
+use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -28,7 +28,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
         $factory = new InstagramSnowflakeFactory(
             0,
             new FrozenClock(new DateTimeImmutable('2011-08-24 21:07:01.721')),
-            new FrozenSequence(0),
+            new FrozenClockSequence(0),
         );
 
         $snowflake = $factory->create();
@@ -42,7 +42,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
     public function testCreateFromDateTime(): void
     {
         $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345678');
-        $factory = new InstagramSnowflakeFactory(1, sequence: new FrozenSequence(1));
+        $factory = new InstagramSnowflakeFactory(1, sequence: new FrozenClockSequence(1));
         $snowflake = $factory->createFromDateTime($dateTime);
 
         $this->assertNotSame($dateTime, $snowflake->getDateTime());
@@ -201,7 +201,8 @@ class InstagramSnowflakeFactoryTest extends TestCase
     {
         $previous = $this->factory->create();
 
-        for ($i = 0; $i < 25; $i++) {
+        // This is 1023 * 2 + 1, so that we loop through the clock sequence twice.
+        for ($i = 0; $i < 2047; $i++) {
             $snowflake = $this->factory->create();
             $this->assertTrue(
                 $snowflake->compareTo($previous) > 0,
@@ -222,7 +223,8 @@ class InstagramSnowflakeFactoryTest extends TestCase
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
-        for ($i = 0; $i < 25; $i++) {
+        // This is 1023 * 2 + 1, so that we loop through the clock sequence twice.
+        for ($i = 0; $i < 2047; $i++) {
             $snowflake = $this->factory->createFromDateTime($dateTime);
             $this->assertTrue(
                 $snowflake->compareTo($previous) > 0,
@@ -250,7 +252,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromDateTimeForOutOfBoundsDateTime(): void
     {
-        $factory = new InstagramSnowflakeFactory(0x1fff, sequence: new FrozenSequence(0x3ff));
+        $factory = new InstagramSnowflakeFactory(0x1fff, sequence: new FrozenClockSequence(0x3ff));
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake:');
@@ -260,7 +262,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
 
     public function testCreateFromDateTimeWithMaxValuesReturnsMaxIdentifier(): void
     {
-        $factory = new InstagramSnowflakeFactory(0x1fff, sequence: new FrozenSequence(0x3ff));
+        $factory = new InstagramSnowflakeFactory(0x1fff, sequence: new FrozenClockSequence(0x3ff));
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2081-04-30 12:54:37.272'));
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());

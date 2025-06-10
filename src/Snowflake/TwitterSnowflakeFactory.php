@@ -20,9 +20,8 @@ use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Clock\Precision;
-use Ramsey\Identifier\Service\Clock\Sequence;
-use Ramsey\Identifier\Service\Clock\StatefulSequence;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
+use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
@@ -45,6 +44,12 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     private readonly int $machineIdShifted;
 
     /**
+     * We increase this value each time our clock sequence rolls over and add the value to the milliseconds to ensure
+     * the values are monotonically increasing.
+     */
+    private int $clockSequenceCounter = 0;
+
+    /**
      * Constructs a factory for creating Twitter Snowflakes
      *
      * @param int<0, 1023> $machineId A 10-bit machine identifier to use when
@@ -58,7 +63,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     public function __construct(
         private readonly int $machineId,
         private readonly Clock $clock = new SystemClock(),
-        private readonly Sequence $sequence = new StatefulSequence(precision: Precision::Millisecond),
+        private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
         $this->machineIdShifted = ($this->machineId & 0x03ff) << 12;
     }
@@ -93,9 +98,16 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->value($this->machineId, $dateTime) & 0x0fff;
+        $sequence = $this->sequence->next((string) $this->machineId, $dateTime) & 0x0fff;
 
+        // Increase the milliseconds by the current value of the clock sequence counter.
+        $milliseconds += $this->clockSequenceCounter;
         $millisecondsShifted = $milliseconds << 22;
+
+        if ($sequence === 0x0fff) {
+            // If the sequence is currently 0x0fff, bump the clock sequence counter, since we're rolling over.
+            $this->clockSequenceCounter++;
+        }
 
         if ($millisecondsShifted > $milliseconds) {
             $identifier = $millisecondsShifted | $this->machineIdShifted | $sequence;

@@ -17,21 +17,29 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Sequence;
 
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 
+use function abs;
 use function spl_object_hash;
 
 use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * An integer sequence that always increases by a given step value
  */
-final class IncreasingSequence implements Sequence
+final class MonotonicSequence implements Sequence
 {
-    private const CACHE_KEY = '__ramsey_id_increasing_sequence';
+    /**
+     * The cache key is generated from the Adler-32 checksum of this class name.
+     *
+     * ```
+     * hash('adler32', MonotonicSequence::class);
+     * ```
+     */
+    private const CACHE_KEY = '__ramsey_id_259414de';
 
-    private ?string $internalCacheKey = null;
+    private ?string $defaultCacheKey = null;
 
     /**
      * @param int $start The sequence starting value; please note, the first call to
@@ -44,24 +52,26 @@ final class IncreasingSequence implements Sequence
         private readonly int $step = 1,
         private readonly CacheInterface $cache = new InMemoryCache(),
     ) {
-        if ($step <= 0) {
-            throw new InvalidArgument('Step must be a positive integer');
-        }
+    }
+
+    public function current(?string $state = null): int
+    {
+        /** @var int */
+        return $this->cache->get($this->generateCacheKey($state), $this->start);
     }
 
     public function next(?string $state = null): int
     {
-        $cacheKey = $this->generateCacheKey($state);
+        $previous = $this->current($state);
 
-        /** @var int $previous */
-        $previous = $this->cache->get($cacheKey, $this->start);
-
-        if ($previous === PHP_INT_MAX || (PHP_INT_MAX - $previous) < $this->step) {
+        if ($this->step > 0 && $previous === PHP_INT_MAX || (PHP_INT_MAX - $previous) < $this->step) {
             throw new SequenceOverflow('Unable to increase sequence beyond its maximum value');
+        } elseif ($this->step < 0 && $previous === PHP_INT_MIN || ($previous - PHP_INT_MIN) < abs($this->step)) {
+            throw new SequenceOverflow('Unable to decrease sequence beyond its minimum value');
         }
 
         $next = $previous + $this->step;
-        $this->cache->set($cacheKey, $next);
+        $this->cache->set($this->generateCacheKey($state), $next);
 
         return $next;
     }
@@ -69,15 +79,15 @@ final class IncreasingSequence implements Sequence
     private function generateCacheKey(?string $state): string
     {
         if ($state === null) {
-            if ($this->internalCacheKey === null) {
-                $this->internalCacheKey = self::CACHE_KEY
-                    . ":start={$this->start};step={$this->step}:"
+            if ($this->defaultCacheKey === null) {
+                $this->defaultCacheKey = self::CACHE_KEY
+                    . "|start={$this->start};step={$this->step}|"
                     . spl_object_hash($this);
             }
 
-            return $this->internalCacheKey;
+            return $this->defaultCacheKey;
         }
 
-        return self::CACHE_KEY . ':' . $state;
+        return self::CACHE_KEY . '|' . $state;
     }
 }

@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Uuid;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Service\Clock\Sequence;
-use Ramsey\Identifier\Service\Clock\StatefulSequence;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
+use Ramsey\Identifier\Service\Clock\RandomClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
@@ -43,23 +43,25 @@ final class UuidV6Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
+    /**
+     * The maximum value of the clock sequence before it must roll over to zero.
+     */
+    private const CLOCK_SEQ_MAX = 16_384;
+
     private readonly Binary $binary;
     private readonly Time $time;
 
     /**
      * Constructs a factory for creating version 6, reordered time UUIDs
      *
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Nic $nic A NIC that provides the system MAC address value;
-     *     defaults to {@see RandomNic}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence}
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
+     * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
+     * @param ClockSequence $sequence A sequence that provides a clock sequence value to prevent collisions; defaults to {@see RandomClockSequence}.
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
         private readonly Nic $nic = new RandomNic(),
-        private readonly Sequence $sequence = new StatefulSequence(),
+        private readonly ClockSequence $sequence = new RandomClockSequence(),
     ) {
         $this->binary = new Binary();
         $this->time = new Time();
@@ -84,7 +86,7 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     ): UuidV6 {
         $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
         $dateTime = $dateTime ?? $this->clock->now();
-        $clockSequence = ($clockSequence ?? $this->sequence->value($node, $dateTime)) % 16384;
+        $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % self::CLOCK_SEQ_MAX;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
         $timeHex = bin2hex($timeBytes);
