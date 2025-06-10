@@ -42,7 +42,7 @@ class RandomNicTest extends TestCase
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturn('aabbccddeeff');
+        $cache->expects('get')->with('__ramsey_id_33d80f4b')->andReturn('aabbccddeeff');
 
         $nic = new RandomNic($cache);
 
@@ -57,10 +57,10 @@ class RandomNicTest extends TestCase
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturnNull();
+        $cache->expects('get')->with('__ramsey_id_33d80f4b')->andReturnNull();
         $cache
             ->expects('set')
-            ->with('__ramsey_id_random_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_33d80f4b', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new RandomNic($cache);
@@ -78,10 +78,10 @@ class RandomNicTest extends TestCase
     public function testAddressStoredInCacheIsSomehowAnEmptyString(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_nic')->andReturn('');
+        $cache->expects('get')->with('__ramsey_id_33d80f4b')->andReturn('');
         $cache
             ->expects('set')
-            ->with('__ramsey_id_random_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_33d80f4b', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new RandomNic($cache);
@@ -94,13 +94,19 @@ class RandomNicTest extends TestCase
         $this->assertSame($address, $nic->address());
     }
 
+    /**
+     * This test runs in a separate process because RandomNic::$address is a static property and is set in earlier
+     * tests, and for this test to pass, it must not be set.
+     */
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testAddressThrowsExceptionFromCache(): void
     {
         $exception = new class extends Exception implements CacheException {
         };
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_random_nic')->andThrow($exception);
+        $cache->expects('get')->with('__ramsey_id_33d80f4b')->andThrow($exception);
 
         $nic = new RandomNic($cache);
 

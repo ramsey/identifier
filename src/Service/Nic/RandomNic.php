@@ -39,7 +39,7 @@ final class RandomNic implements Nic
      * hash('adler32', RandomNic::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_random_nic';
+    private const CACHE_KEY = '__ramsey_id_33d80f4b';
 
     /**
      * The address, stored statically for better performance.

@@ -43,7 +43,7 @@ class SystemNicTest extends TestCase
     public function testAddressFoundInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_system_nic')->andReturn('aabbccddeeff');
+        $cache->expects('get')->with('__ramsey_id_34f20f6f')->andReturn('aabbccddeeff');
 
         $nic = new SystemNic($cache);
 
@@ -58,10 +58,10 @@ class SystemNicTest extends TestCase
     public function testAddressStoredInCache(): void
     {
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_system_nic')->andReturnNull();
+        $cache->expects('get')->with('__ramsey_id_34f20f6f')->andReturnNull();
         $cache
             ->expects('set')
-            ->with('__ramsey_id_system_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_34f20f6f', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new SystemNic($cache);
@@ -338,10 +338,10 @@ class SystemNicTest extends TestCase
         $os->expects('run')->with('netstat -ie')->andReturn($netstat);
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_system_nic')->andReturn('');
+        $cache->expects('get')->with('__ramsey_id_34f20f6f')->andReturn('');
         $cache
             ->expects('set')
-            ->with('__ramsey_id_system_nic', Mockery::pattern('/^[0-9a-f]{12}$/i'))
+            ->with('__ramsey_id_34f20f6f', Mockery::pattern('/^[0-9a-f]{12}$/i'))
             ->andReturnTrue();
 
         $nic = new SystemNic($cache, $os);
@@ -363,7 +363,7 @@ class SystemNicTest extends TestCase
         };
 
         $cache = $this->mockery(CacheInterface::class);
-        $cache->expects('get')->with('__ramsey_id_system_nic')->andThrow($exception);
+        $cache->expects('get')->with('__ramsey_id_34f20f6f')->andThrow($exception);
 
         $nic = new SystemNic($cache);
 

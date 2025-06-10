@@ -47,7 +47,7 @@ final class SystemDce implements Dce
      * hash('adler32', SystemDce::class . 'GID');
      * ```
      */
-    private const GID_CACHE_KEY = '__ramsey_id_system_dce_gid';
+    private const GID_CACHE_KEY = '__ramsey_id_63ba1027';
 
     /**
      * The cache key is generated from the Adler-32 checksum of this class name + "UID".
@@ -56,7 +56,7 @@ final class SystemDce implements Dce
      * hash('adler32', SystemDce::class . 'UID');
      * ```
      */
-    private const UID_CACHE_KEY = '__ramsey_id_system_dce_uid';
+    private const UID_CACHE_KEY = '__ramsey_id_63e41035';
 
     /**
      * @var int<0, max> | null

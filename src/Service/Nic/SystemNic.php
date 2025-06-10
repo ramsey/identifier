@@ -51,7 +51,7 @@ final class SystemNic implements Nic
      * hash('adler32', SystemNic::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_system_nic';
+    private const CACHE_KEY = '__ramsey_id_34f20f6f';
 
     /**
      * The system address, stored statically for better performance.
