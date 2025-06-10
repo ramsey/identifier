@@ -277,7 +277,8 @@ class UlidFactoryTest extends TestCase
     {
         $previous = $this->factory->create();
 
-        for ($i = 0; $i < 25; $i++) {
+        // Create a ton of ULIDs and assert that each one is greater than the last.
+        for ($i = 0; $i < 40_000; $i++) {
             $ulid = $this->factory->create();
             $now = gmdate('Y-m-d H:i');
             $this->assertTrue($ulid->compareTo($previous) > 0);
@@ -292,7 +293,8 @@ class UlidFactoryTest extends TestCase
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
-        for ($i = 0; $i < 25; $i++) {
+        // Create a ton of ULIDs and assert that each one is greater than the last.
+        for ($i = 0; $i < 40_000; $i++) {
             $ulid = $this->factory->createFromDateTime($dateTime);
             $this->assertTrue($ulid->compareTo($previous) > 0);
             $this->assertSame($dateTime->format('Y-m-d H:i'), $ulid->getDateTime()->format('Y-m-d H:i'));
