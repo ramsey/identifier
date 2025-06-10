@@ -36,7 +36,7 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory for creating version 1, Gregorian time UUIDs
+ * A factory for creating version 1, Gregorian time UUIDs.
  */
 final class UuidV1Factory implements TimeBasedUuidFactory
 {

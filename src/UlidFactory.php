@@ -24,7 +24,7 @@ use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * A factory for creating ULIDs
+ * A factory for creating ULIDs.
  */
 interface UlidFactory extends
     BytesIdentifierFactory,
@@ -39,9 +39,9 @@ interface UlidFactory extends
     public function createFromDateTime(DateTimeInterface $dateTime): Ulid;
 
     /**
-     * Creates a new instance of a ULID from the given hexadecimal representation
+     * Creates a new instance of a ULID from the given hexadecimal representation.
      *
-     * @throws InvalidArgument MUST throw if the identifier is not a legal value
+     * @throws InvalidArgument MUST throw if the identifier is not a legal value.
      */
     public function createFromHexadecimal(string $identifier): Ulid;
 

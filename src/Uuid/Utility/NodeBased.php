@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid\Utility;
 use function substr;
 
 /**
- * This internal trait provides functionality common to node-based UUIDs
+ * This internal trait provides functionality common to node-based UUIDs.
  *
  * @internal
  */

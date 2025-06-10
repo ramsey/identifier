@@ -30,9 +30,9 @@ use Ramsey\Identifier\SnowflakeFactory;
 use function sprintf;
 
 /**
- * A factory that generates Snowflakes according to Instagram's rules
+ * A factory that generates Snowflakes according to Instagram's rules.
  *
- * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes
+ * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes.
  */
 final class InstagramSnowflakeFactory implements SnowflakeFactory
 {
@@ -50,15 +50,11 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     private readonly int $shardIdShifted;
 
     /**
-     * Constructs a factory for creating Instagram Snowflakes
+     * Constructs a factory for creating Instagram Snowflakes.
      *
-     * @param int<0, 8191> $shardId A 13-bit shard identifier to use when
-     *     creating Snowflakes
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence} with
-     *     millisecond precision
+     * @param int<0, 8191> $shardId A 13-bit shard identifier to use when creating Snowflakes.
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
+     * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
     public function __construct(
         private readonly int $shardId,

@@ -34,11 +34,10 @@ use function substr;
 use const STR_PAD_LEFT;
 
 /**
- * A factory for creating Microsoft GUIDs
+ * A factory for creating Microsoft GUIDs.
  *
- * These GUIDs may either be "reserved Microsoft" variant UUIDs or RFC 9562
- * UUIDs using the Microsoft GUID binary encoding. See {@see MicrosoftGuid}
- * for more information on this encoding.
+ * These GUIDs may either be "reserved Microsoft" variant UUIDs or RFC 9562 UUIDs using the Microsoft GUID binary
+ * encoding. See {@see MicrosoftGuid} for more information on this encoding.
  */
 final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
 {
@@ -47,10 +46,9 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     private Binary $binary;
 
     /**
-     * Constructs a factory for creating Microsoft GUIDs
+     * Constructs a factory for creating Microsoft GUIDs.
      *
-     * @param BytesGenerator $bytesGenerator A random generator used to
-     *     generate bytes; defaults to {@see RandomBytesGenerator}
+     * @param BytesGenerator $bytesGenerator A random generator used to generate bytes; defaults to {@see RandomBytesGenerator}.
      */
     public function __construct(
         private BytesGenerator $bytesGenerator = new RandomBytesGenerator(),
@@ -101,11 +99,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
             /** @var MicrosoftGuid */
             return $this->createFromBytesInternal($this->swapBytes($bytes));
         } catch (Throwable $exception) {
-            throw new InvalidArgument(
-                sprintf('Invalid Microsoft GUID: %s', $identifier),
-                0,
-                $exception,
-            );
+            throw new InvalidArgument(sprintf('Invalid Microsoft GUID: %s', $identifier), 0, $exception);
         }
     }
 
@@ -120,11 +114,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
      */
     public function createFromRfc(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid // phpcs:ignore
     {
-        $bytes = $this->binary->applyVersionAndVariant(
-            $uuid->toBytes(),
-            $uuid->getVersion(),
-            Variant::Microsoft,
-        );
+        $bytes = $this->binary->applyVersionAndVariant($uuid->toBytes(), $uuid->getVersion(), Variant::Microsoft);
 
         return new MicrosoftGuid($this->swapBytes($bytes));
     }
@@ -154,8 +144,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     private function swapBytes(string $bytes): string
     {
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]
-            . $bytes[5] . $bytes[4]
-            . $bytes[7] . $bytes[6]
+            . $bytes[5] . $bytes[4] . $bytes[7] . $bytes[6]
             . substr($bytes, 8);
     }
 }

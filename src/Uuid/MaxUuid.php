@@ -26,10 +26,9 @@ use function sprintf;
 use function strlen;
 
 /**
- * The Max UUID is a special form of UUID that is specified to have all 128
- * bits set to one (1)
+ * The Max UUID is a special form of UUID that is specified to have all 128 bits set to one (1).
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10: Max UUID
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10: Max UUID.
  */
 final readonly class MaxUuid implements Uuid
 {

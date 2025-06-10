@@ -20,42 +20,42 @@ use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Uuid\UuidV2;
 
 /**
- * Provides system group, user, and organization identifiers for use with
- * Distributed Computing Environment (DCE) specifications
+ * Provides system group, user, and organization identifiers for use with Distributed Computing Environment (DCE)
+ * specifications.
  *
- * @link https://publications.opengroup.org/c311 DCE 1.1: Authentication and Security Services
+ * @link https://publications.opengroup.org/c311 DCE 1.1: Authentication and Security Services.
  * @see UuidV2
  */
 interface Dce
 {
     /**
-     * Returns a group identifier (i.e., GID) for the system
+     * Returns a group identifier (i.e., GID) for the system.
      *
-     * @link https://en.wikipedia.org/wiki/Group_identifier Group identifier
+     * @link https://en.wikipedia.org/wiki/Group_identifier Group identifier.
      *
      * @return int<0, max>
      *
-     * @throws DceIdentifierNotFound when unable to find a group identifier
+     * @throws DceIdentifierNotFound when unable to find a group identifier.
      */
     public function groupId(): int;
 
     /**
-     * Returns an organization identifier
+     * Returns an organization identifier.
      *
      * @return int<0, max>
      *
-     * @throws DceIdentifierNotFound when unable to find an organization identifier
+     * @throws DceIdentifierNotFound when unable to find an organization identifier.
      */
     public function orgId(): int;
 
     /**
-     * Returns a user identifier (i.e., UID) for the system
+     * Returns a user identifier (i.e., UID) for the system.
      *
-     * @link https://en.wikipedia.org/wiki/User_identifier User identifier
+     * @link https://en.wikipedia.org/wiki/User_identifier User identifier.
      *
      * @return int<0, max>
      *
-     * @throws DceIdentifierNotFound when unable to find a user identifier
+     * @throws DceIdentifierNotFound when unable to find a user identifier.
      */
     public function userId(): int;
 }

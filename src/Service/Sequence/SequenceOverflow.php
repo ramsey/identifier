@@ -20,8 +20,7 @@ use OverflowException;
 use Ramsey\Identifier\Exception\IdentifierException;
 
 /**
- * Thrown when a sequence reaches its maximum value (i.e., the sequence cannot
- * be incremented beyond its current value).
+ * Thrown when a sequence reaches its maximum value (i.e., the sequence cannot be incremented beyond its current value).
  */
 class SequenceOverflow extends OverflowException implements IdentifierException
 {

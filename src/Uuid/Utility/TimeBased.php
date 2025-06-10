@@ -19,7 +19,7 @@ namespace Ramsey\Identifier\Uuid\Utility;
 use DateTimeImmutable;
 
 /**
- * This internal trait provides functionality common to time-based UUIDs
+ * This internal trait provides functionality common to time-based UUIDs.
  *
  * @internal
  */

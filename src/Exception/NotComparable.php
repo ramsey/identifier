@@ -20,8 +20,7 @@ use Identifier\Exception\NotComparable as IdentifierNotComparable;
 use RuntimeException;
 
 /**
- * Thrown when unable to compare values, e.g. because the other value is not of
- * the proper type, etc.
+ * Thrown when unable to compare values, e.g. because the other value is not of the proper type, etc.
  */
 class NotComparable extends RuntimeException implements
     IdentifierException,

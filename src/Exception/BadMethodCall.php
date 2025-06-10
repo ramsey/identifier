@@ -19,8 +19,8 @@ namespace Ramsey\Identifier\Exception;
 use BadMethodCallException;
 
 /**
- * Thrown when attempting to call a method from an unsupported context (e.g.,
- * calling `getVersion()` on a {@see \Ramsey\Identifier\Uuid\MaxUuid})
+ * Thrown when attempting to call a method from an unsupported context (e.g., calling `getVersion()` on a
+ * {@see \Ramsey\Identifier\Uuid\MaxUuid}).
  */
 class BadMethodCall extends BadMethodCallException implements IdentifierException
 {

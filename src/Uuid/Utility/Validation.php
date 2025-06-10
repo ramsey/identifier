@@ -32,26 +32,23 @@ use function unpack;
 use const PHP_INT_MIN;
 
 /**
- * This internal trait provides common validation functionality for RFC 9562 UUIDs
+ * This internal trait provides common validation functionality for UUIDs.
  *
  * @internal
  */
 trait Validation
 {
     /**
-     * Returns the Version enum for the UUID type represented by the class
-     * using this trait
+     * Returns the Version enum for the UUID type represented by the class using this trait.
      *
-     * We use this in {@see self::isValid()} to determine whether the UUID is
-     * valid for the type the class represents.
+     * We use this in {@see self::isValid()} to determine whether the UUID is valid for the type the class represents.
      */
     abstract protected function getVersion(): Version;
 
     /**
-     * Given an integer value of the variant bits, this returns the variant
-     * associated with those bits
+     * Given an integer value of the variant bits, this returns the variant associated with those bits.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field.
      */
     private function determineVariant(int $value): Variant
     {
@@ -64,7 +61,7 @@ trait Validation
     }
 
     /**
-     * Returns a Domain for the UUID, if available
+     * Returns a Domain for the UUID, if available.
      *
      * The domain field is only relevant to version 2 UUIDs.
      */
@@ -79,7 +76,7 @@ trait Validation
     }
 
     /**
-     * Returns the UUID variant, if available
+     * Returns the UUID variant, if available.
      */
     private function getVariantFromUuid(string $uuid, ?Format $format): ?Variant
     {
@@ -92,7 +89,7 @@ trait Validation
     }
 
     /**
-     * Returns the UUID version, if available
+     * Returns the UUID version, if available.
      */
     private function getVersionFromUuid(string $uuid, ?Format $format, bool $guid = false): ?int
     {
@@ -105,8 +102,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes
-     * representation of a UUID has a valid format
+     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID has a valid format.
      */
     private function hasValidFormat(string $uuid, ?Format $format): bool
     {
@@ -121,8 +117,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes
-     * representation of a UUID is a Max UUID
+     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID is a Max UUID.
      */
     private function isMax(string $uuid, ?Format $format): bool
     {
@@ -135,8 +130,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes
-     * representation of a UUID is a Nil UUID
+     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID is a Nil UUID.
      */
     private function isNil(string $uuid, ?Format $format): bool
     {
@@ -149,7 +143,7 @@ trait Validation
     }
 
     /**
-     * Validates a UUID according to the RFC 9562 layout
+     * Validates a UUID according to the RFC 9562 layout.
      *
      * The UUID may be in string standard, hexadecimal, or bytes representation.
      */
@@ -161,10 +155,9 @@ trait Validation
     }
 
     /**
-     * Returns true if the UUID is a valid string standard representation
+     * Returns true if the UUID is a valid string standard representation.
      *
-     * @param string $mask Typically a hexadecimal mask but may also be used to
-     *     validate alternate masks, such as with Max UUIDs
+     * @param string $mask A character mask used to validate the UUID string.
      */
     private function isValidStringLayout(string $uuid, string $mask): bool
     {
@@ -184,8 +177,7 @@ trait Validation
         /** @var int[] $parts */
         $parts = unpack('n', "\x00" . $bytes[9]);
 
-        // If $parts[1] is not set, return an integer that won't
-        // exist in Domain, so that Domain::tryFrom() returns null.
+        // If $parts[1] is not set, return an integer that won't exist in Domain, so that Domain::tryFrom() returns null.
         return $parts[1] ?? PHP_INT_MIN;
     }
 

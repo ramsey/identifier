@@ -28,12 +28,10 @@ use function sprintf;
 use function strlen;
 
 /**
- * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
- * version bits set according to RFC 9562
+ * Nonstandard UUIDs look like UUIDs, but they do not have the variant and version bits set according to RFC 9562.
  *
- * It is possible a nonstandard UUID was generated according to RFC 9562 but had
- * its bits rearranged for reasons such as sortability. Without knowing which
- * rearrangement algorithm was used, it is impossible to determine the UUID's
+ * It is possible a nonstandard UUID was generated according to RFC 9562 but had its bits rearranged for reasons such as
+ * sortability. Without knowing which rearrangement algorithm was used, it is impossible to determine the UUID's
  * original layout, so we treat it as a "nonstandard" UUID.
  */
 final readonly class NonstandardUuid implements JsonSerializable, Uuid

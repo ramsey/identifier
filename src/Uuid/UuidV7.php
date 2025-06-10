@@ -21,12 +21,11 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
 use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 /**
- * Unix Epoch time, or version 7, UUIDs include a timestamp in milliseconds
- * since the Unix Epoch
+ * Unix Epoch time, or version 7, UUIDs include a timestamp in milliseconds since the Unix Epoch.
  *
  * Version 7 UUIDs are designed to be monotonically increasing and sortable.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.7 RFC 9562, section 5.7. UUID Version 7
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.7 RFC 9562, section 5.7. UUID Version 7.
  */
 final readonly class UuidV7 implements TimeBasedUuid
 {

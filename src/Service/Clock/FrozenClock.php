@@ -20,13 +20,12 @@ use DateTimeImmutable;
 use Psr\Clock\ClockInterface as Clock;
 
 /**
- * A clock that always returns a pre-defined date-time
+ * A clock that always returns a pre-defined date-time.
  */
 final readonly class FrozenClock implements Clock
 {
     /**
-     * @param DateTimeImmutable $dateTime The date-time instance this service
-     *     should always return
+     * @param DateTimeImmutable $dateTime The date-time instance this service should always return.
      */
     public function __construct(private DateTimeImmutable $dateTime)
     {

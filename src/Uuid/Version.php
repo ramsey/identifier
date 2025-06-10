@@ -17,7 +17,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 /**
- * The version number describes how the UUID was generated
+ * The version number describes how the UUID was generated.
  *
  * | **Msb0** | **Msb1** | **Msb2** | **Msb3** | **Version** | **Description**                                             |
  * | :------: | :------: | :------: | :------: | :---------: | :---------------------------------------------------------- |
@@ -38,7 +38,7 @@ namespace Ramsey\Identifier\Uuid;
  * |     1    |    1     |    1     |    0     |     14      | Reserved for future definition                              |
  * |     1    |    1     |    1     |    1     |     15      | Reserved for future definition                              |
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Verson Field
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Verson Field.
  */
 enum Version: int
 {
@@ -48,7 +48,7 @@ enum Version: int
     case GregorianTime = 0b0001;
 
     /**
-     * Reserved for DCE Security version, with embedded POSIX UUIDs.
+     * Reserved for the DCE Security version, with embedded POSIX UUIDs.
      */
     case DceSecurity = 0b0010;
 
@@ -78,7 +78,7 @@ enum Version: int
     case UnixTime = 0b0111;
 
     /**
-     * Reserved for custom UUID formats specified in RFC 9562.
+     * Reserved for custom format UUID formats specified in RFC 9562.
      */
     case Custom = 0b1000;
 

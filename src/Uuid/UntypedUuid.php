@@ -33,17 +33,15 @@ use function strlen;
 use function strspn;
 
 /**
- * An untyped UUID is one in which the version and variant bits have not yet
- * been evaluated. This does NOT mean the UUID is invalid! Rather, this is a
- * performance feature.
+ * An untyped UUID is one in which the version and variant bits have not yet been evaluated. This does NOT mean the UUID
+ * is invalid! Rather, this is a performance feature.
  *
- * When creating a UUID instance from string, bytes, hexadecimal, or integer, it
- * is more performant to defer checking the version and variant bits until
- * later, i.e., when calling {@see self::getVersion()}, {@see self::getVariant()},
+ * When creating a UUID instance from string, bytes, hexadecimal, or integer, it is more performant to defer checking
+ * the version and variant bits until later, i.e., when calling {@see self::getVersion()}, {@see self::getVariant()},
  * {@see self::getDateTime()}, and {@see self::getNode()}.
  *
- * To access a typed version (e.g., {@see UuidV1}, {@see UuidV4}, etc.), call
- * {@see self::toTypedUuid()} on any UntypedUuid instance.
+ * To access a typed version (e.g., {@see UuidV1}, {@see UuidV4}, etc.), call {@see self::toTypedUuid()} on any
+ * UntypedUuid instance.
  */
 final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
 {
@@ -54,7 +52,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     private ?Variant $variant = null;
     private ?Version $version = null;
 
-    private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore
+    private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore Generic.Files.LineLength
 
     /**
      * @throws InvalidArgument
@@ -140,8 +138,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * Returns a typed version of this UUID
      */
-    // phpcs:ignore
-    public function toTypedUuid(): MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
+    public function toTypedUuid(): MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 // phpcs:ignore Generic.Files.LineLength
     {
         if ($this->typedUuid === null) {
             try {

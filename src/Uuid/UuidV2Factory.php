@@ -39,7 +39,7 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory for creating version 2, DCE Security UUIDs
+ * A factory for creating version 2, DCE Security UUIDs.
  */
 final class UuidV2Factory implements TimeBasedUuidFactory
 {
@@ -54,7 +54,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * Constructs a factory for creating version 2, DCE Security UUIDs
+     * Constructs a factory for creating version 2, DCE Security UUIDs.
      *
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}

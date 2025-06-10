@@ -30,10 +30,9 @@ use function strspn;
 use function unpack;
 
 /**
- * A NIC that provides a pre-determined MAC address and sets the multicast bit,
- * according to RFC 9562, section 6.10.
+ * A NIC that provides a pre-determined MAC address and sets the multicast bit, according to RFC 9562, section 6.10.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host.
  */
 final readonly class StaticNic implements Nic
 {
@@ -43,7 +42,7 @@ final readonly class StaticNic implements Nic
     private string $address;
 
     /**
-     * @param int<0, max> | non-empty-string $address A 48-bit integer or hexadecimal string
+     * @param int<0, max> | non-empty-string $address A 48-bit integer or hexadecimal string.
      *
      * @throws InvalidArgument
      */

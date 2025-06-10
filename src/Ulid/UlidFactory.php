@@ -41,17 +41,16 @@ use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
- * A factory for creating ULIDs
+ * A factory for creating ULIDs.
  */
 final class UlidFactory implements UlidFactoryInterface
 {
     use Validation;
 
     /**
-     * Constructs a factory for creating ULIDs
+     * Constructs a factory for creating ULIDs.
      *
-     * @param BytesGenerator $bytesGenerator A bytes generator used to
-     *     generate bytes; defaults to {@see MonotonicBytesGenerator}
+     * @param BytesGenerator $bytesGenerator A generator used to generate bytes; defaults to {@see MonotonicBytesGenerator}.
      */
     public function __construct(
         private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator(),
@@ -180,16 +179,14 @@ final class UlidFactory implements UlidFactoryInterface
     }
 
     /**
-     * Returns a ULID created from the value of a UUID
+     * Returns a ULID created from the value of a UUID.
      *
-     * ULIDs are defined as being generated from a timestamp based on a count of
-     * milliseconds since the Unix Epoch. The only type of UUID that is binary
-     * compatible with the ULID specification is version 7. Only version 7 UUIDs
-     * will produce sortable ULIDs with meaningful timestamps.
+     * ULIDs are defined as being generated from a timestamp based on a count of milliseconds since the Unix Epoch. The
+     * only type of UUID that is binary compatible with the ULID specification is version 7. Only version 7 UUIDs will
+     * produce sortable ULIDs with meaningful timestamps.
      *
-     * That said, any type of UUID may be converted to a ULID representation,
-     * though the ULID produced may not be sortable or contain any meaningful
-     * timestamp information.
+     * That said, any type of UUID may be converted to a ULID representation, though the ULID produced may not be
+     * sortable or contain any meaningful timestamp information.
      */
     public function createFromUuid(Uuid $uuid): MaxUlid | NilUlid | Ulid
     {
@@ -197,7 +194,7 @@ final class UlidFactory implements UlidFactoryInterface
     }
 
     /**
-     * Creates a Max ULID with all bits set to one (1)
+     * Creates a Max ULID with all bits set to one (1).
      */
     public function max(): MaxUlid
     {
@@ -205,7 +202,7 @@ final class UlidFactory implements UlidFactoryInterface
     }
 
     /**
-     * Creates a Nil ULID with all bits set to zero (0)
+     * Creates a Nil ULID with all bits set to zero (0).
      */
     public function nil(): NilUlid
     {

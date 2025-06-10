@@ -28,7 +28,7 @@ use function str_pad;
 use const STR_PAD_LEFT;
 
 /**
- * This internal trait provides common factory functionality for RFC 9562 UUIDs
+ * This internal trait provides common factory functionality for UUIDs.
  *
  * @internal
  */
@@ -37,8 +37,7 @@ trait StandardFactory
     use Validation;
 
     /**
-     * Returns the name of the UUID class to use when instantiating UUID
-     * instances from this trait
+     * Returns the name of the UUID class to use when instantiating UUID instances from this trait.
      *
      * @return class-string<Uuid>
      */
@@ -71,9 +70,8 @@ trait StandardFactory
     }
 
     /**
-     * The minimum integer value for a version 1 UUID is 75567087097951178194944.
-     * As such, there's no need to use better performing math for integers less
-     * than PHP_INT_MAX, since those integers can never be valid RFC 9562 UUIDs.
+     * The minimum integer value for a version 1 UUID is 75,567,087,097,951,178,194,944. As such, there's no need to use
+     * better performing math for integers less than PHP_INT_MAX, since those integers can never be valid UUIDs.
      *
      * @throws InvalidArgument
      */

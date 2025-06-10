@@ -19,7 +19,7 @@ namespace Ramsey\Identifier;
 use Identifier\DateTimeIdentifier;
 
 /**
- * A time-based UUID
+ * A time-based UUID.
  */
 interface TimeBasedUuid extends DateTimeIdentifier, Uuid
 {

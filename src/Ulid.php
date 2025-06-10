@@ -21,14 +21,14 @@ use Identifier\DateTimeIdentifier;
 use Identifier\IntegerIdentifier;
 
 /**
- * A universally unique lexicographically sortable identifier (ULID)
+ * A universally unique lexicographically sortable identifier (ULID).
  *
- * @link https://github.com/ulid/spec ULID Specification
+ * @link https://github.com/ulid/spec ULID Specification.
  */
 interface Ulid extends BytesIdentifier, DateTimeIdentifier, IntegerIdentifier
 {
     /**
-     * Returns a string representation of the ULID encoded as hexadecimal digits
+     * Returns a string representation of the ULID encoded as hexadecimal digits.
      */
     public function toHexadecimal(): string;
 }

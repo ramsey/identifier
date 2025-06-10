@@ -22,12 +22,12 @@ namespace Ramsey\Identifier\Uuid\Utility;
 final class Mask
 {
     /**
-     * A mask used with functions like {@see strspn()} to validate hexadecimal strings
+     * A character mask used with functions like {@see strspn()} to validate hexadecimal strings.
      */
     public const HEX = '0123456789abcdefABCDEF';
 
     /**
-     * A mask used with functions like {@see strspn()} to validate string integers
+     * A character mask used with functions like {@see strspn()} to validate string integers.
      */
     public const INT = '0123456789';
 

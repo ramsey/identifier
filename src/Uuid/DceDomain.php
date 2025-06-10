@@ -17,29 +17,29 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 /**
- * DCE local domains for version 2, DCE Security UUIDs
+ * DCE local domains for version 2, DCE Security UUIDs.
  *
- * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01 DCE 1.1: Auth & Sec, §11.5.1.1
+ * @link https://pubs.opengroup.org/onlinepubs/9696989899/chap11.htm#tagcjh_14_05_01_01 DCE 1.1: Auth & Sec, §11.5.1.1.
  */
 enum DceDomain: int
 {
     /**
-     * Principal domain
+     * Principal domain.
      */
     case Person = 0;
 
     /**
-     * Group domain
+     * Group domain.
      */
     case Group = 1;
 
     /**
-     * Organization domain
+     * Organization domain.
      */
     case Org = 2;
 
     /**
-     * Returns the "stringname" value, as defined by DCE
+     * Returns the "string name" value, as defined by DCE.
      */
     public function dceStringName(): string
     {

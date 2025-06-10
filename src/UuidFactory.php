@@ -22,7 +22,7 @@ use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * A factory for creating UUIDs
+ * A factory for creating UUIDs.
  */
 interface UuidFactory extends
     BytesIdentifierFactory,
@@ -34,9 +34,9 @@ interface UuidFactory extends
     public function createFromBytes(string $identifier): Uuid;
 
     /**
-     * Creates a new instance of a UUID from the given hexadecimal representation
+     * Creates a new instance of a UUID from the given hexadecimal representation.
      *
-     * @throws InvalidArgument MUST throw if the identifier is not a legal value
+     * @throws InvalidArgument MUST throw if the identifier is not a legal value.
      */
     public function createFromHexadecimal(string $identifier): Uuid;
 

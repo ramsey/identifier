@@ -22,19 +22,20 @@ use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
 /**
- * Uses PHP's `random_int()` function to always generate a random sequence value.
+ * Uses PHP's `random_int()` function to generate a random sequence value.
  *
- * WARNING: Sequence values generated using this method are not sequential.
+ * > [!CAUTION]
+ * > Values generated using RandomSequence are not sequential or monotonic. They may be positive or negative integers.
  *
- * @link https://www.php.net/random_int random_int()
+ * @link https://www.php.net/random_int random_int().
  */
 final class RandomSequence implements Sequence
 {
     private int $current;
 
     /**
-     * @param int $min The minimum value allowed in this random sequence (inclusive)
-     * @param int $max The maximum value allowed in this random sequence (inclusive)
+     * @param int $min The minimum value allowed in this random sequence (inclusive).
+     * @param int $max The maximum value allowed in this random sequence (inclusive).
      */
     public function __construct(
         private readonly int $min = PHP_INT_MIN,

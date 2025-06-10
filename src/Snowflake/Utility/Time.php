@@ -33,11 +33,10 @@ use function sprintf;
 final class Time
 {
     /**
-     * Returns a date-time instance created from the timestamp extracted from
-     * a Snowflake
+     * Returns a date-time instance created from the timestamp extracted from a Snowflake.
      *
-     * @param int | numeric-string $epochOffset The number of milliseconds from
-     *     the Unix Epoch to offset the starting epoch for this Snowflake
+     * @param int | numeric-string $epochOffset The number of milliseconds from the Unix Epoch to offset the starting
+     *     epoch for this Snowflake.
      *
      * @throws OutOfRange
      */
@@ -48,17 +47,11 @@ final class Time
     ): DateTimeImmutable {
         $value = $snowflake->toInteger();
 
-        // We support unsigned, 64-bit integers, so $value might be greater than
-        // PHP_INT_MAX, in which case, it'll be a string, and we'll need to use
-        // BigInteger for the math.
+        // We support unsigned, 64-bit integers, so $value might be greater than PHP_INT_MAX, in which case, it'll be a
+        // string, and we'll need to use BigInteger for the math.
         if (is_int($value)) {
             $milliseconds = (int) (($value >> $rightShifts) + $epochOffset);
-
-            $timestamp = sprintf(
-                '%d.%03d',
-                intdiv($milliseconds, 1000),
-                abs($milliseconds) % 1000,
-            );
+            $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds) % 1000);
         } else {
             $timestamp = (string) BigInteger::of($value)
                 ->shiftedRight($rightShifts)

@@ -19,8 +19,7 @@ namespace Ramsey\Identifier\Exception;
 use LogicException;
 
 /**
- * Thrown when attempting to use functionality that relies on a PHP function
- * that is not supported by the current system
+ * Thrown when attempting to use functionality that relies on a PHP function that is not supported by the current system.
  */
 class MissingFunction extends LogicException implements IdentifierException
 {

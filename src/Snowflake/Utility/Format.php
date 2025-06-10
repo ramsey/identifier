@@ -34,18 +34,18 @@ use const STR_PAD_LEFT;
 enum Format: int
 {
     /**
-     * Bytes representation
+     * Bytes representation.
      */
     case Bytes = 8;
 
     /**
-     * Hexadecimal representation
+     * Hexadecimal representation.
      */
     case Hex = 16;
 
     /**
-     * Formats a Snowflake identifier from its integer or numeric string form
-     * into {@see self::Hex}, {@see self::Bytes}, or int forms.
+     * Formats a Snowflake identifier from its integer or numeric string form into {@see self::Hex}, {@see self::Bytes},
+     * or int forms.
      */
     public static function format(int | string $value, ?self $to): int | string
     {

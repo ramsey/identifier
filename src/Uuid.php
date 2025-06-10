@@ -22,36 +22,36 @@ use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 
 /**
- * A universally unique identifier (UUID)
+ * A universally unique identifier (UUID).
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562: Universally Unique IDentifiers (UUIDs)
+ * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562: Universally Unique IDentifiers (UUIDs).
  */
 interface Uuid extends BytesIdentifier, IntegerIdentifier
 {
     /**
-     * Returns the variant of this UUID, describing the layout of the UUID
+     * Returns the variant of this UUID, describing the layout of the UUID.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 RFC 9562, section 4.1. Variant Field.
      */
     public function getVariant(): Variant;
 
     /**
-     * Returns the version of this UUID, describing how the UUID was generated
+     * Returns the version of this UUID, describing how the UUID was generated.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Version Field
+     * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Version Field.
      */
     public function getVersion(): Version;
 
     /**
-     * Returns a string representation of the UUID encoded as hexadecimal digits
+     * Returns a string representation of the UUID encoded as hexadecimal digits.
      */
     public function toHexadecimal(): string;
 
     /**
-     * Returns the string standard representation of the UUID as a URN
+     * Returns the string standard representation of the UUID as a URN.
      *
-     * @link https://www.rfc-editor.org/rfc/rfc9562#figure-4 RFC 9562, Figure 4: Example URN Namespace for UUID
-     * @link https://www.rfc-editor.org/rfc/rfc8141 RFC 8141: Uniform Resource Names (URNs)
+     * @link https://www.rfc-editor.org/rfc/rfc9562#figure-4 RFC 9562, Figure 4: Example URN Namespace for UUID.
+     * @link https://www.rfc-editor.org/rfc/rfc8141 RFC 8141: Uniform Resource Names (URNs).
      *
      * @return non-empty-string
      */

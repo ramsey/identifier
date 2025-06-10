@@ -39,7 +39,7 @@ use function substr;
 use const PHP_INT_MAX;
 
 /**
- * This internal trait provides functionality common to all types of UUIDs
+ * This internal trait provides functionality common to all types of UUIDs.
  *
  * @internal
  */
@@ -50,10 +50,9 @@ trait Standard
     private readonly ?Format $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\Uuid} instance
+     * Constructs a {@see \Ramsey\Identifier\Uuid} instance.
      *
-     * @param string $uuid A representation of the UUID in either string
-     *     standard, hexadecimal, or bytes form
+     * @param string $uuid A representation of the UUID in either string with dashes, hexadecimal, or bytes form.
      *
      * @throws InvalidArgument
      */
@@ -103,9 +102,8 @@ trait Standard
      */
     public function compareTo(mixed $other): int
     {
-        // Microsoft GUID bytes are in a different order, even though the string
-        // representations might be identical, so we'll skip MicrosoftGuid bytes
-        // comparisons.
+        // Microsoft GUID bytes are in a different order, even though the string representations might be identical, so
+        // we'll skip MicrosoftGuid bytes comparisons.
         if ($other instanceof BytesIdentifier && !$other instanceof MicrosoftGuid) {
             return $this->toBytes() <=> $other->toBytes();
         }

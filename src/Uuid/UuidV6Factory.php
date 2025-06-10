@@ -37,7 +37,7 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory for creating version 6, reordered time UUIDs
+ * A factory for creating version 6, reordered Gregorian time UUIDs.
  */
 final class UuidV6Factory implements TimeBasedUuidFactory
 {
@@ -52,7 +52,7 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * Constructs a factory for creating version 6, reordered time UUIDs
+     * Constructs a factory for creating version 6, reordered time UUIDs.
      *
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
@@ -68,14 +68,11 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal
-     *     string representing the hardware address of the machine where this
-     *     identifier was generated
-     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help
-     *     avoid duplicates that could arise when the clock is set backwards in
-     *     time or if the node ID changes
-     * @param DateTimeInterface | null $dateTime A date-time to use when
-     *     creating the identifier
+     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
+     *     hardware address of the machine where this identifier was generated.
+     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help avoid duplicates that could arise when
+     *     the clock is set backwards in time or if the node ID changes.
+     * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws InvalidArgument
      */

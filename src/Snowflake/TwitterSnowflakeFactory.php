@@ -29,17 +29,16 @@ use Ramsey\Identifier\SnowflakeFactory;
 use function sprintf;
 
 /**
- * A factory that generates Snowflakes according to Twitter's rules
+ * A factory that generates Snowflakes according to Twitter's rules.
  *
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes
+ * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflakes.
  */
 final class TwitterSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
     /**
-     * For performance, we'll prepare the machine ID bits and store them
-     * for repeated use.
+     * For performance, we'll prepare the machine ID bits and store them for repeated use.
      */
     private readonly int $machineIdShifted;
 
@@ -50,15 +49,11 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     private int $clockSequenceCounter = 0;
 
     /**
-     * Constructs a factory for creating Twitter Snowflakes
+     * Constructs a factory for creating Twitter Snowflakes.
      *
-     * @param int<0, 1023> $machineId A 10-bit machine identifier to use when
-     *     creating Snowflakes
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence} with
-     *     millisecond precision
+     * @param int<0, 1023> $machineId A 10-bit machine identifier to use when creating Snowflakes.
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
+     * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
     public function __construct(
         private readonly int $machineId,

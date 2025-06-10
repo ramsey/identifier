@@ -23,10 +23,10 @@ use Ramsey\Identifier\Uuid\Utility\Standard;
 use Ramsey\Identifier\Uuid\Utility\TimeBased;
 
 /**
- * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node
- * values that are combined into a 128-bit unsigned integer
+ * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node values that are combined into a
+ * 128-bit unsigned integer.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.1 RFC 9562, section 5.1. UUID Version 1
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.1 RFC 9562, section 5.1. UUID Version 1.
  */
 final readonly class UuidV1 implements NodeBasedUuid, TimeBasedUuid
 {

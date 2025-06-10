@@ -24,7 +24,7 @@ use function strlen;
 use function substr;
 
 /**
- * A bytes generator that returns a pre-determined string of bytes
+ * A generator that returns a pre-determined string of bytes.
  */
 final readonly class FixedBytesGenerator implements BytesGenerator
 {

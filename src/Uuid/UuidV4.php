@@ -20,10 +20,9 @@ use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 /**
- * Random, or version 4, UUIDs are randomly or pseudo-randomly generated 128-bit
- * integers
+ * Random, or version 4, UUIDs are randomly generated 128-bit integers.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.4 RFC 9562, section 5.4. UUID Version 4
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.4 RFC 9562, section 5.4. UUID Version 4.
  */
 final readonly class UuidV4 implements Uuid
 {

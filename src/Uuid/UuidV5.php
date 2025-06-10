@@ -20,11 +20,10 @@ use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Utility\Standard;
 
 /**
- * Version 5 UUIDs are named-based, using a combination of a namespace and name
- * that are hashed into a 128-bit unsigned integer using the SHA-1 hashing
- * algorithm
+ * Version 5 UUIDs are named-based, using a combination of a namespace and name that are hashed into a 128-bit unsigned
+ * integer using the SHA-1 hashing algorithm.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.5 RFC 9562, section 5.5. UUID Version 5
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.5 RFC 9562, section 5.5. UUID Version 5.
  */
 final readonly class UuidV5 implements Uuid
 {

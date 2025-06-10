@@ -22,17 +22,17 @@ namespace Ramsey\Identifier\Uuid\Utility;
 enum Format: int
 {
     /**
-     * Bytes representation
+     * Bytes representation.
      */
     case Bytes = 16;
 
     /**
-     * Hexadecimal representation
+     * Hexadecimal representation.
      */
     case Hex = 32;
 
     /**
-     * String standard representation
+     * String standard representation.
      */
     case String = 36;
 }

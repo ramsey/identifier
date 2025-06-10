@@ -13,16 +13,15 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use function count;
 
 /**
- * A simple PSR-16 in-memory cache implementation
+ * A simple PSR-16 in-memory cache implementation.
  *
- * Code and concepts within this class are borrowed from the marvin255/in-memory-cache
- * package and are used under the terms of the MIT license distributed with
- * marvin255/in-memory-cache.
+ * Code and concepts within this class are borrowed from the marvin255/in-memory-cache package and are used under the
+ * terms of the MIT license distributed with marvin255/in-memory-cache.
  *
  * marvin255/in-memory-cache is copyright (c) liquetsoft.
  *
- * @link https://github.com/marvin255/in-memory-cache marvin255/in-memory-cache
- * @link https://github.com/marvin255/in-memory-cache/blob/v2.3.3/LICENSE MIT License
+ * @link https://github.com/marvin255/in-memory-cache marvin255/in-memory-cache.
+ * @link https://github.com/marvin255/in-memory-cache/blob/v2.3.3/LICENSE MIT License.
  *
  * @phpstan-type CacheItem array{value: mixed, ttl: int, last_access: int}
  */
@@ -166,8 +165,8 @@ final class InMemoryCache implements CacheInterface
     }
 
     /**
-     * Attempts to remove an invalid cache item first, and if it can't find one,
-     * it resorts to removing the least recently used cache item.
+     * Attempts to remove an invalid cache item first, and if it can't find one, it resorts to removing the least
+     * recently used cache item.
      */
     private function evictCacheItem(): void
     {

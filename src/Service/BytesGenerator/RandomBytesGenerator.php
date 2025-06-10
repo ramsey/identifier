@@ -21,10 +21,9 @@ use DateTimeInterface;
 use function random_bytes;
 
 /**
- * A random generator that uses PHP's built-in `random_bytes()` function to
- * generate cryptographically-secure random bytes
+ * A generator that uses PHP's built-in `random_bytes()` function to generate cryptographically secure random bytes.
  *
- * @link https://www.php.net/random_bytes random_bytes()
+ * @link https://www.php.net/random_bytes random_bytes().
  */
 final class RandomBytesGenerator implements BytesGenerator
 {

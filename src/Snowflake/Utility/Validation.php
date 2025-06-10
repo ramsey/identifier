@@ -33,7 +33,7 @@ trait Validation
     private const UPPER_BOUNDS = '18446744073709551615';
 
     /**
-     * Returns true if the Snowflake is valid according to the given format
+     * Returns true if the Snowflake is valid, according to the given format
      */
     private function isValid(int | string $snowflake): bool
     {

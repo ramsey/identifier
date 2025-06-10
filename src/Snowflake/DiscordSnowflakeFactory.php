@@ -39,8 +39,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     use StandardFactory;
 
     /**
-     * For performance, we'll prepare the worker and process ID bits and store
-     * them for repeated use.
+     * For performance, we'll prepare the worker and process ID bits and store them for repeated use.
      */
     private readonly int $workerProcessIdShifted;
 
@@ -51,17 +50,12 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     private int $clockSequenceCounter = 0;
 
     /**
-     * Constructs a factory for creating Discord Snowflakes
+     * Constructs a factory for creating Discord Snowflakes.
      *
-     * @param int<0, 31> $workerId A 5-bit worker identifier to use when
-     *     creating Snowflakes
-     * @param int<0, 31> $processId A 5-bit process identifier to use when
-     *     creating Snowflakes
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence} with
-     *     millisecond precision
+     * @param int<0, 31> $workerId A 5-bit worker identifier to use when creating Snowflakes.
+     * @param int<0, 31> $processId A 5-bit process identifier to use when creating Snowflakes.
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
+     * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
     public function __construct(
         private readonly int $workerId,

@@ -24,7 +24,7 @@ use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 use function strlen;
 
 /**
- * A factory for creating version 8, custom UUIDs
+ * A factory for creating version 8, custom format UUIDs.
  */
 final class UuidV8Factory implements UuidFactoryInterface
 {
@@ -38,19 +38,16 @@ final class UuidV8Factory implements UuidFactoryInterface
     }
 
     /**
-     * Creates a new instance of an identifier
+     * Creates a new instance of an identifier.
      *
-     * The bytes provided may contain any value according to your application's
-     * needs. Be aware, however, that other applications may not understand the
-     * semantics of the value.
+     * The bytes provided may contain any value according to your application's needs. Be aware, however, that other
+     * applications may not understand the semantics of the value.
      *
-     * @param string | null $bytes A 16-byte octet string. This is an open blob
-     *     of data that you may fill with 128 bits of information. Be aware,
-     *     however, bits 48 through 51 will be replaced with the UUID version
-     *     field, and bits 64 and 65 will be replaced with the UUID variant. You
-     *     MUST NOT rely on these bits for your application needs.
+     * @param string | null $bytes A 16-byte octet string. This is an open blob of data that you may fill with 128 bits
+     *     of information. Be aware, however, bits 48 through 51 will be replaced with the UUID version field, and bits
+     *     64 and 65 will be replaced with the UUID variant. You MUST NOT rely on these bits for your application needs.
      *
-     * @throws InvalidArgument if $bytes is null or is not a 16-byte octet string
+     * @throws InvalidArgument if `$bytes` is null or is not a 16-byte octet string.
      */
     public function create(?string $bytes = null): UuidV8
     {

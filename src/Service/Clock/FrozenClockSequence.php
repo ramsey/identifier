@@ -24,7 +24,7 @@ use DateTimeInterface;
 final readonly class FrozenClockSequence implements ClockSequence
 {
     /**
-     * @param int<0, max> $value A pre-determined clock sequence value
+     * @param int<0, max> $value A pre-determined sequence value.
      */
     public function __construct(private int $value)
     {

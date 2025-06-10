@@ -39,34 +39,25 @@ use function strlen;
 use function substr;
 
 /**
- * Microsoft GUIDs are identical to RFC 9562 UUIDs, except for the endianness of
- * the most-significant 8 bytes when stored or transmitted in binary form. While
- * RFC 9562 UUIDs use "network," or big-endian, byte order for all 16 bytes,
- * Microsoft GUIDs store the most-significant 8 bytes in "native," or
- * little-endian, byte order and the least-significant 8 bytes in network byte
- * order.
+ * Microsoft GUIDs are identical to RFC 9562 UUIDs, except for the endianness of the most-significant 8 bytes when
+ * stored or transmitted in binary form. While RFC 9562 UUIDs use "network," or big-endian, byte order for all 16 bytes,
+ * Microsoft GUIDs store the most-significant 8 bytes in "native," or little-endian, byte order and the least-significant
+ * 8 bytes in network byte order.
  *
- * For backwards compatibility, Microsoft GUIDs may be encoded using the
- * "reserved Microsoft" {@see Variant variant} bits. However, in practice, they
- * are often encoded as standard RFC 9562 variant UUIDs and stored using the
- * Microsoft GUID byte order. Since it is impossible to determine whether the
- * bytes for an RFC 9562 UUID are stored in the standard network byte order or
- * using Microsoft's GUID byte order, applications using Microsoft GUIDs must
- * take care to keep track of this information or, alternately, encode the UUIDs
- * as "reserved Microsoft" variant UUIDs.
+ * For backwards compatibility, Microsoft GUIDs may be encoded using the "reserved Microsoft" {@see Variant variant}
+ * bits. However, in practice, they are often encoded as standard RFC 9562 variant UUIDs and stored using the Microsoft
+ * GUID byte order. Since it is impossible to determine whether the UUID bytes are stored in network byte order or using
+ * Microsoft's GUID byte order, applications must keep track of this information or encode the UUIDs as "reserved
+ * Microsoft" variant UUIDs.
  *
  * > [!WARNING]
- * > This class supports both "reserved Microsoft" and RFC 9562 variants.
- * > Please understand that, if using this class with RFC 9562 variants,
- * > bytes will be treated as if they are in Microsoft's GUID byte order. This
- * > might cause problems if your application receives UUID bytes stored or
- * > transmitted in network byte order.
+ * > This class supports both "reserved Microsoft" and RFC 9562 variants. Please understand that, if using this class
+ * > with RFC 9562 variants, bytes will be treated as if they are in Microsoft's GUID byte order. This might cause
+ * > problems if your application receives UUID bytes stored or transmitted in network byte order.
  *
- * There is no difference between the string and hexadecimal representations of
- * Microsoft GUIDs and RFC 9562 UUIDs.
+ * There is no difference between the string and hexadecimal representations of Microsoft GUIDs and standard UUIDs.
  *
- * @link https://learn.microsoft.com/en-us/windows/win32/api/guiddef/ns-guiddef-guid#remarks Micosoft documentation remarks on GUIDs
- * @link https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-7.0#remarks Microsoft documentation remarks on GUID byte order
+ * @link https://learn.microsoft.com/en-us/dotnet/api/system.guid.tobytearray?view=net-7.0 Microsoft documentation remarks on GUID byte order.
  */
 final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
 {
@@ -137,8 +128,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @throws BadMethodCall when called on a GUID that does not support
-     *     date-time values
+     * @throws BadMethodCall when called on a GUID that does not support date-time values
      */
     public function getDateTime(): DateTimeImmutable
     {
@@ -153,12 +143,11 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * Returns the local domain to which the local identifier belongs
+     * Returns the local domain to which the local identifier belongs.
      *
      * @see UuidV2::getLocalDomain()
      *
-     * @throws BadMethodCall when called on a GUID that does not support local
-     *     domain values
+     * @throws BadMethodCall when called on a GUID that does not support local domain values.
      */
     public function getLocalDomain(): DceDomain
     {
@@ -173,13 +162,11 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * Returns an identifier meaningful to the local host where this UUID was
-     * created
+     * Returns an identifier meaningful to the local host where this UUID was created.
      *
      * @see UuidV2::getLocalIdentifier()
      *
-     * @throws BadMethodCall when called on a GUID that does not support local
-     *     identifier values
+     * @throws BadMethodCall when called on a GUID that does not support local identifier values.
      */
     public function getLocalIdentifier(): int
     {
@@ -193,8 +180,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @throws BadMethodCall when called on a GUID that does not support node
-     *     values
+     * @throws BadMethodCall when called on a GUID that does not support node values.
      */
     public function getNode(): string
     {
@@ -223,11 +209,10 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * Returns an RFC 9562 variant version of this Microsoft GUID
+     * Returns an RFC 9562 variant version of this Microsoft GUID.
      *
-     * The new UUID returned will be of the RFC 9562 variant. If this GUID is
-     * of the "reserved Microsoft" variant, this means some bits will change,
-     * and the two values will not be equal.
+     * The new UUID returned will be of the RFC 9562 variant. If this GUID is of the "reserved Microsoft" variant, this
+     * means some bits will change, and the two values will not be equal.
      */
     public function toRfc(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
@@ -285,19 +270,17 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
 
     private function isValid(string $uuid, ?Format $format): bool
     {
-        // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer
-        // is using MicrosoftGuid, it's because they know the bytes of the time
-        // fields are stored in "native" (little-endian) byte order.
+        // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer is using MicrosoftGuid, it's because they
+        // know the bytes of the time fields are stored in "native" (little-endian) byte order.
         return $this->hasValidFormat($uuid, $format)
             && ($this->variant === Variant::Microsoft || $this->variant === Variant::Rfc)
             && $this->version !== null;
     }
 
     /**
-     * Swaps the bytes in the first three fields of a GUID to/from
-     * network byte order
+     * Swaps the bytes in the first three fields of a GUID to/from network byte order.
      *
-     * @link https://en.wikipedia.org/w/index.php?title=Universally_unique_identifier&oldid=1116582443#Encoding Encoding
+     * @link https://en.wikipedia.org/w/index.php?title=Universally_unique_identifier&oldid=1116582443#Encoding Encoding.
      *
      * @return non-empty-string
      */
@@ -306,8 +289,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         assert(strlen($bytes) === 16);
 
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]
-            . $bytes[5] . $bytes[4]
-            . $bytes[7] . $bytes[6]
+            . $bytes[5] . $bytes[4] . $bytes[7] . $bytes[6]
             . substr($bytes, 8);
     }
 }

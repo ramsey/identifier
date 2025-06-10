@@ -25,7 +25,7 @@ use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 use function hash;
 
 /**
- * A factory for creating version 3, name-based (MD5) UUIDs
+ * A factory for creating version 3, name-based (MD5) UUIDs.
  */
 final class UuidV3Factory implements UuidFactoryInterface
 {
