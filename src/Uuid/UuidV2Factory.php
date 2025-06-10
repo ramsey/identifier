@@ -26,8 +26,8 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Dce\Dce;
 use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Nic\Nic;
+use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
-use Ramsey\Identifier\Service\Nic\SystemNic;
 use Ramsey\Identifier\TimeBasedUuidFactory;
 use Ramsey\Identifier\Uuid\Utility\Binary;
 use Ramsey\Identifier\Uuid\Utility\StandardFactory;
@@ -56,19 +56,15 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     /**
      * Constructs a factory for creating version 2, DCE Security UUIDs.
      *
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Dce $dce A service that provides local identifiers when creating
-     *     version 2 UUIDs; defaults to {@see SystemDce}
-     * @param Nic $nic A NIC that provides the system MAC address value;
-     *     defaults to {@see SystemNic}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence}
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
+     * @param Dce $dce A service that provides local identifiers when creating version 2 UUIDs; defaults to {@see SystemDce}.
+     * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
+     * @param ClockSequence $sequence A sequence that provides a clock sequence value to prevent collisions; defaults to {@see RandomClockSequence}.
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
         private readonly Dce $dce = new SystemDce(),
-        private readonly Nic $nic = new SystemNic(),
+        private readonly Nic $nic = new RandomNic(),
         private readonly ClockSequence $sequence = new RandomClockSequence(),
     ) {
         $this->binary = new Binary();
@@ -76,22 +72,17 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param DceDomain $localDomain The local domain to which the local identifier
-     *     belongs; this defaults to "Person," and if $localIdentifier is not
-     *     provided, the factory will attempt to obtain a suitable local ID for
-     *     the domain (e.g., the UID or GID of the user running the script)
-     * @param int<0, max> | null $localIdentifier A local identifier belonging
-     *     to the local domain specified in $localDomain; if no identifier is
-     *     provided, the factory will attempt to obtain a suitable local ID for
-     *     the domain (e.g., the UID or GID of the user running the script)
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal
-     *     string representing the hardware address of the machine where this
-     *     identifier was generated
-     * @param int<0, 63> | null $clockSequence A 6-bit number used to help
-     *     avoid duplicates that could arise when the clock is set backwards in
-     *     time or if the node ID changes
-     * @param DateTimeInterface | null $dateTime A date-time to use when
-     *     creating the identifier
+     * @param DceDomain $localDomain The local domain to which the local identifier belongs; this defaults to "Person,"
+     *     and if $localIdentifier is not provided, the factory will attempt to get a suitable local ID for the domain
+     *     (e.g., the UID or GID of the user running the script).
+     * @param int<0, max> | null $localIdentifier A local identifier belonging to the local domain specified in
+     *     `$localDomain`; if no identifier is provided, the factory will attempt to get a suitable local ID for the
+     *     domain (e.g., the UID or GID of the user running the script).
+     * @param Nic | int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
+     *     hardware address of the machine where this identifier was generated.
+     * @param int<0, 63> | null $clockSequence A 6-bit number used to help avoid duplicates that could arise when the
+     *     clock is set backwards in time or if the node ID changes.
+     * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
@@ -99,7 +90,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     public function create(
         DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
-        int | string | null $node = null,
+        Nic | int | string | null $node = null,
         ?int $clockSequence = null,
         ?DateTimeInterface $dateTime = null,
     ): UuidV2 {
@@ -109,7 +100,14 @@ final class UuidV2Factory implements TimeBasedUuidFactory
             default => $this->dce->orgId(),
         };
 
-        $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
+        if ($node === null) {
+            $node = $this->nic->address();
+        } elseif ($node instanceof Nic) {
+            $node = $node->address();
+        } else {
+            $node = (new StaticNic($node))->address();
+        }
+
         $dateTime = $dateTime ?? $this->clock->now();
         $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % self::CLOCK_SEQ_MAX;
 
