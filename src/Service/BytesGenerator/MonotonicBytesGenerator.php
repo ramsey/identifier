@@ -228,18 +228,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
     private function increment(): int
     {
         if (self::$seedIndex === 0 && self::$seed !== null) {
-            self::$seed = hash('sha512', self::$seed, true);
-
-            /** @var int[] $s */
-            $s = unpack('l*', self::$seed);
-            $s[] = ($s[1] >> 8 & 0xff0000) | ($s[2] >> 16 & 0xff00) | ($s[3] >> 24 & 0xff);
-            $s[] = ($s[4] >> 8 & 0xff0000) | ($s[5] >> 16 & 0xff00) | ($s[6] >> 24 & 0xff);
-            $s[] = ($s[7] >> 8 & 0xff0000) | ($s[8] >> 16 & 0xff00) | ($s[9] >> 24 & 0xff);
-            $s[] = ($s[10] >> 8 & 0xff0000) | ($s[11] >> 16 & 0xff00) | ($s[12] >> 24 & 0xff);
-            $s[] = ($s[13] >> 8 & 0xff0000) | ($s[14] >> 16 & 0xff00) | ($s[15] >> 24 & 0xff);
-
-            self::$seedParts = $s;
-            self::$seedIndex = 21;
+            $this->generateSeedParts();
         }
 
         self::$rand[5] = 0xffff & $carry = self::$rand[5] + 1 + (self::$seedParts[self::$seedIndex--] & 0xffffff);
@@ -254,6 +243,35 @@ final class MonotonicBytesGenerator implements BytesGenerator
             $this->randomize(self::$time + 1);
         }
 
+        /** @var int */
         return self::$time;
+    }
+
+    /**
+     * Generate a pool of random integers for increasing the value.
+     *
+     * Instead of getting these values from `random_bytes()`, which is slow, we get them by sha512-hashing
+     * `self::$seed`. This produces 64 bytes of entropy, which we split into a list of 24-bit integers. `unpack()` first
+     * splits the bytes into sixteen 32-bit integers. We then take the first byte from each of these integers to get
+     * five additional 24-bit integers.
+     *
+     * We can now use these twenty-one integers as a pool to increment our value.
+     */
+    private function generateSeedParts(): void
+    {
+        assert(self::$seed !== null);
+        self::$seed = hash('sha512', self::$seed, true);
+
+        /** @var int[] $s */
+        $s = unpack('l*', self::$seed);
+
+        $s[] = ($s[1] >> 8 & 0xff0000) | ($s[2] >> 16 & 0xff00) | ($s[3] >> 24 & 0xff);
+        $s[] = ($s[4] >> 8 & 0xff0000) | ($s[5] >> 16 & 0xff00) | ($s[6] >> 24 & 0xff);
+        $s[] = ($s[7] >> 8 & 0xff0000) | ($s[8] >> 16 & 0xff00) | ($s[9] >> 24 & 0xff);
+        $s[] = ($s[10] >> 8 & 0xff0000) | ($s[11] >> 16 & 0xff00) | ($s[12] >> 24 & 0xff);
+        $s[] = ($s[13] >> 8 & 0xff0000) | ($s[14] >> 16 & 0xff00) | ($s[15] >> 24 & 0xff);
+
+        self::$seedParts = $s;
+        self::$seedIndex = 21;
     }
 }
