@@ -8,6 +8,7 @@ use DateInterval;
 use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 
 use function count;
@@ -38,8 +39,8 @@ final class InMemoryCache implements CacheInterface
      * @param ClockInterface $clock A clock to use for determining freshness of cache items.
      */
     public function __construct(
-        private readonly int $defaultTtl = 300,
-        private readonly int $cacheSize = 500,
+        private readonly int $defaultTtl = 120,
+        private readonly int $cacheSize = 100,
         private readonly ClockInterface $clock = new SystemClock(),
     ) {
     }
@@ -49,7 +50,7 @@ final class InMemoryCache implements CacheInterface
         $cacheItem = $this->cache[$key] ?? null;
 
         if ($this->isValid($key, $cacheItem)) {
-            $this->cache[$key]['last_access'] = (int) $this->clock->now()->format('Uu');
+            $this->cache[$key]['last_access'] = (int) $this->clock->now()->format(Precision::Microsecond->value);
 
             return $cacheItem['value'];
         }
@@ -67,7 +68,7 @@ final class InMemoryCache implements CacheInterface
         $this->cache[$key] = [
             'value' => $value,
             'ttl' => $this->createTtl($ttl),
-            'last_access' => (int) $this->clock->now()->format('Uu'),
+            'last_access' => (int) $this->clock->now()->format(Precision::Microsecond->value),
         ];
 
         return true;
