@@ -34,6 +34,6 @@ final readonly class TwitterSnowflake implements Snowflake
      */
     public function __construct(int | string $snowflake)
     {
-        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Twitter->value);
+        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Twitter);
     }
 }

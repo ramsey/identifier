@@ -42,28 +42,33 @@ final readonly class GenericSnowflake implements Snowflake
 
     private Time $time;
 
+    private int | string $epochOffset;
+
     /**
      * Constructs a {@see Snowflake} instance
      *
-     * @param int | numeric-string $snowflake A representation of the
-     *     Snowflake in integer or numeric string form
-     * @param int | numeric-string $epochOffset The Snowflake ID's offset from
-     *     the Unix Epoch in milliseconds
+     * @param int | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form
+     * @param Epoch | int | numeric-string $epochOffset The Snowflake ID's offset from the Unix Epoch in milliseconds
      *
      * @throws InvalidArgument
      */
     public function __construct(
         private int | string $snowflake,
-        private int | string $epochOffset,
+        Epoch | int | string $epochOffset,
     ) {
         if (!$this->isValid($this->snowflake)) {
             throw new InvalidArgument(sprintf('Invalid Snowflake: "%s"', $this->snowflake));
         }
 
-        if (!is_int($this->epochOffset) && strspn($this->epochOffset, Mask::INT) !== strlen($this->epochOffset)) {
-            throw new InvalidArgument(sprintf('Invalid epoch offset: "%s"', $this->epochOffset));
+        if ($epochOffset instanceof Epoch) {
+            $epochOffset = $epochOffset->value;
         }
 
+        if (!is_int($epochOffset) && strspn($epochOffset, Mask::INT) !== strlen($epochOffset)) {
+            throw new InvalidArgument(sprintf('Invalid epoch offset: "%s"', $epochOffset));
+        }
+
+        $this->epochOffset = $epochOffset;
         $this->time = new Time();
     }
 

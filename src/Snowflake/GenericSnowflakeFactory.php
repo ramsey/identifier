@@ -52,26 +52,24 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      */
     private readonly int $nodeIdShifted;
 
+    private readonly int $epochOffset;
+
     /**
      * Constructs a factory for creating Snowflakes
      *
-     * @param int<0, 1023> $nodeId A 10-bit machine identifier to use when
-     *     creating Snowflakes
-     * @param int $epochOffset The offset from the Unix Epoch in milliseconds to
-     *     use when creating Snowflakes
-     * @param Clock $clock A clock used to provide a date-time instance;
-     *     defaults to {@see SystemClock}
-     * @param Sequence $sequence A sequence that provides a clock sequence value
-     *     to prevent collisions; defaults to {@see StatefulSequence} with
-     *     millisecond precision
+     * @param int<0, 1023> $nodeId A 10-bit machine identifier to use when creating Snowflakes
+     * @param Epoch | int $epochOffset The offset from the Unix Epoch in milliseconds to use when creating Snowflakes
+     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}
+     * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}
      */
     public function __construct(
         private readonly int $nodeId,
-        private readonly int $epochOffset,
+        Epoch | int $epochOffset,
         private readonly Clock $clock = new SystemClock(),
         private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
         $this->nodeIdShifted = ($this->nodeId & 0x03ff) << 12;
+        $this->epochOffset = $epochOffset instanceof Epoch ? $epochOffset->value : $epochOffset;
     }
 
     /**

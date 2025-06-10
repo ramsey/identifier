@@ -39,7 +39,7 @@ final readonly class InstagramSnowflake implements Snowflake
      */
     public function __construct(int | string $snowflake)
     {
-        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Instagram->value);
+        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Instagram);
         $this->time = new Time();
     }
 

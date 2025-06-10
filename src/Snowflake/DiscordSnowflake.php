@@ -34,6 +34,6 @@ final readonly class DiscordSnowflake implements Snowflake
      */
     public function __construct(int | string $snowflake)
     {
-        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Discord->value);
+        $this->snowflake = new GenericSnowflake($snowflake, Epoch::Discord);
     }
 }
