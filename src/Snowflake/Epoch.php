@@ -28,7 +28,7 @@ enum Epoch: int
      *
      * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes.
      */
-    case Discord = 1420070400000;
+    case Discord = 1_420_070_400_000;
 
     /**
      * The Instagram epoch begins at 2011-08-24 21:07:01.721 +00:00.
@@ -46,14 +46,14 @@ enum Epoch: int
      *
      * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes.
      */
-    case Instagram = 1314220021721;
+    case Instagram = 1_314_220_021_721;
 
     /**
      * The Twitter epoch begins at 2010-11-04 01:42:54.657 +00:00.
      *
      * @link https://github.com/twitter-archive/snowflake/blob/snowflake-2010/src/main/scala/com/twitter/service/snowflake/IdWorker.scala#L25 Twitter Snowflakes.
      */
-    case Twitter = 1288834974657;
+    case Twitter = 1_288_834_974_657;
 
     /**
      * ISO 8601 extended format (includes millisecond precision).
