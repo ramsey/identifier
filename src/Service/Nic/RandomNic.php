@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -28,7 +26,7 @@ use function sprintf;
  * address is stored and reused for each call to address() within the same process. If a cache is provided, the same
  * address is used across processes.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-6.10 RFC 9562, section 6.10. UUIDs That Do Not Identify the Host.
  */
 final class RandomNic implements Nic
 {

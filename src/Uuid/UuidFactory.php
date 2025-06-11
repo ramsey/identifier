@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -41,15 +39,12 @@ use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
- * A factory for creating UUIDs.
+ * A factory that generates UUIDs.
  */
 final class UuidFactory implements UuidFactoryInterface
 {
     use Validation;
 
-    /**
-     * Constructs a default factory for creating UUIDs.
-     */
     public function __construct(
         private readonly UuidV1Factory $v1Factory = new UuidV1Factory(),
         private readonly UuidV2Factory $v2Factory = new UuidV2Factory(),
@@ -284,7 +279,7 @@ final class UuidFactory implements UuidFactoryInterface
      * Creates a version 8, custom format UUID.
      *
      * The bytes provided may contain any value according to your application's needs. Be aware, however, that other
-     * applications may not understand the semantics of the value.
+     * applications may not understand the format and meaning of the value.
      *
      * @param string $bytes A 16-byte octet string. This is an open blob of data that you may fill with 128 bits of
      *     information. Be aware, however, bits 48 through 51 will be replaced with the UUID version field, and bits 64

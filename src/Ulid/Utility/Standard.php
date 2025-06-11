@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -49,14 +47,17 @@ use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
- * This internal trait provides functionality common to all types of ULIDs.
+ * Provides common methods for ULIDs.
  *
- * @internal
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 trait Standard
 {
     use Validation;
 
+    /**
+     * @link https://www.crockford.com/base32.html Crockford base-32 specification.
+     */
     private const CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
     private readonly string $ulid;
@@ -131,10 +132,7 @@ trait Standard
             return strcasecmp($this->toString(), $other);
         }
 
-        throw new NotComparable(sprintf(
-            'Comparison with values of type "%s" is not supported',
-            gettype($other),
-        ));
+        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
     }
 
     public function equals(mixed $other): bool

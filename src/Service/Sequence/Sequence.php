@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -19,8 +17,7 @@ namespace Ramsey\Identifier\Service\Sequence;
 /**
  * Derives a sequence value.
  *
- * Sequences may be ascending or descending, depending on the nature of the sequence. The `next()` method should always
- * return the next available value in the sequence, for the state provided.
+ * Sequences may be ascending or descending, depending on the nature of the sequence.
  */
 interface Sequence
 {
@@ -35,8 +32,8 @@ interface Sequence
     /**
      * Advances the sequence and returns the next value for the given state.
      *
-     * If the sequence has reached the maximum value allowed for the given state, it may throw a SequenceOverflow
-     * exception.
+     * If the sequence has reached the maximum value allowed for the given state, it may throw a {@see SequenceOverflow}
+     * exception. Some sequences may choose to exhibit other behavior, such as rolling over the value.
      *
      * @param non-empty-string | null $state If provided, the state is treated as a namespace within which the next
      *     sequence value will be generated; each unique state has a different sequence.

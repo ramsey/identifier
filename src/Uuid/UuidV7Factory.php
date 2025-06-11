@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -36,13 +34,10 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     private readonly Binary $binary;
 
     /**
-     * Constructs a factory for creating version 7, Unix Epoch time UUIDs.
-     *
      * @param BytesGenerator $bytesGenerator A generator used to generate bytes for a version 7 UUID; defaults to {@see MonotonicBytesGenerator}.
      */
-    public function __construct(
-        private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator(),
-    ) {
+    public function __construct(private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator())
+    {
         $this->binary = new Binary();
     }
 

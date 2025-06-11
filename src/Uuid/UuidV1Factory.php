@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -51,8 +49,6 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * Constructs a factory for creating version 1, Gregorian time UUIDs
-     *
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
      * @param ClockSequence $sequence A sequence that provides a clock sequence value to prevent collisions; defaults to {@see RandomClockSequence}.

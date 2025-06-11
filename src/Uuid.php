@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -48,7 +46,7 @@ interface Uuid extends BytesIdentifier, IntegerIdentifier
     public function toHexadecimal(): string;
 
     /**
-     * Returns the string standard representation of the UUID as a URN.
+     * Returns the standard string representation of the UUID as a URN.
      *
      * @link https://www.rfc-editor.org/rfc/rfc9562#figure-4 RFC 9562, Figure 4: Example URN Namespace for UUID.
      * @link https://www.rfc-editor.org/rfc/rfc8141 RFC 8141: Uniform Resource Names (URNs).

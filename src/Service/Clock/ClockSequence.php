@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -49,13 +47,11 @@ use Ramsey\Identifier\Service\Sequence\SequenceOverflow;
  * > The clock sequence and node bits SHOULD be reset to a pseudorandom value for each new UUIDv6 generated; however,
  * > implementations MAY choose to retain the old clock sequence and MAC address behavior from Section 5.1.
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562
+ * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562.
  */
 interface ClockSequence extends Sequence
 {
     /**
-     * {@inheritDoc}
-     *
      * @param non-empty-string | null $state For a clock sequence, the state typically identifies the machine or node.
      *     This may be the MAC address, or it may be some other identifier, according to the application's needs.
      * @param DateTimeInterface | null $dateTime The date-time value is used together with the state value to keep track
@@ -66,12 +62,11 @@ interface ClockSequence extends Sequence
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int;
 
     /**
-     * Calculates and returns the next clock sequence value.
-     *
      * {@inheritDoc}
      *
-     * This value may be the same as the previous clock sequence value if the state (i.e., the node) hasn't changed and
-     * the date-time value is later than the previous date-time value.
+     * Please be aware that, in some clock sequence implementations, this value may not advance except under certain
+     * conditions. For example, in {@see Rfc4122ClockSequence}, if the state hasn't changed, and the date-time value
+     * is later than the previous date-time value, then the clock sequence does not advance.
      *
      * @param non-empty-string | null $state For a clock sequence, the state typically identifies the machine or node.
      *     This may be the MAC address, or it may be some other identifier, according to the application's needs.
@@ -79,9 +74,9 @@ interface ClockSequence extends Sequence
      *     of the clock sequence. If this value is less than or equal to a previously used clock value, the sequence
      *     should increment the clock sequence value, since the clock has been set backwards.
      *
-     * @return int<0, max> Clock sequence values are always greater than or equal to zero
+     * @return int<0, max> Clock sequence values are always greater than or equal to zero.
      *
-     * @throws SequenceOverflow if the maximum clock sequence value is reached
+     * @throws SequenceOverflow if the maximum clock sequence value is reached.
      */
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int;
 }

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -31,7 +29,7 @@ use const PHP_INT_MIN;
  * If the step value is positive, the sequence will be *monotonically increasing*. If the step value is negative, the
  * sequence will be *monotonically decreasing*.
  *
- * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia
+ * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia.
  */
 final class MonotonicSequence implements Sequence
 {

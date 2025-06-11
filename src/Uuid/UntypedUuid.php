@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -33,14 +31,14 @@ use function strlen;
 use function strspn;
 
 /**
- * An untyped UUID is one in which the version and variant bits have not yet been evaluated. This does NOT mean the UUID
- * is invalid! Rather, this is a performance feature.
+ * An untyped UUID is one in which the version and variant bits have not yet been evaluated. This does not mean the UUID
+ * is invalid; rather, this is a performance feature.
  *
  * When creating a UUID instance from string, bytes, hexadecimal, or integer, it is more performant to defer checking
  * the version and variant bits until later, i.e., when calling {@see self::getVersion()}, {@see self::getVariant()},
  * {@see self::getDateTime()}, and {@see self::getNode()}.
  *
- * To access a typed version (e.g., {@see UuidV1}, {@see UuidV4}, etc.), call {@see self::toTypedUuid()} on any
+ * To access a typed version (e.g., {@see UuidV4}, {@see UuidV7}, etc.), call {@see self::toTypedUuid()} on any
  * UntypedUuid instance.
  */
 final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid

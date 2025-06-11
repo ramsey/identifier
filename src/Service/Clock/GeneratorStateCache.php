@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -22,6 +20,11 @@ use function random_int;
 
 use const PHP_INT_MAX;
 
+/**
+ * A utility for fetching the generator state from the cache.
+ *
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ */
 trait GeneratorStateCache
 {
     /**
@@ -29,6 +32,11 @@ trait GeneratorStateCache
      */
     private readonly ?int $initialValue;
 
+    /**
+     * Whether the generator has already used the initial value. If the initial value has been used, then the next time
+     * we generate a new sequence value, we will randomly select a value instead of starting over with the initial value.
+     * This can occur when a clock sequence rolls over or the generator state cannot be found in the cache.
+     */
     private bool $initialValueUsed = false;
 
     /**

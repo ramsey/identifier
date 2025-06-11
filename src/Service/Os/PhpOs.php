@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -29,12 +27,12 @@ use const GLOB_NOSORT;
 use const PHP_OS_FAMILY;
 
 /**
- * An OS that uses pure PHP functions to interact with the operating system
+ * An OS interface that uses pure PHP functions to interact with the operating system.
  */
 class PhpOs implements Os
 {
     /**
-     * @throws MissingFunction if a required PHP function is not available on this system
+     * @throws MissingFunction if a required PHP function is not available on this system.
      */
     public function __construct()
     {

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -24,6 +22,15 @@ use Ramsey\Identifier\Ulid\Utility\Standard;
 use function sprintf;
 use function strlen;
 
+/**
+ * The Max ULID is a special form of ULID that has all 128 bits set to one (`1`).
+ *
+ * > Technically, a 26-character Base32 encoded string can contain 130 bits of information, whereas a ULID must only
+ * > contain 128 bits. Therefore, the largest valid ULID encoded in Base32 is `7ZZZZZZZZZZZZZZZZZZZZZZZZZ`, which
+ * > corresponds to an epoch time of `281474976710655` or `2 ^ 48 - 1`.
+ *
+ * @link https://github.com/ulid/spec ULID specification.
+ */
 final readonly class MaxUlid implements UlidInterface
 {
     use Standard;

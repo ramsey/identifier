@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -32,9 +30,9 @@ use function unpack;
 use const PHP_INT_MIN;
 
 /**
- * This internal trait provides common validation functionality for UUIDs.
+ * A utility providing common validation functionality for UUIDs.
  *
- * @internal
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 trait Validation
 {
@@ -117,7 +115,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID is a Max UUID.
+     * Returns true if the given standard string, hexadecimal, or byte representation of a UUID is a Max UUID.
      */
     private function isMax(string $uuid, ?Format $format): bool
     {
@@ -130,7 +128,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID is a Nil UUID.
+     * Returns true if the given standard string, hexadecimal, or byte representation of a UUID is a Nil UUID.
      */
     private function isNil(string $uuid, ?Format $format): bool
     {
@@ -155,7 +153,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the UUID is a valid string standard representation.
+     * Returns true if the UUID is a valid standard string representation.
      *
      * @param string $mask A character mask used to validate the UUID string.
      */

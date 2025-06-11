@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * This file is part of ramsey/identifier
+ *
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
+ *
+ * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
+ * @license https://opensource.org/licenses/MIT MIT License
+ */
+
 declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Cache;
@@ -129,6 +139,9 @@ final class InMemoryCache implements CacheInterface
         return $this->isValid($key, $this->cache[$key] ?? null);
     }
 
+    /**
+     * Returns a Unix timestamp representing the expiration time of an item in the cache.
+     */
     private function createTtl(DateInterval | int | null $ttl): int
     {
         $timestamp = $this->clock->now()->getTimestamp();
@@ -145,6 +158,8 @@ final class InMemoryCache implements CacheInterface
     }
 
     /**
+     * Returns true if the cache item is valid, taking into account its TTL. An item with an expired TTL is invalid.
+     *
      * @param CacheItem | null $cacheItem
      *
      * @phpstan-assert-if-true CacheItem $cacheItem

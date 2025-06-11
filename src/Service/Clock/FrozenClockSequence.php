@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -19,7 +17,7 @@ namespace Ramsey\Identifier\Service\Clock;
 use DateTimeInterface;
 
 /**
- * A clock sequence that returns a pre-determined value as the sequence and never changes.
+ * A clock sequence that always returns the same pre-determined value. Calling `next()` does not advance the sequence.
  */
 final readonly class FrozenClockSequence implements ClockSequence
 {
@@ -35,6 +33,11 @@ final readonly class FrozenClockSequence implements ClockSequence
         return $this->value;
     }
 
+    /**
+     * **WARNING**: The clock sequence does not advance for {@see FrozenClockSequence}s.
+     *
+     * {@inheritDoc}
+     */
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         return $this->value;

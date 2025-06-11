@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -28,9 +26,9 @@ use function str_pad;
 use const STR_PAD_LEFT;
 
 /**
- * This internal trait provides common factory functionality for UUIDs.
+ * Provides common methods for UUID factories.
  *
- * @internal
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 trait StandardFactory
 {
@@ -70,9 +68,6 @@ trait StandardFactory
     }
 
     /**
-     * The minimum integer value for a version 1 UUID is 75,567,087,097,951,178,194,944. As such, there's no need to use
-     * better performing math for integers less than PHP_INT_MAX, since those integers can never be valid UUIDs.
-     *
      * @throws InvalidArgument
      */
     private function createFromIntegerInternal(int | string $identifier): Uuid

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -118,8 +116,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
             return $this->toBytes() <=> $other->toBytes();
         }
 
-        // We need to compare with strings here, since Microsoft GUID bytes
-        // are in a different order than UUID bytes.
+        // We need to compare with strings here, since Microsoft GUID bytes are in a different order than UUID bytes.
         if ($other instanceof Uuid) {
             return $this->toString() <=> $other->toString();
         }
@@ -128,7 +125,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @throws BadMethodCall when called on a GUID that does not support date-time values
+     * @throws BadMethodCall when called on a GUID that does not support date-time values.
      */
     public function getDateTime(): DateTimeImmutable
     {

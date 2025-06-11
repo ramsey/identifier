@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -32,11 +30,14 @@ use const PHP_INT_MAX;
  * "simple, correct, and inefficient."
  *
  * > * Obtain a system-wide global lock
- * > * From a system-wide shared stable store (e.g., a file), read the UUID generator state: the values of the timestamp, clock sequence, and node ID used to generate the last UUID.
+ * > * From a system-wide shared stable store (e.g., a file), read the UUID generator state: the values of the timestamp,
+ * >   clock sequence, and node ID used to generate the last UUID.
  * > * Get the current time as a 60-bit count of 100-nanosecond intervals since 00:00:00.00, 15 October 1582.
  * > * Get the current node ID.
- * > * If the state was unavailable (e.g., non-existent or corrupted), or the saved node ID is different than the current node ID, generate a random clock sequence value.
- * > * If the state was available, but the saved timestamp is later than the current timestamp, increment the clock sequence value.
+ * > * If the state was unavailable (e.g., non-existent or corrupted), or the saved node ID is different than the current
+ * >   node ID, generate a random clock sequence value.
+ * > * If the state was available, but the saved timestamp is later than the current timestamp, increment the clock
+ * >   sequence value.
  * > * Save the state (current timestamp, clock sequence, and node ID) back to the stable store.
  * > * Release the global lock.
  *
@@ -72,10 +73,10 @@ final class Rfc4122ClockSequence implements ClockSequence
     private readonly string $defaultState;
 
     /**
-     * @param int<0, max> | null $initialValue An initial clock sequence value; if not provided, it is randomly generated
-     * @param Nic $nic The system NIC, for maintaining state; defaults to {@see RandomNic}
-     * @param ClockInterface $clock A clock to use for determining state; defaults to {@see SystemClock}
-     * @param CacheInterface $cache A cache for storing the sequence and maintaining state
+     * @param int<0, max> | null $initialValue An initial clock sequence value; if not provided, it is randomly generated.
+     * @param Nic $nic The system NIC, for maintaining state; defaults to {@see RandomNic}.
+     * @param ClockInterface $clock A clock to use for determining state; defaults to {@see SystemClock}.
+     * @param CacheInterface $cache A cache for storing the sequence and maintaining state.
      */
     public function __construct(
         ?int $initialValue = null,

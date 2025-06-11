@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -33,9 +31,13 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory that generates Snowflakes
+ * A factory that generates generic Snowflakes identifiers that may use any epoch offset.
  *
- * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflakes
+ * This uses the commonly adopted Twitter Snowflake specification, allowing for an arbitrary epoch offset.
+ *
+ * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID.
+ * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflake identifiers.
+ * @see GenericSnowflake
  */
 final class GenericSnowflakeFactory implements SnowflakeFactory
 {
@@ -108,8 +110,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         $milliseconds += $this->clockSequenceCounter;
         $millisecondsShifted = $milliseconds << 22;
 
+        // If the sequence is currently 0x0fff (4095), bump the clock sequence counter, since we're rolling over.
         if ($sequence === 0x0fff) {
-            // If the sequence is currently 0x0fff, bump the clock sequence counter, since we're rolling over.
             $this->clockSequenceCounter++;
         }
 

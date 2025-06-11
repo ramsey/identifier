@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -29,7 +27,12 @@ use function strspn;
 use const STR_PAD_LEFT;
 
 /**
- * @internal
+ * An enum representing the format of a Snowflake identifier.
+ *
+ * This enum class includes static utilities for formatting Snowflakes from integer or numeric string forms into
+ * hexadecimal, byte, or int forms.
+ *
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 enum Format: int
 {

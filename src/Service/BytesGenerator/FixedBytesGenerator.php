@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -24,7 +22,7 @@ use function strlen;
 use function substr;
 
 /**
- * A generator that returns a pre-determined string of bytes.
+ * A generator that returns a pre-determined byte string.
  */
 final readonly class FixedBytesGenerator implements BytesGenerator
 {

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -41,20 +39,20 @@ use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
- * A factory for creating ULIDs.
+ * A factory that generates ULIDs.
+ *
+ * @link https://github.com/ulid/spec ULID specification.
+ * @see Ulid
  */
 final class UlidFactory implements UlidFactoryInterface
 {
     use Validation;
 
     /**
-     * Constructs a factory for creating ULIDs.
-     *
      * @param BytesGenerator $bytesGenerator A generator used to generate bytes; defaults to {@see MonotonicBytesGenerator}.
      */
-    public function __construct(
-        private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator(),
-    ) {
+    public function __construct(private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator())
+    {
     }
 
     /**

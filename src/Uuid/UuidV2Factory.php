@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -54,8 +52,6 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * Constructs a factory for creating version 2, DCE Security UUIDs.
-     *
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param Dce $dce A service that provides local identifiers when creating version 2 UUIDs; defaults to {@see SystemDce}.
      * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.

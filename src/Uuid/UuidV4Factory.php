@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -33,8 +31,6 @@ final class UuidV4Factory implements UuidFactoryInterface
     private readonly Binary $binary;
 
     /**
-     * Constructs a factory for creating version 4, random UUIDs.
-     *
      * @param BytesGenerator $bytesGenerator A random generator used to generate bytes; defaults to {@see RandomBytesGenerator}.
      */
     public function __construct(private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator())

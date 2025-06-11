@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -41,7 +39,7 @@ final class UuidV8Factory implements UuidFactoryInterface
      * Creates a new instance of an identifier.
      *
      * The bytes provided may contain any value according to your application's needs. Be aware, however, that other
-     * applications may not understand the semantics of the value.
+     * applications may not understand the format and meaning of the value.
      *
      * @param string | null $bytes A 16-byte octet string. This is an open blob of data that you may fill with 128 bits
      *     of information. Be aware, however, bits 48 through 51 will be replaced with the UUID version field, and bits

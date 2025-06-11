@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -22,9 +20,9 @@ use function strtoupper;
 use function strtr;
 
 /**
- * This internal trait provides common validation functionality for ULIDs
+ * A utility providing common validation functionality for ULIDs.
  *
- * @internal
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 trait Validation
 {
@@ -42,7 +40,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the given Crockford base 32, hexadecimal, or bytes representation of a ULID is a Nil ULID.
+     * Returns true if the given Crockford base-32, hexadecimal, or bytes representation of a ULID is a Nil ULID.
      */
     private function isNil(string $ulid, ?Format $format): bool
     {

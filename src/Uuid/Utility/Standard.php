@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -39,9 +37,9 @@ use function substr;
 use const PHP_INT_MAX;
 
 /**
- * This internal trait provides functionality common to all types of UUIDs.
+ * Provides common methods for UUIDs.
  *
- * @internal
+ * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 trait Standard
 {
@@ -117,10 +115,7 @@ trait Standard
             return strcasecmp($this->toString(), $other);
         }
 
-        throw new NotComparable(sprintf(
-            'Comparison with values of type "%s" is not supported',
-            gettype($other),
-        ));
+        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
     }
 
     public function equals(mixed $other): bool

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -36,6 +34,14 @@ use function sprintf;
 use function strlen;
 use function strspn;
 
+/**
+ * A generic Snowflake identifier that may use any epoch offset.
+ *
+ * This uses the commonly adopted Twitter Snowflake specification, allowing for an arbitrary epoch offset.
+ *
+ * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID.
+ * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflake identifiers.
+ */
 final readonly class GenericSnowflake implements Snowflake
 {
     use Validation;
@@ -114,10 +120,7 @@ final readonly class GenericSnowflake implements Snowflake
             return (string) $this->snowflake <=> (string) $other;
         }
 
-        throw new NotComparable(sprintf(
-            'Comparison with values of type "%s" is not supported',
-            gettype($other),
-        ));
+        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
     }
 
     public function equals(mixed $other): bool

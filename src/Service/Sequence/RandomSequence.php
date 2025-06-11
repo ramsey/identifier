@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -26,8 +24,6 @@ use const PHP_INT_MIN;
  *
  * > [!CAUTION]
  * > Values generated using RandomSequence are not sequential or monotonic. They may be positive or negative integers.
- *
- * @link https://www.php.net/random_int random_int().
  */
 final class RandomSequence implements Sequence
 {
@@ -47,7 +43,6 @@ final class RandomSequence implements Sequence
 
     public function current(?string $state = null): int
     {
-        // This method should always return the previously generated "next" value without "advancing" the sequence.
         return $this->current;
     }
 

@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -68,7 +66,7 @@ final readonly class UuidV2 implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * Returns an identifier meaningful to the local host where this UUID was created.
+     * Returns a 32-bit identifier meaningful to the local host where this UUID was created.
      *
      * The type of this identifier is indicated by the domain returned from {@see self::getLocalDomain()}. For example,
      * if the domain is {@see DceDomain::Group}, this identifier is a group ID on the local host. On POSIX systems,

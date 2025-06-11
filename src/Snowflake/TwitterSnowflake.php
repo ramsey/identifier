@@ -3,10 +3,8 @@
 /**
  * This file is part of ramsey/identifier
  *
- * ramsey/identifier is open source software: you can distribute
- * it and/or modify it under the terms of the MIT License
- * (the "License"). You may not use this file except in
- * compliance with the License.
+ * ramsey/identifier is open source software: you can distribute it and/or modify it under the terms of the MIT License
+ * (the "License"). You may not use this file except in compliance with the License.
  *
  * @copyright Copyright (c) Ben Ramsey <ben@benramsey.com>
  * @license https://opensource.org/licenses/MIT MIT License
@@ -20,6 +18,12 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\Standard;
 
+/**
+ * A Snowflake identifier for use with the Twitter social media platform.
+ *
+ * @link http://twitter.com Twitter.
+ * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake.
+ */
 final readonly class TwitterSnowflake implements Snowflake
 {
     use Standard;
