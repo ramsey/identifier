@@ -55,19 +55,4 @@ enum Variant: int
      * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10}.
      */
     case Future = 0b111;
-
-    /**
-     * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562} and previously in
-     * {@link https://www.rfc-editor.org/rfc/rfc4122 RFC 4122}.
-     *
-     * An alias for {@see self::Rfc}.
-     */
-    public const Rfc4122 = self::Rfc; // phpcs:ignore
-
-    /**
-     * The variant specified in {@link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562}.
-     *
-     * An alias for {@see self::Rfc}.
-     */
-    public const Rfc9562 = self::Rfc; // phpcs:ignore
 }
