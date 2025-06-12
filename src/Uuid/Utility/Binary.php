@@ -47,7 +47,9 @@ final class Binary
         Variant $variant = Variant::Rfc,
     ): string {
         if (strlen($bytes) !== 16) {
-            throw new InvalidArgument('$bytes must be a a 16-byte string');
+            throw new InvalidArgument(
+                'When applying the version and variant bits, the bytes must be a 16-byte octet string',
+            );
         }
 
         /** @var int[] $parts */

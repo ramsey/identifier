@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -44,5 +45,14 @@ class FrozenClockSequenceTest extends TestCase
             'forty-two' => ['value' => 42],
             'maximum system integer' => ['value' => PHP_INT_MAX],
         ];
+    }
+
+    public function testFrozenClockSequenceWithNegativeInt(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The frozen clock sequence value must be a positive integer');
+
+        /** @phpstan-ignore argument.type */
+        new FrozenClockSequence(-1);
     }
 }

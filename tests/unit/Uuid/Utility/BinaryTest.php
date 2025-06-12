@@ -203,7 +203,9 @@ class BinaryTest extends TestCase
     public function testApplyVersionAndVariantThrowsExceptionWhenBytesAreWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('$bytes must be a a 16-byte string');
+        $this->expectExceptionMessage(
+            'When applying the version and variant bits, the bytes must be a 16-byte octet string',
+        );
 
         (new Binary())->applyVersionAndVariant('foobar', null);
     }

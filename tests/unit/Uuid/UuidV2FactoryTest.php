@@ -57,6 +57,24 @@ class UuidV2FactoryTest extends TestCase
         $this->assertSame(1001, $uuid->getLocalIdentifier());
     }
 
+    public function testCreateWithNegativeLocalIdentifier(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The local identifier must be a positive 32-bit integer');
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->create(localIdentifier: -1);
+    }
+
+    public function testCreateWithOutOfBoundsLocalIdentifier(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The local identifier must be a positive 32-bit integer');
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->create(localIdentifier: 0x100000000);
+    }
+
     public function testCreateWithClockSequence(): void
     {
         $uuid = $this->factory->create(clockSequence: 42);
@@ -64,9 +82,23 @@ class UuidV2FactoryTest extends TestCase
         $this->assertSame(42, hexdec(substr($uuid->toString(), 19, 2)) & 0x3f);
     }
 
-    public function testCreateWithNode(): void
+    public function testCreateWithStringNode(): void
     {
         $uuid = $this->factory->create(node: '3c1239b4f540');
+
+        $this->assertSame('3d1239b4f540', substr($uuid->toString(), -12));
+    }
+
+    public function testCreateWithIntNode(): void
+    {
+        $uuid = $this->factory->create(node: 66048975238464);
+
+        $this->assertSame('3d1239b4f540', substr($uuid->toString(), -12));
+    }
+
+    public function testCreateWithNicNode(): void
+    {
+        $uuid = $this->factory->create(node: new StaticNic('3c1239b4f540'));
 
         $this->assertSame('3d1239b4f540', substr($uuid->toString(), -12));
     }
@@ -107,7 +139,7 @@ class UuidV2FactoryTest extends TestCase
     public function testCreateFromBytesThrowsException(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 16-byte string');
+        $this->expectExceptionMessage('The identifier must be a 16-byte octet string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\x2f\xff\x8f\x00\xff\xff\xff\xff\xff");
     }
@@ -221,7 +253,7 @@ class UuidV2FactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
+        $this->expectExceptionMessage('The identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffffffff-ffff-2fff-8f00-fffffffffffff');
     }
@@ -229,7 +261,7 @@ class UuidV2FactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
+        $this->expectExceptionMessage('The identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffff-ffffffff-2fff-8f00-ffffffffffff');
     }
@@ -245,7 +277,7 @@ class UuidV2FactoryTest extends TestCase
     public function testCreateFromHexadecimalThrowsExceptionForInvalidHexadecimal(string $hexadecimal): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
+        $this->expectExceptionMessage('The identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal($hexadecimal);
     }

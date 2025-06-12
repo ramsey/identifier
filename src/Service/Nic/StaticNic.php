@@ -34,6 +34,8 @@ use function unpack;
  */
 final readonly class StaticNic implements Nic
 {
+    private const ADDRESS_ERROR_MESSAGE = 'The NIC address must be a positive 48-bit integer or hexadecimal string';
+
     /**
      * @var non-empty-string
      */
@@ -47,14 +49,8 @@ final readonly class StaticNic implements Nic
     public function __construct(int | string $address)
     {
         if (is_int($address)) {
-            if ($address < 0 || $address > 0xffffffffffff) {
-                throw new InvalidArgument('$address must be a non-negative 48-bit integer or hexadecimal string');
-            }
             $this->address = $this->parseIntegerAddress($address);
         } else {
-            if (strlen($address) === 0) {
-                throw new InvalidArgument('$address must be a non-negative 48-bit integer or hexadecimal string');
-            }
             $this->address = $this->parseHexadecimalAddress($address);
         }
     }
@@ -71,6 +67,10 @@ final readonly class StaticNic implements Nic
      */
     private function parseIntegerAddress(int $address): string
     {
+        if ($address < 0 || $address > 0xffffffffffff) {
+            throw new InvalidArgument(self::ADDRESS_ERROR_MESSAGE);
+        }
+
         /** @var non-empty-string */
         return sprintf('%012s', dechex($address | 0x010000000000));
     }
@@ -84,8 +84,9 @@ final readonly class StaticNic implements Nic
      */
     private function parseHexadecimalAddress(string $address): string
     {
-        if (strspn($address, Mask::HEX) !== strlen($address) || strlen($address) > 12) {
-            throw new InvalidArgument('Address must be a non-negative 48-bit integer or hexadecimal string');
+        $length = strlen($address);
+        if ($length === 0 || strspn($address, Mask::HEX) !== $length || $length > 12) {
+            throw new InvalidArgument(self::ADDRESS_ERROR_MESSAGE);
         }
 
         /** @var int[] $parts */

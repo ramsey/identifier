@@ -49,7 +49,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromBytesThrowsException(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 16-byte string');
+        $this->expectExceptionMessage('The identifier must be a 16-byte octet string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\x4f\xcf\xff\xff\xff\xff\xff\xff");
     }
@@ -107,7 +107,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
+        $this->expectExceptionMessage('The identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffffffff-ffff-4fff-dfff-fffffffffffff');
     }
@@ -115,7 +115,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
+        $this->expectExceptionMessage('The identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffff-ffffffff-4fff-dfff-ffffffffffff');
     }
@@ -189,7 +189,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromHexadecimalThrowsExceptionForInvalidHexadecimal(string $hexadecimal): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
+        $this->expectExceptionMessage('The identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal($hexadecimal);
     }

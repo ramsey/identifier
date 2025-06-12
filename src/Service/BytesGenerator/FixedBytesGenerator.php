@@ -37,7 +37,7 @@ final readonly class FixedBytesGenerator implements BytesGenerator
         $this->bytesLength = strlen($this->bytes);
 
         if ($this->bytesLength === 0) {
-            throw new InvalidArgument('$bytes must be a non-empty string');
+            throw new InvalidArgument('The bytes must be a non-empty octet string');
         }
     }
 

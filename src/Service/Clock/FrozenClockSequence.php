@@ -28,7 +28,7 @@ final readonly class FrozenClockSequence implements ClockSequence
     public function __construct(private int $value)
     {
         if ($this->value < 0) {
-            throw new InvalidArgument('$value must be a non-negative integer');
+            throw new InvalidArgument('The frozen clock sequence value must be a positive integer');
         }
     }
 

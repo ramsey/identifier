@@ -81,7 +81,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     public function testCreateFromBytesThrowsException(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be an 8-byte string');
+        $this->expectExceptionMessage('The identifier must be an 8-byte octet string');
 
         $this->factory->createFromBytes("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
     }
@@ -117,7 +117,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     public function testCreateFromHexadecimalThrowsExceptionForWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 16-character hexadecimal string');
+        $this->expectExceptionMessage('The identifier must be a 16-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('fffffffffffffffffffffffffffffffff');
     }
@@ -125,7 +125,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     public function testCreateFromHexadecimalThrowsExceptionForNonHexadecimal(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 16-character hexadecimal string');
+        $this->expectExceptionMessage('The identifier must be a 16-character hexadecimal string');
 
         $this->factory->createFromHexadecimal('fffffffffffffffg');
     }

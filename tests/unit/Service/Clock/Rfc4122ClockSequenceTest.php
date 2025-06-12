@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\GeneratorState;
@@ -101,5 +102,40 @@ class Rfc4122ClockSequenceTest extends TestCase
         $this->assertSame(1000, $sequence->next());
         $this->assertSame(1000, $sequence->next());
         $this->assertNotSame(1000, $sequence->next(state: 'ba0987654321'));
+    }
+
+    public function testSequenceInitialValueIsNegativeInteger(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The clock sequence initial value must be a positive integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new Rfc4122ClockSequence(initialValue: -1);
+    }
+
+    public function testCurrentWhenStateIsEmptyString(): void
+    {
+        $sequence = new Rfc4122ClockSequence();
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'When getting the current or next clock sequence value, the state must be a non-empty string or null',
+        );
+
+        /** @phpstan-ignore argument.type */
+        $sequence->current(state: '');
+    }
+
+    public function testNextWhenStateIsEmptyString(): void
+    {
+        $sequence = new Rfc4122ClockSequence();
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'When getting the current or next clock sequence value, the state must be a non-empty string or null',
+        );
+
+        /** @phpstan-ignore argument.type */
+        $sequence->next(state: '');
     }
 }

@@ -44,6 +44,9 @@ final class MonotonicClockSequence implements ClockSequence
      */
     private const CACHE_KEY = '__ramsey_id_4cdb157d';
 
+    private const STATE_ERROR_MESSAGE =
+        'When getting the current or next clock sequence value, the state must be a non-empty string or null';
+
     /**
      * @var non-empty-string
      */
@@ -64,7 +67,7 @@ final class MonotonicClockSequence implements ClockSequence
         private readonly Precision $precision = Precision::Millisecond,
     ) {
         if ($initialValue !== null && $initialValue < 0) {
-            throw new InvalidArgument('$initialValue must be a non-negative integer or null');
+            throw new InvalidArgument('The clock sequence initial value must be a positive integer or null');
         }
 
         $this->initialValue = $initialValue;
@@ -74,7 +77,7 @@ final class MonotonicClockSequence implements ClockSequence
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {
-            throw new InvalidArgument('$state must be a non-empty string or null');
+            throw new InvalidArgument(self::STATE_ERROR_MESSAGE);
         }
 
         return $this->getGeneratorState($state, $dateTime, false)->sequence;
@@ -83,7 +86,7 @@ final class MonotonicClockSequence implements ClockSequence
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {
-            throw new InvalidArgument('$state must be a non-empty string or null');
+            throw new InvalidArgument(self::STATE_ERROR_MESSAGE);
         }
 
         return $this->getGeneratorState($state, $dateTime, true)->sequence;

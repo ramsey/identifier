@@ -40,15 +40,15 @@ final readonly class StaticDce implements Dce
         private ?int $orgId = null,
     ) {
         if ($this->userId !== null && ($this->userId < 0 || $this->userId > 0xffffffff)) {
-            throw new InvalidArgument('$userId must be a non-negative 32-bit integer or null');
+            throw new InvalidArgument('The DCE user ID must be a positive 32-bit integer or null');
         }
 
         if ($this->groupId !== null && ($this->groupId < 0 || $this->groupId > 0xffffffff)) {
-            throw new InvalidArgument('$groupId must be a non-negative 32-bit integer or null');
+            throw new InvalidArgument('The DCE group ID must be a positive 32-bit integer or null');
         }
 
         if ($this->orgId !== null && ($this->orgId < 0 || $this->orgId > 0xffffffff)) {
-            throw new InvalidArgument('$orgId must be a non-negative 32-bit integer or null');
+            throw new InvalidArgument('The DCE org ID must be a positive 32-bit integer or null');
         }
     }
 

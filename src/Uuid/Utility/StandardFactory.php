@@ -51,7 +51,7 @@ trait StandardFactory
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 16-byte string');
+        throw new InvalidArgument('The identifier must be a 16-byte octet string');
     }
 
     /**
@@ -64,7 +64,7 @@ trait StandardFactory
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 32-character hexadecimal string');
+        throw new InvalidArgument('The identifier must be a 32-character hexadecimal string');
     }
 
     /**
@@ -99,6 +99,6 @@ trait StandardFactory
             return new ($this->getUuidClass())($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a UUID in standard string representation');
+        throw new InvalidArgument('The identifier must be a UUID in standard string representation');
     }
 }

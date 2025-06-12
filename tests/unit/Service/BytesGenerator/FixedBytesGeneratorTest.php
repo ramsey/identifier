@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -55,5 +56,14 @@ class FixedBytesGeneratorTest extends TestCase
                 'expectedBytes' => "\xff\xff\xff\xff\xab\xcd\xef\x01",
             ],
         ];
+    }
+
+    public function testBytesMustBeNonEmptyString(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The bytes must be a non-empty octet string');
+
+        /** @phpstan-ignore argument.type */
+        new FixedBytesGenerator('');
     }
 }

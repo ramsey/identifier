@@ -35,11 +35,11 @@ final class GeneratorState
         public int $timestamp,
     ) {
         if (strlen($this->node) === 0) {
-            throw new InvalidArgument('$node must be a non-empty string');
+            throw new InvalidArgument('The generator state node must be a non-empty string');
         }
 
         if ($this->sequence < 0) {
-            throw new InvalidArgument('$sequence must be a non-negative integer');
+            throw new InvalidArgument('The generator state sequence must be a positive integer');
         }
     }
 }

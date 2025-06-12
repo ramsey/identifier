@@ -39,7 +39,7 @@ trait StandardFactory
     private function convertFromBytes(string $identifier): int | string
     {
         if (strlen($identifier) !== Format::Bytes->value) {
-            throw new InvalidArgument('Identifier must be an 8-byte string');
+            throw new InvalidArgument('The identifier must be an 8-byte octet string');
         }
 
         /** @var int[] $parts */
@@ -63,7 +63,7 @@ trait StandardFactory
     private function convertFromHexadecimal(string $identifier): int | string
     {
         if (strlen($identifier) !== Format::Hex->value || strspn($identifier, Mask::HEX) !== strlen($identifier)) {
-            throw new InvalidArgument('Identifier must be a 16-character hexadecimal string');
+            throw new InvalidArgument('The identifier must be a 16-character hexadecimal string');
         }
 
         // Support unsigned 64-bit identifiers.

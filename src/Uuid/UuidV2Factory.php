@@ -93,7 +93,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
         };
 
         if ($localIdentifier < 0 || $localIdentifier > 0xffffffff) {
-            throw new InvalidArgument('$localIdentifier must be a non-negative 32-bit integer');
+            throw new InvalidArgument('The local identifier must be a positive 32-bit integer');
         }
 
         if ($node === null) {

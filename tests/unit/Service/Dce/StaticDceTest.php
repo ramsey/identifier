@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Dce;
 
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Dce\StaticDce;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -68,5 +69,59 @@ class StaticDceTest extends TestCase
         );
 
         $dce->orgId();
+    }
+
+    public function testWhenUserIdIsNegative(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE user ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(userId: -1);
+    }
+
+    public function testWhenUserIdIsOutOfBounds(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE user ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(userId: 0x100000000);
+    }
+
+    public function testWhenGroupIdIsNegative(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE group ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(groupId: -1);
+    }
+
+    public function testWhenGroupIdIsOutOfBounds(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE group ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(groupId: 0x100000000);
+    }
+
+    public function testWhenOrgIdIsNegative(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE org ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(orgId: -1);
+    }
+
+    public function testWhenOrgIdIsOutOfBounds(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE org ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new StaticDce(orgId: 0x100000000);
     }
 }

@@ -70,6 +70,9 @@ final class Rfc4122ClockSequence implements ClockSequence
      */
     private const CACHE_KEY = '__ramsey_id_122f13ab';
 
+    private const STATE_ERROR_MESSAGE =
+        'When getting the current or next clock sequence value, the state must be a non-empty string or null';
+
     /**
      * @var non-empty-string
      */
@@ -88,7 +91,7 @@ final class Rfc4122ClockSequence implements ClockSequence
         private readonly CacheInterface $cache = new InMemoryCache(),
     ) {
         if ($initialValue !== null && $initialValue < 0) {
-            throw new InvalidArgument('$initialValue must be a non-negative integer or null');
+            throw new InvalidArgument('The clock sequence initial value must be a positive integer or null');
         }
 
         $this->initialValue = $initialValue;
@@ -98,7 +101,7 @@ final class Rfc4122ClockSequence implements ClockSequence
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {
-            throw new InvalidArgument('$state must be a non-empty string or null');
+            throw new InvalidArgument(self::STATE_ERROR_MESSAGE);
         }
 
         return $this->getGeneratorState($state, $dateTime)->sequence;
@@ -107,7 +110,7 @@ final class Rfc4122ClockSequence implements ClockSequence
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {
-            throw new InvalidArgument('$state must be a non-empty string or null');
+            throw new InvalidArgument(self::STATE_ERROR_MESSAGE);
         }
 
         return $this->getGeneratorState($state, $dateTime)->sequence;

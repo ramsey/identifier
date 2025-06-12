@@ -42,11 +42,11 @@ final class UuidV3Factory implements UuidFactoryInterface
     public function create(?Uuid $namespace = null, ?string $name = null): UuidV3
     {
         if ($namespace === null) {
-            throw new InvalidArgument('$namespace cannot be null when creating version 3 UUIDs');
+            throw new InvalidArgument('When creating version 3 UUIDs, the namespace cannot be null');
         }
 
         if ($name === null) {
-            throw new InvalidArgument('$name cannot be null when creating version 3 UUIDs');
+            throw new InvalidArgument('When creating version 3 UUIDs, the name cannot be null');
         }
 
         $bytes = hash('md5', $namespace->toBytes() . $name, true);

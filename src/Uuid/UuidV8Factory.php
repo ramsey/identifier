@@ -49,12 +49,8 @@ final class UuidV8Factory implements UuidFactoryInterface
      */
     public function create(?string $bytes = null): UuidV8
     {
-        if ($bytes === null) {
-            throw new InvalidArgument('$bytes cannot be null when creating version 8 UUIDs');
-        }
-
-        if (strlen($bytes) !== 16) {
-            throw new InvalidArgument('$bytes must be a 16-byte octet string');
+        if ($bytes === null || strlen($bytes) !== 16) {
+            throw new InvalidArgument('To create a version 8 UUID, the bytes must be a 16-byte octet string');
         }
 
         $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Custom);

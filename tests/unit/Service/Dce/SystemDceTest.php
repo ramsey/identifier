@@ -13,6 +13,7 @@ use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
@@ -413,5 +414,23 @@ class SystemDceTest extends TestCase
             ['whoamiResponse' => ''],
             ['whoamiResponse' => '"Cora Rumble","345"'],
         ];
+    }
+
+    public function testWhenOrgIdIsNegative(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE org ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new SystemDce(orgId: -1);
+    }
+
+    public function testWhenOrgIdIsOutOfBounds(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The DCE org ID must be a positive 32-bit integer or null');
+
+        /** @phpstan-ignore argument.type */
+        new SystemDce(orgId: 0x100000000);
     }
 }

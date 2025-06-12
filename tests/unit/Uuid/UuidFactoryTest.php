@@ -105,7 +105,7 @@ class UuidFactoryTest extends TestCase
     public function testCreateFromBytesThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 16-byte string');
+        $this->expectExceptionMessage('The identifier must be a 16-byte octet string');
 
         $this->factory->createFromBytes($input);
     }
@@ -193,7 +193,7 @@ class UuidFactoryTest extends TestCase
     public function testCreateFromHexadecimalThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a 32-character hexadecimal string');
+        $this->expectExceptionMessage('The identifier must be a 32-character hexadecimal string');
 
         $this->factory->createFromHexadecimal($input);
     }
@@ -393,7 +393,7 @@ class UuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
+        $this->expectExceptionMessage('The identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString($input);
     }

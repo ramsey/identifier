@@ -80,7 +80,7 @@ final class SystemDce implements Dce
         private readonly Os $os = new PhpOs(),
     ) {
         if ($this->orgId !== null && ($this->orgId < 0 || $this->orgId > 0xffffffff)) {
-            throw new InvalidArgument('$orgId must be a non-negative 32-bit integer or null');
+            throw new InvalidArgument('The DCE org ID must be a positive 32-bit integer or null');
         }
     }
 

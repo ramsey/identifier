@@ -81,7 +81,7 @@ final class UlidFactory implements UlidFactoryInterface
             return new Ulid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 16-byte string');
+        throw new InvalidArgument('The identifier must be a 16-byte octet string');
     }
 
     /**
@@ -118,7 +118,7 @@ final class UlidFactory implements UlidFactoryInterface
             return new Ulid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 32-character hexadecimal string');
+        throw new InvalidArgument('The identifier must be a 32-character hexadecimal string');
     }
 
     /**
@@ -176,7 +176,7 @@ final class UlidFactory implements UlidFactoryInterface
             return new Ulid($identifierEncoded);
         }
 
-        throw new InvalidArgument('Identifier must be a valid ULID string representation');
+        throw new InvalidArgument('The identifier must be a valid ULID string representation');
     }
 
     /**

@@ -43,11 +43,11 @@ final class UuidV5Factory implements UuidFactoryInterface
     public function create(?Uuid $namespace = null, ?string $name = null): UuidV5
     {
         if ($namespace === null) {
-            throw new InvalidArgument('$namespace cannot be null when creating version 5 UUIDs');
+            throw new InvalidArgument('When creating version 5 UUIDs, the namespace cannot be null');
         }
 
         if ($name === null) {
-            throw new InvalidArgument('$name cannot be null when creating version 5 UUIDs');
+            throw new InvalidArgument('When creating version 5 UUIDs, the name cannot be null');
         }
 
         /** @var non-empty-string $bytes */

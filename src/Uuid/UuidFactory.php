@@ -71,7 +71,7 @@ final class UuidFactory implements UuidFactoryInterface
             return new UntypedUuid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 16-byte string');
+        throw new InvalidArgument('The identifier must be a 16-byte octet string');
     }
 
     /**
@@ -83,7 +83,7 @@ final class UuidFactory implements UuidFactoryInterface
             return new UntypedUuid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a 32-character hexadecimal string');
+        throw new InvalidArgument('The identifier must be a 32-character hexadecimal string');
     }
 
     /**
@@ -127,7 +127,7 @@ final class UuidFactory implements UuidFactoryInterface
             return new UntypedUuid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a UUID in standard string representation (with dashes)');
+        throw new InvalidArgument('The identifier must be a UUID in standard string representation (with dashes)');
     }
 
     /**
