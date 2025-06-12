@@ -43,6 +43,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
+    private const TIMESTAMP_BIT_SHIFTS = 22;
+
     /**
      * We increase this value each time our clock sequence rolls over and add the value to the milliseconds to ensure
      * the values are monotonically increasing.
@@ -109,7 +111,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;
-        $millisecondsShifted = $milliseconds << 22;
+        $millisecondsShifted = $milliseconds << self::TIMESTAMP_BIT_SHIFTS;
 
         // If the sequence is currently 0x0fff (4095), bump the clock sequence counter, since we're rolling over.
         if ($sequence === 0x0fff) {
@@ -122,7 +124,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
-                ->shiftedLeft(22)
+                ->shiftedLeft(self::TIMESTAMP_BIT_SHIFTS)
                 ->or($this->nodeIdShifted)
                 ->or($sequence);
         }

@@ -38,6 +38,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
+    private const TIMESTAMP_BIT_SHIFTS = 23;
+
     /**
      * We increase this value each time our clock sequence rolls over and add the value to the milliseconds to ensure
      * the values are monotonically increasing.
@@ -100,7 +102,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;
-        $millisecondsShifted = $milliseconds << 23;
+        $millisecondsShifted = $milliseconds << self::TIMESTAMP_BIT_SHIFTS;
 
         // If the sequence is currently 0x03ff (1023), bump the clock sequence counter, since we're rolling over.
         if ($sequence === 0x03ff) {
@@ -113,7 +115,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
-                ->shiftedLeft(23)
+                ->shiftedLeft(self::TIMESTAMP_BIT_SHIFTS)
                 ->or($this->shardIdShifted)
                 ->or($sequence);
         }

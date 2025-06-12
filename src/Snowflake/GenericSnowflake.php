@@ -21,7 +21,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Utility\Format;
-use Ramsey\Identifier\Snowflake\Utility\Mask;
 use Ramsey\Identifier\Snowflake\Utility\Time;
 use Ramsey\Identifier\Snowflake\Utility\Validation;
 use Stringable;
@@ -42,6 +41,8 @@ use function sprintf;
 final readonly class GenericSnowflake implements Snowflake
 {
     use Validation;
+
+    private const TIMESTAMP_BIT_SHIFTS = 22;
 
     private Time $time;
 
@@ -134,7 +135,7 @@ final readonly class GenericSnowflake implements Snowflake
      */
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, 22);
+        return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);
     }
 
     /**

@@ -31,6 +31,8 @@ final readonly class InstagramSnowflake implements Snowflake
 {
     use Standard;
 
+    private const TIMESTAMP_BIT_SHIFTS = 23;
+
     private Time $time;
 
     /**
@@ -49,6 +51,6 @@ final readonly class InstagramSnowflake implements Snowflake
      */
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, Epoch::Instagram->value, 23);
+        return $this->time->getDateTimeForSnowflake($this, Epoch::Instagram->value, self::TIMESTAMP_BIT_SHIFTS);
     }
 }

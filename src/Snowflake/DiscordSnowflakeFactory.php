@@ -38,6 +38,8 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
+    private const TIMESTAMP_BIT_SHIFTS = 22;
+
     /**
      * For performance, we'll prepare the worker and process ID bits and store them for repeated use.
      */
@@ -102,7 +104,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;
-        $millisecondsShifted = $milliseconds << 22;
+        $millisecondsShifted = $milliseconds << self::TIMESTAMP_BIT_SHIFTS;
 
         // If the sequence is currently 0x0fff (4095), bump the clock sequence counter, since we're rolling over.
         if ($sequence === 0x0fff) {
@@ -115,7 +117,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
         } else {
             /** @var numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
-                ->shiftedLeft(22)
+                ->shiftedLeft(self::TIMESTAMP_BIT_SHIFTS)
                 ->or($this->workerProcessIdShifted)
                 ->or($sequence);
         }
