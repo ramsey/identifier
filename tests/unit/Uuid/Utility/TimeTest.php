@@ -76,6 +76,9 @@ class TimeTest extends TestCase
         (new Time())->getTimeBytesForGregorianEpoch($dateTime);
     }
 
+    /**
+     * @param non-empty-string $uuid
+     */
     #[DataProvider('getDateTimeForUuidProvider')]
     public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
     {
@@ -86,7 +89,7 @@ class TimeTest extends TestCase
     }
 
     /**
-     * @return array<string, array{uuid: string, expectedTime: string}>
+     * @return array<string, array{uuid: non-empty-string, expectedTime: string}>
      */
     public static function getDateTimeForUuidProvider(): array
     {

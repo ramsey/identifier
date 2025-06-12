@@ -38,6 +38,7 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
+     * @param non-empty-string $bytes
      * @param class-string<Uuid> $expectedType
      */
     #[DataProvider('createFromBytesProvider')]
@@ -101,6 +102,9 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $input
+     */
     #[DataProvider('createFromBytesInvalidInputProvider')]
     public function testCreateFromBytesThrowsExceptionForInvalidInput(string $input): void
     {
@@ -326,6 +330,7 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
+     * @param non-empty-string $value
      * @param class-string<Uuid> $expectedType
      */
     #[DataProvider('createFromStringProvider')]
@@ -389,6 +394,9 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $input
+     */
     #[DataProvider('createFromStringInvalidInputProvider')]
     public function testCreateFromStringThrowsExceptionForInvalidInput(string $input): void
     {

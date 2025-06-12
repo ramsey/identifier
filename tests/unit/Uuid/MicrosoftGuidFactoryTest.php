@@ -120,6 +120,9 @@ class MicrosoftGuidFactoryTest extends TestCase
         $this->factory->createFromString('ffff-ffffffff-4fff-dfff-ffffffffffff');
     }
 
+    /**
+     * @param non-empty-string $uuidValue
+     */
     #[DataProvider('createFromRfcProvider')]
     public function testCreateFromRfc(
         string $uuidValue,
@@ -138,7 +141,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     }
 
     /**
-     * @return array<string, array{uuidValue: string, expectedGuidValue: string}>
+     * @return array<string, array{uuidValue: non-empty-string, expectedGuidValue: string}>
      */
     public static function createFromRfcProvider(): array
     {

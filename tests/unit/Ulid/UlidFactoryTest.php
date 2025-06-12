@@ -357,6 +357,9 @@ class UlidFactoryTest extends TestCase
         $this->factory->createFromDateTime($dateTime);
     }
 
+    /**
+     * @param non-empty-string $bytes
+     */
     #[DataProvider('createFromUuidProvider')]
     public function testCreateFromUuid(string $bytes): void
     {
@@ -370,7 +373,7 @@ class UlidFactoryTest extends TestCase
     }
 
     /**
-     * @return list<array{bytes: string}>
+     * @return list<array{bytes: non-empty-string}>
      */
     public static function createFromUuidProvider(): array
     {

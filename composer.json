@@ -22,7 +22,7 @@
     "require": {
         "php-64bit": "^8.2",
         "brick/math": "^0.13.0",
-        "identifier/identifier": "^0.3.0",
+        "identifier/identifier": "^0.4.0",
         "psr/clock": "^1.0",
         "psr/simple-cache": "^3.0"
     },
