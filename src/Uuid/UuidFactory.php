@@ -149,10 +149,11 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * Creates a version 1, Gregorian time UUID.
      *
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
-     *     hardware address of the machine where this identifier was generated.
-     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help avoid duplicates that could arise when
-     *     the clock is set backwards in time or if the node ID changes.
+     * @param int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
+     *     representing the hardware address of the machine where this identifier was generated.
+     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
+     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 16,384, giving it an
+     *     effective range of 0-16383 (i.e., 14 bits).
      * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws InvalidArgument if parameters are not legal values.
@@ -170,13 +171,14 @@ final class UuidFactory implements UuidFactoryInterface
      *
      * @param DceDomain $localDomain The local domain to which the local identifier belongs; this MUST default to a
      *     suitable domain for the implementation.
-     * @param int<0, max> | null $localIdentifier A local identifier belonging to the local domain specified in
-     *     `$localDomain`; if no identifier is provided, the factory SHOULD attempt to get a suitable local ID for the
-     *     domain (e.g., the UID or GID of the user running the script).
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
-     *     hardware address of the machine where this identifier was generated.
-     * @param int<0, 63> | null $clockSequence A 6-bit number used to help avoid duplicates that could arise when the
-     *     clock is set backwards in time or if the node ID changes.
+     * @param int<0, 4294967295> | null $localIdentifier A 32-bit local identifier belonging to the local domain
+     *     specified in `$localDomain`; if no identifier is provided, the factory SHOULD attempt to get a suitable local
+     *     ID for the domain (e.g., the UID or GID of the user running the script).
+     * @param int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
+     *     representing the hardware address of the machine where this identifier was generated.
+     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
+     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 64, giving it an
+     *     effective range of 0-63 (i.e., 6 bits).
      * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws InvalidArgument if parameters are not legal values.
@@ -247,10 +249,11 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * Creates a version 6, reordered Gregorian time UUID.
      *
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
-     *     hardware address of the machine where this identifier was generated.
-     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help avoid duplicates that could arise when
-     *     the clock is set backwards in time or if the node ID changes
+     * @param int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
+     *     representing the hardware address of the machine where this identifier was generated.
+     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
+     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 16,384, giving it an
+     *     effective range of 0-16383 (i.e., 14 bits).
      * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws InvalidArgument if parameters are not legal values.

@@ -54,7 +54,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     /**
      * Constructs a factory for creating Instagram Snowflakes.
      *
-     * @param int<0, 8191> $shardId A 13-bit shard identifier to use when creating Snowflakes.
+     * @param int $shardId A shard identifier to use when creating Snowflakes; we take the modulo of this integer
+     *     divided by 8192, giving it an effective range of 0-8191 (i.e., 13 bits).
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
@@ -63,7 +64,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
-        $this->shardIdShifted = ($this->shardId & 0x1fff) << 10;
+        // Use modular arithmetic to roll over the shard value at mod 0x2000 (8192).
+        $this->shardIdShifted = $this->shardId % 0x2000 << 10;
     }
 
     /**
@@ -98,7 +100,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->next((string) $this->shardId, $dateTime) & 0x03ff;
+        // Use modular arithmetic to roll over the sequence value at mod 0x0400 (1024).
+        $sequence = $this->sequence->next((string) $this->shardId, $dateTime) % 0x0400;
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;

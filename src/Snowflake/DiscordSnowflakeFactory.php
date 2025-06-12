@@ -52,10 +52,10 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     private int $clockSequenceCounter = 0;
 
     /**
-     * Constructs a factory for creating Discord Snowflakes.
-     *
-     * @param int<0, 31> $workerId A 5-bit worker identifier to use when creating Snowflakes.
-     * @param int<0, 31> $processId A 5-bit process identifier to use when creating Snowflakes.
+     * @param int $workerId A worker identifier to use when creating Snowflakes; we take the modulo of this integer
+     *     divided by 32, giving it an effective range of 0-31 (i.e., 5 bits).
+     * @param int $processId A process identifier to use when creating Snowflakes; we take the modulo of this integer
+     *     divided by 32, giving it an effective range of 0-31 (i.e., 5 bits).
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
@@ -65,7 +65,8 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
-        $this->workerProcessIdShifted = ($this->workerId & 0x1f) << 17 | ($this->processId & 0x1f) << 12;
+        // Use modular arithmetic to roll over the worker and process IDs at mod 0x20 (32).
+        $this->workerProcessIdShifted = $this->workerId % 0x20 << 17 | $this->processId % 0x20 << 12;
     }
 
     /**
@@ -100,7 +101,8 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->next((string) ($this->workerId + $this->processId), $dateTime) & 0x0fff;
+        // Use modular arithmetic to roll over the sequence value at mod 0x1000 (4096).
+        $sequence = $this->sequence->next((string) ($this->workerId + $this->processId), $dateTime) % 0x1000;
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;

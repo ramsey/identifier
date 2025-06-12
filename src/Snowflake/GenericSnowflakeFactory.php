@@ -71,7 +71,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
-        $this->nodeIdShifted = ($this->nodeId & 0x03ff) << 12;
+        // Use modular arithmetic to roll over the node value at mod 0x0400 (1024).
+        $this->nodeIdShifted = $this->nodeId % 0x0400 << 12;
         $this->epochOffset = $epochOffset instanceof Epoch ? $epochOffset->value : $epochOffset;
     }
 
@@ -107,7 +108,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->next((string) $this->nodeId, $dateTime) & 0x0fff;
+        // Use modular arithmetic to roll over the sequence value at mod 0x1000 (4096).
+        $sequence = $this->sequence->next((string) $this->nodeId, $dateTime) % 0x1000;
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;

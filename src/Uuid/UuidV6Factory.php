@@ -41,11 +41,6 @@ final class UuidV6Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
-    /**
-     * The maximum value of the clock sequence before it must roll over to zero.
-     */
-    private const CLOCK_SEQ_MAX = 16_384;
-
     private readonly Binary $binary;
     private readonly Time $time;
 
@@ -64,10 +59,11 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param int<0, max> | non-empty-string | null $node A 48-bit integer or hexadecimal string representing the
-     *     hardware address of the machine where this identifier was generated.
-     * @param int<0, 16383> | null $clockSequence A 14-bit number used to help avoid duplicates that could arise when
-     *     the clock is set backwards in time or if the node ID changes.
+     * @param int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
+     *     representing the hardware address of the machine where this identifier was generated.
+     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
+     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 16,384, giving it an
+     *     effective range of 0-16383 (i.e., 14 bits).
      * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
      *
      * @throws InvalidArgument
@@ -79,7 +75,9 @@ final class UuidV6Factory implements TimeBasedUuidFactory
     ): UuidV6 {
         $node = $node === null ? $this->nic->address() : (new StaticNic($node))->address();
         $dateTime = $dateTime ?? $this->clock->now();
-        $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % self::CLOCK_SEQ_MAX;
+
+        // Use modular arithmetic to roll over the sequence value at mod 0x4000 (16384).
+        $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % 0x4000;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
         $timeHex = bin2hex($timeBytes);

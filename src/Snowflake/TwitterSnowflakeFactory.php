@@ -51,9 +51,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     private int $clockSequenceCounter = 0;
 
     /**
-     * Constructs a factory for creating Twitter Snowflakes.
-     *
-     * @param int<0, 1023> $machineId A 10-bit machine identifier to use when creating Snowflakes.
+     * @param int $machineId A machine identifier to use when creating Snowflakes; we take the modulo of this integer
+     *     divided by 1024, giving it an effective range of 0-1023 (i.e., 10 bits).
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
      * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}.
      */
@@ -62,7 +61,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
         private readonly Clock $clock = new SystemClock(),
         private readonly ClockSequence $sequence = new MonotonicClockSequence(),
     ) {
-        $this->machineIdShifted = ($this->machineId & 0x03ff) << 12;
+        // Use modular arithmetic to roll over the machine ID value at mod 0x0400 (1024).
+        $this->machineIdShifted = $this->machineId % 0x0400 << 12;
     }
 
     /**
@@ -97,7 +97,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        $sequence = $this->sequence->next((string) $this->machineId, $dateTime) & 0x0fff;
+        // Use modular arithmetic to roll over the sequence value at mod 0x1000 (4096).
+        $sequence = $this->sequence->next((string) $this->machineId, $dateTime) % 0x1000;
 
         // Increase the milliseconds by the current value of the clock sequence counter.
         $milliseconds += $this->clockSequenceCounter;
