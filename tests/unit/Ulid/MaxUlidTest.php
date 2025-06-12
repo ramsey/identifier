@@ -445,4 +445,11 @@ class MaxUlidTest extends TestCase
         $this->assertSame($expectedBytes, $uuid->toBytes());
         $this->assertFalse($this->maxUlid->equals($uuid));
     }
+
+    public function testMaxEpochDateTime(): void
+    {
+        $max = new Ulid\MaxUlid();
+
+        $this->assertSame('10889-08-02T05:31:50.655Z', $max->getDateTime()->format('Y-m-d\TH:i:s.vp'));
+    }
 }
