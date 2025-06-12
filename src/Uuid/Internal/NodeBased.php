@@ -12,29 +12,23 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Snowflake\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
+
+use function substr;
 
 /**
- * Various character masks for Snowflake identifiers.
+ * Provides common methods for node-based UUIDs.
  *
  * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
-final class Mask
+trait NodeBased
 {
     /**
-     * A mask used with functions like {@see strspn()} to validate hexadecimal strings.
+     * @return non-empty-string
      */
-    public const HEX = '0123456789abcdefABCDEF';
-
-    /**
-     * A mask used with functions like {@see strspn()} to validate string integers.
-     */
-    public const INT = '0123456789';
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function __construct()
+    public function getNode(): string
     {
+        /** @var non-empty-string */
+        return substr($this->getFormat(Format::Hex), -12);
     }
 }

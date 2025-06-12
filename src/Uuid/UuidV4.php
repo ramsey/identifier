@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Internal\Standard;
 
 /**
  * Random, or version 4, UUIDs are randomly generated 128-bit integers.

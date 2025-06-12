@@ -19,8 +19,8 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\TimeBasedUuidFactory;
-use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardFactory;
+use Ramsey\Identifier\Uuid\Internal\Binary;
+use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 
 use function sprintf;
 

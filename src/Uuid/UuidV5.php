@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Internal\Standard;
 
 /**
  * Version 5 UUIDs are named-based, using a combination of a namespace and name that are hashed into a 128-bit unsigned

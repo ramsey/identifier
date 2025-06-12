@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Variant;

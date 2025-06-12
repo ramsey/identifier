@@ -21,11 +21,11 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\NodeBased;
-use Ramsey\Identifier\Uuid\Utility\Standard;
-use Ramsey\Identifier\Uuid\Utility\TimeBased;
+use Ramsey\Identifier\Uuid\Internal\Binary;
+use Ramsey\Identifier\Uuid\Internal\Format;
+use Ramsey\Identifier\Uuid\Internal\NodeBased;
+use Ramsey\Identifier\Uuid\Internal\Standard;
+use Ramsey\Identifier\Uuid\Internal\TimeBased;
 
 use function assert;
 use function bin2hex;

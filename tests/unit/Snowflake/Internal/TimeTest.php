@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Snowflake\Utility;
+namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Snowflake\Epoch;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
-use Ramsey\Identifier\Snowflake\Utility\Time;
 use Ramsey\Test\Identifier\TestCase;
 
 class TimeTest extends TestCase

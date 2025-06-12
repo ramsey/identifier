@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
 
 /**
  * Various character masks for UUIDs.

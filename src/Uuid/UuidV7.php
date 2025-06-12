@@ -15,8 +15,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Ramsey\Identifier\TimeBasedUuid;
-use Ramsey\Identifier\Uuid\Utility\Standard;
-use Ramsey\Identifier\Uuid\Utility\TimeBased;
+use Ramsey\Identifier\Uuid\Internal\Standard;
+use Ramsey\Identifier\Uuid\Internal\TimeBased;
 
 /**
  * Unix Epoch time, or version 7, UUIDs include a timestamp in milliseconds since the Unix Epoch.

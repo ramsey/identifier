@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Nic;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\Mask;
+use Ramsey\Identifier\Uuid\Internal\Mask;
 
 use function bin2hex;
 use function dechex;

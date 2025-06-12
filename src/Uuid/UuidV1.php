@@ -16,9 +16,9 @@ namespace Ramsey\Identifier\Uuid;
 
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
-use Ramsey\Identifier\Uuid\Utility\NodeBased;
-use Ramsey\Identifier\Uuid\Utility\Standard;
-use Ramsey\Identifier\Uuid\Utility\TimeBased;
+use Ramsey\Identifier\Uuid\Internal\NodeBased;
+use Ramsey\Identifier\Uuid\Internal\Standard;
+use Ramsey\Identifier\Uuid\Internal\TimeBased;
 
 /**
  * Gregorian time, or version 1, UUIDs include timestamp, clock sequence, and node values that are combined into a

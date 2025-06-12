@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Snowflake\Utility;
+namespace Ramsey\Identifier\Snowflake\Internal;
 
 use Brick\Math\BigInteger;
 

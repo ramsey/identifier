@@ -24,9 +24,9 @@ use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\TimeBasedUuidFactory;
-use Ramsey\Identifier\Uuid\Utility\Binary;
-use Ramsey\Identifier\Uuid\Utility\StandardFactory;
-use Ramsey\Identifier\Uuid\Utility\Time;
+use Ramsey\Identifier\Uuid\Internal\Binary;
+use Ramsey\Identifier\Uuid\Internal\StandardFactory;
+use Ramsey\Identifier\Uuid\Internal\Time;
 
 use function hex2bin;
 use function pack;

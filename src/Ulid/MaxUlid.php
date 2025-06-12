@@ -16,8 +16,8 @@ namespace Ramsey\Identifier\Ulid;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid as UlidInterface;
-use Ramsey\Identifier\Ulid\Utility\Format;
-use Ramsey\Identifier\Ulid\Utility\Standard;
+use Ramsey\Identifier\Ulid\Internal\Format;
+use Ramsey\Identifier\Ulid\Internal\Standard;
 
 use function sprintf;
 use function strlen;

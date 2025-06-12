@@ -21,9 +21,9 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
-use Ramsey\Identifier\Ulid\Utility\Format;
-use Ramsey\Identifier\Ulid\Utility\Mask;
-use Ramsey\Identifier\Ulid\Utility\Validation;
+use Ramsey\Identifier\Ulid\Internal\Format;
+use Ramsey\Identifier\Ulid\Internal\Mask;
+use Ramsey\Identifier\Ulid\Internal\Validation;
 use Ramsey\Identifier\UlidFactory as UlidFactoryInterface;
 use Ramsey\Identifier\Uuid;
 

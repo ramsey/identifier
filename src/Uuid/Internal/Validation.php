@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
 
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\Variant;

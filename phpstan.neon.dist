@@ -13,4 +13,4 @@ parameters:
             # and will never encounter this case where it would try to call `getVersion()`,
             # so we can safely ignore this error.
             message: '#Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given#'
-            path: src/Uuid/Utility/StandardFactory.php
+            path: src/Uuid/Internal/StandardFactory.php

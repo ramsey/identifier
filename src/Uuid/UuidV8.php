@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Internal\Standard;
 
 /**
  * Version 8, custom format UUIDs provide an RFC 9562 compatible format for experimental or vendor-specific uses.

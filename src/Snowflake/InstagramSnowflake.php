@@ -18,8 +18,8 @@ use DateTimeImmutable;
 use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
-use Ramsey\Identifier\Snowflake\Utility\Standard;
-use Ramsey\Identifier\Snowflake\Utility\Time;
+use Ramsey\Identifier\Snowflake\Internal\Standard;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 
 /**
  * A Snowflake identifier for use with the Instagram photo and video sharing social media platform.

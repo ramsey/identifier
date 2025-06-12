@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Uuid\Utility;
+namespace Ramsey\Test\Identifier\Uuid\Internal;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;

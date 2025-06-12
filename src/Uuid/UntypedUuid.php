@@ -20,9 +20,9 @@ use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
-use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\Mask;
-use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Internal\Format;
+use Ramsey\Identifier\Uuid\Internal\Mask;
+use Ramsey\Identifier\Uuid\Internal\Standard;
 
 use function assert;
 use function preg_match;

@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid;
 
 use Ramsey\Identifier\Ulid as UlidInterface;
-use Ramsey\Identifier\Ulid\Utility\Standard;
+use Ramsey\Identifier\Ulid\Internal\Standard;
 
 /**
  * A universally unique lexicographically sortable identifier (ULID).

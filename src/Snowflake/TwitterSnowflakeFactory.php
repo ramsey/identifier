@@ -21,7 +21,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
-use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function sprintf;

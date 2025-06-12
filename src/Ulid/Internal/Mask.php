@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid\Utility;
+namespace Ramsey\Identifier\Ulid\Internal;
 
 /**
  * Various character masks for ULIDs.

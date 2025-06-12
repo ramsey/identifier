@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Uuid\Utility;
+namespace Ramsey\Test\Identifier\Uuid\Internal;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Utility\Time;
+use Ramsey\Identifier\Uuid\Internal\Time;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Test\Identifier\TestCase;
 

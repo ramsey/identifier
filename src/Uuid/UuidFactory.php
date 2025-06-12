@@ -22,9 +22,9 @@ use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\Mask;
-use Ramsey\Identifier\Uuid\Utility\Validation;
+use Ramsey\Identifier\Uuid\Internal\Format;
+use Ramsey\Identifier\Uuid\Internal\Mask;
+use Ramsey\Identifier\Uuid\Internal\Validation;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
 use function is_int;

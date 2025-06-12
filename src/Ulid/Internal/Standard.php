@@ -12,7 +12,7 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid\Utility;
+namespace Ramsey\Identifier\Ulid\Internal;
 
 use Brick\Math\BigInteger;
 use DateTimeImmutable;
@@ -20,7 +20,7 @@ use Identifier\BytesIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Binary;
+use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;

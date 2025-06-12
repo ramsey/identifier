@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Test\Identifier\Snowflake\Utility;
+namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
 use PHPUnit\Framework\Attributes\DataProvider;
-use Ramsey\Identifier\Snowflake\Utility\Format;
+use Ramsey\Identifier\Snowflake\Internal\Format;
 use Ramsey\Test\Identifier\TestCase;
 
 class FormatTest extends TestCase

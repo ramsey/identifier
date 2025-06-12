@@ -16,7 +16,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
-use Ramsey\Identifier\Snowflake\Utility\Standard;
+use Ramsey\Identifier\Snowflake\Internal\Standard;
 
 /**
  * A Snowflake identifier for use with the Discord voice, text, and streaming video platform.

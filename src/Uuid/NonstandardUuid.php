@@ -18,8 +18,8 @@ use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
-use Ramsey\Identifier\Uuid\Utility\Format;
-use Ramsey\Identifier\Uuid\Utility\Standard;
+use Ramsey\Identifier\Uuid\Internal\Format;
+use Ramsey\Identifier\Uuid\Internal\Standard;
 
 use function assert;
 use function sprintf;

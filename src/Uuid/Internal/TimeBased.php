@@ -12,27 +12,19 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Uuid\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
+
+use DateTimeImmutable;
 
 /**
- * An enum representing the format of a UUID.
+ * Provides common methods for time-based UUIDs.
  *
  * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
-enum Format: int
+trait TimeBased
 {
-    /**
-     * Bytes representation.
-     */
-    case Bytes = 16;
-
-    /**
-     * Hexadecimal representation.
-     */
-    case Hex = 32;
-
-    /**
-     * Standard string representation.
-     */
-    case String = 36;
+    public function getDateTime(): DateTimeImmutable
+    {
+        return (new Time())->getDateTimeForUuid($this);
+    }
 }

@@ -24,7 +24,7 @@ use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake;
-use Ramsey\Identifier\Snowflake\Utility\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function sprintf;

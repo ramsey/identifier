@@ -12,27 +12,27 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Ulid\Utility;
+namespace Ramsey\Identifier\Uuid\Internal;
 
 /**
- * An enum representing the format of a ULID.
+ * An enum representing the format of a UUID.
  *
  * @internal Not intended for use outside ramsey/identifier; may change without notice.
  */
 enum Format: int
 {
     /**
-     * Bytes representation
+     * Bytes representation.
      */
     case Bytes = 16;
 
     /**
-     * Hexadecimal representation
+     * Hexadecimal representation.
      */
     case Hex = 32;
 
     /**
-     * ULID representation
+     * Standard string representation.
      */
-    case Ulid = 26;
+    case String = 36;
 }

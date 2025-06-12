@@ -20,9 +20,9 @@ use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
-use Ramsey\Identifier\Snowflake\Utility\Format;
-use Ramsey\Identifier\Snowflake\Utility\Time;
-use Ramsey\Identifier\Snowflake\Utility\Validation;
+use Ramsey\Identifier\Snowflake\Internal\Format;
+use Ramsey\Identifier\Snowflake\Internal\Time;
+use Ramsey\Identifier\Snowflake\Internal\Validation;
 use Stringable;
 
 use function assert;
