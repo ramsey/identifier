@@ -78,14 +78,14 @@ trait Standard
         $this->format = Format::tryFrom(strlen($ulid));
 
         if ($this->format === Format::Ulid) {
-            $ulid = strtr($ulid, 'IiLlOo', '111100');
+            $ulid = strtr($ulid, ...self::DECODE_SYMBOLS);
+        }
+
+        if (!$this->isValid($ulid, $this->format)) {
+            throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $original));
         }
 
         $this->ulid = $ulid;
-
-        if (!$this->isValid($this->ulid, $this->format)) {
-            throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $original));
-        }
     }
 
     /**
@@ -127,8 +127,10 @@ trait Standard
 
         if ($other === null || is_scalar($other) || $other instanceof Stringable) {
             $other = (string) $other;
-            if ($this->isValid($other, Format::tryFrom(strlen($other)))) {
-                $other = $this->getFormat(Format::Ulid, strtr($other, 'IiLlOo', '111100'));
+
+            $otherEncoded = strtr($other, ...self::DECODE_SYMBOLS);
+            if ($this->isValid($otherEncoded, Format::tryFrom(strlen($other)))) {
+                $other = $this->getFormat(Format::Ulid, $otherEncoded);
             }
 
             return strcasecmp($this->toString(), $other);

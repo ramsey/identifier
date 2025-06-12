@@ -93,7 +93,7 @@ final class RandomNic implements Nic
     /**
      * @return non-empty-string
      */
-    public function generateAddress(): string
+    private function generateAddress(): string
     {
         /** @var non-empty-string */
         return sprintf('%012x', random_int(0, 0xffffffffffff) | 0x010000000000);

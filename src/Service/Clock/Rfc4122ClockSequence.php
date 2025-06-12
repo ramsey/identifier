@@ -17,9 +17,12 @@ namespace Ramsey\Identifier\Service\Clock;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
+
+use function strlen;
 
 use const PHP_INT_MAX;
 
@@ -84,17 +87,29 @@ final class Rfc4122ClockSequence implements ClockSequence
         private readonly ClockInterface $clock = new SystemClock(),
         private readonly CacheInterface $cache = new InMemoryCache(),
     ) {
+        if ($initialValue !== null && $initialValue < 0) {
+            throw new InvalidArgument('$initialValue must be a non-negative integer or null');
+        }
+
         $this->initialValue = $initialValue;
         $this->defaultState = $nic->address();
     }
 
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
+        if ($state !== null && strlen($state) === 0) {
+            throw new InvalidArgument('$state must be a non-empty string or null');
+        }
+
         return $this->getGeneratorState($state, $dateTime)->sequence;
     }
 
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
+        if ($state !== null && strlen($state) === 0) {
+            throw new InvalidArgument('$state must be a non-empty string or null');
+        }
+
         return $this->getGeneratorState($state, $dateTime)->sequence;
     }
 
@@ -117,11 +132,10 @@ final class Rfc4122ClockSequence implements ClockSequence
             } else {
                 $generatorState->sequence++;
             }
+
+            $generatorState->timestamp = (int) $dateTime->format(Precision::Microsecond->value);
+            $this->cache->set($cacheKey, $generatorState);
         }
-
-        $generatorState->timestamp = (int) $dateTime->format(Precision::Microsecond->value);
-
-        $this->cache->set($cacheKey, $generatorState);
 
         return $generatorState;
     }

@@ -17,6 +17,7 @@ namespace Ramsey\Identifier\Service\Dce;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
@@ -78,6 +79,9 @@ final class SystemDce implements Dce
         private readonly ?CacheInterface $cache = null,
         private readonly Os $os = new PhpOs(),
     ) {
+        if ($this->orgId !== null && ($this->orgId < 0 || $this->orgId > 0xffffffff)) {
+            throw new InvalidArgument('$orgId must be a non-negative 32-bit integer or null');
+        }
     }
 
     /**

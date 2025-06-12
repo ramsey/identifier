@@ -43,7 +43,14 @@ final class RandomClockSequence implements ClockSequence
      */
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
-        /** @var int<0, max> */
-        return $this->sequence->next();
+        // Prevent against randomly generating the same as the current value.
+        $current = $this->current();
+
+        do {
+            /** @var int<0, max> $next */
+            $next = $this->sequence->next();
+        } while ($next === $current);
+
+        return $next;
     }
 }

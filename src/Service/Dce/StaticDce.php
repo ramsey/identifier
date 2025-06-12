@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Dce;
 
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function sprintf;
 
@@ -38,6 +39,17 @@ final readonly class StaticDce implements Dce
         private ?int $groupId = null,
         private ?int $orgId = null,
     ) {
+        if ($this->userId !== null && ($this->userId < 0 || $this->userId > 0xffffffff)) {
+            throw new InvalidArgument('$userId must be a non-negative 32-bit integer or null');
+        }
+
+        if ($this->groupId !== null && ($this->groupId < 0 || $this->groupId > 0xffffffff)) {
+            throw new InvalidArgument('$groupId must be a non-negative 32-bit integer or null');
+        }
+
+        if ($this->orgId !== null && ($this->orgId < 0 || $this->orgId > 0xffffffff)) {
+            throw new InvalidArgument('$orgId must be a non-negative 32-bit integer or null');
+        }
     }
 
     /**

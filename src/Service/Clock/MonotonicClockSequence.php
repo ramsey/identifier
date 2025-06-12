@@ -17,9 +17,12 @@ namespace Ramsey\Identifier\Service\Clock;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
+
+use function strlen;
 
 use const PHP_INT_MAX;
 
@@ -60,17 +63,29 @@ final class MonotonicClockSequence implements ClockSequence
         private readonly CacheInterface $cache = new InMemoryCache(),
         private readonly Precision $precision = Precision::Millisecond,
     ) {
+        if ($initialValue !== null && $initialValue < 0) {
+            throw new InvalidArgument('$initialValue must be a non-negative integer or null');
+        }
+
         $this->initialValue = $initialValue;
         $this->defaultState = $nic->address();
     }
 
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
+        if ($state !== null && strlen($state) === 0) {
+            throw new InvalidArgument('$state must be a non-empty string or null');
+        }
+
         return $this->getGeneratorState($state, $dateTime, false)->sequence;
     }
 
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
+        if ($state !== null && strlen($state) === 0) {
+            throw new InvalidArgument('$state must be a non-empty string or null');
+        }
+
         return $this->getGeneratorState($state, $dateTime, true)->sequence;
     }
 
@@ -92,9 +107,9 @@ final class MonotonicClockSequence implements ClockSequence
             } else {
                 $generatorState->sequence = $generatorState->sequence + 1;
             }
-        }
 
-        $this->cache->set($cacheKey, $generatorState);
+            $this->cache->set($cacheKey, $generatorState);
+        }
 
         return $generatorState;
     }

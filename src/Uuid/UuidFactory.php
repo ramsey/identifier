@@ -127,7 +127,7 @@ final class UuidFactory implements UuidFactoryInterface
             return new UntypedUuid($identifier);
         }
 
-        throw new InvalidArgument('Identifier must be a UUID in string standard representation');
+        throw new InvalidArgument('Identifier must be a UUID in standard string representation (with dashes)');
     }
 
     /**

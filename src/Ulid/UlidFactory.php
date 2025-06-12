@@ -34,6 +34,7 @@ use function sprintf;
 use function str_pad;
 use function strlen;
 use function strspn;
+use function strtr;
 
 use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
@@ -76,7 +77,7 @@ final class UlidFactory implements UlidFactoryInterface
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::Bytes->value) {
+        if ($this->isValid($identifier, Format::Bytes)) {
             return new Ulid($identifier);
         }
 
@@ -113,7 +114,7 @@ final class UlidFactory implements UlidFactoryInterface
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::Hex->value && $this->isValid($identifier, Format::Hex)) {
+        if ($this->isValid($identifier, Format::Hex)) {
             return new Ulid($identifier);
         }
 
@@ -151,8 +152,8 @@ final class UlidFactory implements UlidFactoryInterface
 
         try {
             return $this->createFromBytes(str_pad($bytes, 16, "\x00", STR_PAD_LEFT));
-        } catch (InvalidArgument) {
-            throw new InvalidArgument(sprintf('Invalid ULID: %s', $identifier));
+        } catch (InvalidArgument $exception) {
+            throw new InvalidArgument(sprintf('Invalid ULID: %s', $identifier), previous: $exception);
         }
     }
 
@@ -169,8 +170,10 @@ final class UlidFactory implements UlidFactoryInterface
             return new NilUlid();
         }
 
-        if (strlen($identifier) === Format::Ulid->value && $this->isValid($identifier, Format::Ulid)) {
-            return new Ulid($identifier);
+        $identifierEncoded = strtr($identifier, ...self::DECODE_SYMBOLS);
+
+        if ($this->isValid($identifierEncoded, Format::Ulid)) {
+            return new Ulid($identifierEncoded);
         }
 
         throw new InvalidArgument('Identifier must be a valid ULID string representation');

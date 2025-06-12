@@ -50,16 +50,18 @@ trait GeneratorStateCache
     ): GeneratorState {
         $generatorState = $this->cache->get($cacheKey);
 
+        if ($generatorState !== null && !$generatorState instanceof GeneratorState) {
+            throw new InvalidGeneratorState('The generator state must be an instance of ' . GeneratorState::class);
+        }
+
         if ($generatorState === null) {
             $generatorState = new GeneratorState(
                 node: $state,
                 sequence: $this->initializeValue(),
                 timestamp: (int) $dateTime->format(Precision::Microsecond->value),
             );
-        }
 
-        if (!$generatorState instanceof GeneratorState) {
-            throw new InvalidGeneratorState('The generator state must be an instance of ' . GeneratorState::class);
+            $this->cache->set($cacheKey, $generatorState);
         }
 
         return $generatorState;

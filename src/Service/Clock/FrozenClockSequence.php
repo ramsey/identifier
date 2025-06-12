@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
  * A clock sequence that always returns the same pre-determined value. Calling `next()` does not advance the sequence.
@@ -26,6 +27,9 @@ final readonly class FrozenClockSequence implements ClockSequence
      */
     public function __construct(private int $value)
     {
+        if ($this->value < 0) {
+            throw new InvalidArgument('$value must be a non-negative integer');
+        }
     }
 
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int

@@ -141,7 +141,7 @@ class StaticNicTest extends TestCase
     public function testGetAddressThrowsException(string $value): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Address must be a 48-bit integer or hexadecimal string');
+        $this->expectExceptionMessage('Address must be a non-negative 48-bit integer or hexadecimal string');
 
         new StaticNic($value);
     }

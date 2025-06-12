@@ -78,7 +78,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         }
 
         throw new BadMethodCall(sprintf(
-            'Cannot call getDateTime() on untyped UUID "%s"',
+            'Cannot call getDateTime() on untyped UUID "%s"; it is not a time-based UUID',
             $this->getFormat(Format::String),
         ));
     }
@@ -95,7 +95,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         }
 
         throw new BadMethodCall(sprintf(
-            'Cannot call getNode() on untyped UUID "%s"',
+            'Cannot call getNode() on untyped UUID "%s"; it is not a node-based UUID',
             $this->getFormat(Format::String),
         ));
     }
@@ -179,7 +179,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     private function isValid(string $uuid, ?Format $format): bool
     {
         return match ($format) {
-            Format::Bytes => true,
+            Format::Bytes => strlen($uuid) === 16,
             Format::Hex => strspn($uuid, Mask::HEX) === 32,
             Format::String => preg_match(self::VALID_UUID, $uuid) === 1,
             default => false,

@@ -14,6 +14,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Clock;
 
+use Ramsey\Identifier\Exception\InvalidArgument;
+
+use function strlen;
+
 /**
  * A value object for storing and passing the generator state for clock sequences.
  *
@@ -30,5 +34,12 @@ final class GeneratorState
         public int $sequence,
         public int $timestamp,
     ) {
+        if (strlen($this->node) === 0) {
+            throw new InvalidArgument('$node must be a non-empty string');
+        }
+
+        if ($this->sequence < 0) {
+            throw new InvalidArgument('$sequence must be a non-negative integer');
+        }
     }
 }

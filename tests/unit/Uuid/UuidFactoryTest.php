@@ -393,7 +393,7 @@ class UuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForInvalidInput(string $input): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
+        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString($input);
     }

@@ -107,7 +107,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
+        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffffffff-ffff-4fff-dfff-fffffffffffff');
     }
@@ -115,7 +115,7 @@ class MicrosoftGuidFactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
+        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffff-ffffffff-4fff-dfff-ffffffffffff');
     }

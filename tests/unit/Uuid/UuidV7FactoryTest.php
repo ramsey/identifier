@@ -189,7 +189,7 @@ class UuidV7FactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongLength(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
+        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffffffff-ffff-7fff-8fff-fffffffffffff');
     }
@@ -197,7 +197,7 @@ class UuidV7FactoryTest extends TestCase
     public function testCreateFromStringThrowsExceptionForWrongFormat(): void
     {
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Identifier must be a UUID in string standard representation');
+        $this->expectExceptionMessage('Identifier must be a UUID in standard string representation');
 
         $this->factory->createFromString('ffff-ffffffff-7fff-8fff-ffffffffffff');
     }

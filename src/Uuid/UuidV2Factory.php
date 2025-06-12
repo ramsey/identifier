@@ -92,6 +92,10 @@ final class UuidV2Factory implements TimeBasedUuidFactory
             default => $this->dce->orgId(),
         };
 
+        if ($localIdentifier < 0 || $localIdentifier > 0xffffffff) {
+            throw new InvalidArgument('$localIdentifier must be a non-negative 32-bit integer');
+        }
+
         if ($node === null) {
             $node = $this->nic->address();
         } elseif ($node instanceof Nic) {

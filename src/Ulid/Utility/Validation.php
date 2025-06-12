@@ -14,10 +14,10 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Ulid\Utility;
 
+use function strlen;
 use function strspn;
 use function strtolower;
 use function strtoupper;
-use function strtr;
 
 /**
  * A utility providing common validation functionality for ULIDs.
@@ -27,7 +27,15 @@ use function strtr;
 trait Validation
 {
     /**
-     * Returns true if the given Crockford base 32, hexadecimal, or bytes representation of a ULID is a Max ULID.
+     * Used with {@see strtr()} to convert ULID decode symbols to the proper encode symbols.
+     *
+     * According to Crockford base-32, "When decoding, upper and lower case letters are accepted, and `i` and `l` will
+     * be treated as `1` and `o` will be treated as `0`."
+     */
+    private const DECODE_SYMBOLS = ['from' => 'IiLlOo', 'to' => '111100'];
+
+    /**
+     * Returns true if the given Crockford base-32, hexadecimal, or bytes representation of a ULID is a Max ULID.
      */
     private function isMax(string $ulid, ?Format $format): bool
     {
@@ -60,13 +68,9 @@ trait Validation
     private function isValid(string $ulid, ?Format $format): bool
     {
         return match ($format) {
-            Format::Ulid => (static function (string $ulid): bool {
-                $ulid = strtr($ulid, 'IiLlOo', '111100');
-
-                return strspn($ulid, Mask::CROCKFORD32) === Format::Ulid->value && $ulid[0] <= '7';
-            })($ulid),
+            Format::Ulid => strspn($ulid, Mask::CROCKFORD32) === Format::Ulid->value && $ulid[0] <= '7',
             Format::Hex => strspn($ulid, Mask::HEX) === Format::Hex->value,
-            Format::Bytes => true,
+            Format::Bytes => strlen($ulid) === Format::Bytes->value,
             default => false,
         };
     }

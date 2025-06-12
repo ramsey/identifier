@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function intdiv;
 use function str_repeat;
@@ -34,6 +35,10 @@ final readonly class FixedBytesGenerator implements BytesGenerator
     public function __construct(private string $bytes)
     {
         $this->bytesLength = strlen($this->bytes);
+
+        if ($this->bytesLength === 0) {
+            throw new InvalidArgument('$bytes must be a non-empty string');
+        }
     }
 
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
