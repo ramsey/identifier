@@ -29,22 +29,40 @@ use Ramsey\Identifier\Uuid;
 enum NamespaceId: string
 {
     /**
-     * Name string is a fully qualified domain name.
+     * Names in the CBOR PEN namespace represent Concise Binary Object Representation Private Enterprise Numbers (CBOR PEN).
+     *
+     * @link https://www.ietf.org/archive/id/draft-ietf-suit-manifest-34.html#section-8.4.8.1 draft-ietf-suit-manifest-34, section 8.4.8.1. CBOR PEN UUID Namespace Identifier.
      */
-    case DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+    case CborPen = '47fbdabb-f2e4-55f0-bb39-3620c2f6df4e';
 
     /**
-     * Name string is an ISO OID.
+     * Names in the DNS namespace represent fully qualified domain names.
+     *
+     * @link https://www.rfc-editor.org/rfc/rfc9499 RFC 9499, DNS Terminology.
      */
-    case OID = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
+    case Dns = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
 
     /**
-     * Name string is a URL.
+     * Names in the OID namespace represent ISO object identifiers (OID).
+     *
+     * @link https://en.wikipedia.org/wiki/Object_identifier Object identifier.
+     * @link https://www.itu.int/itu-t/recommendations/rec.aspx?rec=X.660/ ISO/IEC 9834-1, ITU-T Rec. X.660, 2011.
      */
-    case URL = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+    case Oid = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
 
     /**
-     * Name string is an X.500 DN (in DER or text output format).
+     * Names in the URL namespace represent uniform resource locators (URL).
+     *
+     * @link https://www.rfc-editor.org/rfc/rfc3986 RFC 3986, Uniform Resource Identifier (URI): Generic Syntax.
+     */
+    case Url = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+
+    /**
+     * Names in the X500 namespace represent the Distinguished Names (DN) of entries in an X.500 directory service.
+     *
+     * @link https://en.wikipedia.org/wiki/X.500 X.500.
+     * @link https://en.wikipedia.org/wiki/Distinguished_Name Distinguished Name
+     * @link https://www.itu.int/ITU-T/recommendations/rec.aspx?rec=x.500 ISO/IEC 9594-1, ITU-T Rec. X.500, 2019.
      */
     case X500 = '6ba7b814-9dad-11d1-80b4-00c04fd430c8';
 
@@ -53,6 +71,9 @@ enum NamespaceId: string
      */
     public function uuid(): Uuid
     {
-        return new UuidV1($this->value);
+        return match ($this) {
+            self::Dns, self::Oid, self::Url, self::X500 => new UuidV1($this->value),
+            self::CborPen => new UuidV5($this->value),
+        };
     }
 }
