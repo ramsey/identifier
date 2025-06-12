@@ -77,7 +77,7 @@ final class Time
         // A count of 100-nanosecond intervals
         $intervals = (int) $dateTime->format('Uu0');
 
-        if ($intervals < -self::GREGORIAN_OFFSET) {
+        if ($intervals < 0 - self::GREGORIAN_OFFSET) {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
         }
 
