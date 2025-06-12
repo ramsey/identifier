@@ -101,6 +101,8 @@ final class MonotonicClockSequence implements ClockSequence
 
     /**
      * @param non-empty-string $state
+     *
+     * @return non-empty-string
      */
     private function getGeneratorStateCacheKey(string $state, DateTimeInterface $dateTime): string
     {

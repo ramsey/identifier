@@ -42,6 +42,9 @@ class UlidTest extends TestCase
         $this->ulidWithBytes = new Ulid(self::ULID_BYTES);
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUlidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
@@ -73,7 +76,7 @@ class UlidTest extends TestCase
             ['value' => '0000000000000000000000000000000g'],
             ['value' => '7ZZZZZZILOUZZZZZZZZZZZZZZZ'],
 
-            // Out of bounds ULIDs:
+            // Out-of-bounds ULIDs:
             ['value' => '8ZZZZZZZZZZZZZZZZZZZZZZZZZ'],
             ['value' => '80000000000000000000000000'],
         ];
@@ -382,6 +385,9 @@ class UlidTest extends TestCase
         $this->assertSame($int, $this->ulidWithBytes->toInteger());
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('valuesForUppercaseConversionTestProvider')]
     public function testUppercaseConversion(string $value, string $expected): void
     {

@@ -44,6 +44,8 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
     private ?Variant $variant;
 
     /**
+     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $uuid)

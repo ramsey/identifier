@@ -40,6 +40,7 @@ trait GeneratorStateCache
     private bool $initialValueUsed = false;
 
     /**
+     * @param non-empty-string $cacheKey
      * @param non-empty-string $state
      */
     private function getGeneratorStateFromCache(

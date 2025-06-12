@@ -30,6 +30,8 @@ use function unpack;
 trait StandardFactory
 {
     /**
+     * @param non-empty-string $identifier
+     *
      * @return int<0, max> | numeric-string
      *
      * @throws InvalidArgument

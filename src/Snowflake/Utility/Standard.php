@@ -48,7 +48,7 @@ trait Standard
     }
 
     /**
-     * @param array{snowflake: int | numeric-string} $data
+     * @param array{snowflake: int<0, max> | numeric-string} $data
      *
      * @throws InvalidArgument
      */

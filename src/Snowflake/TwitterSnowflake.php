@@ -29,9 +29,7 @@ final readonly class TwitterSnowflake implements Snowflake
     use Standard;
 
     /**
-     * Constructs a Snowflake identifier using Twitter's Unix Epoch offset.
-     *
-     * @param int | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
      *
      * @throws InvalidArgument
      */

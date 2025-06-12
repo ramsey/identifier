@@ -34,9 +34,7 @@ final readonly class InstagramSnowflake implements Snowflake
     private Time $time;
 
     /**
-     * Constructs a Snowflake identifier using Instagram's Unix Epoch offset.
-     *
-     * @param int | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
      *
      * @throws InvalidArgument
      */

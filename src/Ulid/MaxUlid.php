@@ -38,6 +38,8 @@ final readonly class MaxUlid implements UlidInterface
     private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
+     * @param non-empty-string $ulid A representation of a ULID in either Crockford base-32 or byte form.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $ulid = self::MAX)
@@ -49,6 +51,9 @@ final readonly class MaxUlid implements UlidInterface
         }
     }
 
+    /**
+     * @phpstan-assert-if-true non-empty-string $ulid
+     */
     private function isValid(string $ulid, ?Format $format): bool
     {
         return $this->isMax($ulid, $format);

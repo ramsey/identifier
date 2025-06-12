@@ -31,7 +31,7 @@ interface Dce
      *
      * @link https://en.wikipedia.org/wiki/Group_identifier Group identifier.
      *
-     * @return int<0, max>
+     * @return int<0, 4294967295> 32-bit group identifier
      *
      * @throws DceIdentifierNotFound when unable to find a group identifier.
      */
@@ -40,7 +40,7 @@ interface Dce
     /**
      * Returns an organization identifier.
      *
-     * @return int<0, max>
+     * @return int<0, 4294967295> 32-bit org identifier
      *
      * @throws DceIdentifierNotFound when unable to find an organization identifier.
      */
@@ -51,7 +51,7 @@ interface Dce
      *
      * @link https://en.wikipedia.org/wiki/User_identifier User identifier.
      *
-     * @return int<0, max>
+     * @return int<0, 4294967295> 32-bit user identifier
      *
      * @throws DceIdentifierNotFound when unable to find a user identifier.
      */

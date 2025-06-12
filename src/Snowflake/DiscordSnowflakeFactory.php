@@ -75,6 +75,8 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param non-empty-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): DiscordSnowflake
@@ -108,6 +110,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
         }
 
         if ($millisecondsShifted > $milliseconds) {
+            /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $this->workerProcessIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
@@ -129,6 +132,8 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param int<0, max> | numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): DiscordSnowflake
@@ -137,13 +142,12 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromString(string $identifier): DiscordSnowflake
     {
-        /** @var numeric-string $value */
-        $value = $identifier;
-
-        return new DiscordSnowflake($value);
+        return new DiscordSnowflake($identifier);
     }
 }

@@ -73,6 +73,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param non-empty-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): InstagramSnowflake
@@ -106,6 +108,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
         }
 
         if ($millisecondsShifted > $milliseconds) {
+            /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $this->shardIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
@@ -127,6 +130,8 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param int<0, max> | numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): InstagramSnowflake
@@ -135,13 +140,12 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromString(string $identifier): InstagramSnowflake
     {
-        /** @var numeric-string $value */
-        $value = $identifier;
-
-        return new InstagramSnowflake($value);
+        return new InstagramSnowflake($identifier);
     }
 }

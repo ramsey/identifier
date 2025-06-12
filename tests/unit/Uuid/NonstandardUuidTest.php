@@ -39,6 +39,9 @@ class NonstandardUuidTest extends TestCase
         $this->uuidWithBytes = new Uuid\NonstandardUuid(self::UUID_NONSTANDARD_BYTES);
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
@@ -122,6 +125,9 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('nonstandardUuidProvider')]
     public function testSucceedsForNonstandardUuids(string $value): void
     {
@@ -515,6 +521,9 @@ class NonstandardUuidTest extends TestCase
         $this->assertSame('urn:uuid:' . self::UUID_NONSTANDARD_STRING, $this->uuidWithBytes->toUrn());
     }
 
+    /**
+     * @param non-empty-string $uuid
+     */
     #[DataProvider('allVariantsProvider')]
     public function testAllVariants(string $uuid, Variant $expected): void
     {
@@ -672,6 +681,9 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $uuid
+     */
     #[DataProvider('invalidNonstandardProvider')]
     public function testInvalidNonstandard(string $uuid): void
     {
@@ -865,6 +877,9 @@ class NonstandardUuidTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {

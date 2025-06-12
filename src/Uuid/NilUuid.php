@@ -35,6 +35,8 @@ final readonly class NilUuid implements Uuid
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
+     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $uuid = self::NIL)

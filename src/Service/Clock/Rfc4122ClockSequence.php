@@ -126,6 +126,11 @@ final class Rfc4122ClockSequence implements ClockSequence
         return $generatorState;
     }
 
+    /**
+     * @param non-empty-string $state
+     *
+     * @return non-empty-string
+     */
     private function getGeneratorStateCacheKey(string $state): string
     {
         return self::CACHE_KEY . '|' . $state;

@@ -72,6 +72,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param non-empty-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): TwitterSnowflake
@@ -105,6 +107,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
         }
 
         if ($millisecondsShifted > $milliseconds) {
+            /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $this->machineIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
@@ -126,6 +129,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param int<0, max> | numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): TwitterSnowflake
@@ -134,13 +139,12 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromString(string $identifier): TwitterSnowflake
     {
-        /** @var numeric-string $value */
-        $value = $identifier;
-
-        return new TwitterSnowflake($value);
+        return new TwitterSnowflake($identifier);
     }
 }

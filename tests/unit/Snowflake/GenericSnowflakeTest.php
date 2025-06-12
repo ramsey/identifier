@@ -24,7 +24,7 @@ class GenericSnowflakeTest extends TestCase
 {
     private const SNOWFLAKE_INT = 9223372036854775807;
     private const SNOWFLAKE_STRING = '9223372036854775807';
-    private const EPOCH_OFFSET = '1662744255000';
+    private const EPOCH_OFFSET = 1662744255000;
 
     private GenericSnowflake $snowflakeWithInt;
     private GenericSnowflake $snowflakeWithString;
@@ -36,7 +36,7 @@ class GenericSnowflakeTest extends TestCase
     }
 
     /**
-     * @param int | numeric-string $value
+     * @param int<0, max> | numeric-string $value
      */
     #[DataProvider('invalidSnowflakesProvider')]
     public function testConstructorThrowsExceptionForInvalidSnowflake(int | string $value): void
@@ -66,7 +66,7 @@ class GenericSnowflakeTest extends TestCase
     public function testSerializeForString(): void
     {
         $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";i:1662744255000;}';
         $serialized = serialize($this->snowflakeWithString);
 
         $this->assertSame($expected, $serialized);
@@ -75,7 +75,7 @@ class GenericSnowflakeTest extends TestCase
     public function testSerializeForInt(): void
     {
         $expected = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";i:1662744255000;}';
         $serialized = serialize($this->snowflakeWithInt);
 
         $this->assertSame($expected, $serialized);
@@ -90,7 +90,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeForString(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:19:"9223372036854775807";s:11:"epochOffset";i:1662744255000;}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
@@ -100,7 +100,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeForInt(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";i:9223372036854775807;s:11:"epochOffset";i:1662744255000;}';
         $snowflake = unserialize($serialized);
 
         $this->assertInstanceOf(GenericSnowflake::class, $snowflake);
@@ -110,7 +110,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeFailsWhenSnowflakeIsAnEmptyString(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:0:"";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:0:"";s:11:"epochOffset";i:1662744255000;}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: ""');
@@ -121,7 +121,7 @@ class GenericSnowflakeTest extends TestCase
     public function testUnserializeFailsForInvalidSnowflake(): void
     {
         $serialized = 'O:44:"Ramsey\\Identifier\\Snowflake\\GenericSnowflake":2:'
-            . '{s:9:"snowflake";s:6:"foobar";s:11:"epochOffset";s:13:"1662744255000";}';
+            . '{s:9:"snowflake";s:6:"foobar";s:11:"epochOffset";i:1662744255000;}';
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: "foobar"');
@@ -335,15 +335,6 @@ class GenericSnowflakeTest extends TestCase
         $dateTime = $this->snowflakeWithInt->getDateTime();
 
         $this->assertSame('2092-05-16 09:11:50.551', $dateTime->format('Y-m-d H:i:s.v'));
-    }
-
-    public function testConstructorThrowsExceptionForInvalidEpochOffset(): void
-    {
-        $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid epoch offset: "foobar"');
-
-        /** @phpstan-ignore-next-line */
-        new GenericSnowflake(1243, 'foobar');
     }
 
     public function testGetDateTimeForMaxIdentifier(): void

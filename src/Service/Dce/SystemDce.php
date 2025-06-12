@@ -57,17 +57,17 @@ final class SystemDce implements Dce
     private const UID_CACHE_KEY = '__ramsey_id_63e41035';
 
     /**
-     * @var int<0, max> | null
+     * @var int<0, 4294967295> | null
      */
     private static ?int $groupId = null;
 
     /**
-     * @var int<0, max> | null
+     * @var int<0, 4294967295> | null
      */
     private static ?int $userId = null;
 
     /**
-     * @param int<0, max> | null $orgId An organization ID must be provided if using the {@see self::orgId()} method.
+     * @param int<0, 4294967295> | null $orgId An organization ID must be provided if using the {@see self::orgId()} method.
      * @param CacheInterface | null $cache An optional PSR-16 cache instance to cache the system IDs for faster lookups.
      *     Be aware that use of a centralized cache might have unintended consequences if you wish to use
      *     machine-specific IDs. If you wish for machine-specific IDs, use of a machine-local cache, such as APCu, is
@@ -148,29 +148,29 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getPosixGid(): ?int
     {
         $gid = trim($this->os->run('id -g'));
 
-        /** @var int<0, max> | null */
+        /** @var int<0, 4294967295> | null */
         return $gid === '' ? null : (int) $gid;
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getPosixUid(): ?int
     {
         $uid = trim($this->os->run('id -u'));
 
-        /** @var int<0, max> | null */
+        /** @var int<0, 4294967295> | null */
         return $uid === '' ? null : (int) $uid;
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getSystemGid(): ?int
     {
@@ -181,7 +181,7 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      *
      * @throws CacheException
      */
@@ -190,7 +190,7 @@ final class SystemDce implements Dce
         /**
          * The return value of -1 is useful for testing purposes.
          *
-         * @var int<-1, max> | null $gid
+         * @var int<-1, 4294967295> | null $gid
          */
         $gid = $this->cache?->get(self::GID_CACHE_KEY);
 
@@ -203,7 +203,7 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getSystemUid(): ?int
     {
@@ -214,7 +214,7 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      *
      * @throws CacheException
      */
@@ -223,7 +223,7 @@ final class SystemDce implements Dce
         /**
          * The return value of -1 is useful for testing purposes.
          *
-         * @var int<-1, max> | null $uid
+         * @var int<-1, 4294967295> | null $uid
          */
         $uid = $this->cache?->get(self::UID_CACHE_KEY);
 
@@ -245,7 +245,7 @@ final class SystemDce implements Dce
      *
      * @link https://www.windows-commandline.com/list-of-user-groups-command-line/ List of user groups command line.
      *
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getWindowsGid(): ?int
     {
@@ -279,7 +279,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        /** @var int<0, max> */
+        /** @var int<0, 4294967295> */
         return (int) trim(substr($sid, $lastHyphen + 1));
     }
 
@@ -296,7 +296,7 @@ final class SystemDce implements Dce
      * @link https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids Well-known SIDs.
      * @link https://www.windows-commandline.com/get-sid-of-user/ Get SID of user.
      *
-     * @return int<0, max> | null
+     * @return int<0, 4294967295> | null
      */
     private function getWindowsUid(): ?int
     {
@@ -312,7 +312,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        /** @var int<0, max> */
+        /** @var int<0, 4294967295> */
         return (int) trim(substr($sid, $lastHyphen + 1));
     }
 }

@@ -48,9 +48,7 @@ trait Standard
     private readonly ?Format $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\Uuid} instance.
-     *
-     * @param string $uuid A representation of the UUID in either string with dashes, hexadecimal, or bytes form.
+     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
      *
      * @throws InvalidArgument
      */
@@ -68,7 +66,7 @@ trait Standard
     }
 
     /**
-     * @return array{uuid: string}
+     * @return array{uuid: non-empty-string}
      */
     public function __serialize(): array
     {
@@ -84,7 +82,7 @@ trait Standard
     }
 
     /**
-     * @param array{uuid: string} $data
+     * @param array{uuid: non-empty-string} $data
      *
      * @throws InvalidArgument
      */
@@ -157,7 +155,7 @@ trait Standard
     }
 
     /**
-     * @return int | numeric-string
+     * @return int<0, max> | numeric-string
      */
     public function toInteger(): int | string
     {
@@ -165,6 +163,7 @@ trait Standard
         $uuidInteger = $this->getFormat(null);
 
         if ($uuidInteger <= PHP_INT_MAX) {
+            /** @var int<0, max> */
             return (int) $uuidInteger;
         }
 
@@ -227,6 +226,9 @@ trait Standard
         };
     }
 
+    /**
+     * @return non-empty-string
+     */
     private function toStringFromHex(string $hex): string
     {
         return sprintf(

@@ -28,11 +28,8 @@ use Stringable;
 
 use function assert;
 use function gettype;
-use function is_int;
 use function is_scalar;
 use function sprintf;
-use function strlen;
-use function strspn;
 
 /**
  * A generic Snowflake identifier that may use any epoch offset.
@@ -48,19 +45,17 @@ final readonly class GenericSnowflake implements Snowflake
 
     private Time $time;
 
-    private int | string $epochOffset;
+    private int $epochOffset;
 
     /**
-     * Constructs a {@see Snowflake} instance
-     *
-     * @param int | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form
-     * @param Epoch | int | numeric-string $epochOffset The Snowflake ID's offset from the Unix Epoch in milliseconds
+     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param Epoch | int $epochOffset The Snowflake identifier's offset from the Unix Epoch in milliseconds.
      *
      * @throws InvalidArgument
      */
     public function __construct(
         private int | string $snowflake,
-        Epoch | int | string $epochOffset,
+        Epoch | int $epochOffset,
     ) {
         if (!$this->isValid($this->snowflake)) {
             throw new InvalidArgument(sprintf('Invalid Snowflake: "%s"', $this->snowflake));
@@ -70,16 +65,15 @@ final readonly class GenericSnowflake implements Snowflake
             $epochOffset = $epochOffset->value;
         }
 
-        if (!is_int($epochOffset) && strspn($epochOffset, Mask::INT) !== strlen($epochOffset)) {
-            throw new InvalidArgument(sprintf('Invalid epoch offset: "%s"', $epochOffset));
-        }
-
         $this->epochOffset = $epochOffset;
         $this->time = new Time();
     }
 
     /**
-     * @return array{snowflake: int | numeric-string, epochOffset: int | numeric-string}
+     * @return array{
+     *     snowflake: int<0, max> | numeric-string,
+     *     epochOffset: int,
+     * }
      */
     public function __serialize(): array
     {
@@ -95,7 +89,10 @@ final readonly class GenericSnowflake implements Snowflake
     }
 
     /**
-     * @param array{snowflake: int | numeric-string, epochOffset: int | numeric-string} $data
+     * @param array{
+     *     snowflake: int<0, max> | numeric-string,
+     *     epochOffset: int,
+     * } $data
      *
      * @throws InvalidArgument
      */

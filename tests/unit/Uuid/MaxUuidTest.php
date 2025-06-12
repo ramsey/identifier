@@ -39,6 +39,9 @@ class MaxUuidTest extends TestCase
         $this->maxUuidWithBytes = new Uuid\MaxUuid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
@@ -451,6 +454,9 @@ class MaxUuidTest extends TestCase
         $this->assertSame('urn:uuid:' . self::MAX_UUID, $this->maxUuidWithBytes->toUrn());
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {

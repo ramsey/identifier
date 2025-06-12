@@ -54,6 +54,8 @@ trait Validation
 
     /**
      * Returns true if the ULID is valid, according to the given format.
+     *
+     * @phpstan-assert-if-true non-empty-string $ulid
      */
     private function isValid(string $ulid, ?Format $format): bool
     {

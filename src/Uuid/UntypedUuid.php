@@ -53,6 +53,8 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore Generic.Files.LineLength
 
     /**
+     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private readonly string $uuid)

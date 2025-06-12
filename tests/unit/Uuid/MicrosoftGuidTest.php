@@ -41,6 +41,9 @@ class MicrosoftGuidTest extends TestCase
         $this->guidWithBytes = new Uuid\MicrosoftGuid(self::GUID_BYTES);
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidGuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidGuid(string $value): void
     {
@@ -117,6 +120,9 @@ class MicrosoftGuidTest extends TestCase
         ];
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('microsoftGuidProvider')]
     public function testSucceedsForMicrosoftGuids(string $value): void
     {
@@ -551,6 +557,9 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame('urn:uuid:' . self::GUID_STRING, $this->guidWithBytes->toUrn());
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {
@@ -701,6 +710,7 @@ class MicrosoftGuidTest extends TestCase
     }
 
     /**
+     * @param non-empty-string $guidValue
      * @param class-string $expectedInstanceOf
      */
     #[DataProvider('toRfcProvider')]

@@ -29,9 +29,9 @@ final readonly class StaticDce implements Dce
      * Each parameter is optional, so you may only provide the one you intend to use. However, when attempting to use a
      * method for a property not provided, this class will throw a {@see DceIdentifierNotFound}.
      *
-     * @param int<0, max> | null $userId An optional user identifier, or UID.
-     * @param int<0, max> | null $groupId An optional group identifier, or GID.
-     * @param int<0, max> | null $orgId An optional organization identifier.
+     * @param int<0, 4294967295> | null $userId An optional user identifier, or UID.
+     * @param int<0, 4294967295> | null $groupId An optional group identifier, or GID.
+     * @param int<0, 4294967295> | null $orgId An optional organization identifier.
      */
     public function __construct(
         private ?int $userId = null,

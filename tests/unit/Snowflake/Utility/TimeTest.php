@@ -13,12 +13,12 @@ use Ramsey\Test\Identifier\TestCase;
 class TimeTest extends TestCase
 {
     /**
-     * @param int | numeric-string $epochOffset
+     * @param numeric-string $snowflake
      */
     #[DataProvider('getDateTimeForSnowflakeProvider')]
     public function testGetDateTimeForSnowflake(
         string $snowflake,
-        int | string $epochOffset,
+        int $epochOffset,
         int $rightShifts,
         string $expectedTime,
     ): void {

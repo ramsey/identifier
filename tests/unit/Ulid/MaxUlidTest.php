@@ -37,6 +37,9 @@ class MaxUlidTest extends TestCase
         $this->maxUlidWithBytes = new Ulid\MaxUlid("\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff");
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUlidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUlid(string $value): void
     {
@@ -392,6 +395,10 @@ class MaxUlidTest extends TestCase
         $this->assertSame($int, $this->maxUlidWithBytes->toInteger());
     }
 
+    /**
+     * @param non-empty-string $value
+     * @param non-empty-string $expected
+     */
     #[DataProvider('valuesForUppercaseConversionTestProvider')]
     public function testUppercaseConversion(string $value, string $expected): void
     {
@@ -402,7 +409,7 @@ class MaxUlidTest extends TestCase
     }
 
     /**
-     * @return list<array{value: string, expected: string}>
+     * @return list<array{value: non-empty-string, expected: non-empty-string}>
      */
     public static function valuesForUppercaseConversionTestProvider(): array
     {

@@ -131,13 +131,15 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $this->factory->createFromHexadecimal('fffffffffffffffg');
     }
 
+    /**
+     * @param int<0, max> | numeric-string $input
+     */
     #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(sprintf('Invalid Snowflake: "%s"', $input));
 
-        /** @phpstan-ignore-next-line */
         $this->factory->createFromInteger($input);
     }
 
@@ -159,7 +161,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
     }
 
     /**
-     * @param int | numeric-string $value
+     * @param int<0, max> | numeric-string $value
      */
     #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, int | string $expected): void

@@ -71,9 +71,12 @@ final readonly class UuidV2 implements NodeBasedUuid, TimeBasedUuid
      * The type of this identifier is indicated by the domain returned from {@see self::getLocalDomain()}. For example,
      * if the domain is {@see DceDomain::Group}, this identifier is a group ID on the local host. On POSIX systems,
      * this is usually the GID.
+     *
+     * @return int<0, 4294967295> The 32-bit local identifier.
      */
     public function getLocalIdentifier(): int
     {
+        /** @var int<0, 4294967295> */
         return (int) hexdec(substr($this->getFormat(Format::String), 0, 8));
     }
 

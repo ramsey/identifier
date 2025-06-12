@@ -39,6 +39,9 @@ class UuidV6Test extends TestCase
         $this->uuidWithBytes = new Uuid\UuidV6(self::UUID_V6_BYTES);
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
@@ -454,6 +457,9 @@ class UuidV6Test extends TestCase
         $this->assertSame('urn:uuid:' . self::UUID_V6_STRING, $this->uuidWithBytes->toUrn());
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void
     {

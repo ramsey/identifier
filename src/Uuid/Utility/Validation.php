@@ -100,7 +100,9 @@ trait Validation
     }
 
     /**
-     * Returns true if the given string standard, hexadecimal, or bytes representation of a UUID has a valid format.
+     * Returns true if the given string standard, hexadecimal, or byte representation of a UUID has a valid format.
+     *
+     * @phpstan-assert-if-true non-empty-string $uuid
      */
     private function hasValidFormat(string $uuid, ?Format $format): bool
     {
@@ -143,7 +145,9 @@ trait Validation
     /**
      * Validates a UUID according to the RFC 9562 layout.
      *
-     * The UUID may be in string standard, hexadecimal, or bytes representation.
+     * The UUID may be in standard string, hexadecimal, or byte representation.
+     *
+     * @phpstan-assert-if-true non-empty-string $uuid
      */
     private function isValid(string $uuid, ?Format $format): bool
     {
@@ -156,6 +160,8 @@ trait Validation
      * Returns true if the UUID is a valid standard string representation.
      *
      * @param string $mask A character mask used to validate the UUID string.
+     *
+     * @phpstan-assert-if-true non-empty-string $uuid
      */
     private function isValidStringLayout(string $uuid, string $mask): bool
     {

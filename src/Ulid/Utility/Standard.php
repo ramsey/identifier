@@ -60,13 +60,15 @@ trait Standard
      */
     private const CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
-    private readonly string $ulid;
     private readonly ?Format $format;
 
     /**
-     * Constructs a {@see \Ramsey\Identifier\Ulid} instance.
-     *
-     * @param string $ulid A representation of the ULID in either Crockford base 32 or bytes form.
+     * @var non-empty-string
+     */
+    private readonly string $ulid;
+
+    /**
+     * @param non-empty-string $ulid A representation of a ULID in either Crockford base-32 or byte form.
      *
      * @throws InvalidArgument
      */
@@ -87,7 +89,7 @@ trait Standard
     }
 
     /**
-     * @return array{ulid: string}
+     * @return array{ulid: non-empty-string}
      */
     public function __serialize(): array
     {
@@ -103,7 +105,7 @@ trait Standard
     }
 
     /**
-     * @param array{ulid: string} $data
+     * @param array{ulid: non-empty-string} $data
      *
      * @throws InvalidArgument
      */
@@ -185,7 +187,7 @@ trait Standard
     }
 
     /**
-     * @return int | numeric-string
+     * @return int<0, max> | numeric-string
      */
     public function toInteger(): int | string
     {
@@ -193,6 +195,7 @@ trait Standard
         $ulidInteger = $this->getFormat(null);
 
         if ($ulidInteger <= PHP_INT_MAX) {
+            /** @var int<0, max> */
             return (int) $ulidInteger;
         }
 
@@ -238,6 +241,8 @@ trait Standard
     }
 
     /**
+     * @param non-empty-string | null $ulid
+     *
      * @return non-empty-string
      */
     private function getFormat(?Format $formatToReturn, ?string $ulid = null): string

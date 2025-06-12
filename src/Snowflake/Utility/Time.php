@@ -35,14 +35,13 @@ final class Time
     /**
      * Returns a date-time instance created from the timestamp extracted from a Snowflake.
      *
-     * @param int | numeric-string $epochOffset The number of milliseconds from the Unix Epoch to offset the starting
-     *     epoch for this Snowflake.
+     * @param int $epochOffset The number of milliseconds from the Unix Epoch to offset the starting epoch for this Snowflake.
      *
      * @throws OutOfRange
      */
     public function getDateTimeForSnowflake(
         Snowflake $snowflake,
-        int | string $epochOffset,
+        int $epochOffset,
         int $rightShifts,
     ): DateTimeImmutable {
         $value = $snowflake->toInteger();
@@ -50,7 +49,7 @@ final class Time
         // We support unsigned, 64-bit integers, so $value might be greater than PHP_INT_MAX, in which case, it'll be a
         // string, and we'll need to use BigInteger for the math.
         if (is_int($value)) {
-            $milliseconds = (int) (($value >> $rightShifts) + $epochOffset);
+            $milliseconds = ($value >> $rightShifts) + $epochOffset;
             $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds) % 1000);
         } else {
             $timestamp = (string) BigInteger::of($value)

@@ -158,7 +158,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     }
 
     /**
-     * @param int | numeric-string $value
+     * @param int<0, max> | numeric-string $value
      */
     #[DataProvider('createFromIntegerProvider')]
     public function testCreateFromInteger(int | string $value, int | string $expected): void

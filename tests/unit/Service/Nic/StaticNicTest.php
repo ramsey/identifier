@@ -12,7 +12,7 @@ use Ramsey\Test\Identifier\TestCase;
 class StaticNicTest extends TestCase
 {
     /**
-     * @param int<0, max> | non-empty-string $staticAddress
+     * @param int<0, 281474976710655> | non-empty-string $staticAddress
      */
     #[DataProvider('addressProvider')]
     public function testAddress(int | string $staticAddress, string $expected): void
@@ -23,7 +23,7 @@ class StaticNicTest extends TestCase
     }
 
     /**
-     * @return list<array{staticAddress: int<0, max> | non-empty-string, expected: string}>
+     * @return list<array{staticAddress: int<0, 281474976710655> | non-empty-string, expected: string}>
      */
     public static function addressProvider(): array
     {

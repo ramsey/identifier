@@ -138,6 +138,11 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
         return MicrosoftGuid::class;
     }
 
+    /**
+     * @param non-empty-string $bytes
+     *
+     * @return non-empty-string
+     */
     private function swapBytes(string $bytes): string
     {
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]

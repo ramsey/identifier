@@ -38,6 +38,9 @@ class NilUuidTest extends TestCase
         $this->nilUuidWithBytes = new Uuid\NilUuid("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
     }
 
+    /**
+     * @param non-empty-string $value
+     */
     #[DataProvider('invalidUuidsProvider')]
     public function testConstructorThrowsExceptionForInvalidUuid(string $value): void
     {
@@ -448,6 +451,8 @@ class NilUuidTest extends TestCase
     /**
      * Yes, yes. There's no real "lowercase" conversion with a Nil UUID, but
      * we're also testing the equality/comparison check with hex/bytes.
+     *
+     * @param non-empty-string $value
      */
     #[DataProvider('valuesForLowercaseConversionTestProvider')]
     public function testLowercaseConversion(string $value, string $expected): void

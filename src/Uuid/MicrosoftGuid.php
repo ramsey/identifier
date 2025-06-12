@@ -75,6 +75,8 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     private ?Version $version;
 
     /**
+     * @param non-empty-string $uuid A representation of the GUID as a string with dashes, hexadecimal, or byte string.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $uuid)
@@ -91,7 +93,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @return array{guid: string}
+     * @return array{guid: non-empty-string}
      */
     public function __serialize(): array
     {
@@ -99,7 +101,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @param array{guid: string} $data
+     * @param array{guid: non-empty-string} $data
      *
      * @throws InvalidArgument
      */
@@ -163,10 +165,13 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      *
      * @see UuidV2::getLocalIdentifier()
      *
+     * @return int<0, 4294967295>
+     *
      * @throws BadMethodCall when called on a GUID that does not support local identifier values.
      */
     public function getLocalIdentifier(): int
     {
+        /** @var int<0, 4294967295> */
         return match ($this->getVersion()) {
             Version::DceSecurity => (int) hexdec(substr($this->getFormat(Format::String), 0, 8)),
             default => throw new BadMethodCall(sprintf(
@@ -265,6 +270,9 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         };
     }
 
+    /**
+     * @phpstan-assert-if-true non-empty-string $uuid
+     */
     private function isValid(string $uuid, ?Format $format): bool
     {
         // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer is using MicrosoftGuid, it's because they

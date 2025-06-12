@@ -42,6 +42,8 @@ interface Uuid extends BytesIdentifier, IntegerIdentifier
 
     /**
      * Returns a string representation of the UUID encoded as hexadecimal digits.
+     *
+     * @return non-empty-string
      */
     public function toHexadecimal(): string;
 

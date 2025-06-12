@@ -35,7 +35,7 @@ class TwitterSnowflakeTest extends TestCase
     }
 
     /**
-     * @param int | numeric-string $value
+     * @param int<0, max> | numeric-string $value
      */
     #[DataProvider('invalidSnowflakesProvider')]
     public function testConstructorThrowsExceptionForInvalidSnowflake(int | string $value): void

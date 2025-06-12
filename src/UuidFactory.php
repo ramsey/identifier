@@ -38,6 +38,9 @@ interface UuidFactory extends
      */
     public function createFromHexadecimal(string $identifier): Uuid;
 
+    /**
+     * @param int<0, max> | numeric-string $identifier
+     */
     public function createFromInteger(int | string $identifier): Uuid;
 
     public function createFromString(string $identifier): Uuid;

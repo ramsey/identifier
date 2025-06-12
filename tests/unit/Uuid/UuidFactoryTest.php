@@ -217,6 +217,7 @@ class UuidFactoryTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
+        /** @phpstan-ignore argument.type */
         $this->factory->createFromInteger(-1);
     }
 
@@ -252,7 +253,7 @@ class UuidFactoryTest extends TestCase
     }
 
     /**
-     * @param int | numeric-string $value
+     * @param int<0, max> | numeric-string $value
      * @param class-string<Uuid> $expectedType
      */
     #[DataProvider('createFromIntegerProvider')]

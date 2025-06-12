@@ -35,6 +35,8 @@ final readonly class MaxUuid implements Uuid
     private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
+     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $uuid = self::MAX)

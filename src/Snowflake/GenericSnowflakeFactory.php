@@ -57,10 +57,9 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     private readonly int $epochOffset;
 
     /**
-     * Constructs a factory for creating Snowflakes
-     *
-     * @param int<0, 1023> $nodeId A 10-bit machine identifier to use when creating Snowflakes
-     * @param Epoch | int $epochOffset The offset from the Unix Epoch in milliseconds to use when creating Snowflakes
+     * @param int $nodeId A node identifier to use when creating Snowflakes; we take the modulo of this integer
+     *     divided by 1024, giving it an effective range of 0-1023 (i.e., 10 bits).
+     * @param Epoch | int $epochOffset The offset from the Unix Epoch in milliseconds to use when creating Snowflake identifiers.
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}
      * @param ClockSequence $sequence A clock sequence value to prevent collisions; defaults to {@see MonotonicClockSequence}
      */
@@ -83,6 +82,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param non-empty-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromBytes(string $identifier): Snowflake
@@ -116,6 +117,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         }
 
         if ($millisecondsShifted > $milliseconds) {
+            /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $this->nodeIdShifted | $sequence;
         } else {
             /** @var numeric-string $identifier */
@@ -137,6 +139,8 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param int<0, max> | numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromInteger(int | string $identifier): Snowflake
@@ -145,14 +149,13 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     }
 
     /**
+     * @param numeric-string $identifier
+     *
      * @throws InvalidArgument
      */
     public function createFromString(string $identifier): Snowflake
     {
-        /** @var numeric-string $value */
-        $value = $identifier;
-
-        return new GenericSnowflake($value, $this->epochOffset);
+        return new GenericSnowflake($identifier, $this->epochOffset);
     }
 
     private function getEpochDate(): DateTimeImmutable

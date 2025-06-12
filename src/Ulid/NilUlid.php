@@ -34,6 +34,8 @@ final readonly class NilUlid implements UlidInterface
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
+     * @param non-empty-string $ulid A representation of a ULID in either Crockford base-32 or byte form.
+     *
      * @throws InvalidArgument
      */
     public function __construct(private string $ulid = self::NIL)
@@ -45,6 +47,9 @@ final readonly class NilUlid implements UlidInterface
         }
     }
 
+    /**
+     * @phpstan-assert-if-true non-empty-string $ulid
+     */
     private function isValid(string $ulid, ?Format $format): bool
     {
         return $this->isNil($ulid, $format);

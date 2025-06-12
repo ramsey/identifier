@@ -9,6 +9,9 @@ use Ramsey\Identifier\Exception\BadMethodCall;
 
 readonly class MockBinaryIdentifier implements BytesIdentifier
 {
+    /**
+     * @param non-empty-string $bytes
+     */
     public function __construct(private string $bytes)
     {
     }

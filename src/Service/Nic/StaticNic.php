@@ -40,7 +40,7 @@ final readonly class StaticNic implements Nic
     private string $address;
 
     /**
-     * @param int<0, max> | non-empty-string $address A 48-bit integer or hexadecimal string.
+     * @param int<0, 281474976710655> | non-empty-string $address A 48-bit integer or hexadecimal string.
      *
      * @throws InvalidArgument
      */
@@ -61,6 +61,8 @@ final readonly class StaticNic implements Nic
     }
 
     /**
+     * @param int<0, 281474976710655> $address
+     *
      * @return non-empty-string
      */
     private function parseIntegerAddress(int $address): string
@@ -70,6 +72,8 @@ final readonly class StaticNic implements Nic
     }
 
     /**
+     * @param non-empty-string $address
+     *
      * @return non-empty-string
      *
      * @throws InvalidArgument
