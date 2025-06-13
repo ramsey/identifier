@@ -1,7 +1,7 @@
 {
     "name": "ramsey/identifier",
     "description": "A PHP library for generating and working with identifiers, including UUIDs, ULIDs, and Snowflakes",
-    "license": "MIT",
+    "license": "LGPL-3.0-or-later",
     "type": "library",
     "keywords": [
         "guid",
