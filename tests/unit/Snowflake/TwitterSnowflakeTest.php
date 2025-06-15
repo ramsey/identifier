@@ -56,9 +56,6 @@ class TwitterSnowflakeTest extends TestCase
             ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00"],
             ['value' => -1],
             ['value' => '-1'],
-
-            // This value is out of bounds.
-            ['value' => '18446744073709551616'],
         ];
     }
 
@@ -322,11 +319,44 @@ class TwitterSnowflakeTest extends TestCase
         $this->assertSame('2080-07-10 17:30:30.208', $dateTime->format('Y-m-d H:i:s.v'));
     }
 
-    public function testGetDateTimeForMaxIdentifier(): void
+    public function testIdentifierGreaterThanMax(): void
     {
-        $snowflake = new TwitterSnowflake('18446744073709551615');
-        $dateTime = $snowflake->getDateTime();
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'Twitter Snowflakes are limited to a 41-bit timestamp; '
+            . 'the timestamp in "9223372036854775808" is greater than 41-bits',
+        );
 
-        $this->assertSame('2150-03-18 09:18:05.760', $dateTime->format('Y-m-d H:i:s.v'));
+        new TwitterSnowflake('9223372036854775808');
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('knownTwitterSnowflakesProvider')]
+    public function testKnownTwitterSnowflakes(int | string $value, string $expectedDate): void
+    {
+        $snowflake = new TwitterSnowflake($value);
+
+        $this->assertSame($expectedDate, $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
+    }
+
+    /**
+     * @return array<array{value: int | string, expectedDate: string}>
+     */
+    public static function knownTwitterSnowflakesProvider(): array
+    {
+        return [
+            [
+                // Twitter Snowflake maximum value.
+                'value' => 0x7fffffffffffffff,
+                'expectedDate' => '2080-07-10 17:30:30.208',
+            ],
+            [
+                // https://twitter.com/wikipedia/status/1541815603606036480
+                'value' => 1541815603606036480,
+                'expectedDate' => '2022-06-28 16:07:40.105',
+            ],
+        ];
     }
 }

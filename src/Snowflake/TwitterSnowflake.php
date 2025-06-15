@@ -24,13 +24,19 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
+use Ramsey\Identifier\Snowflake\Internal\Mask;
 use Ramsey\Identifier\Snowflake\Internal\Standard;
 
+use function sprintf;
+use function strlen;
+use function strspn;
+
 /**
- * A Snowflake identifier for use with the Twitter social media platform.
+ * A Snowflake identifier for use with the X (formerly Twitter) social media platform.
  *
- * @link http://twitter.com Twitter.
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake.
+ * @link https://blog.x.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake.
+ * @link https://en.m.wikipedia.org/wiki/Snowflake_ID Wikipedia: Snowflake ID.
  */
 final readonly class TwitterSnowflake implements Snowflake
 {
@@ -43,6 +49,16 @@ final readonly class TwitterSnowflake implements Snowflake
      */
     public function __construct(int | string $snowflake)
     {
+        if (
+            (string) $snowflake > (string) 0x7fffffffffffffff
+            && strspn((string) $snowflake, Mask::INT) === strlen((string) $snowflake)
+        ) {
+            throw new InvalidArgument(sprintf(
+                'Twitter Snowflakes are limited to a 41-bit timestamp; the timestamp in "%s" is greater than 41-bits',
+                $snowflake,
+            ));
+        }
+
         $this->snowflake = new GenericSnowflake($snowflake, Epoch::Twitter);
     }
 }

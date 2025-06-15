@@ -41,7 +41,11 @@ use function sprintf;
 /**
  * A generic Snowflake identifier that may use any epoch offset.
  *
- * This uses the commonly adopted Twitter Snowflake specification, allowing for an arbitrary epoch offset.
+ * This uses the commonly adopted Twitter Snowflake specification, with two primary differences:
+ *
+ * * This allows setting an arbitrary epoch offset, though this offset should be the same across all Snowflakes
+ *   generated within a given domain.
+ * * This allows a 42-bit timestamp, while Twitter Snowflakes are limited to a 41-bit timestamp.
  *
  * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID.
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflake identifiers.
