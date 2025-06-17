@@ -255,7 +255,9 @@ class InstagramSnowflakeFactoryTest extends TestCase
         $factory = new InstagramSnowflakeFactory(0x1fff, sequence: new FrozenClockSequence(0x3ff));
 
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid Snowflake:');
+        $this->expectExceptionMessage(
+            'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272Z',
+        );
 
         $factory->createFromDateTime(new DateTimeImmutable('2081-04-30 12:54:37.273'));
     }

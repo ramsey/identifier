@@ -282,7 +282,9 @@ class GenericSnowflakeFactoryTest extends TestCase
         $factory = new GenericSnowflakeFactory(0x3ff, self::EPOCH_OFFSET, sequence: new FrozenClockSequence(0xfff));
 
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid Snowflake:');
+        $this->expectExceptionMessage(
+            'Snowflakes with epoch offset 946684800000 cannot have a date-time greater than 2139-05-15T07:35:11.103Z',
+        );
 
         $factory->createFromDateTime(new DateTimeImmutable('2139-05-15 07:35:11.104'));
     }

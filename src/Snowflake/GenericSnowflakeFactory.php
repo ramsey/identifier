@@ -35,6 +35,7 @@ use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
 use Ramsey\Identifier\SnowflakeFactory;
 
+use function intdiv;
 use function sprintf;
 use function substr;
 
@@ -113,6 +114,17 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             throw new InvalidArgument(sprintf(
                 'Timestamp may not be earlier than the epoch, %s',
                 $this->getEpochDate()->format(Epoch::ISO_EXTENDED_FORMAT),
+            ));
+        }
+
+        if ($milliseconds > 0x3ffffffffff) {
+            $maxMilliseconds = 0x3ffffffffff + $this->epochOffset;
+            $maxDateTime = new DateTimeImmutable('@' . intdiv($maxMilliseconds, 1000) . '.' . $maxMilliseconds % 1000);
+
+            throw new InvalidArgument(sprintf(
+                'Snowflakes with epoch offset %d cannot have a date-time greater than %s',
+                $this->epochOffset,
+                $maxDateTime->format(Epoch::ISO_EXTENDED_FORMAT),
             ));
         }
 

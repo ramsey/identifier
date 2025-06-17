@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Snowflake;
 
-use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -106,6 +105,12 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
+        if ($milliseconds > 0x1ffffffffff) {
+            throw new InvalidArgument(
+                'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208Z',
+            );
+        }
+
         // Use modular arithmetic to roll over the sequence value at mod 0x1000 (4096).
         $sequence = $this->sequence->next((string) $this->machineId, $dateTime) % 0x1000;
 
@@ -118,16 +123,8 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
             $this->clockSequenceCounter++;
         }
 
-        if ($millisecondsShifted > $milliseconds) {
-            /** @var int<0, max> $identifier */
-            $identifier = $millisecondsShifted | $this->machineIdShifted | $sequence;
-        } else {
-            /** @var numeric-string $identifier */
-            $identifier = (string) BigInteger::of($milliseconds)
-                ->shiftedLeft(self::TIMESTAMP_BIT_SHIFTS)
-                ->or($this->machineIdShifted)
-                ->or($sequence);
-        }
+        /** @var int<0, max> $identifier */
+        $identifier = $millisecondsShifted | $this->machineIdShifted | $sequence;
 
         return new TwitterSnowflake($identifier);
     }

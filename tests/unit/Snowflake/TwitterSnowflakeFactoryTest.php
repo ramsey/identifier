@@ -263,10 +263,17 @@ class TwitterSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Twitter Snowflakes are limited to a 41-bit timestamp; '
-            . 'the timestamp in "9223372036858970111" is greater than 41-bits',
+            'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208Z',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2080-07-10 17:30:30.209'));
+    }
+
+    public function testCreateFromDateTimeWithMaxValuesReturnsMaxIdentifier(): void
+    {
+        $factory = new TwitterSnowflakeFactory(0x3ff, sequence: new FrozenClockSequence(0xfff));
+        $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2080-07-10 17:30:30.208'));
+
+        $this->assertSame(0x7fffffffffffffff, $snowflake->toInteger());
     }
 }

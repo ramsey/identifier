@@ -259,7 +259,9 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $factory = new DiscordSnowflakeFactory(0x1f, 0x1f, sequence: new FrozenClockSequence(0x0fff));
 
         $this->expectException(InvalidArgument::class);
-        $this->expectExceptionMessage('Invalid Snowflake:');
+        $this->expectExceptionMessage(
+            'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103Z',
+        );
 
         $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.104'));
     }

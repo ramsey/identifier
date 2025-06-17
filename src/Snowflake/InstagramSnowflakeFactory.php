@@ -108,6 +108,12 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
+        if ($milliseconds > 0x1ffffffffff) {
+            throw new InvalidArgument(
+                'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272Z',
+            );
+        }
+
         // Use modular arithmetic to roll over the sequence value at mod 0x0400 (1024).
         $sequence = $this->sequence->next((string) $this->shardId, $dateTime) % 0x0400;
 

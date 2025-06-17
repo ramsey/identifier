@@ -109,6 +109,12 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
+        if ($milliseconds > 0x3ffffffffff) {
+            throw new InvalidArgument(
+                'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103Z',
+            );
+        }
+
         // Use modular arithmetic to roll over the sequence value at mod 0x1000 (4096).
         $sequence = $this->sequence->next((string) ($this->workerId + $this->processId), $dateTime) % 0x1000;
 
