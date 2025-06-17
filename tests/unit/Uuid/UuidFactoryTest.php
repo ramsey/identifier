@@ -10,6 +10,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
 use Ramsey\Identifier\Uuid\MaxUuid;
+use Ramsey\Identifier\Uuid\NamespaceId;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
@@ -21,6 +22,7 @@ use Ramsey\Identifier\Uuid\UuidV5;
 use Ramsey\Identifier\Uuid\UuidV6;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\UuidV8;
+use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
 use function sprintf;
@@ -457,11 +459,18 @@ class UuidFactoryTest extends TestCase
         $this->factory->v3('foobar', '');
     }
 
+    public function testUuid3WithNamespaceId(): void
+    {
+        $uuid = $this->factory->v3(NamespaceId::Url, 'https://www.php.net');
+
+        $this->assertSame('3f703955-aaba-3e70-a3cb-baff6aa3b28f', $uuid->toString());
+    }
+
     public function testUuid4(): void
     {
         $uuid = $this->factory->v4();
 
-        $this->assertSame(Uuid\Version::Random, $uuid->getVersion());
+        $this->assertSame(Version::Random, $uuid->getVersion());
     }
 
     public function testUuid5(): void
@@ -486,6 +495,13 @@ class UuidFactoryTest extends TestCase
         $this->expectExceptionMessage('Invalid UUID namespace: "foobar"');
 
         $this->factory->v5('foobar', '');
+    }
+
+    public function testUuid5WithNamespaceId(): void
+    {
+        $uuid = $this->factory->v5(NamespaceId::Url, 'https://www.php.net');
+
+        $this->assertSame('a8f6ae40-d8a7-58f0-be05-a22f94eca9ec', $uuid->toString());
     }
 
     public function testUuid6WithParams(): void
@@ -513,7 +529,7 @@ class UuidFactoryTest extends TestCase
     {
         $uuid = $this->factory->create();
 
-        $this->assertSame(Uuid\Version::Random, $uuid->getVersion());
+        $this->assertSame(Version::Random, $uuid->getVersion());
     }
 
     public function testMax(): void

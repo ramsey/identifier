@@ -205,14 +205,16 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * Creates a version 3, name-based (MD5) UUID.
      *
-     * @param string | Uuid $namespace The UUID namespace to use when creating this version 3 identifier.
+     * @param NamespaceId | Uuid | string $namespace The UUID namespace to use when creating this version 3 identifier.
      * @param string $name The name used to create the version 3 identifier in the given namespace.
      *
      * @throws InvalidArgument if parameters are not legal values.
      */
-    public function v3(string | Uuid $namespace, string $name): UuidV3
+    public function v3(NamespaceId | Uuid | string $namespace, string $name): UuidV3
     {
-        if (!$namespace instanceof Uuid) {
+        if ($namespace instanceof NamespaceId) {
+            $namespace = $namespace->uuid();
+        } elseif (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
                 Format::String->value => $this->createFromString($namespace),
                 Format::Hex->value => $this->createFromHexadecimal($namespace),
@@ -235,14 +237,16 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * Creates a version 5, name-based (SHA-1) UUID.
      *
-     * @param string | Uuid $namespace The UUID namespace to use when creating this version 5 identifier.
+     * @param NamespaceId | Uuid | string $namespace The UUID namespace to use when creating this version 5 identifier.
      * @param string $name The name used to create the version 5 identifier in the given namespace.
      *
      * @throws InvalidArgument if parameters are not legal values.
      */
-    public function v5(string | Uuid $namespace, string $name): UuidV5
+    public function v5(NamespaceId | Uuid | string $namespace, string $name): UuidV5
     {
-        if (!$namespace instanceof Uuid) {
+        if ($namespace instanceof NamespaceId) {
+            $namespace = $namespace->uuid();
+        } elseif (!$namespace instanceof Uuid) {
             $namespace = match (strlen($namespace)) {
                 Format::String->value => $this->createFromString($namespace),
                 Format::Hex->value => $this->createFromHexadecimal($namespace),
