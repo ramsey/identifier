@@ -62,9 +62,21 @@ enum Epoch: int
     case Twitter = 1_288_834_974_657;
 
     /**
+     * The Unix Epoch begins at 1970-01-01 00:00:00.000 +00:00.
+     */
+    case Unix = 0;
+
+    /**
      * ISO 8601 extended format (includes millisecond precision).
      */
     public const ISO_EXTENDED_FORMAT = 'Y-m-d\TH:i:s.vp';
+
+    /**
+     * The Mastodon epoch begins at 1970-01-01 00:00:00.000 +00:00. It is the same as the Unix Epoch.
+     *
+     * @see MastodonSnowflake
+     */
+    public const Mastodon = self::Unix; // phpcs:ignore Generic.NamingConventions.UpperCaseConstantName
 
     /**
      * Returns the epoch as a date-time string in ISO 8601 extended format.
