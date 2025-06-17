@@ -39,7 +39,6 @@ use function sprintf;
  * A factory that generates Snowflake identifiers for use with the Discord voice, text, and streaming video platform.
  *
  * @link https://discord.com Discord.
- * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes.
  * @see DiscordSnowflake
  */
 final class DiscordSnowflakeFactory implements SnowflakeFactory

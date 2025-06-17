@@ -42,10 +42,6 @@ use function substr;
 /**
  * A factory that generates generic Snowflakes identifiers that may use any epoch offset.
  *
- * This uses the commonly adopted Twitter Snowflake specification, allowing for an arbitrary epoch offset.
- *
- * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID.
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Twitter Snowflake identifiers.
  * @see GenericSnowflake
  */
 final class GenericSnowflakeFactory implements SnowflakeFactory

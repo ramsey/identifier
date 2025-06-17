@@ -36,9 +36,7 @@ use function sprintf;
 /**
  * A factory that generates Snowflake identifiers for use with the X (formerly Twitter) social media platform.
  *
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake.
- * @link https://blog.x.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake.
- * @link https://en.m.wikipedia.org/wiki/Snowflake_ID Wikipedia: Snowflake ID.
+ * @link https://x.com X/Twitter.
  * @see TwitterSnowflake
  */
 final class TwitterSnowflakeFactory implements SnowflakeFactory

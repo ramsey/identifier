@@ -39,7 +39,6 @@ use function sprintf;
  * A factory that generates Snowflake identifiers for use with the Instagram photo and video sharing social media platform.
  *
  * @link https://www.instagram.com Instagram.
- * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Sharding & IDs at Instagram.
  * @see InstagramSnowflake
  */
 final class InstagramSnowflakeFactory implements SnowflakeFactory
@@ -60,8 +59,6 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     private readonly int $shardIdShifted;
 
     /**
-     * Constructs a factory for creating Instagram Snowflakes.
-     *
      * @param int $shardId A shard identifier to use when creating Snowflakes; we take the modulo of this integer
      *     divided by 8192, giving it an effective range of 0-8191 (i.e., 13 bits).
      * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.

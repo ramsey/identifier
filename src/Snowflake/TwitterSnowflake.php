@@ -34,9 +34,9 @@ use function strspn;
 /**
  * A Snowflake identifier for use with the X (formerly Twitter) social media platform.
  *
+ * @link https://x.com X/Twitter.
+ * @link https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake.
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake.
- * @link https://blog.x.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake.
- * @link https://en.m.wikipedia.org/wiki/Snowflake_ID Wikipedia: Snowflake ID.
  */
 final readonly class TwitterSnowflake implements Snowflake
 {
