@@ -7,8 +7,7 @@
 <p align="center">
     <a href="https://github.com/ramsey/identifier"><img src="https://img.shields.io/badge/source-ramsey/identifier-blue.svg?style=flat-square" alt="Source Code"></a>
     <a href="https://packagist.org/packages/ramsey/identifier"><img src="https://img.shields.io/packagist/v/ramsey/identifier.svg?style=flat-square&label=release" alt="Download Package"></a>
-    <a href="https://php.net"><img src="https://img.shields.io/packagist/dependency-v/ramsey/identifier/php-64bit
-?style=flat-square&colorB=%238892BF" alt="PHP Programming Language"></a>
+    <a href="https://php.net"><img src="https://img.shields.io/packagist/dependency-v/ramsey/identifier/php-64bit?style=flat-square&colorB=%238892BF" alt="PHP Programming Language"></a>
     <a href="https://github.com/ramsey/identifier/blob/main/COPYING.LESSER"><img src="https://img.shields.io/packagist/l/ramsey/identifier.svg?style=flat-square&colorB=darkcyan" alt="Read License"></a>
     <a href="https://github.com/ramsey/identifier/actions/workflows/continuous-integration.yml"><img src="https://img.shields.io/github/actions/workflow/status/ramsey/identifier/continuous-integration.yml?branch=main&style=flat-square&logo=github" alt="Build Status"></a>
     <a href="https://codecov.io/gh/ramsey/identifier"><img src="https://img.shields.io/codecov/c/gh/ramsey/identifier?label=codecov&logo=codecov&style=flat-square" alt="Codecov Code Coverage"></a>
