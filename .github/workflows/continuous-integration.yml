@@ -73,9 +73,7 @@ jobs:
     strategy:
       matrix:
         os:
-          #- "macos-latest"
           - "ubuntu-latest"
-          #- "windows-latest"
 
     steps:
       - name: "Checkout repository"
@@ -194,9 +192,8 @@ jobs:
           - "8.3"
           - "8.4"
         os:
-          #- "macos-latest"
           - "ubuntu-latest"
-          #- "windows-latest"
+          - "ubuntu-24.04-arm"
         composer-deps:
           - "lowest"
           - "highest"
