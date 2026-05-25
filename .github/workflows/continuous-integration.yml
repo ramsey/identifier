@@ -174,7 +174,7 @@ jobs:
           composer dev:test:bench:ci
 
       - name: "Upload benchmark artifacts"
-        uses: "actions/upload-artifact@v4"
+        uses: "actions/upload-artifact@v7"
         with:
           name: "Benchmark (PHP ${{ matrix.php }})"
           path: "build/bench/"
