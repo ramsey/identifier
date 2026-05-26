@@ -207,6 +207,7 @@ trait Standard
         $formatOfUuid ??= $this->format;
         assert($formatOfUuid !== null);
 
+        /** @var non-empty-string $uuid */
         $uuid ??= $this->uuid;
 
         /** @var non-empty-string */
@@ -229,7 +230,7 @@ trait Standard
             default => match ($formatOfUuid) {
                 Format::Bytes => BigInteger::fromBytes($uuid, false)->toBase(10),
                 Format::Hex => BigInteger::fromBase($uuid, 16)->toBase(10),
-                Format::String => BigInteger::fromBase(str_replace('-', '', $uuid), 16)->toBase(10),
+                Format::String => BigInteger::fromBase(str_replace('-', '', $uuid), 16)->toBase(10), // @phpstan-ignore argument.type
             },
         };
     }

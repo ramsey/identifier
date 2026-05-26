@@ -100,7 +100,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): MastodonSnowflake
     {
-        /** @var int $milliseconds */
+        /** @var int<0, 281474976710655> $milliseconds */
         $milliseconds = (int) $dateTime->format(Precision::Millisecond->value);
 
         if ($milliseconds < 0) {
@@ -116,6 +116,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
             );
         }
 
+        /** @var int $millisecondsShifted */
         $millisecondsShifted = $milliseconds << self::TIMESTAMP_BIT_SHIFTS;
 
         // Did we go beyond the bounds of a signed, 64-bit integer?
@@ -143,7 +144,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
             /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $tail;
         } else {
-            /** @var numeric-string $identifier */
+            /** @var non-empty-string & numeric-string $identifier */
             $identifier = (string) BigInteger::of($millisecondsShifted)->or($tail);
         }
 

@@ -140,7 +140,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             /** @var int<0, max> $identifier */
             $identifier = $millisecondsShifted | $this->nodeIdShifted | $sequence;
         } else {
-            /** @var numeric-string $identifier */
+            /** @var non-empty-string & numeric-string $identifier */
             $identifier = (string) BigInteger::of($milliseconds)
                 ->shiftedLeft(self::TIMESTAMP_BIT_SHIFTS)
                 ->or($this->nodeIdShifted)

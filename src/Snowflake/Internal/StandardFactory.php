@@ -55,7 +55,7 @@ trait StandardFactory
 
         // Support unsigned 64-bit identifiers.
         if ($parts[1] < 0) {
-            /** @var numeric-string */
+            /** @var non-empty-string & numeric-string */
             return (string) BigInteger::fromBytes($identifier, false);
         }
 
@@ -76,7 +76,7 @@ trait StandardFactory
 
         // Support unsigned 64-bit identifiers.
         if ($identifier > '7fffffffffffffff') {
-            /** @var numeric-string */
+            /** @var non-empty-string & numeric-string */
             return (string) BigInteger::fromBase($identifier, 16);
         }
 
