@@ -64,7 +64,7 @@ final class Time
                 ->shiftedRight($rightShifts)
                 ->plus($epochOffset)
                 ->toBigDecimal()
-                ->dividedBy(1000, 3, RoundingMode::HALF_UP);
+                ->dividedBy(1000, 3, RoundingMode::HalfUp);
         }
 
         return new DateTimeImmutable('@' . $timestamp);
