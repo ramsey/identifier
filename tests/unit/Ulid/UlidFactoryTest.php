@@ -370,8 +370,22 @@ class UlidFactoryTest extends TestCase
         $uuid = $uuidFactory->createFromBytes($bytes)->toTypedUuid();
         $ulid = $ulidFactory->createFromUuid($uuid);
 
-        $this->assertFalse($uuid->equals($ulid));
         $this->assertSame($bytes, $ulid->toBytes());
+    }
+
+    /**
+     * @param non-empty-string $bytes
+     */
+    #[DataProvider('createFromUuidComparableProvider')]
+    public function testCreateFromUuidComparesAsEqualToTheUuid(string $bytes): void
+    {
+        $ulidFactory = new UlidFactory();
+        $uuidFactory = new UuidFactory();
+        $uuid = $uuidFactory->createFromBytes($bytes)->toTypedUuid();
+        $ulid = $ulidFactory->createFromUuid($uuid);
+
+        $this->assertSame(0, $uuid->compareTo($ulid));
+        $this->assertSame(0, $ulid->compareTo($uuid));
     }
 
     /**
@@ -405,6 +419,33 @@ class UlidFactoryTest extends TestCase
             ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x6f\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x7f\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\x8f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Nonstandard UUIDs
+            ['bytes' => "\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33"],
+        ];
+    }
+
+    /**
+     * @return list<array{bytes: non-empty-string}>
+     */
+    public static function createFromUuidComparableProvider(): array
+    {
+        return [
+            // Max UUID
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff"],
+
+            // Nil UUID
+            ['bytes' => "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"],
+
+            // Standard UUIDs
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x1f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x8f\x00\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x3f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x4f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x5f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x6f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x7f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
+            ['bytes' => "\xff\xff\xff\xff\xff\xff\x8f\xff\x8f\xff\xff\xff\xff\xff\xff\xff"],
 
             // Nonstandard UUIDs
             ['bytes' => "\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33\x00\x11\x22\x33"],
