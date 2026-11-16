@@ -381,6 +381,107 @@ class ComparisonRulesTest extends TestCase
         self::assertGreaterThan(15, $others);
     }
 
+    public function testIdentifiersWithTheSameBytesHaveTheSameSortKey(): void
+    {
+        $identifiers = [
+            new UuidV7(self::SHARED_UUID),
+            new Ulid(self::SHARED_HEX),
+            new UntypedUuid(self::SHARED_UUID),
+            $guid = new MicrosoftGuid(self::SHARED_UUID),
+        ];
+
+        foreach ($identifiers as $a) {
+            foreach ($identifiers as $b) {
+                $label = sprintf('%s and %s', self::describe($a), self::describe($b));
+
+                self::assertSame($a->getSortKey(), $b->getSortKey(), $label);
+                self::assertSame(0, $a->compareTo($b), $label);
+                self::assertSame(0, $b->compareTo($a), $label);
+            }
+        }
+
+        self::assertSame((new UuidV7(self::SHARED_UUID))->toString(), $guid->toString());
+        self::assertNotSame($guid->toBytes(), $guid->getSortKey());
+    }
+
+    public function testSortKeysThatLookLikeNumbersAreComparedAsBytes(): void
+    {
+        $first = new Ulid('0000000000000010');
+        $second = new UntypedUuid('00000000000001e1');
+
+        self::assertNotSame(0, self::sign($first, $second));
+        self::assertNotSame(0, self::sign($second, $first));
+        self::assertFalse($first->equals($second));
+        self::assertFalse($second->equals($first));
+
+        foreach ([$first, $second] as $a) {
+            foreach (['10000000', '9'] as $key) {
+                $mock = new MockIdentifier($key);
+
+                self::assertSame(
+                    strcmp($a->getSortKey(), $key) <=> 0,
+                    self::sign($a, $mock),
+                    sprintf('%s and mock %s', self::describe($a), $key),
+                );
+            }
+        }
+    }
+
+    public function testEqualsRequiresTheSameKindAndTheSameSortKey(): void
+    {
+        $receivers = self::receivers();
+        $sample = self::sample();
+        $labels = self::describeAll($sample);
+        $differentKindsWithSameKey = 0;
+        $sameKindEqual = 0;
+
+        foreach ($receivers as $a) {
+            foreach ($sample as $j => $b) {
+                $label = sprintf('%s and %s', self::describe($a), $labels[$j]);
+                $sameKey = $a->getSortKey() === $b->getSortKey();
+
+                if (self::kind($a) === null || self::kind($a) !== self::kind($b)) {
+                    self::assertFalse($a->equals($b), $label . ': different kinds');
+
+                    if ($sameKey) {
+                        $differentKindsWithSameKey++;
+                    }
+
+                    continue;
+                }
+
+                self::assertSame($sameKey, $a->equals($b), $label . ': same kind');
+
+                if ($sameKey) {
+                    $sameKindEqual++;
+                }
+            }
+        }
+
+        self::assertGreaterThan(5, $differentKindsWithSameKey);
+        self::assertGreaterThan(count($receivers), $sameKindEqual);
+    }
+
+    public function testSortKeysAreNotEmptyAndDoNotChange(): void
+    {
+        foreach (self::sample() as $identifier) {
+            $sortKey = $identifier->getSortKey();
+
+            self::assertNotSame('', $sortKey, self::describe($identifier));
+            self::assertSame($sortKey, $identifier->getSortKey(), self::describe($identifier));
+        }
+    }
+
+    private static function kind(Identifier $identifier): ?string
+    {
+        return match (true) {
+            $identifier instanceof Uuid => Uuid::class,
+            $identifier instanceof UlidInterface => UlidInterface::class,
+            $identifier instanceof Snowflake => Snowflake::class,
+            default => null,
+        };
+    }
+
     /**
      * Returns the sign of the result of compareTo(), or null when it throws
      * NotComparable
@@ -478,6 +579,13 @@ class ComparisonRulesTest extends TestCase
             // Identifiers from another implementation.
             new MockIdentifier(self::SHARED_BYTES),
             new MockIdentifier("\x00\x00\x00\x00\x00\x00\x00\x05"),
+
+            // Sort keys that PHP reads as numbers.
+            new MockIdentifier('10000000'),
+            new MockIdentifier('9'),
+            new MockIdentifier('1e1'),
+            new Ulid('0000000000000010'),
+            new UntypedUuid('00000000000001e1'),
         ];
     }
 
