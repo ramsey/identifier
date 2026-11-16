@@ -1,6 +1,6 @@
 # GitHub Actions Documentation: https://docs.github.com/en/actions
 
-name: "build"
+name: "Continuous Integration"
 
 on:
   push:
@@ -15,184 +15,112 @@ on:
 # Cancels all previous workflow runs for the same branch that have not yet completed.
 concurrency:
   # The concurrency group contains the workflow name and the branch name.
-  group: "${{ github.workflow }}-${{ github.ref }}"
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
   COMPOSER_ROOT_VERSION: "1.99.99"
 
 jobs:
-  coding-standards:
-    name: "Coding standards"
-    runs-on: "ubuntu-latest"
+  lint:
+    name: "Lint"
+    runs-on: "ubuntu-24.04"
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
-          php-version: "latest"
+          php-version: "8.5"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
-      - name: "Check syntax (php-parallel-lint)"
-        run: "composer dev:lint:syntax"
+      - name: "Lint"
+        run: "composer lint"
 
-      - name: "Check coding standards (PHP_CodeSniffer)"
-        run: "composer dev:lint:style"
-
-  static-analysis:
-    name: "Static analysis"
-    runs-on: "ubuntu-latest"
+  coverage:
+    name: "Coverage"
+    needs: ["lint"]
+    runs-on: "ubuntu-24.04"
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
-          php-version: "latest"
-          coverage: "none"
-
-      - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v3"
-
-      - name: "Statically analyze code (PHPStan)"
-        run: "composer dev:analyze:phpstan"
-
-  code-coverage:
-    name: "Code coverage"
-    needs: ["coding-standards", "static-analysis"]
-    runs-on: "${{ matrix.os }}"
-
-    strategy:
-      matrix:
-        os:
-          - "ubuntu-latest"
-
-    steps:
-      - name: "Checkout repository"
-        uses: "actions/checkout@v5"
-
-      - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
-        with:
-          php-version: "latest"
+          php-version: "8.5"
           coverage: "xdebug"
+          ini-values: "memory_limit=-1"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
-      - name: "Run unit tests (PHPUnit)"
-        run: "composer dev:test:coverage:ci"
+      - name: "Run tests"
+        run: "composer coverage-ci"
 
       - name: "Publish coverage report to Codecov"
-        uses: "codecov/codecov-action@v5"
-
-      - name: "Upload test results to Codecov"
-        if: ${{ !cancelled() }}
-        uses: "codecov/test-results-action@v1"
-        with:
-          disable_search: true
-          file: "./build/junit.xml"
-
-  #code-coverage-freebsd:
-  #  name: "Code coverage (freebsd)"
-  #  needs: ["coding-standards", "static-analysis"]
-  #  runs-on: "ubuntu-latest"
-
-  #  steps:
-  #    - name: "Checkout repository"
-  #      uses: "actions/checkout@v5"
-
-  #    - name: "Install PHP"
-  #      uses: "shivammathur/setup-php@v2"
-  #      with:
-  #        php-version: "latest"
-  #        coverage: "xdebug"
-
-  #    - name: "Install dependencies (Composer)"
-  #      uses: "ramsey/composer-install@v3"
-
-  #    - name: "Run unit tests on FreeBSD (PHPUnit)"
-  #      uses: "vmactions/freebsd-vm@v1"
-  #      with:
-  #        usesh: true
-  #        prepare: |
-  #          pkg update
-  #          pkg install -y php84 php84-bcmath php84-composer php84-dom \
-  #            php84-gmp php84-mbstring php84-pecl-uuid php84-tokenizer \
-  #            php84-xml php84-xmlreader php84-xmlwriter php84-zip php84-zlib
-  #          pkg install -y autoconf automake libtool m4 gcc
-  #          curl -L --output /usr/local/bin/pie https://github.com/php/pie/releases/latest/download/pie.phar
-  #          chmod +x /usr/local/bin/pie
-  #          pie install xdebug/xdebug
-  #          sh -c 'echo "xdebug.mode=coverage" >> /usr/local/etc/php/ext-20-xdebug.ini'
-  #          php --version
-  #        run: "composer dev:test:coverage:ci"
-
-  #    - name: "Publish coverage report to Codecov"
-  #      uses: "codecov/codecov-action@v5"
+        uses: "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5" # v7.1.1
 
   benchmark:
     name: "Benchmark"
-    needs: ["code-coverage"]
-    runs-on: "ubuntu-latest"
+    needs: ["coverage"]
+    runs-on: "ubuntu-24.04"
 
     strategy:
       matrix:
         php:
-          - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
 
     steps:
       - name: "Configure Git"
         run: "git config --global safe.directory '*'"
 
       - name: "Checkout repository"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
           php-version: "${{ matrix.php }}"
           coverage: "none"
           ini-values: "memory_limit=-1"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
 
-      - name: "Run benchmark (PHPBench)"
+      - name: "Run benchmarks"
         run: |
           mkdir -p build/bench/
-          composer dev:test:bench:ci
+          composer bench-ci
 
-      - name: "Upload benchmark artifacts"
-        uses: "actions/upload-artifact@v4"
+      - name: "Upload benchmark reports"
+        uses: "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9" # v7.0.2
         with:
           name: "Benchmark (PHP ${{ matrix.php }})"
           path: "build/bench/"
 
-  unit-tests:
+  test:
     name: "Unit tests"
-    needs: ["code-coverage"]
-    runs-on: "${{ matrix.os }}"
+    needs: ["coverage"]
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
         php:
-          - "8.2"
           - "8.3"
           - "8.4"
+          - "8.5"
         os:
-          - "ubuntu-latest"
+          - "ubuntu-24.04"
           - "ubuntu-24.04-arm"
         composer-deps:
           - "lowest"
@@ -200,18 +128,18 @@ jobs:
 
     steps:
       - name: "Checkout repository"
-        uses: "actions/checkout@v5"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
 
       - name: "Install PHP"
-        uses: "shivammathur/setup-php@v2"
+        uses: "shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240" # 2.37.2
         with:
           php-version: "${{ matrix.php }}"
           coverage: "none"
 
       - name: "Install dependencies (Composer)"
-        uses: "ramsey/composer-install@v3"
+        uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
         with:
           dependency-versions: "${{ matrix.composer-deps }}"
 
-      - name: "Run unit tests (PHPUnit)"
-        run: "composer dev:test:unit"
+      - name: "Run tests"
+        run: "composer test"
