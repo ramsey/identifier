@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
-use DateMalformedStringException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\GenericSnowflake;
@@ -103,18 +103,91 @@ class TimeTest extends TestCase
         ];
     }
 
-    public function testGetDateTimeForSnowflakeKeepsPreviousExceptionWhenDateTimeCannotBeCreated(): void
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('negativeRightShiftsProvider')]
+    public function testGetDateTimeForSnowflakeThrowsExceptionForNegativeRightShifts(int | string $value): void
     {
-        $snowflake = new GenericSnowflake('18446744073709551615', 0);
+        $snowflake = new GenericSnowflake($value, 0);
         $time = new Time();
 
-        try {
-            $time->getDateTimeForSnowflake($snowflake, 0, -40);
-            $this->fail('Expected an exception');
-        } catch (NotConvertible $exception) {
-            $this->assertSame('The date-time of the snowflake cannot be represented', $exception->getMessage());
-            $this->assertInstanceOf(DateMalformedStringException::class, $exception->getPrevious());
-        }
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The number of right shifts must not be negative; received -1');
+
+        $time->getDateTimeForSnowflake($snowflake, 0, -1);
+    }
+
+    /**
+     * @return list<array{value: int<0, max> | numeric-string}>
+     */
+    public static function negativeRightShiftsProvider(): array
+    {
+        return [
+            ['value' => 5],
+            ['value' => '18446744073709551615'],
+        ];
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('largeRightShiftsProvider')]
+    public function testGetDateTimeForSnowflakeWithLargeRightShifts(int | string $value, int $rightShifts): void
+    {
+        $snowflake = new GenericSnowflake($value, 0);
+        $time = new Time();
+
+        $this->assertSame(
+            '1970-01-01 00:00:00.000',
+            $time->getDateTimeForSnowflake($snowflake, 0, $rightShifts)->format('Y-m-d H:i:s.v'),
+        );
+    }
+
+    /**
+     * @return list<array{value: int<0, max> | numeric-string, rightShifts: int}>
+     */
+    public static function largeRightShiftsProvider(): array
+    {
+        return [
+            ['value' => 5, 'rightShifts' => 64],
+            ['value' => 5, 'rightShifts' => 100],
+            ['value' => PHP_INT_MAX, 'rightShifts' => 100],
+            ['value' => '18446744073709551615', 'rightShifts' => 64],
+            ['value' => '18446744073709551615', 'rightShifts' => 100],
+        ];
+    }
+
+    #[DataProvider('millisecondsBeforeEpochProvider')]
+    public function testGetDateTimeForSnowflakeBeforeUnixEpoch(int $epochOffset, string $expected): void
+    {
+        $time = new Time();
+
+        $this->assertSame(
+            $expected,
+            $time->getDateTimeForSnowflake(new GenericSnowflake(0, $epochOffset), $epochOffset, 0)
+                ->format('Y-m-d H:i:s.v'),
+        );
+        $this->assertSame(
+            $expected,
+            $time->getDateTimeForSnowflake(new GenericSnowflake('0', $epochOffset), $epochOffset, 22)
+                ->format('Y-m-d H:i:s.v'),
+        );
+    }
+
+    /**
+     * @return list<array{epochOffset: int, expected: string}>
+     */
+    public static function millisecondsBeforeEpochProvider(): array
+    {
+        return [
+            ['epochOffset' => -1, 'expected' => '1969-12-31 23:59:59.999'],
+            ['epochOffset' => -500, 'expected' => '1969-12-31 23:59:59.500'],
+            ['epochOffset' => -999, 'expected' => '1969-12-31 23:59:59.001'],
+            ['epochOffset' => -1000, 'expected' => '1969-12-31 23:59:59.000'],
+            ['epochOffset' => -1001, 'expected' => '1969-12-31 23:59:58.999'],
+            ['epochOffset' => -1500, 'expected' => '1969-12-31 23:59:58.500'],
+        ];
     }
 
     public function testGetDateTimeForSnowflakeReturnsDateTimeForMinimumOffset(): void

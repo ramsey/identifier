@@ -27,8 +27,8 @@ namespace Ramsey\Identifier\Snowflake\Internal;
 
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
-use DateMalformedStringException;
 use DateTimeImmutable;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
 
@@ -54,6 +54,7 @@ final class Time
      * @param int $epochOffset The number of milliseconds from the Unix Epoch to
      *     offset the starting epoch for this Snowflake
      *
+     * @throws InvalidArgument when the number of right shifts is negative
      * @throws NotConvertible when the date-time of the Snowflake cannot be
      *     represented
      */
@@ -62,6 +63,13 @@ final class Time
         int $epochOffset,
         int $rightShifts,
     ): DateTimeImmutable {
+        if ($rightShifts < 0) {
+            throw new InvalidArgument(sprintf(
+                'The number of right shifts must not be negative; received %d',
+                $rightShifts,
+            ));
+        }
+
         $value = $snowflake->toInteger();
 
         // We support unsigned, 64-bit integers, so $value might be greater than
@@ -75,7 +83,12 @@ final class Time
             }
 
             $milliseconds = $shifted + $epochOffset;
-            $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds % 1000));
+            $timestamp = sprintf(
+                '%s%d.%03d',
+                $milliseconds < 0 ? '-' : '',
+                abs(intdiv($milliseconds, 1000)),
+                abs($milliseconds % 1000),
+            );
         } else {
             $timestamp = (string) BigInteger::of($value)
                 ->shiftedRight($rightShifts)
@@ -84,13 +97,6 @@ final class Time
                 ->dividedBy(1000, 3, RoundingMode::HalfUp);
         }
 
-        try {
-            return new DateTimeImmutable('@' . $timestamp);
-        } catch (DateMalformedStringException $exception) {
-            throw new NotConvertible(
-                'The date-time of the snowflake cannot be represented',
-                previous: $exception,
-            );
-        }
+        return new DateTimeImmutable('@' . $timestamp);
     }
 }

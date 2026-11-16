@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 ### Fixed
 
 - `getDateTime()` on a snowflake whose epoch offset puts the date-time out of range throws `NotConvertible` in place of a PHP error.
+- `getDateTime()` on a snowflake returned the wrong date-time when the date-time was less than one second before the Unix Epoch.
 
 ## [0.1.0] - 2025-06-19
 

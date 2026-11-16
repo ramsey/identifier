@@ -390,6 +390,29 @@ class GenericSnowflakeTest extends TestCase
         ];
     }
 
+    #[DataProvider('millisecondsBeforeEpochProvider')]
+    public function testGetDateTimeBeforeUnixEpoch(int $epochOffset, string $expected): void
+    {
+        $snowflake = new GenericSnowflake(0, $epochOffset);
+
+        $this->assertSame($expected, $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
+    }
+
+    /**
+     * @return list<array{epochOffset: int, expected: string}>
+     */
+    public static function millisecondsBeforeEpochProvider(): array
+    {
+        return [
+            ['epochOffset' => -1, 'expected' => '1969-12-31 23:59:59.999'],
+            ['epochOffset' => -500, 'expected' => '1969-12-31 23:59:59.500'],
+            ['epochOffset' => -999, 'expected' => '1969-12-31 23:59:59.001'],
+            ['epochOffset' => -1000, 'expected' => '1969-12-31 23:59:59.000'],
+            ['epochOffset' => -1001, 'expected' => '1969-12-31 23:59:58.999'],
+            ['epochOffset' => -1500, 'expected' => '1969-12-31 23:59:58.500'],
+        ];
+    }
+
     public function testGetDateTimeForMinimumOffset(): void
     {
         $snowflake = new GenericSnowflake(0, PHP_INT_MIN);
