@@ -222,6 +222,20 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         };
     }
 
+    /**
+     * Returns a string of bytes that places the identifier in order among other
+     * identifiers
+     *
+     * The bytes are in RFC 9562 layout, so a GUID sorts with the UUID that has
+     * the same string form.
+     *
+     * @return non-empty-string
+     */
+    public function getSortKey(): string
+    {
+        return $this->swapBytes($this->toBytes());
+    }
+
     public function getVariant(): Variant
     {
         assert($this->variant !== null);

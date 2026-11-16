@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use Identifier\BytesIdentifier;
-use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
@@ -140,12 +139,20 @@ final readonly class GenericSnowflake implements Snowflake
         }
     }
 
-    /**
-     * @throws OutOfRange
-     */
     public function getDateTime(): DateTimeImmutable
     {
         return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);
+    }
+
+    /**
+     * Returns a string of bytes that places the identifier in order among other
+     * identifiers
+     *
+     * @return non-empty-string
+     */
+    public function getSortKey(): string
+    {
+        return Format::formatBytes($this->snowflake);
     }
 
     /**

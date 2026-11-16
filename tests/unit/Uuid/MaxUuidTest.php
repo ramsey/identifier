@@ -426,6 +426,16 @@ class MaxUuidTest extends TestCase
         $this->assertSame($bytes, $this->maxUuidWithBytes->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $bytes = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+
+        $this->assertSame($bytes, $this->maxUuid->getSortKey());
+        $this->assertSame($bytes, $this->maxUuidWithString->getSortKey());
+        $this->assertSame($bytes, $this->maxUuidWithHex->getSortKey());
+        $this->assertSame($bytes, $this->maxUuidWithBytes->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $hex = 'ffffffffffffffffffffffffffffffff';

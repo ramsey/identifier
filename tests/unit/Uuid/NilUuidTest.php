@@ -422,6 +422,16 @@ class NilUuidTest extends TestCase
         $this->assertSame($bytes, $this->nilUuidWithBytes->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $bytes = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+        $this->assertSame($bytes, $this->nilUuid->getSortKey());
+        $this->assertSame($bytes, $this->nilUuidWithString->getSortKey());
+        $this->assertSame($bytes, $this->nilUuidWithHex->getSortKey());
+        $this->assertSame($bytes, $this->nilUuidWithBytes->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $hex = '00000000000000000000000000000000';

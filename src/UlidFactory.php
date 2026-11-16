@@ -56,6 +56,9 @@ interface UlidFactory extends
      */
     public function createFromHexadecimal(string $identifier): Ulid;
 
+    /**
+     * @param int | numeric-string $identifier
+     */
     public function createFromInteger(int | string $identifier): Ulid;
 
     public function createFromString(string $identifier): Ulid;

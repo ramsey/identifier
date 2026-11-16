@@ -18,6 +18,7 @@ use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class GenericSnowflakeTest extends TestCase
@@ -299,6 +300,22 @@ class GenericSnowflakeTest extends TestCase
     {
         $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithString->toBytes());
         $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->toBytes());
+    }
+
+    public function testGetSortKey(): void
+    {
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithString->getSortKey());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->getSortKey());
+        $this->assertSame(8, strlen($this->snowflakeWithInt->getSortKey()));
+    }
+
+    public function testGetSortKeyForZeroAndMaximumValues(): void
+    {
+        $zero = new GenericSnowflake(0, self::EPOCH_OFFSET);
+        $max = new GenericSnowflake('18446744073709551615', self::EPOCH_OFFSET);
+
+        $this->assertSame("\x00\x00\x00\x00\x00\x00\x00\x00", $zero->getSortKey());
+        $this->assertSame("\xff\xff\xff\xff\xff\xff\xff\xff", $max->getSortKey());
     }
 
     public function testToHexadecimal(): void

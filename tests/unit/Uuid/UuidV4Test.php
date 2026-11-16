@@ -435,6 +435,13 @@ class UuidV4Test extends TestCase
         $this->assertSame(self::UUID_V4_BYTES, $this->uuidWithBytes->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $this->assertSame(self::UUID_V4_BYTES, $this->uuidWithString->getSortKey());
+        $this->assertSame(self::UUID_V4_BYTES, $this->uuidWithHex->getSortKey());
+        $this->assertSame(self::UUID_V4_BYTES, $this->uuidWithBytes->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $this->assertSame(self::UUID_V4_HEX, $this->uuidWithString->toHexadecimal());

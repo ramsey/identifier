@@ -369,6 +369,13 @@ class UlidTest extends TestCase
         $this->assertSame(self::ULID_BYTES, $this->ulidWithBytes->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $this->assertSame(self::ULID_BYTES, $this->ulidWithString->getSortKey());
+        $this->assertSame(self::ULID_BYTES, $this->ulidWithHex->getSortKey());
+        $this->assertSame(self::ULID_BYTES, $this->ulidWithBytes->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $this->assertSame(self::ULID_HEX, $this->ulidWithString->toHexadecimal());

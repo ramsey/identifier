@@ -27,15 +27,18 @@ namespace Ramsey\Identifier;
 
 use Identifier\BytesIdentifier;
 use Identifier\IntegerIdentifier;
+use Identifier\StringIdentifier;
+use JsonSerializable;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
+use Stringable;
 
 /**
  * A universally unique identifier (UUID)
  *
  * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562: Universally Unique IDentifiers (UUIDs)
  */
-interface Uuid extends BytesIdentifier, IntegerIdentifier
+interface Uuid extends BytesIdentifier, IntegerIdentifier, JsonSerializable, Stringable, StringIdentifier
 {
     /**
      * Returns the variant of this UUID, describing the layout of the UUID

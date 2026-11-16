@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
-use JsonSerializable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
@@ -51,7 +50,7 @@ use function strlen;
  * Without knowing which rearrangement algorithm was used, it is impossible to
  * determine the UUID's original layout, so we treat it as a "nonstandard" UUID.
  */
-final readonly class NonstandardUuid implements JsonSerializable, Uuid
+final readonly class NonstandardUuid implements Uuid
 {
     use Standard;
 

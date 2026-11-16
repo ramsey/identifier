@@ -178,6 +178,17 @@ trait Standard
     }
 
     /**
+     * Returns a string of bytes that places the identifier in order among other
+     * identifiers
+     *
+     * @return non-empty-string
+     */
+    public function getSortKey(): string
+    {
+        return $this->getFormat(Format::Bytes);
+    }
+
+    /**
      * @return non-empty-string
      */
     public function jsonSerialize(): string

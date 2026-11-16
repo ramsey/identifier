@@ -21,6 +21,11 @@ readonly class MockBinaryIdentifier implements BytesIdentifier
         return $this->bytes;
     }
 
+    public function getSortKey(): string
+    {
+        return $this->bytes;
+    }
+
     public function compareTo(mixed $other): never
     {
         throw new BadMethodCall();

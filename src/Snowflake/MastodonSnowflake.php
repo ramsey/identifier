@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
-use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\Standard;
@@ -86,9 +85,6 @@ final readonly class MastodonSnowflake implements Snowflake
         $this->time = new Time();
     }
 
-    /**
-     * @throws OutOfRange
-     */
     public function getDateTime(): DateTimeImmutable
     {
         return $this->time->getDateTimeForSnowflake($this, Epoch::Mastodon->value, self::TIMESTAMP_BIT_SHIFTS);

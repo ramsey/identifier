@@ -71,6 +71,7 @@ class UntypedUuidTest extends TestCase
         $this->assertSame($expected['string'], $untypedUuid->toString());
         $this->assertSame($expected['string'], (string) $untypedUuid);
         $this->assertSame($expected['bytes'], $untypedUuid->toBytes());
+        $this->assertSame($expected['bytes'], $untypedUuid->getSortKey());
         $this->assertSame($expected['hex'], $untypedUuid->toHexadecimal());
         $this->assertSame($expected['int'], $untypedUuid->toInteger());
         $this->assertSame($expected['urn'], $untypedUuid->toUrn());

@@ -28,6 +28,9 @@ namespace Ramsey\Identifier;
 use Identifier\BytesIdentifier;
 use Identifier\DateTimeIdentifier;
 use Identifier\IntegerIdentifier;
+use Identifier\StringIdentifier;
+use JsonSerializable;
+use Stringable;
 
 /**
  * A universally unique lexicographically sortable identifier (ULID)
@@ -42,7 +45,13 @@ use Identifier\IntegerIdentifier;
  * @link https://github.com/ulid/spec ULID specification
  * @link https://www.crockford.com/base32.html Crockford base-32 specification
  */
-interface Ulid extends BytesIdentifier, DateTimeIdentifier, IntegerIdentifier
+interface Ulid extends
+    BytesIdentifier,
+    DateTimeIdentifier,
+    IntegerIdentifier,
+    JsonSerializable,
+    Stringable,
+    StringIdentifier
 {
     /**
      * Returns a string representation of the ULID encoded as hexadecimal

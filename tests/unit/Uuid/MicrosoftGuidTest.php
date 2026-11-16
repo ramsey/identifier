@@ -18,6 +18,7 @@ use Ramsey\Test\Identifier\Comparison;
 use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
+use function hex2bin;
 use function json_encode;
 use function serialize;
 use function sprintf;
@@ -530,6 +531,16 @@ class MicrosoftGuidTest extends TestCase
         $this->assertSame($bytes, $this->guidWithString->toBytes());
         $this->assertSame($bytes, $this->guidWithHex->toBytes());
         $this->assertSame($bytes, $this->guidWithBytes->toBytes());
+    }
+
+    public function testGetSortKey(): void
+    {
+        $sortKey = hex2bin('27433d43011d4a6ac1611550863792c9');
+
+        $this->assertSame($sortKey, $this->guidWithString->getSortKey());
+        $this->assertSame($sortKey, $this->guidWithBytes->getSortKey());
+        $this->assertNotSame($this->guidWithString->toBytes(), $this->guidWithString->getSortKey());
+        $this->assertNotSame($this->guidWithBytes->toBytes(), $this->guidWithBytes->getSortKey());
     }
 
     public function testToHexadecimal(): void

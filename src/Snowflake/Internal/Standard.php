@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Internal;
 
 use DateTimeImmutable;
-use Identifier\Exception\OutOfRange;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Snowflake;
@@ -89,6 +88,17 @@ trait Standard
         return $this->snowflake->getDateTime();
     }
 
+    /**
+     * Returns a string of bytes that places the identifier in order among other
+     * identifiers
+     *
+     * @return non-empty-string
+     */
+    public function getSortKey(): string
+    {
+        return $this->snowflake->getSortKey();
+    }
+
     /*
      * @return non-empty-string
      */
@@ -117,8 +127,6 @@ trait Standard
 
     /**
      * @return int<0, max> | numeric-string
-     *
-     * @throws OutOfRange
      */
     public function toInteger(): int | string
     {

@@ -6,9 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Added
+
+- Add `getSortKey()` to every identifier. It returns a string of bytes that places the identifier in order among other identifiers. A Microsoft GUID's sort key is in RFC 9562 layout, so it differs from the bytes `toBytes()` returns.
+
 ### Changed
 
 - Require PHP 8.3 or later.
+- **Breaking:** Require identifier/identifier `^0.6.0`.
+- **Breaking:** `Ramsey\Identifier\Exception\NotComparable` extends `Ramsey\Identifier\Exception\InvalidArgument` in place of `RuntimeException`.
+- `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 
 ## [0.1.0] - 2025-06-19
 

@@ -496,6 +496,15 @@ class NonstandardUuidTest extends TestCase
         $this->assertSame($bytes, $this->uuidWithBytes->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $bytes = "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x01\x61\x15\x50\x86\x37\x92\xc9";
+
+        $this->assertSame($bytes, $this->uuidWithString->getSortKey());
+        $this->assertSame($bytes, $this->uuidWithHex->getSortKey());
+        $this->assertSame($bytes, $this->uuidWithBytes->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $hex = '27433d43011d0a6a01611550863792c9';

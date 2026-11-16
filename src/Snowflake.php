@@ -28,6 +28,9 @@ namespace Ramsey\Identifier;
 use Identifier\BytesIdentifier;
 use Identifier\DateTimeIdentifier;
 use Identifier\IntegerIdentifier;
+use Identifier\StringIdentifier;
+use JsonSerializable;
+use Stringable;
 
 /**
  * A Snowflake identifier
@@ -37,7 +40,13 @@ use Identifier\IntegerIdentifier;
  * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Instagram Snowflakes
  * @link https://github.com/mastodon/mastodon/blob/04492e7f934d07f8e89fa9c3d4fe3381f251e8a2/lib/mastodon/snowflake.rb Mastodon Snowflakes
  */
-interface Snowflake extends BytesIdentifier, DateTimeIdentifier, IntegerIdentifier
+interface Snowflake extends
+    BytesIdentifier,
+    DateTimeIdentifier,
+    IntegerIdentifier,
+    JsonSerializable,
+    Stringable,
+    StringIdentifier
 {
     /**
      * Returns a string representation of the Snowflake encoded as hexadecimal

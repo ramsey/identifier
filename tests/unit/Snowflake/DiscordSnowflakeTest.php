@@ -286,6 +286,12 @@ class DiscordSnowflakeTest extends TestCase
         $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->toBytes());
     }
 
+    public function testGetSortKey(): void
+    {
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithString->getSortKey());
+        $this->assertSame("\x7f\xff\xff\xff\xff\xff\xff\xff", $this->snowflakeWithInt->getSortKey());
+    }
+
     public function testToHexadecimal(): void
     {
         $this->assertSame('7fffffffffffffff', $this->snowflakeWithString->toHexadecimal());
