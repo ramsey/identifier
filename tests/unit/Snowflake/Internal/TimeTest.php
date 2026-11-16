@@ -133,29 +133,59 @@ class TimeTest extends TestCase
      * @param int<0, max> | numeric-string $value
      */
     #[DataProvider('largeRightShiftsProvider')]
-    public function testGetDateTimeForSnowflakeWithLargeRightShifts(int | string $value, int $rightShifts): void
-    {
-        $snowflake = new GenericSnowflake($value, 0);
+    public function testGetDateTimeForSnowflakeWithLargeRightShifts(
+        int | string $value,
+        int $epochOffset,
+        int $rightShifts,
+        string $expected,
+    ): void {
+        $snowflake = new GenericSnowflake($value, $epochOffset);
         $time = new Time();
 
         $this->assertSame(
-            '1970-01-01 00:00:00.000',
-            $time->getDateTimeForSnowflake($snowflake, 0, $rightShifts)->format('Y-m-d H:i:s.v'),
+            $expected,
+            $time->getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.v'),
         );
     }
 
     /**
-     * @return list<array{value: int<0, max> | numeric-string, rightShifts: int}>
+     * @return list<array{value: int<0, max> | numeric-string, epochOffset: int, rightShifts: int, expected: string}>
      */
     public static function largeRightShiftsProvider(): array
     {
-        return [
-            ['value' => 5, 'rightShifts' => 64],
-            ['value' => 5, 'rightShifts' => 100],
-            ['value' => PHP_INT_MAX, 'rightShifts' => 100],
-            ['value' => '18446744073709551615', 'rightShifts' => 64],
-            ['value' => '18446744073709551615', 'rightShifts' => 100],
+        $cases = [];
+
+        foreach ([5, PHP_INT_MAX, '18446744073709551615'] as $value) {
+            foreach ([64, 100, 2147483647, PHP_INT_MAX] as $rightShifts) {
+                $cases[] = [
+                    'value' => $value,
+                    'epochOffset' => 0,
+                    'rightShifts' => $rightShifts,
+                    'expected' => '1970-01-01 00:00:00.000',
+                ];
+                $cases[] = [
+                    'value' => $value,
+                    'epochOffset' => 1500,
+                    'rightShifts' => $rightShifts,
+                    'expected' => '1970-01-01 00:00:01.500',
+                ];
+            }
+        }
+
+        $cases[] = [
+            'value' => '18446744073709551615',
+            'epochOffset' => 0,
+            'rightShifts' => 63,
+            'expected' => '1970-01-01 00:00:00.001',
         ];
+        $cases[] = [
+            'value' => PHP_INT_MAX,
+            'epochOffset' => 0,
+            'rightShifts' => 63,
+            'expected' => '1970-01-01 00:00:00.000',
+        ];
+
+        return $cases;
     }
 
     #[DataProvider('millisecondsBeforeEpochProvider')]

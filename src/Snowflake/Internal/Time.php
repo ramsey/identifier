@@ -47,6 +47,8 @@ use const PHP_INT_MAX;
  */
 final class Time
 {
+    private const SNOWFLAKE_BITS = 64;
+
     /**
      * Returns a date-time instance created from the timestamp extracted from a
      * Snowflake
@@ -70,7 +72,14 @@ final class Time
             ));
         }
 
-        $value = $snowflake->toInteger();
+        // A snowflake has at most 64 bits, so shifting it right by 64 or more
+        // bits leaves zero.
+        if ($rightShifts >= self::SNOWFLAKE_BITS) {
+            $value = 0;
+            $rightShifts = 0;
+        } else {
+            $value = $snowflake->toInteger();
+        }
 
         // We support unsigned, 64-bit integers, so $value might be greater than
         // PHP_INT_MAX, in which case, it'll be a string, and we'll need to use
