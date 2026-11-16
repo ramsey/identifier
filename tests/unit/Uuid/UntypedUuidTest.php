@@ -38,6 +38,12 @@ use function unserialize;
 
 class UntypedUuidTest extends TestCase
 {
+    use UuidComparisonTests;
+
+    private const UUID_STRING = '27433d43-011d-4a6a-9161-1550863792c9';
+    private const UUID_HEX = '27433d43011d4a6a91611550863792c9';
+    private const UUID_BYTES = "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9";
+
     /**
      * @param non-empty-string $value
      * @param array{
@@ -65,6 +71,8 @@ class UntypedUuidTest extends TestCase
         $this->assertSame($typedUuid, $untypedUuid->toTypedUuid());
         $this->assertSame(0, $untypedUuid->compareTo($typedUuid));
         $this->assertTrue($untypedUuid->equals($typedUuid));
+        $this->assertSame(0, $typedUuid->compareTo($untypedUuid));
+        $this->assertTrue($typedUuid->equals($untypedUuid));
         $this->assertSame(0, $untypedUuid->compareTo($unserializedUntypedUuid));
         $this->assertTrue($untypedUuid->equals($unserializedUntypedUuid));
 
@@ -420,5 +428,52 @@ class UntypedUuidTest extends TestCase
         );
 
         $uuid->getVersion();
+    }
+
+    /**
+     * @return array<string, UntypedUuid>
+     */
+    protected static function comparisonSubjects(): array
+    {
+        return [
+            'from a string' => new UntypedUuid(self::UUID_STRING),
+            'from a hexadecimal string' => new UntypedUuid(self::UUID_HEX),
+            'from bytes' => new UntypedUuid(self::UUID_BYTES),
+        ];
+    }
+
+    /**
+     * @return array<string, UuidV4 | Uuid\MicrosoftGuid>
+     */
+    protected static function equalValues(): array
+    {
+        return [
+            'the typed UUID with the same value' => new UuidV4(self::UUID_STRING),
+            'a MicrosoftGuid with the same string form' => new Uuid\MicrosoftGuid(self::UUID_STRING),
+        ];
+    }
+
+    /**
+     * @return array<string, UntypedUuid | NilUuid | string>
+     */
+    protected static function lesserValues(): array
+    {
+        return [
+            'a lesser UntypedUuid' => new UntypedUuid('00000000-0000-0000-0000-000000000000'),
+            'the NilUuid' => new NilUuid(),
+            'a lesser UUID string' => '00000000-0000-0000-0000-000000000000',
+        ];
+    }
+
+    /**
+     * @return array<string, UntypedUuid | MaxUuid | string>
+     */
+    protected static function greaterValues(): array
+    {
+        return [
+            'a greater UntypedUuid' => new UntypedUuid('ffffffff-ffff-ffff-ffff-ffffffffffff'),
+            'the MaxUuid' => new MaxUuid(),
+            'a greater UUID string' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
+        ];
     }
 }

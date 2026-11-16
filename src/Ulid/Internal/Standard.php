@@ -27,26 +27,23 @@ namespace Ramsey\Identifier\Ulid\Internal;
 
 use Brick\Math\BigInteger;
 use DateTimeImmutable;
-use Identifier\BytesIdentifier;
+use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Internal\ComparesBySortKey;
+use Ramsey\Identifier\Ulid;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\UuidFactory;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
-use Stringable;
 
 use function abs;
 use function assert;
 use function bin2hex;
-use function gettype;
 use function hex2bin;
 use function intdiv;
-use function is_scalar;
 use function sprintf;
 use function str_pad;
-use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function strtoupper;
@@ -65,7 +62,10 @@ use const STR_PAD_LEFT;
  */
 trait Standard
 {
-    use Validation;
+    use ComparesBySortKey;
+    use Validation {
+        isValid as private isValidUlid;
+    }
 
     /**
      * @link https://www.crockford.com/base32.html Crockford base-32 specification
@@ -127,38 +127,6 @@ trait Standard
         assert(isset($data['ulid']), "'ulid' is not set in serialized data");
 
         $this->__construct($data['ulid']);
-    }
-
-    /**
-     * @throws NotComparable
-     */
-    public function compareTo(mixed $other): int
-    {
-        if ($other instanceof BytesIdentifier) {
-            return $this->toBytes() <=> $other->toBytes();
-        }
-
-        if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            $other = (string) $other;
-
-            $otherEncoded = strtr($other, ...self::DECODE_SYMBOLS);
-            if ($this->isValid($otherEncoded, Format::tryFrom(strlen($other)))) {
-                $other = $this->getFormat(Format::Ulid, $otherEncoded);
-            }
-
-            return strcasecmp($this->toString(), $other);
-        }
-
-        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
-    }
-
-    public function equals(mixed $other): bool
-    {
-        try {
-            return $this->compareTo($other) === 0;
-        } catch (NotComparable) {
-            return false;
-        }
     }
 
     public function getDateTime(): DateTimeImmutable
@@ -268,6 +236,31 @@ trait Standard
     public function toUuidV7(): UuidV7
     {
         return new UuidV7((new Binary())->applyVersionAndVariant($this->toBytes(), Version::UnixTime));
+    }
+
+    private function isSameKind(Identifier $other): bool
+    {
+        return $other instanceof Ulid;
+    }
+
+    /**
+     * @return non-empty-string | null
+     */
+    private function sortKeyFromString(string $value): ?string
+    {
+        if (strlen($value) !== Format::Ulid->value) {
+            return null;
+        }
+
+        $value = strtr($value, ...self::DECODE_SYMBOLS);
+
+        // MaxUlid and NilUlid replace isValid() with a check for their own
+        // value, but they compare with any ULID.
+        if (!$this->isValidUlid($value, Format::Ulid)) {
+            return null;
+        }
+
+        return $this->getFormat(Format::Bytes, $value);
     }
 
     /**

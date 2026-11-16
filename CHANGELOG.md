@@ -19,12 +19,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
 - **Breaking:** The snowflake classes and factories refuse a string with a leading zero, such as `0123`.
+- **Breaking:** `compareTo()` given any `Identifier\Identifier` compares the two sort keys and does not throw.
+- **Breaking:** `compareTo()` throws `NotComparable` for `null`, numbers, booleans, objects that are neither identifiers nor `Stringable`, and strings (or `Stringable` objects) not in the identifier's own string form; raw bytes and bare hexadecimal strings are no longer compared.
+- **Breaking:** `equals()` returns `true` only for an identifier of the same kind (UUID, ULID, or snowflake) with the same sort key, or a string in the identifier's own string form with the same value; a UUID and a ULID with the same bytes are no longer equal.
 
 ### Fixed
 
 - `getDateTime()` on a snowflake whose epoch offset puts the date-time out of range throws `NotConvertible` in place of a PHP error.
 - `getDateTime()` on a snowflake returned the wrong date-time when the date-time was less than one second before the Unix Epoch.
 - A snowflake value above the largest unsigned 64-bit integer was accepted when written with a leading zero.
+- Identifiers whose bytes look like numbers to PHP no longer compare as equal.
+- GUIDs sort in the order of their string form.
 
 ## [0.1.0] - 2025-06-19
 

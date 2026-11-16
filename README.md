@@ -95,13 +95,15 @@ This will print:
 
 The UUID and ULID shown above have the same underlying byte values. Every version 7 UUID can also be expressed as a ULID, but not every ULID can be converted into a version 7 UUID. Similarly, Snowflake identifiers and ULIDs both encode a timestamp and randomness, but their formats are not directly interchangeable with UUIDs or each other.
 
+Identifiers of different kinds are never equal, but they sort by their bytes, so the UUID and ULID above sort in the same place:
+
 ```php
-if ($uuid->equals($ulid)) {
-    echo "They are equal!\n";
+if ($uuid->compareTo($ulid) === 0 && !$uuid->equals($ulid)) {
+    echo "They sort in the same place, but they aren't equal.\n";
 }
 
 if ($uuid->equals($snowflake)) {
-    echo "The timestamp is the same, but they aren't equal.\n"
+    echo "The timestamp is the same, but they aren't equal.\n";
 }
 ```
 

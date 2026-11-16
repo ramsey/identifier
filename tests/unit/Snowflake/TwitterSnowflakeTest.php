@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
-use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Snowflake\DiscordSnowflake;
+use Ramsey\Identifier\Snowflake\Epoch;
+use Ramsey\Identifier\Snowflake\GenericSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflake;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
-use Ramsey\Test\Identifier\Comparison;
-use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
@@ -23,6 +22,8 @@ use function unserialize;
 
 class TwitterSnowflakeTest extends TestCase
 {
+    use SnowflakeComparisonTests;
+
     private const SNOWFLAKE_INT = 9223372036854775807;
     private const SNOWFLAKE_STRING = '9223372036854775807';
 
@@ -173,146 +174,68 @@ class TwitterSnowflakeTest extends TestCase
         unserialize($serialized);
     }
 
-    #[DataProvider('compareToProvider')]
-    public function testCompareTo(mixed $other, Comparison $comparison): void
-    {
-        switch ($comparison) {
-            case Comparison::Equal:
-                $this->assertSame(0, $this->snowflakeWithString->compareTo($other));
-                $this->assertSame(0, $this->snowflakeWithInt->compareTo($other));
-
-                break;
-            case Comparison::GreaterThan:
-                $this->assertGreaterThan(0, $this->snowflakeWithString->compareTo($other));
-                $this->assertGreaterThan(0, $this->snowflakeWithInt->compareTo($other));
-
-                break;
-            case Comparison::LessThan:
-                $this->assertLessThan(0, $this->snowflakeWithString->compareTo($other));
-                $this->assertLessThan(0, $this->snowflakeWithInt->compareTo($other));
-
-                break;
-            default:
-                throw new Exception('Invalid comparison');
-        }
-    }
-
     /**
-     * @return array<string, array{mixed, Comparison}>
+     * @return array<string, TwitterSnowflake>
      */
-    public static function compareToProvider(): array
+    protected static function comparisonSubjects(): array
     {
         return [
-            'with null' => [null, Comparison::GreaterThan],
-            'with int' => [123, Comparison::GreaterThan],
-            'with float' => [123.456, Comparison::GreaterThan],
-            'with string' => ['foobar', Comparison::LessThan],
-            'with same string Snowflake' => [self::SNOWFLAKE_STRING, Comparison::Equal],
-            'with same integer Snowflake' => [self::SNOWFLAKE_INT, Comparison::Equal],
-            'with bool true' => [true, Comparison::GreaterThan],
-            'with bool false' => [false, Comparison::GreaterThan],
-            'with Stringable class' => [
-                new class {
-                    public function __toString(): string
-                    {
-                        return 'foobar';
-                    }
-                },
-                Comparison::LessThan,
-            ],
-            'with Stringable class returning Snowflake string' => [
-                new class (self::SNOWFLAKE_STRING) {
-                    public function __construct(private readonly string $snowflake)
-                    {
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->snowflake;
-                    }
-                },
-                Comparison::Equal,
-            ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
-            'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
-                Comparison::Equal,
-            ],
+            'from an integer' => new TwitterSnowflake(self::SNOWFLAKE_INT),
+            'from a string' => new TwitterSnowflake(self::SNOWFLAKE_STRING),
         ];
     }
 
-    public function testCompareToThrowsExceptionWhenNotComparable(): void
+    /**
+     * @return array<string, DiscordSnowflake | GenericSnowflake>
+     */
+    protected static function equalValues(): array
     {
-        $this->expectException(NotComparable::class);
-        $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
-
-        $this->snowflakeWithString->compareTo([]);
-    }
-
-    #[DataProvider('equalsProvider')]
-    public function testEquals(mixed $other, Comparison $comparison): void
-    {
-        switch ($comparison) {
-            case Comparison::Equal:
-                $this->assertTrue($this->snowflakeWithString->equals($other));
-                $this->assertTrue($this->snowflakeWithInt->equals($other));
-
-                break;
-            case Comparison::NotEqual:
-                $this->assertFalse($this->snowflakeWithString->equals($other));
-                $this->assertFalse($this->snowflakeWithInt->equals($other));
-
-                break;
-            default:
-                throw new Exception('Invalid comparison');
-        }
+        return [
+            'a DiscordSnowflake with the same number' => new DiscordSnowflake(self::SNOWFLAKE_STRING),
+            'a GenericSnowflake with the same number' => new GenericSnowflake(self::SNOWFLAKE_INT, Epoch::Discord),
+        ];
     }
 
     /**
-     * @return array<string, array{mixed, Comparison}>
+     * @return array<string, TwitterSnowflake | string>
      */
-    public static function equalsProvider(): array
+    protected static function lesserValues(): array
     {
         return [
-            'with null' => [null, Comparison::NotEqual],
-            'with int' => [123, Comparison::NotEqual],
-            'with float' => [123.456, Comparison::NotEqual],
-            'with string' => ['foobar', Comparison::NotEqual],
-            'with same string Snowflake' => [self::SNOWFLAKE_STRING, Comparison::Equal],
-            'with same integer Snowflake' => [self::SNOWFLAKE_INT, Comparison::Equal],
-            'with bool true' => [true, Comparison::NotEqual],
-            'with bool false' => [false, Comparison::NotEqual],
-            'with Stringable class' => [
-                new class {
-                    public function __toString(): string
-                    {
-                        return 'foobar';
-                    }
-                },
-                Comparison::NotEqual,
-            ],
-            'with Stringable class returning Snowflake string' => [
-                new class (self::SNOWFLAKE_STRING) {
-                    public function __construct(private readonly string $snowflake)
-                    {
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->snowflake;
-                    }
-                },
-                Comparison::Equal,
-            ],
-            'with Snowflake from string' => [new TwitterSnowflake(self::SNOWFLAKE_STRING), Comparison::Equal],
-            'with Snowflake from int' => [new TwitterSnowflake(self::SNOWFLAKE_INT), Comparison::Equal],
-            'with array' => [[], Comparison::NotEqual],
-            'with BinaryIdentifier' => [
-                new MockBinaryIdentifier("\x7f\xff\xff\xff\xff\xff\xff\xff"),
-                Comparison::Equal,
-            ],
+            'a lesser TwitterSnowflake' => new TwitterSnowflake(0),
+            'a lesser snowflake string' => '9223372036854775806',
+            'a lesser snowflake string with fewer digits' => '10',
+            'a lesser snowflake string of one digit' => '9',
         ];
+    }
+
+    /**
+     * @return array<string, DiscordSnowflake | string>
+     */
+    protected static function greaterValues(): array
+    {
+        return [
+            'a greater DiscordSnowflake' => new DiscordSnowflake('9223372036854775808'),
+            'a greater snowflake string' => '9223372036854775808',
+            'the largest snowflake string' => '18446744073709551615',
+        ];
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    protected static function createSnowflake(int | string $value): TwitterSnowflake
+    {
+        return new TwitterSnowflake($value);
+    }
+
+    public function testCompareToAcceptsAStringAboveTheLimitOfATwitterSnowflake(): void
+    {
+        $snowflake = new TwitterSnowflake(self::SNOWFLAKE_STRING);
+
+        $this->assertLessThan(0, $snowflake->compareTo('9223372036854775808'));
+        $this->assertFalse($snowflake->equals('9223372036854775808'));
+        $this->assertLessThan(0, $snowflake->compareTo('18446744073709551615'));
     }
 
     public function testJsonSerialize(): void

@@ -26,21 +26,18 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Internal;
 
 use Brick\Math\BigInteger;
-use Identifier\BytesIdentifier;
+use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NotComparable;
-use Ramsey\Identifier\Uuid\MicrosoftGuid;
+use Ramsey\Identifier\Internal\ComparesBySortKey;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Variant;
-use Stringable;
 
 use function assert;
 use function bin2hex;
-use function gettype;
 use function hex2bin;
-use function is_scalar;
+use function preg_match;
 use function sprintf;
 use function str_replace;
-use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -55,6 +52,7 @@ use const PHP_INT_MAX;
  */
 trait Standard
 {
+    use ComparesBySortKey;
     use Validation;
 
     private readonly ?Format $format;
@@ -104,39 +102,6 @@ trait Standard
         assert(isset($data['uuid']), "'uuid' is not set in serialized data");
 
         $this->__construct($data['uuid']);
-    }
-
-    /**
-     * @throws NotComparable
-     */
-    public function compareTo(mixed $other): int
-    {
-        // Microsoft GUID bytes are in a different order, even though the string
-        // representations might be identical, so we'll skip MicrosoftGuid bytes
-        // comparisons.
-        if ($other instanceof BytesIdentifier && !$other instanceof MicrosoftGuid) {
-            return $this->toBytes() <=> $other->toBytes();
-        }
-
-        if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            $other = (string) $other;
-            if ($this->isValid($other, Format::tryFrom(strlen($other)))) {
-                $other = $this->getFormat(Format::String, $other);
-            }
-
-            return strcasecmp($this->toString(), $other);
-        }
-
-        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
-    }
-
-    public function equals(mixed $other): bool
-    {
-        try {
-            return $this->compareTo($other) === 0;
-        } catch (NotComparable) {
-            return false;
-        }
     }
 
     /**
@@ -250,6 +215,24 @@ trait Standard
                 Format::String => BigInteger::fromBase(str_replace('-', '', $uuid), 16)->toBase(10), // @phpstan-ignore argument.type
             },
         };
+    }
+
+    private function isSameKind(Identifier $other): bool
+    {
+        return $other instanceof Uuid;
+    }
+
+    /**
+     * @return non-empty-string | null
+     */
+    private function sortKeyFromString(string $value): ?string
+    {
+        if (preg_match('/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i', $value) !== 1) {
+            return null;
+        }
+
+        /** @var non-empty-string */
+        return (string) hex2bin(str_replace('-', '', $value));
     }
 
     /**

@@ -32,7 +32,6 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
-use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\Format;
 use Ramsey\Identifier\Uuid\Internal\NodeBased;
@@ -80,7 +79,6 @@ use function substr;
 final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard {
-        compareTo as private baseCompareTo;
         getFormat as private baseGetFormat;
     }
     use NodeBased {
@@ -131,21 +129,6 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         assert(isset($data['guid']), "'guid' is not set in serialized data");
 
         $this->__construct($data['guid']);
-    }
-
-    public function compareTo(mixed $other): int
-    {
-        if ($other instanceof MicrosoftGuid) {
-            return $this->toBytes() <=> $other->toBytes();
-        }
-
-        // We need to compare with strings here, since Microsoft GUID bytes are
-        // in a different order than UUID bytes.
-        if ($other instanceof Uuid) {
-            return $this->toString() <=> $other->toString();
-        }
-
-        return $this->baseCompareTo($other);
     }
 
     /**

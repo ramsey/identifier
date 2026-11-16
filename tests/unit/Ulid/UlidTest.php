@@ -4,29 +4,24 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
-use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
-use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UuidV7;
-use Ramsey\Test\Identifier\Comparison;
-use Ramsey\Test\Identifier\MockBinaryIdentifier;
 use Ramsey\Test\Identifier\TestCase;
 
 use function json_encode;
 use function serialize;
 use function sprintf;
-use function strtolower;
-use function strtoupper;
 use function unserialize;
 
 class UlidTest extends TestCase
 {
+    use UlidComparisonTests;
+
     private const ULID_STRING = '01FWHE4YDGFK1SHH6W1G60EECF';
     private const ULID_HEX = '017f22e279b07cc398c4dc0c0c07398f';
     private const ULID_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
@@ -180,172 +175,63 @@ class UlidTest extends TestCase
         unserialize($serialized);
     }
 
-    #[DataProvider('compareToProvider')]
-    public function testCompareTo(mixed $other, Comparison $comparison): void
-    {
-        switch ($comparison) {
-            case Comparison::Equal:
-                $this->assertSame(0, $this->ulidWithString->compareTo($other));
-                $this->assertSame(0, $this->ulidWithHex->compareTo($other));
-                $this->assertSame(0, $this->ulidWithBytes->compareTo($other));
-
-                break;
-            case Comparison::GreaterThan:
-                $this->assertGreaterThan(0, $this->ulidWithString->compareTo($other));
-                $this->assertGreaterThan(0, $this->ulidWithHex->compareTo($other));
-                $this->assertGreaterThan(0, $this->ulidWithBytes->compareTo($other));
-
-                break;
-            case Comparison::LessThan:
-                $this->assertLessThan(0, $this->ulidWithString->compareTo($other));
-                $this->assertLessThan(0, $this->ulidWithHex->compareTo($other));
-                $this->assertLessThan(0, $this->ulidWithBytes->compareTo($other));
-
-                break;
-            default:
-                throw new Exception('Invalid comparison');
-        }
-    }
-
     /**
-     * @return array<string, array{mixed, Comparison}>
+     * @return array<string, Ulid>
      */
-    public static function compareToProvider(): array
+    protected static function comparisonSubjects(): array
     {
-        $factory = new UlidFactory();
-
         return [
-            'with null' => [null, Comparison::GreaterThan],
-            'with int' => [123, Comparison::LessThan],
-            'with float' => [123.456, Comparison::LessThan],
-            'with string' => ['foobar', Comparison::LessThan],
-            'with string Nil ULID' => [$factory->nil()->toString(), Comparison::GreaterThan],
-            'with same string ULID' => [self::ULID_STRING, Comparison::Equal],
-            'with same string ULID all lowercase' => [strtoupper(self::ULID_STRING), Comparison::Equal],
-            'with same hex ULID' => [self::ULID_HEX, Comparison::Equal],
-            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), Comparison::Equal],
-            'with same bytes ULID' => [self::ULID_BYTES, Comparison::Equal],
-            'with string Max ULID' => [$factory->max()->toString(), Comparison::LessThan],
-            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), Comparison::LessThan],
-            'with bool true' => [true, Comparison::LessThan],
-            'with bool false' => [false, Comparison::GreaterThan],
-            'with Stringable class' => [
-                new class {
-                    public function __toString(): string
-                    {
-                        return 'foobar';
-                    }
-                },
-                Comparison::LessThan,
-            ],
-            'with Stringable class returning ULID bytes' => [
-                new class (self::ULID_BYTES) {
-                    public function __construct(private readonly string $ulidBytes)
-                    {
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->ulidBytes;
-                    }
-                },
-                Comparison::Equal,
-            ],
-            'with NilUlid' => [new NilUlid(), Comparison::GreaterThan],
-            'with Ulid from string' => [new Ulid(self::ULID_STRING), Comparison::Equal],
-            'with Ulid from hex' => [new Ulid(self::ULID_HEX), Comparison::Equal],
-            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), Comparison::Equal],
-            'with MaxUlid' => [new MaxUlid(), Comparison::LessThan],
-            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', Comparison::Equal],
-            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), Comparison::Equal],
-            'with BinaryIdentifier class' => [new MockBinaryIdentifier(self::ULID_BYTES), Comparison::Equal],
-            'with UuidV7' => [new UuidV7(self::ULID_BYTES), Comparison::Equal],
+            'from a string' => new Ulid(self::ULID_STRING),
+            'from a hexadecimal string' => new Ulid(self::ULID_HEX),
+            'from bytes' => new Ulid(self::ULID_BYTES),
         ];
     }
 
-    public function testCompareToThrowsExceptionWhenNotComparable(): void
+    /**
+     * @return array<string, string>
+     */
+    protected static function equalValues(): array
     {
-        $this->expectException(NotComparable::class);
-        $this->expectExceptionMessage('Comparison with values of type "array" is not supported');
-
-        $this->ulidWithString->compareTo([]);
-    }
-
-    #[DataProvider('equalsProvider')]
-    public function testEquals(mixed $other, Comparison $comparison): void
-    {
-        switch ($comparison) {
-            case Comparison::Equal:
-                $this->assertTrue($this->ulidWithString->equals($other));
-                $this->assertTrue($this->ulidWithHex->equals($other));
-                $this->assertTrue($this->ulidWithBytes->equals($other));
-
-                break;
-            case Comparison::NotEqual:
-                $this->assertFalse($this->ulidWithString->equals($other));
-                $this->assertFalse($this->ulidWithHex->equals($other));
-                $this->assertFalse($this->ulidWithBytes->equals($other));
-
-                break;
-            default:
-                throw new Exception('Invalid comparison');
-        }
+        return [
+            'a string with the substitute letters' => 'oiFWHE4YDGFKlSHH6W1G6OEECF',
+            'a string with the substitute letters in uppercase' => 'OIFWHE4YDGFKLSHH6W1G6OEECF',
+        ];
     }
 
     /**
-     * @return array<string, array{mixed, Comparison}>
+     * @return array<string, Ulid | NilUlid | string>
      */
-    public static function equalsProvider(): array
+    protected static function lesserValues(): array
     {
-        $factory = new UlidFactory();
-
         return [
-            'with null' => [null, Comparison::NotEqual],
-            'with int' => [123, Comparison::NotEqual],
-            'with float' => [123.456, Comparison::NotEqual],
-            'with string' => ['foobar', Comparison::NotEqual],
-            'with string Nil ULID' => [$factory->nil()->toString(), Comparison::NotEqual],
-            'with same string ULID' => [self::ULID_STRING, Comparison::Equal],
-            'with same string ULID all lowercase' => [strtolower(self::ULID_STRING), Comparison::Equal],
-            'with same hex ULID' => [self::ULID_HEX, Comparison::Equal],
-            'with same hex ULID all caps' => [strtoupper(self::ULID_HEX), Comparison::Equal],
-            'with same bytes ULID' => [self::ULID_BYTES, Comparison::Equal],
-            'with string Max ULID' => [$factory->max()->toString(), Comparison::NotEqual],
-            'with string Max ULID all lowercase' => [strtolower($factory->max()->toString()), Comparison::NotEqual],
-            'with bool true' => [true, Comparison::NotEqual],
-            'with bool false' => [false, Comparison::NotEqual],
-            'with Stringable class' => [
-                new class {
-                    public function __toString(): string
-                    {
-                        return 'foobar';
-                    }
-                },
-                Comparison::NotEqual,
-            ],
-            'with Stringable class returning ULID bytes' => [
-                new class (self::ULID_BYTES) {
-                    public function __construct(private readonly string $ulidBytes)
-                    {
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->ulidBytes;
-                    }
-                },
-                Comparison::Equal,
-            ],
-            'with NilUlid' => [new NilUlid(), Comparison::NotEqual],
-            'with Ulid from string' => [new Ulid(self::ULID_STRING), Comparison::Equal],
-            'with Ulid from hex' => [new Ulid(self::ULID_HEX), Comparison::Equal],
-            'with Ulid from bytes' => [new Ulid(self::ULID_BYTES), Comparison::Equal],
-            'with MaxUlid' => [new MaxUlid(), Comparison::NotEqual],
-            'with excluded symbols string' => ['0Ifwhe4ydgfkishh6wLg6Oeecf', Comparison::Equal],
-            'with excluded symbols Ulid' => [new Ulid('0Ifwhe4ydgfkishh6wLg6Oeecf'), Comparison::Equal],
-            'with BinaryIdentifier class' => [new MockBinaryIdentifier(self::ULID_BYTES), Comparison::Equal],
-            'with UuidV7' => [new UuidV7(self::ULID_BYTES), Comparison::Equal],
+            'a lesser Ulid' => new Ulid('00000000000000000000000001'),
+            'the NilUlid' => new NilUlid(),
+            'a lesser ULID string' => '01FWHE4YDGFK1SHH6W1G60EECE',
         ];
+    }
+
+    /**
+     * @return array<string, Ulid | MaxUlid | string>
+     */
+    protected static function greaterValues(): array
+    {
+        return [
+            'a greater Ulid' => new Ulid('7ZZZZZZZZZZZZZZZZZZZZZZZZY'),
+            'the MaxUlid' => new MaxUlid(),
+            'a greater ULID string' => '01FWHE4YDGFK1SHH6W1G60EECG',
+            'a greater ULID string in lowercase' => '7zzzzzzzzzzzzzzzzzzzzzzzzz',
+        ];
+    }
+
+    public function testUlidsFromBytesThatLookLikeNumbersAreNotEqual(): void
+    {
+        $first = new Ulid('0000000000000010');
+        $second = new Ulid('00000000000001e1');
+
+        $this->assertLessThan(0, $first->compareTo($second));
+        $this->assertGreaterThan(0, $second->compareTo($first));
+        $this->assertFalse($first->equals($second));
+        $this->assertFalse($second->equals($first));
     }
 
     public function testJsonSerialize(): void
@@ -400,7 +286,7 @@ class UlidTest extends TestCase
     {
         $ulid = new Ulid($value);
 
-        $this->assertTrue($ulid->equals($value));
+        $this->assertTrue($ulid->equals($expected));
         $this->assertSame($expected, $ulid->toString());
     }
 
@@ -469,7 +355,8 @@ class UlidTest extends TestCase
         $uuid = $ulid->toUuid();
 
         $this->assertInstanceOf(UuidV7::class, $uuid);
-        $this->assertTrue($ulid->equals($uuid));
+        $this->assertSame(0, $ulid->compareTo($uuid));
+        $this->assertFalse($ulid->equals($uuid));
     }
 
     public function testToUuidWhenUlidBytesAreForNonstandardUuid(): void
@@ -479,7 +366,8 @@ class UlidTest extends TestCase
         $uuid = $ulid->toUuid();
 
         $this->assertInstanceOf(NonstandardUuid::class, $uuid);
-        $this->assertTrue($ulid->equals($uuid));
+        $this->assertSame(0, $ulid->compareTo($uuid));
+        $this->assertFalse($ulid->equals($uuid));
     }
 
     public function testToUuidV7(): void

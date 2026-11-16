@@ -370,7 +370,7 @@ class UlidFactoryTest extends TestCase
         $uuid = $uuidFactory->createFromBytes($bytes)->toTypedUuid();
         $ulid = $ulidFactory->createFromUuid($uuid);
 
-        $this->assertTrue($uuid->equals($ulid));
+        $this->assertFalse($uuid->equals($ulid));
         $this->assertSame($bytes, $ulid->toBytes());
     }
 

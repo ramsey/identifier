@@ -26,19 +26,16 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
-use Identifier\BytesIdentifier;
+use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Exception\NotConvertible;
+use Ramsey\Identifier\Internal\ComparesBySortKey;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\Format;
 use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\Snowflake\Internal\Validation;
-use Stringable;
 
 use function assert;
-use function gettype;
-use function is_scalar;
 use function sprintf;
 
 /**
@@ -48,6 +45,7 @@ use function sprintf;
  */
 final readonly class GenericSnowflake implements Snowflake
 {
+    use ComparesBySortKey;
     use Validation;
 
     private const TIMESTAMP_BIT_SHIFTS = 22;
@@ -116,31 +114,6 @@ final readonly class GenericSnowflake implements Snowflake
     }
 
     /**
-     * @throws NotComparable
-     */
-    public function compareTo(mixed $other): int
-    {
-        if ($other instanceof BytesIdentifier) {
-            return $this->toBytes() <=> $other->toBytes();
-        }
-
-        if ($other === null || is_scalar($other) || $other instanceof Stringable) {
-            return (string) $this->snowflake <=> (string) $other;
-        }
-
-        throw new NotComparable(sprintf('Comparison with values of type "%s" is not supported', gettype($other)));
-    }
-
-    public function equals(mixed $other): bool
-    {
-        try {
-            return $this->compareTo($other) === 0;
-        } catch (NotComparable) {
-            return false;
-        }
-    }
-
-    /**
      * @throws NotConvertible when the date-time cannot be represented
      */
     public function getDateTime(): DateTimeImmutable
@@ -197,5 +170,22 @@ final readonly class GenericSnowflake implements Snowflake
     public function toString(): string
     {
         return (string) $this->snowflake;
+    }
+
+    private function isSameKind(Identifier $other): bool
+    {
+        return $other instanceof Snowflake;
+    }
+
+    /**
+     * @return non-empty-string | null
+     */
+    private function sortKeyFromString(string $value): ?string
+    {
+        if (!$this->isValid($value)) {
+            return null;
+        }
+
+        return Format::formatBytes($value);
     }
 }
