@@ -18,6 +18,7 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class TwitterSnowflakeTest extends TestCase
@@ -56,6 +57,55 @@ class TwitterSnowflakeTest extends TestCase
             ['value' => "\x00\x00\x00\x00\x00\x00\x00\x00"],
             ['value' => -1],
             ['value' => '-1'],
+        ];
+    }
+
+    /**
+     * @param numeric-string $value
+     */
+    #[DataProvider('refusedStringsProvider')]
+    public function testConstructorRefusesInvalidString(string $value): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        new TwitterSnowflake($value);
+    }
+
+    /**
+     * @return list<array{value: numeric-string}>
+     */
+    public static function refusedStringsProvider(): array
+    {
+        return [
+            ['value' => '0123'],
+            ['value' => '00'],
+            ['value' => '018446744073709551616'],
+            ['value' => '18446744073709551616'],
+            ['value' => '99999999999999999999'],
+        ];
+    }
+
+    /**
+     * @param numeric-string $value
+     */
+    #[DataProvider('acceptedStringsProvider')]
+    public function testConstructorAcceptsValidString(string $value): void
+    {
+        $snowflake = new TwitterSnowflake($value);
+
+        $this->assertSame($value, $snowflake->toString());
+        $this->assertSame(8, strlen($snowflake->toBytes()));
+    }
+
+    /**
+     * @return list<array{value: numeric-string}>
+     */
+    public static function acceptedStringsProvider(): array
+    {
+        return [
+            ['value' => '0'],
+            ['value' => '123'],
+            ['value' => '9223372036854775807'],
         ];
     }
 

@@ -62,6 +62,20 @@ class MastodonSnowflakeFactoryTest extends TestCase
         $this->assertSame('018375b4e2b99a3b', $snowflake->toHexadecimal());
     }
 
+    public function testCreateFromStringRefusesLeadingZero(): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        $this->factory->createFromString('0123');
+    }
+
+    public function testCreateFromStringRefusesLeadingZeroAboveMaximum(): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        $this->factory->createFromString('018446744073709551616');
+    }
+
     public function testCreateFromBytes(): void
     {
         $snowflake = $this->factory->createFromBytes("\x01\x83\x95\xab\x83\x9a\xdf\x27");

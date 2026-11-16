@@ -18,11 +18,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `Ramsey\Identifier\Exception\NotComparable` extends `Ramsey\Identifier\Exception\InvalidArgument` in place of `RuntimeException`.
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
+- **Breaking:** The snowflake classes and factories refuse a string with a leading zero, such as `0123`.
 
 ### Fixed
 
 - `getDateTime()` on a snowflake whose epoch offset puts the date-time out of range throws `NotConvertible` in place of a PHP error.
 - `getDateTime()` on a snowflake returned the wrong date-time when the date-time was less than one second before the Unix Epoch.
+- A snowflake value above the largest unsigned 64-bit integer was accepted when written with a leading zero.
 
 ## [0.1.0] - 2025-06-19
 

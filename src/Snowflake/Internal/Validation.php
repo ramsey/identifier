@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Internal;
 
 use function is_int;
+use function strcmp;
 use function strlen;
 use function strspn;
 
@@ -60,6 +61,16 @@ trait Validation
             return false;
         }
 
-        return $snowflake <= self::UPPER_BOUNDS;
+        if ($snowflake !== '0' && $snowflake[0] === '0') {
+            return false;
+        }
+
+        $length = strlen(self::UPPER_BOUNDS);
+
+        if (strlen($snowflake) !== $length) {
+            return strlen($snowflake) < $length;
+        }
+
+        return strcmp($snowflake, self::UPPER_BOUNDS) <= 0;
     }
 }

@@ -18,6 +18,7 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class MastodonSnowflakeTest extends TestCase
@@ -59,6 +60,55 @@ class MastodonSnowflakeTest extends TestCase
 
             // This value is out of bounds.
             ['value' => '18446744073709551616'],
+        ];
+    }
+
+    /**
+     * @param numeric-string $value
+     */
+    #[DataProvider('refusedStringsProvider')]
+    public function testConstructorRefusesInvalidString(string $value): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        new MastodonSnowflake($value);
+    }
+
+    /**
+     * @return list<array{value: numeric-string}>
+     */
+    public static function refusedStringsProvider(): array
+    {
+        return [
+            ['value' => '0123'],
+            ['value' => '00'],
+            ['value' => '018446744073709551616'],
+            ['value' => '18446744073709551616'],
+            ['value' => '99999999999999999999'],
+        ];
+    }
+
+    /**
+     * @param numeric-string $value
+     */
+    #[DataProvider('acceptedStringsProvider')]
+    public function testConstructorAcceptsValidString(string $value): void
+    {
+        $snowflake = new MastodonSnowflake($value);
+
+        $this->assertSame($value, $snowflake->toString());
+        $this->assertSame(8, strlen($snowflake->toBytes()));
+    }
+
+    /**
+     * @return list<array{value: numeric-string}>
+     */
+    public static function acceptedStringsProvider(): array
+    {
+        return [
+            ['value' => '0'],
+            ['value' => '123'],
+            ['value' => '18446744073709551615'],
         ];
     }
 
