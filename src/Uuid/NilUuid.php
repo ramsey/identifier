@@ -35,9 +35,9 @@ use function sprintf;
 use function strlen;
 
 /**
- * The Nil UUID is a special form of UUID that has all 128 bits set to zero (0).
+ * The Nil UUID is a special form of UUID that has all 128 bits set to zero (0)
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 RFC 9562, section 5.9. Nil UUID.
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 RFC 9562, section 5.9. Nil UUID
  */
 final readonly class NilUuid implements Uuid
 {
@@ -46,7 +46,8 @@ final readonly class NilUuid implements Uuid
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
-     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     * @param non-empty-string $uuid A representation of the UUID as a string
+     *     with dashes, hexadecimal, or byte string
      *
      * @throws InvalidArgument
      */
@@ -62,9 +63,10 @@ final readonly class NilUuid implements Uuid
     /**
      * {@inheritDoc}
      *
-     * According to RFC 9562 sections {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
-     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 5.9}, the Nil UUID falls within the range of the Apollo
-     * NCS variant.
+     * According to RFC 9562 sections
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.9 5.9}, the Nil
+     * UUID falls within the range of the Apollo NCS variant.
      */
     public function getVariant(): Variant
     {

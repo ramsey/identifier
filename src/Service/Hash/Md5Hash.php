@@ -28,9 +28,9 @@ namespace Ramsey\Identifier\Service\Hash;
 use function hash;
 
 /**
- * Uses the MD5 message digest algorithm to generate a hash of data.
+ * Uses the MD5 message digest algorithm to generate a hash of data
  *
- * @link https://en.wikipedia.org/wiki/MD5 Wikipedia: MD5.
+ * @link https://en.wikipedia.org/wiki/MD5 Wikipedia: MD5
  */
 class Md5Hash implements Hash
 {

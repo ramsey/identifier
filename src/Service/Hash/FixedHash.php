@@ -31,7 +31,7 @@ use function hex2bin;
 use function sprintf;
 
 /**
- * A hash that returns a pre-determined message digest.
+ * A hash that returns a pre-determined message digest
  */
 final readonly class FixedHash implements Hash
 {
@@ -41,7 +41,8 @@ final readonly class FixedHash implements Hash
     private string $bytes;
 
     /**
-     * @param non-empty-string $hash A hexadecimal string representing a message digest.
+     * @param non-empty-string $hash A hexadecimal string representing a message
+     *     digest
      */
     public function __construct(private string $hash)
     {

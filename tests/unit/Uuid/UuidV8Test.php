@@ -121,7 +121,8 @@ class UuidV8Test extends TestCase
             ['value' => 'ffffffffffff7fff9fffffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\x7f\xff\x9f\xff\xff\xff\xff\xff\xff\xff"],
 
-            // These appear to have valid versions, but they have invalid variants
+            // These appear to have valid versions, but they have invalid
+            // variants
             ['value' => 'ffffffff-ffff-1fff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffff1fffcfffffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\x1f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],

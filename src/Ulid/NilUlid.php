@@ -34,9 +34,10 @@ use function sprintf;
 use function strlen;
 
 /**
- * The Nil ULID is a special form of ULID that has all 128 bits set to zero (`0`).
+ * The Nil ULID is a special form of ULID that has all 128 bits set to zero
+ * (`0`)
  *
- * @link https://github.com/ulid/spec ULID specification.
+ * @link https://github.com/ulid/spec ULID specification
  */
 final readonly class NilUlid implements UlidInterface
 {
@@ -45,7 +46,8 @@ final readonly class NilUlid implements UlidInterface
     private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
-     * @param non-empty-string $ulid A representation of a ULID in either Crockford base-32 or byte form.
+     * @param non-empty-string $ulid A representation of a ULID in either
+     *     Crockford base-32 or byte form
      *
      * @throws InvalidArgument
      */

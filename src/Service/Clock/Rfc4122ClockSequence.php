@@ -38,31 +38,40 @@ use function strlen;
 use const PHP_INT_MAX;
 
 /**
- * Calculates the clock sequence value, according to the algorithm defined in RFC 4122.
+ * Calculates the clock sequence value, according to the algorithm defined in
+ * RFC 4122
  *
- * RFC 4122, section 4.2.1 defines a basic algorithm for generating a clock sequence. It describes the algorithm as
- * "simple, correct, and inefficient."
+ * RFC 4122, section 4.2.1 defines a basic algorithm for generating a clock
+ * sequence. It describes the algorithm as "simple, correct, and inefficient."
  *
  * > * Obtain a system-wide global lock
- * > * From a system-wide shared stable store (e.g., a file), read the UUID generator state: the values of the timestamp,
- * >   clock sequence, and node ID used to generate the last UUID.
- * > * Get the current time as a 60-bit count of 100-nanosecond intervals since 00:00:00.00, 15 October 1582.
+ * > * From a system-wide shared stable store (e.g., a file), read the UUID
+ * >   generator state: the values of the timestamp, clock sequence, and node ID
+ * >   used to generate the last UUID.
+ * > * Get the current time as a 60-bit count of 100-nanosecond intervals since
+ * >   00:00:00.00, 15 October 1582.
  * > * Get the current node ID.
- * > * If the state was unavailable (e.g., non-existent or corrupted), or the saved node ID is different than the current
- * >   node ID, generate a random clock sequence value.
- * > * If the state was available, but the saved timestamp is later than the current timestamp, increment the clock
- * >   sequence value.
- * > * Save the state (current timestamp, clock sequence, and node ID) back to the stable store.
+ * > * If the state was unavailable (e.g., non-existent or corrupted), or the
+ * >   saved node ID is different than the current node ID, generate a random
+ * >   clock sequence value.
+ * > * If the state was available, but the saved timestamp is later than the
+ * >   current timestamp, increment the clock sequence value.
+ * > * Save the state (current timestamp, clock sequence, and node ID) back to
+ * >   the stable store.
  * > * Release the global lock.
  *
- * The implementation in this class deviates from the algorithm in a few notable ways:
+ * The implementation in this class deviates from the algorithm in a few notable
+ * ways:
  *
  * * It does not acquire a system-wide global lock.
- * * The system-wide shared stable store is possible through use of a cache, which you may provide to the constructor.
- * * This implementation uses microsecond time precision instead of 100-nanosecond interval time precision.
+ * * The system-wide shared stable store is possible through use of a cache,
+ *   which you may provide to the constructor.
+ * * This implementation uses microsecond time precision instead of
+ *   100-nanosecond interval time precision.
  *
- * WARNING: Since this does not acquire a global lock, race conditions could occur when fetching or storing data to the
- * cache. If needed, you may create your own cache implementation that resolves these shortcomings.
+ * WARNING: Since this does not acquire a global lock, race conditions could
+ * occur when fetching or storing data to the cache. If needed, you may create
+ * your own cache implementation that resolves these shortcomings.
  *
  * NOTE: The algorithm defined in RFC 4122 was not included in RFC 9562.
  *
@@ -73,7 +82,7 @@ final class Rfc4122ClockSequence implements ClockSequence
     use GeneratorStateCache;
 
     /**
-     * The cache key is generated from the Adler-32 checksum of this class name.
+     * The cache key is generated from the Adler-32 checksum of this class name
      *
      * ```
      * hash('adler32', Rfc4122ClockSequence::class);
@@ -90,10 +99,14 @@ final class Rfc4122ClockSequence implements ClockSequence
     private readonly string $defaultState;
 
     /**
-     * @param int<0, max> | null $initialValue An initial clock sequence value; if not provided, it is randomly generated.
-     * @param Nic $nic The system NIC, for maintaining state; defaults to {@see RandomNic}.
-     * @param ClockInterface $clock A clock to use for determining state; defaults to {@see SystemClock}.
-     * @param CacheInterface $cache A cache for storing the sequence and maintaining state.
+     * @param int<0, max> | null $initialValue An initial clock sequence value;
+     *     if not provided, it is randomly generated
+     * @param Nic $nic The system NIC, for maintaining state; defaults to
+     *     {@see RandomNic}
+     * @param ClockInterface $clock A clock to use for determining state;
+     *     defaults to {@see SystemClock}
+     * @param CacheInterface $cache A cache for storing the sequence and
+     *     maintaining state
      */
     public function __construct(
         ?int $initialValue = null,
@@ -138,7 +151,8 @@ final class Rfc4122ClockSequence implements ClockSequence
         $cacheKey = $this->getGeneratorStateCacheKey($state);
         $generatorState = $this->getGeneratorStateFromCache($cacheKey, $state, $dateTime);
 
-        // If the state timestamp is later than the current, the clock was set backward, and we must increment the sequence.
+        // If the state timestamp is later than the current, the clock was set
+        // backward, and we must increment the sequence.
         if ($generatorState->timestamp > (int) $dateTime->format(Precision::Microsecond->value)) {
             // If the sequence is at the max value, roll it over to zero.
             if ($generatorState->sequence === PHP_INT_MAX) {

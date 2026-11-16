@@ -47,10 +47,10 @@ use function substr;
 use function unpack;
 
 /**
- * A factory that generates Snowflake identifiers for use with the Mastodon open source platform for decentralized
- * social networking.
+ * A factory that generates Snowflake identifiers for use with the Mastodon open
+ * source platform for decentralized social networking
  *
- * @link https://joinmastodon.org Mastodon.
+ * @link https://joinmastodon.org Mastodon
  * @see MastodonSnowflake
  */
 final class MastodonSnowflakeFactory implements SnowflakeFactory
@@ -60,16 +60,20 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     private const TIMESTAMP_BIT_SHIFTS = 16;
 
     /**
-     * @param non-empty-string | null $tableName An optional database table name to ensure different tables derive
-     *     separate sequence bases.
-     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
-     * @param Sequence $sequence A sequence to prevent collisions within the same millisecond. This defaults to
-     *     {@see MonotonicSequence}; to properly implement Mastodon Snowflake identifiers, you might wish to create a
-     *     PostgreSQL sequence class that returns the next sequence for the related table.
-     * @param BytesGenerator $bytesGenerator A generator of bytes used to prevent collisions within the same millisecond;
-     *     defaults to {@see RandomBytesGenerator}.
-     * @param Hash $hash A message digest generator used to create a hash of table name, random bytes, and sequence;
-     *     defaults to {@see Md5Hash}.
+     * @param non-empty-string | null $tableName An optional database table name
+     *     to ensure different tables derive separate sequence bases
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
+     * @param Sequence $sequence A sequence to prevent collisions within the
+     *     same millisecond. This defaults to {@see MonotonicSequence}; to
+     *     properly implement Mastodon Snowflake identifiers, you might wish to
+     *     create a PostgreSQL sequence class that returns the next sequence for
+     *     the related table.
+     * @param BytesGenerator $bytesGenerator A generator of bytes used to
+     *     prevent collisions within the same millisecond; defaults to
+     *     {@see RandomBytesGenerator}
+     * @param Hash $hash A message digest generator used to create a hash of
+     *     table name, random bytes, and sequence; defaults to {@see Md5Hash}
      */
     public function __construct(
         private readonly ?string $tableName = null,
@@ -134,13 +138,14 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
         );
 
         /**
-         * We form the sequence base from the first two bytes of the hash.
+         * We form the sequence base from the first two bytes of the hash
          *
          * @var array{1: int<0, 65535>} $sequenceBase
          */
         $sequenceBase = unpack('n', substr($hash, 0, 2));
 
-        // Add the next sequence to the base and chop the value to the last two bytes.
+        // Add the next sequence to the base and chop the value to the last two
+        // bytes.
         $tail = $sequenceBase[1] + (int) $this->sequence->next($this->tableName) & 0xffff;
 
         if (is_int($millisecondsShifted)) {

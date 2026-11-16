@@ -78,7 +78,7 @@ class MonotonicBytesGeneratorTest extends TestCase
     /**
      * We support fewer bytes returned, but when you truncate the bytes, you
      * lose the monotonicity, since the monotonicity is based on a 48-bit
-     * timestamp.
+     * timestamp
      */
     public function testShorterLengthBytesRequested(): void
     {

@@ -26,12 +26,14 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Sequence;
 
 /**
- * A sequence that always returns the same pre-determined value. Calling `next()` does not advance the sequence.
+ * A sequence that always returns the same pre-determined value
+ *
+ * Calling `next()` does not advance the sequence.
  */
 final readonly class FrozenSequence implements Sequence
 {
     /**
-     * @param int | string $value A pre-determined sequence value.
+     * @param int | string $value A pre-determined sequence value
      */
     public function __construct(private int | string $value)
     {
@@ -43,7 +45,7 @@ final readonly class FrozenSequence implements Sequence
     }
 
     /**
-     * **WARNING**: The sequence does not advance for {@see FrozenSequence}s.
+     * **WARNING**: The sequence does not advance for {@see FrozenSequence}s
      *
      * {@inheritDoc}
      */

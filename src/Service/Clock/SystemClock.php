@@ -29,7 +29,7 @@ use DateTimeImmutable;
 use Psr\Clock\ClockInterface as Clock;
 
 /**
- * A clock that returns the current system time.
+ * A clock that returns the current system time
  */
 final class SystemClock implements Clock
 {

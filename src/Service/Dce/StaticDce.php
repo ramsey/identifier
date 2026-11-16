@@ -31,19 +31,24 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use function sprintf;
 
 /**
- * Provides pre-determined user, group, and organization IDs for generating DCE Security (version 2) UUIDs.
+ * Provides pre-determined user, group, and organization IDs for generating DCE
+ * Security (version 2) UUIDs
  */
 final readonly class StaticDce implements Dce
 {
     /**
-     * Constructs a static DCE service.
+     * Constructs a static DCE service
      *
-     * Each parameter is optional, so you may only provide the one you intend to use. However, when attempting to use a
-     * method for a property not provided, this class will throw a {@see DceIdentifierNotFound}.
+     * Each parameter is optional, so you may only provide the one you intend to
+     * use. However, when attempting to use a method for a property not
+     * provided, this class will throw a {@see DceIdentifierNotFound}.
      *
-     * @param int<0, 4294967295> | null $userId An optional user identifier, or UID.
-     * @param int<0, 4294967295> | null $groupId An optional group identifier, or GID.
-     * @param int<0, 4294967295> | null $orgId An optional organization identifier.
+     * @param int<0, 4294967295> | null $userId An optional user identifier, or
+     *     UID
+     * @param int<0, 4294967295> | null $groupId An optional group identifier,
+     *     or GID
+     * @param int<0, 4294967295> | null $orgId An optional organization
+     *     identifier
      */
     public function __construct(
         private ?int $userId = null,
@@ -64,7 +69,8 @@ final readonly class StaticDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if a group identifier was not provided upon instantiation.
+     * @throws DceIdentifierNotFound if a group identifier was not provided upon
+     *     instantiation
      */
     public function groupId(): int
     {
@@ -79,7 +85,8 @@ final readonly class StaticDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if an org identifier was not provided upon instantiation.
+     * @throws DceIdentifierNotFound if an org identifier was not provided upon
+     *     instantiation
      */
     public function orgId(): int
     {
@@ -94,7 +101,8 @@ final readonly class StaticDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if a user identifier was not provided upon instantiation.
+     * @throws DceIdentifierNotFound if a user identifier was not provided upon
+     *     instantiation
      */
     public function userId(): int
     {

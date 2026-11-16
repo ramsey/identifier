@@ -29,7 +29,8 @@ use Identifier\Exception\InvalidArgument as IdentifierInvalidArgument;
 use InvalidArgumentException;
 
 /**
- * Thrown when a method or function argument does not conform to validation requirements.
+ * Thrown when a method or function argument does not conform to validation
+ * requirements
  */
 class InvalidArgument extends InvalidArgumentException implements
     IdentifierException,

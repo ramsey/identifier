@@ -33,10 +33,11 @@ use Ramsey\Identifier\Snowflake\Internal\Standard;
 use Ramsey\Identifier\Snowflake\Internal\Time;
 
 /**
- * A Snowflake identifier for use with the Instagram photo and video sharing social media platform.
+ * A Snowflake identifier for use with the Instagram photo and video sharing
+ * social media platform
  *
- * @link https://www.instagram.com Instagram.
- * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Sharding & IDs at Instagram.
+ * @link https://www.instagram.com Instagram
+ * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Sharding & IDs at Instagram
  */
 final readonly class InstagramSnowflake implements Snowflake
 {
@@ -47,7 +48,8 @@ final readonly class InstagramSnowflake implements Snowflake
     private Time $time;
 
     /**
-     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param int<0, max> | numeric-string $snowflake A representation of the
+     *     Snowflake in integer or numeric string form
      *
      * @throws InvalidArgument
      */

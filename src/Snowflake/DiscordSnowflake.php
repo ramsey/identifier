@@ -30,17 +30,19 @@ use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\Standard;
 
 /**
- * A Snowflake identifier for use with the Discord voice, text, and streaming video platform.
+ * A Snowflake identifier for use with the Discord voice, text, and streaming
+ * video platform
  *
- * @link https://discord.com Discord.
- * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes.
+ * @link https://discord.com Discord
+ * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes
  */
 final readonly class DiscordSnowflake implements Snowflake
 {
     use Standard;
 
     /**
-     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param int<0, max> | numeric-string $snowflake A representation of the
+     *     Snowflake in integer or numeric string form
      *
      * @throws InvalidArgument
      */

@@ -34,21 +34,25 @@ use function strlen;
 use function unpack;
 
 /**
- * Binary utilities for UUID generation.
+ * Binary utilities for UUID generation
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 final class Binary
 {
     /**
-     * Applies the version number and variant field to the 128-bit integer (as a 16-byte string) provided.
+     * Applies the version number and variant field to the 128-bit integer (as a
+     * 16-byte string) provided
      *
-     * @param non-empty-string $bytes A 128-bit integer (16-byte string) to which the version number and variant field
-     *     will be applied, making the number a valid UUID.
-     * @param Version | null $version The version to apply.
-     * @param Variant $variant The variant to apply.
+     * @param non-empty-string $bytes A 128-bit integer (16-byte string) to
+     *     which the version number and variant field will be applied, making
+     *     the number a valid UUID
+     * @param Version | null $version The version to apply
+     * @param Variant $variant The variant to apply
      *
-     * @return non-empty-string A 16-byte string with the UUID version and variant applied.
+     * @return non-empty-string A 16-byte string with the UUID version and
+     *     variant applied.
      *
      * @throws InvalidArgument
      */

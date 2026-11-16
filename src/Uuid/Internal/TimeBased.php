@@ -28,9 +28,10 @@ namespace Ramsey\Identifier\Uuid\Internal;
 use DateTimeImmutable;
 
 /**
- * Provides common methods for time-based UUIDs.
+ * Provides common methods for time-based UUIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait TimeBased
 {

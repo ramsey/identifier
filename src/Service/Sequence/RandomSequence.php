@@ -31,18 +31,21 @@ use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
 /**
- * Uses PHP's `random_int()` function to generate a random sequence value.
+ * Uses PHP's `random_int()` function to generate a random sequence value
  *
  * > [!CAUTION]
- * > Values generated using RandomSequence are not sequential or monotonic. They may be positive or negative integers.
+ * > Values generated using RandomSequence are not sequential or monotonic. They
+ * > may be positive or negative integers.
  */
 final class RandomSequence implements Sequence
 {
     private int $current;
 
     /**
-     * @param int $min The minimum value allowed in this random sequence (inclusive).
-     * @param int $max The maximum value allowed in this random sequence (inclusive).
+     * @param int $min The minimum value allowed in this random sequence
+     *     (inclusive)
+     * @param int $max The maximum value allowed in this random sequence
+     *     (inclusive)
      */
     public function __construct(
         private readonly int $min = PHP_INT_MIN,

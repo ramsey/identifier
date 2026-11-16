@@ -29,7 +29,7 @@ use DateTimeInterface;
 use Ramsey\Identifier\Service\Sequence\RandomSequence;
 
 /**
- * A clock sequence that is randomly generated and does not use stable storage.
+ * A clock sequence that is randomly generated and does not use stable storage
  */
 final class RandomClockSequence implements ClockSequence
 {
@@ -47,10 +47,11 @@ final class RandomClockSequence implements ClockSequence
     }
 
     /**
-     * **WARNING**: The next value in the sequence for {@see RandomClockSequence} is randomly generated. It is not
-     * guaranteed to be a value greater than or less than the current value.
-     *
      * {@inheritDoc}
+     *
+     * **WARNING**: The next value in the sequence for
+     * {@see RandomClockSequence} is randomly generated. It is not guaranteed to
+     * be a value greater than or less than the current value.
      */
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {

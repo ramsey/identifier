@@ -38,12 +38,14 @@ use const GLOB_NOSORT;
 use const PHP_OS_FAMILY;
 
 /**
- * An OS interface that uses pure PHP functions to interact with the operating system.
+ * An OS interface that uses pure PHP functions to interact with the operating
+ * system
  */
 class PhpOs implements Os
 {
     /**
-     * @throws MissingFunction if a required PHP function is not available on this system.
+     * @throws MissingFunction if a required PHP function is not available on
+     *     this system
      */
     public function __construct()
     {

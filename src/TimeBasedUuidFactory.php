@@ -29,7 +29,7 @@ use DateTimeInterface;
 use Identifier\DateTimeIdentifierFactory;
 
 /**
- * A factory for creating time-based UUIDs.
+ * A factory for creating time-based UUIDs
  */
 interface TimeBasedUuidFactory extends DateTimeIdentifierFactory, UuidFactory
 {

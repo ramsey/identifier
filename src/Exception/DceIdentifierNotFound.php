@@ -28,7 +28,7 @@ namespace Ramsey\Identifier\Exception;
 use RuntimeException;
 
 /**
- * Thrown when unable to find a suitable DCE identifier.
+ * Thrown when unable to find a suitable DCE identifier
  */
 class DceIdentifierNotFound extends RuntimeException implements IdentifierException
 {

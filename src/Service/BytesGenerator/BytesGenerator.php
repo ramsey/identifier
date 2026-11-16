@@ -28,16 +28,17 @@ namespace Ramsey\Identifier\Service\BytesGenerator;
 use DateTimeInterface;
 
 /**
- * Generates bytes used to create identifiers.
+ * Generates bytes used to create identifiers
  */
 interface BytesGenerator
 {
     /**
-     * Generates an n-length string of bytes.
+     * Generates an n-length string of bytes
      *
-     * @param positive-int $length The number of bytes to generate.
-     * @param DateTimeInterface | null $dateTime An optional date-time instance to use when generating the bytes; not
-     *     all generators will need or use this parameter.
+     * @param positive-int $length The number of bytes to generate
+     * @param DateTimeInterface | null $dateTime An optional date-time instance
+     *     to use when generating the bytes; not all generators will need or use
+     *     this parameter
      *
      * @return non-empty-string
      */

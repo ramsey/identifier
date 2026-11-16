@@ -45,7 +45,7 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory for creating version 1, Gregorian time UUIDs.
+ * A factory for creating version 1, Gregorian time UUIDs
  */
 final class UuidV1Factory implements TimeBasedUuidFactory
 {
@@ -55,9 +55,12 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
-     * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
-     * @param ClockSequence $sequence A sequence that provides a clock sequence value to prevent collisions; defaults to {@see RandomClockSequence}.
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
+     * @param Nic $nic A NIC that provides the system MAC address value;
+     *     defaults to {@see RandomNic}
+     * @param ClockSequence $sequence A sequence that provides a clock sequence
+     *     value to prevent collisions; defaults to {@see RandomClockSequence}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
@@ -69,12 +72,15 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param Nic | int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
-     *     representing the hardware address of the machine where this identifier was generated.
-     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
-     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 16,384, giving it an
-     *     effective range of 0-16383 (i.e., 14 bits).
-     * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
+     * @param Nic | int<0, 281474976710655> | non-empty-string | null $node A
+     *     48-bit integer or hexadecimal string representing the hardware
+     *     address of the machine where this identifier was generated
+     * @param int | null $clockSequence A number used to help avoid duplicates
+     *     that could arise when the clock is set backwards in time or the node
+     *     ID changes; we take the modulo of this integer divided by 16,384,
+     *     giving it an effective range of 0-16383 (i.e., 14 bits)
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
      *
      * @throws InvalidArgument
      */
@@ -93,7 +99,8 @@ final class UuidV1Factory implements TimeBasedUuidFactory
 
         $dateTime = $dateTime ?? $this->clock->now();
 
-        // Use modular arithmetic to roll over the sequence value at mod 0x4000 (16384).
+        // Use modular arithmetic to roll over the sequence value at mod 0x4000
+        // (16384).
         $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % 0x4000;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);

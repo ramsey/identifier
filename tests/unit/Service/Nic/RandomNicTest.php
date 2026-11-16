@@ -95,8 +95,9 @@ class RandomNicTest extends TestCase
     }
 
     /**
-     * This test runs in a separate process because RandomNic::$address is a static property and is set in earlier
-     * tests, and for this test to pass, it must not be set.
+     * This test runs in a separate process because RandomNic::$address is a
+     * static property and is set in earlier tests, and for this test to pass,
+     * it must not be set
      */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]

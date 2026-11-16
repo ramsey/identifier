@@ -37,16 +37,19 @@ use function sprintf;
 use function strlen;
 
 /**
- * Nonstandard UUIDs look like UUIDs, but they do not have the variant and version bits set according to RFC 9562.
+ * Nonstandard UUIDs look like UUIDs, but they do not have the variant and
+ * version bits set according to RFC 9562
  *
- * It is possible a nonstandard UUID was generated according to RFC 9562 but had its bytes rearranged for reasons such
- * as sortability. For example, before the introduction of UUID versions 6 and 7, it was popular to rearrange the bytes
- * of UUIDs for sorting purposes. One such arrangement was the "ordered time" UUID, which reordered the timestamp bytes
- * of a version 1 UUID. Another was the timestamp-first combined (COMB) UUID, which embedded a timestamp at the
+ * It is possible a nonstandard UUID was generated according to RFC 9562 but had
+ * its bytes rearranged for reasons such as sortability. For example, before the
+ * introduction of UUID versions 6 and 7, it was popular to rearrange the bytes
+ * of UUIDs for sorting purposes. One such arrangement was the "ordered time"
+ * UUID, which reordered the timestamp bytes of a version 1 UUID. Another was
+ * the timestamp-first combined (COMB) UUID, which embedded a timestamp at the
  * beginning of a version 4 UUID.
  *
- * Without knowing which rearrangement algorithm was used, it is impossible to determine the UUID's original layout, so
- * we treat it as a "nonstandard" UUID.
+ * Without knowing which rearrangement algorithm was used, it is impossible to
+ * determine the UUID's original layout, so we treat it as a "nonstandard" UUID.
  */
 final readonly class NonstandardUuid implements JsonSerializable, Uuid
 {
@@ -55,7 +58,8 @@ final readonly class NonstandardUuid implements JsonSerializable, Uuid
     private ?Variant $variant;
 
     /**
-     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     * @param non-empty-string $uuid A representation of the UUID as a string
+     *     with dashes, hexadecimal, or byte string
      *
      * @throws InvalidArgument
      */

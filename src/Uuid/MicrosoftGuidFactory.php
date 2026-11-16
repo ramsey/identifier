@@ -43,10 +43,11 @@ use function substr;
 use const STR_PAD_LEFT;
 
 /**
- * A factory for creating Microsoft GUIDs.
+ * A factory for creating Microsoft GUIDs
  *
- * These GUIDs may either be "reserved Microsoft" variant UUIDs or RFC 9562 UUIDs using the Microsoft GUID binary
- * encoding. See {@see MicrosoftGuid} for more information on this encoding.
+ * These GUIDs may either be "reserved Microsoft" variant UUIDs or RFC 9562
+ * UUIDs using the Microsoft GUID binary encoding. See {@see MicrosoftGuid} for
+ * more information on this encoding.
  */
 final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
 {
@@ -55,9 +56,10 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     private Binary $binary;
 
     /**
-     * Constructs a factory for creating Microsoft GUIDs.
+     * Constructs a factory for creating Microsoft GUIDs
      *
-     * @param BytesGenerator $bytesGenerator A random generator used to generate bytes; defaults to {@see RandomBytesGenerator}.
+     * @param BytesGenerator $bytesGenerator A random generator used to generate
+     *     bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(private BytesGenerator $bytesGenerator = new RandomBytesGenerator())
     {
@@ -118,7 +120,8 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
      * The new GUID returned will be of the "reserved Microsoft" variant. This
      * means some bits will change, and the two values will not be equal.
      *
-     * @param UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid The UUID to convert to a Microsoft GUID
+     * @param UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid
+     *     The UUID to convert to a Microsoft GUID
      */
     public function createFromRfc(UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 $uuid): MicrosoftGuid // phpcs:ignore
     {

@@ -26,18 +26,19 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Hash;
 
 /**
- * Uses a hashing algorithm to generate a message digest (hash) of data.
+ * Uses a hashing algorithm to generate a message digest (hash) of data
  *
- * @link https://www.php.net/manual/en/function.hash.php PHP: hash().
+ * @link https://www.php.net/manual/en/function.hash.php PHP: hash()
  */
 interface Hash
 {
     /**
-     * Returns a message digest (hash) of the given data.
+     * Returns a message digest (hash) of the given data
      *
-     * @param string $data The data to hash.
-     * @param bool $binary When set to `true`, returns raw binary data; the default, `false`, returns a hexadecimal
-     *     string representing the bytes.
+     * @param string $data The data to hash
+     * @param bool $binary When set to `true`, returns raw binary data; the
+     *     default, `false`, returns a hexadecimal string representing the
+     *     bytes
      */
     public function hash(string $data, bool $binary = false): string;
 }

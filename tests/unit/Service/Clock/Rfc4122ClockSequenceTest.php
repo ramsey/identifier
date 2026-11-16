@@ -40,11 +40,13 @@ class Rfc4122ClockSequenceTest extends TestCase
             clock: new FrozenClock(new DateTimeImmutable()),
         );
 
-        // This initializes the local cache with a value and sets the timestamp two days in the future.
+        // This initializes the local cache with a value and sets the timestamp
+        // two days in the future.
         $this->assertSame(0, $sequence->next(dateTime: new DateTimeImmutable('+2 days')));
 
-        // Now, when called and getting the system time, the time is earlier than the timestamp we just gave it, so
-        // we assume the clock has been set backwards, and the value should increment.
+        // Now, when called and getting the system time, the time is earlier
+        // than the timestamp we just gave it, so we assume the clock has been
+        // set backwards, and the value should increment.
         $this->assertSame(1, $sequence->next());
 
         // But the next time we call, it should still be 1.
@@ -58,11 +60,13 @@ class Rfc4122ClockSequenceTest extends TestCase
             clock: new FrozenClock(new DateTimeImmutable()),
         );
 
-        // This initializes the local cache with a value and sets the timestamp two days in the future.
+        // This initializes the local cache with a value and sets the timestamp
+        // two days in the future.
         $this->assertSame(PHP_INT_MAX, $sequence->next(dateTime: new DateTimeImmutable('+2 days')));
 
-        // Now, when called and getting the system time, the time is earlier than the timestamp we just gave it, so
-        // we assume the clock has been set backwards, and the value should roll over to zero.
+        // Now, when called and getting the system time, the time is earlier
+        // than the timestamp we just gave it, so we assume the clock has been
+        // set backwards, and the value should roll over to zero.
         $this->assertSame(0, $sequence->next());
 
         // And the next time we call, it should still be zero.

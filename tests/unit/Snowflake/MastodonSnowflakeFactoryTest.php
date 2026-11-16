@@ -36,7 +36,8 @@ class MastodonSnowflakeFactoryTest extends TestCase
 
         $snowflake = $factory->create();
 
-        // The "de" (i.e., 222) value is a result of the hashing algorithm used. This is what is evaluated:
+        // The "de" (i.e., 222) value is a result of the hashing algorithm used.
+        // This is what is evaluated:
         //
         //     unpack('n', substr(md5(null . '00000000000000000000000000000000' . 0, true), 0, 2))[1]
         //
@@ -213,8 +214,9 @@ class MastodonSnowflakeFactoryTest extends TestCase
         $previous = $this->factory->create();
 
         for ($i = 0; $i < 500; $i++) {
-            // Sleep for 1 millisecond to advance the clock, since Mastodon Snowflakes are not guaranteed to be
-            // monotonically increasing when generated within the same millisecond.
+            // Sleep for 1 millisecond to advance the clock, since Mastodon
+            // Snowflakes are not guaranteed to be monotonically increasing when
+            // generated within the same millisecond.
             usleep(1000);
             $snowflake = $this->factory->create();
             $this->assertTrue(

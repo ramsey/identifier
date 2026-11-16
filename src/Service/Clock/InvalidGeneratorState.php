@@ -29,7 +29,7 @@ use Ramsey\Identifier\Exception\IdentifierException;
 use RuntimeException;
 
 /**
- * Thrown when the generator state is corrupt or otherwise invalid.
+ * Thrown when the generator state is corrupt or otherwise invalid
  */
 class InvalidGeneratorState extends RuntimeException implements IdentifierException
 {

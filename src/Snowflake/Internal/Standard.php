@@ -34,9 +34,10 @@ use Ramsey\Identifier\Snowflake;
 use function assert;
 
 /**
- * Provides common methods for Snowflake identifiers.
+ * Provides common methods for Snowflake identifiers
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait Standard
 {

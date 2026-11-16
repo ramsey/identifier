@@ -201,7 +201,8 @@ class InstagramSnowflakeFactoryTest extends TestCase
     {
         $previous = $this->factory->create();
 
-        // This is 1023 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 1023 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 2047; $i++) {
             $snowflake = $this->factory->create();
             $this->assertTrue(
@@ -223,7 +224,8 @@ class InstagramSnowflakeFactoryTest extends TestCase
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
-        // This is 1023 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 1023 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 2047; $i++) {
             $snowflake = $this->factory->createFromDateTime($dateTime);
             $this->assertTrue(

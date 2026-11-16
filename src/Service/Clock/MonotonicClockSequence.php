@@ -38,16 +38,16 @@ use function strlen;
 use const PHP_INT_MAX;
 
 /**
- * A clock sequence that always increases.
+ * A clock sequence that always increases
  *
- * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia.
+ * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia
  */
 final class MonotonicClockSequence implements ClockSequence
 {
     use GeneratorStateCache;
 
     /**
-     * The cache key is generated from the Adler-32 checksum of this class name.
+     * The cache key is generated from the Adler-32 checksum of this class name
      *
      * ```
      * hash('adler32', MonotonicClockSequence::class);
@@ -64,11 +64,16 @@ final class MonotonicClockSequence implements ClockSequence
     private readonly string $defaultState;
 
     /**
-     * @param int<0, max> | null $initialValue An initial clock sequence value; if not provided, it is randomly generated.
-     * @param Nic $nic The system NIC, for maintaining state; defaults to {@see RandomNic}.
-     * @param ClockInterface $clock A clock to use for determining state; defaults to {@see SystemClock}.
-     * @param CacheInterface $cache A cache for storing the sequence and maintaining state.
-     * @param Precision $precision The precision (i.e., millisecond or microsecond) to use when creating cache keys.
+     * @param int<0, max> | null $initialValue An initial clock sequence value;
+     *     if not provided, it is randomly generated
+     * @param Nic $nic The system NIC, for maintaining state; defaults to
+     *     {@see RandomNic}
+     * @param ClockInterface $clock A clock to use for determining state;
+     *     defaults to {@see SystemClock}
+     * @param CacheInterface $cache A cache for storing the sequence and
+     *     maintaining state
+     * @param Precision $precision The precision (i.e., millisecond or
+     *     microsecond) to use when creating cache keys
      */
     public function __construct(
         ?int $initialValue = null,

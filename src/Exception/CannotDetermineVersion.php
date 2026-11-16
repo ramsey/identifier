@@ -28,7 +28,7 @@ namespace Ramsey\Identifier\Exception;
 use LogicException;
 
 /**
- * Thrown when unable to determine the version of an untyped UUID.
+ * Thrown when unable to determine the version of an untyped UUID
  */
 class CannotDetermineVersion extends LogicException implements IdentifierException
 {

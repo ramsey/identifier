@@ -26,24 +26,25 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Internal;
 
 /**
- * An enum representing the format of a UUID.
+ * An enum representing the format of a UUID
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 enum Format: int
 {
     /**
-     * Bytes representation.
+     * Bytes representation
      */
     case Bytes = 16;
 
     /**
-     * Hexadecimal representation.
+     * Hexadecimal representation
      */
     case Hex = 32;
 
     /**
-     * Standard string representation.
+     * Standard string representation
      */
     case String = 36;
 }

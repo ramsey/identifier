@@ -205,7 +205,8 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $factory = new DiscordSnowflakeFactory(15, 30);
         $previous = $factory->create();
 
-        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 8191; $i++) {
             $current = $factory->create();
             $this->assertTrue(
@@ -227,7 +228,8 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $dateTime = new DateTimeImmutable();
         $previous = $factory->createFromDateTime($dateTime);
 
-        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 8191; $i++) {
             $current = $factory->createFromDateTime($dateTime);
             $this->assertTrue(

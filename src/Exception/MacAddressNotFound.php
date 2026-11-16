@@ -28,7 +28,7 @@ namespace Ramsey\Identifier\Exception;
 use RuntimeException;
 
 /**
- * Thrown when unable to find a suitable MAC address.
+ * Thrown when unable to find a suitable MAC address
  */
 class MacAddressNotFound extends RuntimeException implements IdentifierException
 {

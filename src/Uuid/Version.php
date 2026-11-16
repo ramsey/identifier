@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 /**
- * The version number describes how the UUID was generated.
+ * The version number describes how the UUID was generated
  *
  * | **Msb0** | **Msb1** | **Msb2** | **Msb3** | **Version** | **Description**                                             |
  * | :------: | :------: | :------: | :------: | :---------: | :---------------------------------------------------------- |
@@ -47,47 +47,47 @@ namespace Ramsey\Identifier\Uuid;
  * |     1    |    1     |    1     |    0     |     14      | Reserved for future definition                              |
  * |     1    |    1     |    1     |    1     |     15      | Reserved for future definition                              |
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Verson Field.
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-4.2 RFC 9562, section 4.2. Verson Field
  */
 enum Version: int
 {
     /**
-     * The Gregorian time-based UUID specified in RFC 9562.
+     * The Gregorian time-based UUID specified in RFC 9562
      */
     case GregorianTime = 0b0001;
 
     /**
-     * Reserved for the DCE Security version, with embedded POSIX UUIDs.
+     * Reserved for the DCE Security version, with embedded POSIX UUIDs
      */
     case DceSecurity = 0b0010;
 
     /**
-     * The name-based version specified in RFC 9562 that uses MD5 hashing.
+     * The name-based version specified in RFC 9562 that uses MD5 hashing
      */
     case NameMd5 = 0b0011;
 
     /**
-     * The randomly or pseudorandomly generated version specified in RFC 9562.
+     * The randomly or pseudorandomly generated version specified in RFC 9562
      */
     case Random = 0b0100;
 
     /**
-     * The name-based version specified in RFC 9562 that uses SHA-1 hashing.
+     * The name-based version specified in RFC 9562 that uses SHA-1 hashing
      */
     case NameSha1 = 0b0101;
 
     /**
-     * Reordered Gregorian time-based UUID specified in RFC 9562.
+     * Reordered Gregorian time-based UUID specified in RFC 9562
      */
     case ReorderedGregorianTime = 0b0110;
 
     /**
-     * Unix Epoch time-based UUID specified in RFC 9562.
+     * Unix Epoch time-based UUID specified in RFC 9562
      */
     case UnixTime = 0b0111;
 
     /**
-     * Reserved for custom format UUID formats specified in RFC 9562.
+     * Reserved for custom format UUID formats specified in RFC 9562
      */
     case Custom = 0b1000;
 

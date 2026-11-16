@@ -26,19 +26,22 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Internal;
 
 /**
- * Various character masks for UUIDs.
+ * Various character masks for UUIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 final class Mask
 {
     /**
-     * A character mask used with functions like {@see strspn()} to validate hexadecimal strings.
+     * A character mask used with functions like {@see strspn()} to validate
+     * hexadecimal strings
      */
     public const HEX = '0123456789abcdefABCDEF';
 
     /**
-     * A character mask used with functions like {@see strspn()} to validate string integers.
+     * A character mask used with functions like {@see strspn()} to validate
+     * string integers
      */
     public const INT = '0123456789';
 

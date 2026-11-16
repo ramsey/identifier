@@ -31,22 +31,26 @@ use function strtolower;
 use function strtoupper;
 
 /**
- * A utility providing common validation functionality for ULIDs.
+ * A utility providing common validation functionality for ULIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait Validation
 {
     /**
-     * Used with {@see strtr()} to convert ULID decode symbols to the proper encode symbols.
+     * Used with {@see strtr()} to convert ULID decode symbols to the proper
+     * encode symbols
      *
-     * According to Crockford base-32, "When decoding, upper and lower case letters are accepted, and `i` and `l` will
-     * be treated as `1` and `o` will be treated as `0`."
+     * According to Crockford base-32, "When decoding, upper and lower case
+     * letters are accepted, and `i` and `l` will be treated as `1` and `o` will
+     * be treated as `0`."
      */
     private const DECODE_SYMBOLS = ['from' => 'IiLlOo', 'to' => '111100'];
 
     /**
-     * Returns true if the given Crockford base-32, hexadecimal, or bytes representation of a ULID is a Max ULID.
+     * Returns true if the given Crockford base-32, hexadecimal, or bytes
+     * representation of a ULID is a Max ULID
      */
     private function isMax(string $ulid, ?Format $format): bool
     {
@@ -59,7 +63,8 @@ trait Validation
     }
 
     /**
-     * Returns true if the given Crockford base-32, hexadecimal, or bytes representation of a ULID is a Nil ULID.
+     * Returns true if the given Crockford base-32, hexadecimal, or bytes
+     * representation of a ULID is a Nil ULID
      */
     private function isNil(string $ulid, ?Format $format): bool
     {
@@ -72,7 +77,7 @@ trait Validation
     }
 
     /**
-     * Returns true if the ULID is valid, according to the given format.
+     * Returns true if the ULID is valid, according to the given format
      *
      * @phpstan-assert-if-true non-empty-string $ulid
      */

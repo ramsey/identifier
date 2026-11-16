@@ -43,15 +43,17 @@ use function trim;
 use const PREG_SPLIT_NO_EMPTY;
 
 /**
- * Retrieves user, group, and organization IDs from the system for generating DCE Security (version 2) UUIDs.
+ * Retrieves user, group, and organization IDs from the system for generating
+ * DCE Security (version 2) UUIDs
  *
- * Organization IDs cannot be retrieved from the system. If using these, you must provide a custom organization ID upon
- * instantiation.
+ * Organization IDs cannot be retrieved from the system. If using these, you
+ * must provide a custom organization ID upon instantiation.
  */
 final class SystemDce implements Dce
 {
     /**
-     * The cache key is generated from the Adler-32 checksum of this class name + "GID".
+     * The cache key is generated from the Adler-32 checksum of this class name
+     * + "GID"
      *
      * ```
      * hash('adler32', SystemDce::class . 'GID');
@@ -60,7 +62,8 @@ final class SystemDce implements Dce
     private const GID_CACHE_KEY = '__ramsey_id_63ba1027';
 
     /**
-     * The cache key is generated from the Adler-32 checksum of this class name + "UID".
+     * The cache key is generated from the Adler-32 checksum of this class name
+     * + "UID"
      *
      * ```
      * hash('adler32', SystemDce::class . 'UID');
@@ -79,11 +82,13 @@ final class SystemDce implements Dce
     private static ?int $userId = null;
 
     /**
-     * @param int<0, 4294967295> | null $orgId An organization ID must be provided if using the {@see self::orgId()} method.
-     * @param CacheInterface | null $cache An optional PSR-16 cache instance to cache the system IDs for faster lookups.
-     *     Be aware that use of a centralized cache might have unintended consequences if you wish to use
-     *     machine-specific IDs. If you wish for machine-specific IDs, use of a machine-local cache, such as APCu, is
-     *     preferable.
+     * @param int<0, 4294967295> | null $orgId An organization ID must be
+     *     provided if using the {@see self::orgId()} method
+     * @param CacheInterface | null $cache An optional PSR-16 cache instance to
+     *     cache the system IDs for faster lookups. Be aware that use of a
+     *     centralized cache might have unintended consequences if you wish to
+     *     use machine-specific IDs. If you wish for machine-specific IDs, use
+     *     of a machine-local cache, such as APCu, is preferable.
      */
     public function __construct(
         private readonly ?int $orgId = null,
@@ -96,7 +101,7 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if unable to get a system group ID.
+     * @throws DceIdentifierNotFound if unable to get a system group ID
      */
     public function groupId(): int
     {
@@ -122,7 +127,8 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if an org identifier was not provided upon instantiation.
+     * @throws DceIdentifierNotFound if an org identifier was not provided upon
+     *     instantiation
      */
     public function orgId(): int
     {
@@ -137,7 +143,7 @@ final class SystemDce implements Dce
     }
 
     /**
-     * @throws DceIdentifierNotFound if unable to get a system user ID.
+     * @throws DceIdentifierNotFound if unable to get a system user ID
      */
     public function userId(): int
     {
@@ -203,7 +209,7 @@ final class SystemDce implements Dce
     private function getSystemGidFromCache(): ?int
     {
         /**
-         * The return value of -1 is useful for testing purposes.
+         * The return value of -1 is useful for testing purposes
          *
          * @var int<-1, 4294967295> | null $gid
          */
@@ -236,7 +242,7 @@ final class SystemDce implements Dce
     private function getSystemUidFromCache(): ?int
     {
         /**
-         * The return value of -1 is useful for testing purposes.
+         * The return value of -1 is useful for testing purposes
          *
          * @var int<-1, 4294967295> | null $uid
          */
@@ -251,14 +257,15 @@ final class SystemDce implements Dce
     }
 
     /**
-     * Returns a group identifier for a user on a Windows system.
+     * Returns a group identifier for a user on a Windows system
      *
-     * Since Windows does not have the same concept as an effective POSIX GID for the running script, we will get the
-     * local group memberships for the user running the script. Then, we will get the SID (security identifier) for the
-     * first group that appears in that list. Finally, we will return the RID (relative identifier) for the group and
-     * use that as the GID.
+     * Since Windows does not have the same concept as an effective POSIX GID
+     * for the running script, we will get the local group memberships for the
+     * user running the script. Then, we will get the SID (security identifier)
+     * for the first group that appears in that list. Finally, we will return
+     * the RID (relative identifier) for the group and use that as the GID.
      *
-     * @link https://www.windows-commandline.com/list-of-user-groups-command-line/ List of user groups command line.
+     * @link https://www.windows-commandline.com/list-of-user-groups-command-line/ List of user groups command line
      *
      * @return int<0, 4294967295> | null
      */
@@ -299,17 +306,20 @@ final class SystemDce implements Dce
     }
 
     /**
-     * Returns the user identifier for a user on a Windows system.
+     * Returns the user identifier for a user on a Windows system
      *
-     * Windows does not have the same concept as an effective POSIX UID for the running script. Instead, each user is
-     * uniquely identified by an SID (security identifier). The SID includes three 32-bit unsigned integers that make up
-     * a unique domain identifier, followed by an RID (relative identifier) that we will use as the UID. The primary
-     * issue is that this UID may not be unique to the system, since it is, instead, unique to the domain.
+     * Windows does not have the same concept as an effective POSIX UID for the
+     * running script. Instead, each user is uniquely identified by an SID
+     * (security identifier). The SID includes three 32-bit unsigned integers
+     * that make up a unique domain identifier, followed by an RID (relative
+     * identifier) that we will use as the UID. The primary issue is that this
+     * UID may not be unique to the system, since it is, instead, unique to the
+     * domain.
      *
      * @link https://www.lifewire.com/what-is-an-sid-number-2626005 What Is an SID Number?
-     * @link https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/81d92bba-d22b-4a8c-908a-554ab29148ab Well-known SID Structures.
-     * @link https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids Well-known SIDs.
-     * @link https://www.windows-commandline.com/get-sid-of-user/ Get SID of user.
+     * @link https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/81d92bba-d22b-4a8c-908a-554ab29148ab Well-known SID Structures
+     * @link https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids Well-known SIDs
+     * @link https://www.windows-commandline.com/get-sid-of-user/ Get SID of user
      *
      * @return int<0, 4294967295> | null
      */

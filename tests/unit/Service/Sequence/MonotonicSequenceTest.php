@@ -54,7 +54,8 @@ class MonotonicSequenceTest extends TestCase
             ['value' => 0, 'step' => -1, 'expectedEnd' => -101],
             ['value' => 81, 'step' => -3, 'expectedEnd' => -222],
 
-            // Using a step value of zero works (and is also considered monotonic).
+            // Using a step value of zero works (and is also considered
+            // monotonic).
             ['value' => 42, 'step' => 0, 'expectedEnd' => 42],
         ];
     }

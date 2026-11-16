@@ -35,17 +35,18 @@ use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
 /**
- * An integer sequence that always increases or decreases by a given step value.
+ * An integer sequence that always increases or decreases by a given step value
  *
- * If the step value is positive, the sequence will be *monotonically increasing*. If the step value is negative, the
- * sequence will be *monotonically decreasing*.
+ * If the step value is positive, the sequence will be *monotonically
+ * increasing*. If the step value is negative, the sequence will be
+ * *monotonically decreasing*.
  *
- * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia.
+ * @link https://en.wikipedia.org/wiki/Monotonic_function "Monotonic function" on Wikipedia
  */
 final class MonotonicSequence implements Sequence
 {
     /**
-     * The cache key is generated from the Adler-32 checksum of this class name.
+     * The cache key is generated from the Adler-32 checksum of this class name
      *
      * ```
      * hash('adler32', MonotonicSequence::class);
@@ -56,9 +57,12 @@ final class MonotonicSequence implements Sequence
     private ?string $defaultCacheKey = null;
 
     /**
-     * @param int $start The sequence starting value; please note, the first call to `next()` will return this value + `$step`.
-     * @param int $step How much the sequence should increase or decrease between values.
-     * @param CacheInterface $cache A cache for storing the sequence and maintaining state.
+     * @param int $start The sequence starting value; please note, the first
+     *     call to `next()` will return this value + `$step`
+     * @param int $step How much the sequence should increase or decrease
+     *     between values
+     * @param CacheInterface $cache A cache for storing the sequence and
+     *     maintaining state
      */
     public function __construct(
         private readonly int $start = 0,

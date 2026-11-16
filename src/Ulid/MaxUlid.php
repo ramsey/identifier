@@ -34,13 +34,15 @@ use function sprintf;
 use function strlen;
 
 /**
- * The Max ULID is a special form of ULID that has all 128 bits set to one (`1`).
+ * The Max ULID is a special form of ULID that has all 128 bits set to one
+ * (`1`)
  *
- * > Technically, a 26-character Base32 encoded string can contain 130 bits of information, whereas a ULID must only
- * > contain 128 bits. Therefore, the largest valid ULID encoded in Base32 is `7ZZZZZZZZZZZZZZZZZZZZZZZZZ`, which
+ * > Technically, a 26-character Base32 encoded string can contain 130 bits of
+ * > information, whereas a ULID must only contain 128 bits. Therefore, the
+ * > largest valid ULID encoded in Base32 is `7ZZZZZZZZZZZZZZZZZZZZZZZZZ`, which
  * > corresponds to an epoch time of `281474976710655` or `2 ^ 48 - 1`.
  *
- * @link https://github.com/ulid/spec ULID specification.
+ * @link https://github.com/ulid/spec ULID specification
  */
 final readonly class MaxUlid implements UlidInterface
 {
@@ -49,7 +51,8 @@ final readonly class MaxUlid implements UlidInterface
     private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
-     * @param non-empty-string $ulid A representation of a ULID in either Crockford base-32 or byte form.
+     * @param non-empty-string $ulid A representation of a ULID in either
+     *     Crockford base-32 or byte form
      *
      * @throws InvalidArgument
      */

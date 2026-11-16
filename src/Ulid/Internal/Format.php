@@ -26,9 +26,10 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid\Internal;
 
 /**
- * An enum representing the format of a ULID.
+ * An enum representing the format of a ULID
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 enum Format: int
 {

@@ -37,16 +37,19 @@ use function is_int;
 use function sprintf;
 
 /**
- * A utility for getting the date-time from a Snowflake identifier.
+ * A utility for getting the date-time from a Snowflake identifier
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 final class Time
 {
     /**
-     * Returns a date-time instance created from the timestamp extracted from a Snowflake.
+     * Returns a date-time instance created from the timestamp extracted from a
+     * Snowflake
      *
-     * @param int $epochOffset The number of milliseconds from the Unix Epoch to offset the starting epoch for this Snowflake.
+     * @param int $epochOffset The number of milliseconds from the Unix Epoch to
+     *     offset the starting epoch for this Snowflake
      *
      * @throws OutOfRange
      */
@@ -57,8 +60,9 @@ final class Time
     ): DateTimeImmutable {
         $value = $snowflake->toInteger();
 
-        // We support unsigned, 64-bit integers, so $value might be greater than PHP_INT_MAX, in which case, it'll be a
-        // string, and we'll need to use BigInteger for the math.
+        // We support unsigned, 64-bit integers, so $value might be greater than
+        // PHP_INT_MAX, in which case, it'll be a string, and we'll need to use
+        // BigInteger for the math.
         if (is_int($value)) {
             $milliseconds = ($value >> $rightShifts) + $epochOffset;
             $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds) % 1000);

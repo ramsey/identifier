@@ -30,9 +30,11 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use function strlen;
 
 /**
- * A value object for storing and passing the generator state for clock sequences.
+ * A value object for storing and passing the generator state for clock
+ * sequences
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 final class GeneratorState
 {

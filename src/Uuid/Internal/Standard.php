@@ -48,9 +48,10 @@ use function substr;
 use const PHP_INT_MAX;
 
 /**
- * Provides common methods for UUIDs.
+ * Provides common methods for UUIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait Standard
 {
@@ -59,7 +60,8 @@ trait Standard
     private readonly ?Format $format;
 
     /**
-     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     * @param non-empty-string $uuid A representation of the UUID as a string
+     *     with dashes, hexadecimal, or byte string
      *
      * @throws InvalidArgument
      */
@@ -109,8 +111,9 @@ trait Standard
      */
     public function compareTo(mixed $other): int
     {
-        // Microsoft GUID bytes are in a different order, even though the string representations might be identical, so
-        // we'll skip MicrosoftGuid bytes comparisons.
+        // Microsoft GUID bytes are in a different order, even though the string
+        // representations might be identical, so we'll skip MicrosoftGuid bytes
+        // comparisons.
         if ($other instanceof BytesIdentifier && !$other instanceof MicrosoftGuid) {
             return $this->toBytes() <=> $other->toBytes();
         }

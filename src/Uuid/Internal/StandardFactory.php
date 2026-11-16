@@ -37,16 +37,18 @@ use function str_pad;
 use const STR_PAD_LEFT;
 
 /**
- * Provides common methods for UUID factories.
+ * Provides common methods for UUID factories
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait StandardFactory
 {
     use Validation;
 
     /**
-     * Returns the name of the UUID class to use when instantiating UUID instances from this trait.
+     * Returns the name of the UUID class to use when instantiating UUID
+     * instances from this trait
      *
      * @return class-string<Uuid>
      */

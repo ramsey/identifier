@@ -30,19 +30,21 @@ use function strlen;
 use function strspn;
 
 /**
- * A utility providing common validation functionality for Snowflake identifiers.
+ * A utility providing common validation functionality for Snowflake
+ * identifiers
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait Validation
 {
     /**
-     * The maximum possible value of a Snowflake (i.e., 0xffffffffffffffff).
+     * The maximum possible value of a Snowflake (i.e., 0xffffffffffffffff)
      */
     private const UPPER_BOUNDS = '18446744073709551615';
 
     /**
-     * Returns true if the Snowflake identifier is valid.
+     * Returns true if the Snowflake identifier is valid
      */
     private function isValid(int | string $snowflake): bool
     {

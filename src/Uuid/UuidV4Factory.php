@@ -33,7 +33,7 @@ use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
 /**
- * A factory for creating version 4, random UUIDs.
+ * A factory for creating version 4, random UUIDs
  */
 final class UuidV4Factory implements UuidFactoryInterface
 {
@@ -42,7 +42,8 @@ final class UuidV4Factory implements UuidFactoryInterface
     private readonly Binary $binary;
 
     /**
-     * @param BytesGenerator $bytesGenerator A random generator used to generate bytes; defaults to {@see RandomBytesGenerator}.
+     * @param BytesGenerator $bytesGenerator A random generator used to generate
+     *     bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator())
     {

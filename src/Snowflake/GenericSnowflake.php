@@ -42,9 +42,9 @@ use function is_scalar;
 use function sprintf;
 
 /**
- * A generic Snowflake identifier that may use any epoch offset.
+ * A generic Snowflake identifier that may use any epoch offset
  *
- * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID.
+ * @link https://en.wikipedia.org/wiki/Snowflake_ID Snowflake ID
  */
 final readonly class GenericSnowflake implements Snowflake
 {
@@ -57,8 +57,10 @@ final readonly class GenericSnowflake implements Snowflake
     private int $epochOffset;
 
     /**
-     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
-     * @param Epoch | int $epochOffset The Snowflake identifier's offset from the Unix Epoch in milliseconds.
+     * @param int<0, max> | numeric-string $snowflake A representation of the
+     *     Snowflake in integer or numeric string form
+     * @param Epoch | int $epochOffset The Snowflake identifier's offset from
+     *     the Unix Epoch in milliseconds
      *
      * @throws InvalidArgument
      */

@@ -228,7 +228,8 @@ class GenericSnowflakeFactoryTest extends TestCase
     {
         $previous = $this->factory->create();
 
-        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 8191; $i++) {
             $snowflake = $this->factory->create();
             $this->assertTrue(
@@ -250,7 +251,8 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
-        // This is 4095 * 2 + 1, so that we loop through the clock sequence twice.
+        // This is 4095 * 2 + 1, so that we loop through the clock sequence
+        // twice.
         for ($i = 0; $i < 8191; $i++) {
             $snowflake = $this->factory->createFromDateTime($dateTime);
             $this->assertTrue(

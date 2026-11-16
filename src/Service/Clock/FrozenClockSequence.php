@@ -29,12 +29,14 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * A clock sequence that always returns the same pre-determined value. Calling `next()` does not advance the sequence.
+ * A clock sequence that always returns the same pre-determined value
+ *
+ * Calling `next()` does not advance the sequence.
  */
 final readonly class FrozenClockSequence implements ClockSequence
 {
     /**
-     * @param int<0, max> $value A pre-determined sequence value.
+     * @param int<0, max> $value A pre-determined sequence value
      */
     public function __construct(private int $value)
     {
@@ -49,7 +51,8 @@ final readonly class FrozenClockSequence implements ClockSequence
     }
 
     /**
-     * **WARNING**: The clock sequence does not advance for {@see FrozenClockSequence}s.
+     * **WARNING**: The clock sequence does not advance for
+     * {@see FrozenClockSequence}s
      *
      * {@inheritDoc}
      */

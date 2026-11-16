@@ -33,7 +33,7 @@ use Identifier\StringIdentifierFactory;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
- * A factory for creating Snowflake IDs.
+ * A factory for creating Snowflake IDs
  */
 interface SnowflakeFactory extends
     BytesIdentifierFactory,
@@ -48,9 +48,11 @@ interface SnowflakeFactory extends
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake;
 
     /**
-     * Creates a new instance of a Snowflake ID from the given hexadecimal representation.
+     * Creates a new instance of a Snowflake ID from the given hexadecimal
+     * representation
      *
-     * @throws InvalidArgument MUST throw if the identifier is not a legal value.
+     * @throws InvalidArgument MUST throw if the identifier is not a legal
+     *     value
      */
     public function createFromHexadecimal(string $identifier): Snowflake;
 

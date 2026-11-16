@@ -35,9 +35,9 @@ use function sprintf;
 use function strlen;
 
 /**
- * The Max UUID is a special form of UUID that has all 128 bits set to one (1).
+ * The Max UUID is a special form of UUID that has all 128 bits set to one (1)
  *
- * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10: Max UUID.
+ * @link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 RFC 9562, section 5.10: Max UUID
  */
 final readonly class MaxUuid implements Uuid
 {
@@ -46,7 +46,8 @@ final readonly class MaxUuid implements Uuid
     private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
-     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     * @param non-empty-string $uuid A representation of the UUID as a string
+     *     with dashes, hexadecimal, or byte string
      *
      * @throws InvalidArgument
      */
@@ -62,9 +63,10 @@ final readonly class MaxUuid implements Uuid
     /**
      * {@inheritDoc}
      *
-     * According to RFC 9562 sections {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
-     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 5.10}, the Max UUID falls within the range
-     * of the future variant.
+     * According to RFC 9562 sections
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-4.1 4.1} and
+     * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 5.10}, the Max
+     * UUID falls within the range of the future variant.
      */
     public function getVariant(): Variant
     {

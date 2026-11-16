@@ -38,28 +38,29 @@ use function strspn;
 use const STR_PAD_LEFT;
 
 /**
- * An enum representing the format of a Snowflake identifier.
+ * An enum representing the format of a Snowflake identifier
  *
- * This enum class includes static utilities for formatting Snowflakes from integer or numeric string forms into
- * hexadecimal, byte, or int forms.
+ * This enum class includes static utilities for formatting Snowflakes from
+ * integer or numeric string forms into hexadecimal, byte, or int forms.
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 enum Format: int
 {
     /**
-     * Bytes representation.
+     * Bytes representation
      */
     case Bytes = 8;
 
     /**
-     * Hexadecimal representation.
+     * Hexadecimal representation
      */
     case Hex = 16;
 
     /**
-     * Formats a Snowflake identifier from its integer or numeric string form into {@see self::Hex}, {@see self::Bytes},
-     * or int forms.
+     * Formats a Snowflake identifier from its integer or numeric string form
+     * into {@see self::Hex}, {@see self::Bytes}, or int forms
      */
     public static function format(int | string $value, ?self $to): int | string
     {

@@ -26,24 +26,28 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid\Internal;
 
 /**
- * Various character masks for ULIDs.
+ * Various character masks for ULIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 final class Mask
 {
     /**
-     * A mask used with functions like {@see strspn()} to validate Crockford base-32 strings
+     * A mask used with functions like {@see strspn()} to validate Crockford
+     * base-32 strings
      */
     public const CROCKFORD32 = '0123456789abcdefghjkmnpqrstvwxyzABCDEFGHJKMNPQRSTVWXYZ';
 
     /**
-     * A mask used with functions like {@see strspn()} to validate hexadecimal strings
+     * A mask used with functions like {@see strspn()} to validate hexadecimal
+     * strings
      */
     public const HEX = '0123456789abcdefABCDEF';
 
     /**
-     * A mask used with functions like {@see strspn()} to validate string integers
+     * A mask used with functions like {@see strspn()} to validate string
+     * integers
      */
     public const INT = '0123456789';
 

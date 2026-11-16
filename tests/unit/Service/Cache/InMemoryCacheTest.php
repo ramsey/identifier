@@ -203,7 +203,8 @@ class InMemoryCacheTest extends TestCase
         // Wait a tiny bit more.
         usleep(100);
 
-        // Access 'foo' next, so it's the second least most recently accessed item.
+        // Access 'foo' next, so it's the second least most recently accessed
+        // item.
         $this->assertSame(1234, $inMemoryCache->get('foo'));
 
         // Wait a little bit more.
@@ -227,8 +228,8 @@ class InMemoryCacheTest extends TestCase
         // 'foo' should no longer exist in the cache.
         $this->assertNull($inMemoryCache->get('foo'));
 
-        // Add 'corge', but give it a TTL in the past, so it's considered invalid
-        // and will be evicted before 'baz'.
+        // Add 'corge', but give it a TTL in the past, so it's considered
+        // invalid and will be evicted before 'baz'.
         $inMemoryCache->set('corge', $values['corge'], -30);
 
         // Add a new value, which should evict 'corge' from the cache.

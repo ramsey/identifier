@@ -35,18 +35,20 @@ use function strlen;
 use function strspn;
 
 /**
- * A Snowflake identifier for use with the X (formerly Twitter) social media platform.
+ * A Snowflake identifier for use with the X (formerly Twitter) social media
+ * platform
  *
- * @link https://x.com X/Twitter.
- * @link https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake.
- * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake.
+ * @link https://x.com X/Twitter
+ * @link https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake
+ * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake
  */
 final readonly class TwitterSnowflake implements Snowflake
 {
     use Standard;
 
     /**
-     * @param int<0, max> | numeric-string $snowflake A representation of the Snowflake in integer or numeric string form.
+     * @param int<0, max> | numeric-string $snowflake A representation of the
+     *     Snowflake in integer or numeric string form
      *
      * @throws InvalidArgument
      */

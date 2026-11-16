@@ -29,15 +29,17 @@ use Ramsey\Identifier\Ulid as UlidInterface;
 use Ramsey\Identifier\Ulid\Internal\Standard;
 
 /**
- * A universally unique lexicographically sortable identifier (ULID).
+ * A universally unique lexicographically sortable identifier (ULID)
  *
- * A ULID consists of a 48-bit integer representing the milliseconds since the Unix Epoch and 80 bits of randomness from
- * a cryptographically secure source. Together, they form a 128-bit unsigned integer that is binary-compatible with
- * UUIDs. When encoded in string form, ULIDs use Crockford base-32 encoding, allowing 5 bits per character. As a result,
- * string ULIDs are 26 characters instead of the 36 characters that make up a UUID.
+ * A ULID consists of a 48-bit integer representing the milliseconds since the
+ * Unix Epoch and 80 bits of randomness from a cryptographically secure source.
+ * Together, they form a 128-bit unsigned integer that is binary-compatible with
+ * UUIDs. When encoded in string form, ULIDs use Crockford base-32 encoding,
+ * allowing 5 bits per character. As a result, string ULIDs are 26 characters
+ * instead of the 36 characters that make up a UUID.
  *
- * @link https://github.com/ulid/spec ULID specification.
- * @link https://www.crockford.com/base32.html Crockford base-32 specification.
+ * @link https://github.com/ulid/spec ULID specification
+ * @link https://www.crockford.com/base32.html Crockford base-32 specification
  */
 final readonly class Ulid implements UlidInterface
 {

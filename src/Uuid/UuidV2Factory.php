@@ -48,7 +48,7 @@ use function sprintf;
 use function substr;
 
 /**
- * A factory for creating version 2, DCE Security UUIDs.
+ * A factory for creating version 2, DCE Security UUIDs
  */
 final class UuidV2Factory implements TimeBasedUuidFactory
 {
@@ -58,10 +58,14 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     private readonly Time $time;
 
     /**
-     * @param Clock $clock A clock used to provide a date-time instance; defaults to {@see SystemClock}.
-     * @param Dce $dce A service that provides local identifiers when creating version 2 UUIDs; defaults to {@see SystemDce}.
-     * @param Nic $nic A NIC that provides the system MAC address value; defaults to {@see RandomNic}.
-     * @param ClockSequence $sequence A sequence that provides a clock sequence value to prevent collisions; defaults to {@see RandomClockSequence}.
+     * @param Clock $clock A clock used to provide a date-time instance;
+     *     defaults to {@see SystemClock}
+     * @param Dce $dce A service that provides local identifiers when creating
+     *     version 2 UUIDs; defaults to {@see SystemDce}
+     * @param Nic $nic A NIC that provides the system MAC address value;
+     *     defaults to {@see RandomNic}
+     * @param ClockSequence $sequence A sequence that provides a clock sequence
+     *     value to prevent collisions; defaults to {@see RandomClockSequence}
      */
     public function __construct(
         private readonly Clock $clock = new SystemClock(),
@@ -74,18 +78,25 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param DceDomain $localDomain The local domain to which the local identifier belongs; this defaults to "Person,"
-     *     and if $localIdentifier is not provided, the factory will attempt to get a suitable local ID for the domain
-     *     (e.g., the UID or GID of the user running the script).
-     * @param int<0, 4294967295> | null $localIdentifier A 32-bit local identifier belonging to the local domain
-     *     specified in `$localDomain`; if no identifier is provided, the factory will attempt to get a suitable local
-     *     ID for the domain (e.g., the UID or GID of the user running the script).
-     * @param Nic | int<0, 281474976710655> | non-empty-string | null $node A 48-bit integer or hexadecimal string
-     *     representing the hardware address of the machine where this identifier was generated.
-     * @param int | null $clockSequence A number used to help avoid duplicates that could arise when the clock is set
-     *     backwards in time or the node ID changes; we take the modulo of this integer divided by 64, giving it an
-     *     effective range of 0-63 (i.e., 6 bits).
-     * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
+     * @param DceDomain $localDomain The local domain to which the local
+     *     identifier belongs; this defaults to "Person," and if
+     *     $localIdentifier is not provided, the factory will attempt to get a
+     *     suitable local ID for the domain (e.g., the UID or GID of the user
+     *     running the script)
+     * @param int<0, 4294967295> | null $localIdentifier A 32-bit local
+     *     identifier belonging to the local domain specified in `$localDomain`;
+     *     if no identifier is provided, the factory will attempt to get a
+     *     suitable local ID for the domain (e.g., the UID or GID of the user
+     *     running the script)
+     * @param Nic | int<0, 281474976710655> | non-empty-string | null $node A
+     *     48-bit integer or hexadecimal string representing the hardware
+     *     address of the machine where this identifier was generated
+     * @param int | null $clockSequence A number used to help avoid duplicates
+     *     that could arise when the clock is set backwards in time or the node
+     *     ID changes; we take the modulo of this integer divided by 64, giving
+     *     it an effective range of 0-63 (i.e., 6 bits)
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
      *
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
@@ -117,7 +128,8 @@ final class UuidV2Factory implements TimeBasedUuidFactory
 
         $dateTime = $dateTime ?? $this->clock->now();
 
-        // Use modular arithmetic to roll over the sequence value at mod 0x40 (64).
+        // Use modular arithmetic to roll over the sequence value at mod 0x40
+        // (64).
         $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % 0x40;
 
         $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);

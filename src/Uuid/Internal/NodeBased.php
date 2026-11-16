@@ -28,9 +28,10 @@ namespace Ramsey\Identifier\Uuid\Internal;
 use function substr;
 
 /**
- * Provides common methods for node-based UUIDs.
+ * Provides common methods for node-based UUIDs
  *
- * @internal Not intended for use outside ramsey/identifier; may change without notice.
+ * @internal Not intended for use outside ramsey/identifier; may change without
+ *     notice.
  */
 trait NodeBased
 {

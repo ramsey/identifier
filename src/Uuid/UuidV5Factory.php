@@ -35,7 +35,7 @@ use function hash;
 use function substr;
 
 /**
- * A factory for creating version 5, name-based (SHA-1) UUIDs.
+ * A factory for creating version 5, name-based (SHA-1) UUIDs
  */
 final class UuidV5Factory implements UuidFactoryInterface
 {

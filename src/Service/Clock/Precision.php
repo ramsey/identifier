@@ -26,7 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 /**
- * Precision formats for clock sequences.
+ * Precision formats for clock sequences
  */
 enum Precision: string
 {

@@ -36,7 +36,7 @@ use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 use function sprintf;
 
 /**
- * A factory for creating version 7, Unix Epoch time UUIDs.
+ * A factory for creating version 7, Unix Epoch time UUIDs
  */
 final class UuidV7Factory implements TimeBasedUuidFactory
 {
@@ -45,7 +45,8 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     private readonly Binary $binary;
 
     /**
-     * @param BytesGenerator $bytesGenerator A generator used to generate bytes for a version 7 UUID; defaults to {@see MonotonicBytesGenerator}.
+     * @param BytesGenerator $bytesGenerator A generator used to generate bytes
+     *     for a version 7 UUID; defaults to {@see MonotonicBytesGenerator}
      */
     public function __construct(private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator())
     {
@@ -53,7 +54,8 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     }
 
     /**
-     * @param DateTimeInterface | null $dateTime A date-time to use when creating the identifier.
+     * @param DateTimeInterface | null $dateTime A date-time to use when
+     *     creating the identifier
      *
      * @throws InvalidArgument
      */

@@ -42,15 +42,20 @@ use function strlen;
 use function strspn;
 
 /**
- * An untyped UUID is one in which the version and variant bits have not yet been evaluated. This does not mean the UUID
- * is invalid; rather, this is a performance feature.
+ * An untyped UUID is one in which the version and variant bits have not yet
+ * been evaluated
  *
- * When creating a UUID instance from string, bytes, hexadecimal, or integer, it is more performant to defer checking
- * the version and variant bits until later, i.e., when calling {@see self::getVersion()}, {@see self::getVariant()},
- * {@see self::getDateTime()}, and {@see self::getNode()}.
+ * This does not mean the UUID is invalid; rather, this is a performance
+ * feature.
  *
- * To access a typed version (e.g., {@see UuidV4}, {@see UuidV7}, etc.), call {@see self::toTypedUuid()} on any
- * UntypedUuid instance.
+ * When creating a UUID instance from string, bytes, hexadecimal, or integer, it
+ * is more performant to defer checking the version and variant bits until
+ * later, i.e., when calling {@see self::getVersion()},
+ * {@see self::getVariant()}, {@see self::getDateTime()}, and
+ * {@see self::getNode()}.
+ *
+ * To access a typed version (e.g., {@see UuidV4}, {@see UuidV7}, etc.), call
+ * {@see self::toTypedUuid()} on any UntypedUuid instance.
  */
 final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
 {
@@ -64,7 +69,8 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore Generic.Files.LineLength
 
     /**
-     * @param non-empty-string $uuid A representation of the UUID as a string with dashes, hexadecimal, or byte string.
+     * @param non-empty-string $uuid A representation of the UUID as a string
+     *     with dashes, hexadecimal, or byte string
      *
      * @throws InvalidArgument
      */
