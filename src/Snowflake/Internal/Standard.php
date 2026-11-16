@@ -103,7 +103,7 @@ trait Standard
         return $this->snowflake->getSortKey();
     }
 
-    /*
+    /**
      * @return non-empty-string
      */
     public function jsonSerialize(): string
