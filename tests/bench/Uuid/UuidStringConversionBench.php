@@ -125,12 +125,21 @@ final class UuidStringConversionBench
      */
     private array $promiscuousUuids;
 
+    /**
+     * @var non-empty-string
+     */
     private string $tinyUuidBytes;
+    /**
+     * @var non-empty-string
+     */
     private string $hugeUuidBytes;
+    /**
+     * @var non-empty-string
+     */
     private string $uuidBytes;
 
     /**
-     * @var non-empty-list<string>
+     * @var non-empty-list<non-empty-string>
      */
     private array $promiscuousUuidsBytes;
 

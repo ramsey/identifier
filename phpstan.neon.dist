@@ -1,10 +1,10 @@
 parameters:
     tmpDir: ./build/cache/phpstan
-    level: max
     treatPhpDocTypesAsCertain: false
+    level: max
     paths:
         - ./src
-        - ./tests/unit
+        - ./tests
     ignoreErrors:
         -
             # This error results because MicrosoftGuidFactory uses StandardFactory

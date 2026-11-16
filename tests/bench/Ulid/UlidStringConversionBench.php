@@ -125,12 +125,21 @@ final class UlidStringConversionBench
      */
     private array $promiscuousUlids;
 
+    /**
+     * @var non-empty-string
+     */
     private string $tinyUlidBytes;
+    /**
+     * @var non-empty-string
+     */
     private string $hugeUlidBytes;
+    /**
+     * @var non-empty-string
+     */
     private string $ulidBytes;
 
     /**
-     * @var non-empty-list<string>
+     * @var non-empty-list<non-empty-string>
      */
     private array $promiscuousUlidsBytes;
 

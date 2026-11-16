@@ -13,9 +13,13 @@
 
     <coverage/>
 
+    <php>
+        <ini name="memory_limit" value="1G"/>
+    </php>
+
     <source>
         <include>
-            <directory>./src</directory>
+            <directory suffix=".php">./src</directory>
         </include>
     </source>
 
