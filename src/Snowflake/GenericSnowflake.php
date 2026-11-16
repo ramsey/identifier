@@ -29,6 +29,7 @@ use DateTimeImmutable;
 use Identifier\BytesIdentifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\Format;
 use Ramsey\Identifier\Snowflake\Internal\Time;
@@ -139,6 +140,9 @@ final readonly class GenericSnowflake implements Snowflake
         }
     }
 
+    /**
+     * @throws NotConvertible when the date-time cannot be represented
+     */
     public function getDateTime(): DateTimeImmutable
     {
         return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);

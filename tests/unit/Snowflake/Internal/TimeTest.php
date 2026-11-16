@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
+use DateMalformedStringException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake\Epoch;
+use Ramsey\Identifier\Snowflake\GenericSnowflake;
 use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
+
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 class TimeTest extends TestCase
 {
@@ -68,5 +74,68 @@ class TimeTest extends TestCase
                 'expectedTime' => '2016-04-30 11:18:25.796000',
             ],
         ];
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('unrepresentableDateTimeProvider')]
+    public function testGetDateTimeForSnowflakeThrowsExceptionWhenNotRepresentable(
+        int | string $value,
+        int $epochOffset,
+    ): void {
+        $snowflake = new GenericSnowflake($value, $epochOffset);
+        $time = new Time();
+
+        $this->expectException(NotConvertible::class);
+        $this->expectExceptionMessage('The date-time of the snowflake cannot be represented');
+
+        $time->getDateTimeForSnowflake($snowflake, $epochOffset, 22);
+    }
+
+    /**
+     * @return list<array{value: int<0, max> | numeric-string, epochOffset: int}>
+     */
+    public static function unrepresentableDateTimeProvider(): array
+    {
+        return [
+            ['value' => '9223372036854775807', 'epochOffset' => PHP_INT_MAX],
+        ];
+    }
+
+    public function testGetDateTimeForSnowflakeKeepsPreviousExceptionWhenDateTimeCannotBeCreated(): void
+    {
+        $snowflake = new GenericSnowflake('18446744073709551615', 0);
+        $time = new Time();
+
+        try {
+            $time->getDateTimeForSnowflake($snowflake, 0, -40);
+            $this->fail('Expected an exception');
+        } catch (NotConvertible $exception) {
+            $this->assertSame('The date-time of the snowflake cannot be represented', $exception->getMessage());
+            $this->assertInstanceOf(DateMalformedStringException::class, $exception->getPrevious());
+        }
+    }
+
+    public function testGetDateTimeForSnowflakeReturnsDateTimeForMinimumOffset(): void
+    {
+        $snowflake = new GenericSnowflake(0, PHP_INT_MIN);
+        $time = new Time();
+
+        $this->assertSame(
+            '-292275055-05-16 16:47:04.192',
+            $time->getDateTimeForSnowflake($snowflake, PHP_INT_MIN, 22)->format('Y-m-d H:i:s.v'),
+        );
+    }
+
+    public function testGetDateTimeForSnowflakeReturnsDateTimeForMaximumValueAndOffset(): void
+    {
+        $snowflake = new GenericSnowflake('18446744073709551615', PHP_INT_MAX);
+        $time = new Time();
+
+        $this->assertSame(
+            '292279133-12-30 14:48:06.910',
+            $time->getDateTimeForSnowflake($snowflake, PHP_INT_MAX, 22)->format('Y-m-d H:i:s.v'),
+        );
     }
 }

@@ -7,10 +7,12 @@ namespace Ramsey\Test\Identifier\Uuid;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Exception;
+use Identifier\Exception\NotConvertible as IdentifierNotConvertible;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\MaxUuid;
 use Ramsey\Identifier\Uuid\NilUuid;
@@ -370,10 +372,28 @@ class UntypedUuidTest extends TestCase
     {
         $uuid = new UntypedUuid('81daa361-8088-499a-adbd-71e4a45ae25c');
 
-        $this->expectException(BadMethodCall::class);
+        $this->expectException(NotConvertible::class);
         $this->expectExceptionMessage(
             'Cannot call getDateTime() on untyped UUID "81daa361-8088-499a-adbd-71e4a45ae25c"',
         );
+
+        $uuid->getDateTime();
+    }
+
+    public function testGetDateTimeExceptionImplementsSpecificationInterface(): void
+    {
+        $uuid = new UntypedUuid('81daa361-8088-499a-adbd-71e4a45ae25c');
+
+        $this->expectException(IdentifierNotConvertible::class);
+
+        $uuid->getDateTime();
+    }
+
+    public function testGetDateTimeExceptionIsBadMethodCall(): void
+    {
+        $uuid = new UntypedUuid('81daa361-8088-499a-adbd-71e4a45ae25c');
+
+        $this->expectException(BadMethodCall::class);
 
         $uuid->getDateTime();
     }

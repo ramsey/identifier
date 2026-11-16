@@ -28,6 +28,7 @@ namespace Ramsey\Identifier\Snowflake\Internal;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
 
 use function assert;
@@ -83,6 +84,9 @@ trait Standard
         return $this->snowflake->equals($other);
     }
 
+    /**
+     * @throws NotConvertible when the date-time cannot be represented
+     */
     public function getDateTime(): DateTimeImmutable
     {
         return $this->snowflake->getDateTime();

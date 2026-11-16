@@ -27,13 +27,17 @@ namespace Ramsey\Identifier\Snowflake\Internal;
 
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
+use DateMalformedStringException;
 use DateTimeImmutable;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
 
 use function abs;
 use function intdiv;
 use function is_int;
 use function sprintf;
+
+use const PHP_INT_MAX;
 
 /**
  * A utility for getting the date-time from a Snowflake identifier
@@ -49,6 +53,9 @@ final class Time
      *
      * @param int $epochOffset The number of milliseconds from the Unix Epoch to
      *     offset the starting epoch for this Snowflake
+     *
+     * @throws NotConvertible when the date-time of the Snowflake cannot be
+     *     represented
      */
     public function getDateTimeForSnowflake(
         Snowflake $snowflake,
@@ -61,8 +68,14 @@ final class Time
         // PHP_INT_MAX, in which case, it'll be a string, and we'll need to use
         // BigInteger for the math.
         if (is_int($value)) {
-            $milliseconds = ($value >> $rightShifts) + $epochOffset;
-            $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds) % 1000);
+            $shifted = $value >> $rightShifts;
+
+            if ($epochOffset > 0 && $shifted > PHP_INT_MAX - $epochOffset) {
+                throw new NotConvertible('The date-time of the snowflake cannot be represented');
+            }
+
+            $milliseconds = $shifted + $epochOffset;
+            $timestamp = sprintf('%d.%03d', intdiv($milliseconds, 1000), abs($milliseconds % 1000));
         } else {
             $timestamp = (string) BigInteger::of($value)
                 ->shiftedRight($rightShifts)
@@ -71,6 +84,13 @@ final class Time
                 ->dividedBy(1000, 3, RoundingMode::HalfUp);
         }
 
-        return new DateTimeImmutable('@' . $timestamp);
+        try {
+            return new DateTimeImmutable('@' . $timestamp);
+        } catch (DateMalformedStringException $exception) {
+            throw new NotConvertible(
+                'The date-time of the snowflake cannot be represented',
+                previous: $exception,
+            );
+        }
     }
 }

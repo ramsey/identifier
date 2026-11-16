@@ -29,6 +29,7 @@ use Brick\Math\BigInteger;
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid;
@@ -148,7 +149,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @throws BadMethodCall when called on a GUID that does not support
+     * @throws NotConvertible when called on a GUID that does not support
      *     date-time values
      */
     public function getDateTime(): DateTimeImmutable
@@ -156,7 +157,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         return match ($this->getVersion()) {
             Version::GregorianTime, Version::DceSecurity,
             Version::ReorderedGregorianTime, Version::UnixTime => $this->baseGetDateTime(),
-            default => throw new BadMethodCall(sprintf(
+            default => throw new NotConvertible(sprintf(
                 'Version %d GUIDs do not contain date-time values',
                 $this->getVersion()->value,
             )),

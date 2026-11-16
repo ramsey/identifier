@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use Exception;
+use Identifier\Exception\NotConvertible as IdentifierNotConvertible;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Ulid\Ulid;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
@@ -690,8 +692,22 @@ class MicrosoftGuidTest extends TestCase
 
     public function testGetDateTimeThrowsException(): void
     {
-        $this->expectException(BadMethodCall::class);
+        $this->expectException(NotConvertible::class);
         $this->expectExceptionMessage('Version 4 GUIDs do not contain date-time values');
+
+        $this->guidWithString->getDateTime();
+    }
+
+    public function testGetDateTimeExceptionImplementsSpecificationInterface(): void
+    {
+        $this->expectException(IdentifierNotConvertible::class);
+
+        $this->guidWithString->getDateTime();
+    }
+
+    public function testGetDateTimeExceptionIsBadMethodCall(): void
+    {
+        $this->expectException(BadMethodCall::class);
 
         $this->guidWithString->getDateTime();
     }

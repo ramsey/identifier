@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake\GenericSnowflake;
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
 use Ramsey\Test\Identifier\Comparison;
@@ -20,6 +21,9 @@ use function serialize;
 use function sprintf;
 use function strlen;
 use function unserialize;
+
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 class GenericSnowflakeTest extends TestCase
 {
@@ -360,5 +364,43 @@ class GenericSnowflakeTest extends TestCase
         $dateTime = $snowflake->getDateTime();
 
         $this->assertSame('2162-01-22 00:59:26.103', $dateTime->format('Y-m-d H:i:s.v'));
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('unrepresentableDateTimeProvider')]
+    public function testGetDateTimeThrowsExceptionWhenNotRepresentable(int | string $value, int $epochOffset): void
+    {
+        $snowflake = new GenericSnowflake($value, $epochOffset);
+
+        $this->expectException(NotConvertible::class);
+        $this->expectExceptionMessage('The date-time of the snowflake cannot be represented');
+
+        $snowflake->getDateTime();
+    }
+
+    /**
+     * @return list<array{value: int<0, max> | numeric-string, epochOffset: int}>
+     */
+    public static function unrepresentableDateTimeProvider(): array
+    {
+        return [
+            ['value' => '9223372036854775807', 'epochOffset' => PHP_INT_MAX],
+        ];
+    }
+
+    public function testGetDateTimeForMinimumOffset(): void
+    {
+        $snowflake = new GenericSnowflake(0, PHP_INT_MIN);
+
+        $this->assertSame('-292275055-05-16 16:47:04.192', $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
+    }
+
+    public function testGetDateTimeForMaximumIdentifierAndMaximumOffset(): void
+    {
+        $snowflake = new GenericSnowflake('18446744073709551615', PHP_INT_MAX);
+
+        $this->assertSame('292279133-12-30 14:48:06.910', $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
     }
 }

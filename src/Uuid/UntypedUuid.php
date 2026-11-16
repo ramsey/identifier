@@ -29,6 +29,7 @@ use DateTimeImmutable;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Internal\Format;
@@ -84,7 +85,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @throws BadMethodCall
+     * @throws NotConvertible
      */
     public function getDateTime(): DateTimeImmutable
     {
@@ -94,7 +95,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
             return $uuid->getDateTime();
         }
 
-        throw new BadMethodCall(sprintf(
+        throw new NotConvertible(sprintf(
             'Cannot call getDateTime() on untyped UUID "%s"; it is not a time-based UUID',
             $this->getFormat(Format::String),
         ));
