@@ -1,27 +1,23 @@
 <h1 align="center">ramsey/identifier</h1>
 
 <p align="center">
-    <strong>A PHP library for generating and working with identifiers</strong>
+    <strong>A PHP library for generating and working with identifiers, including UUIDs, ULIDs, and Snowflakes</strong>
 </p>
 
 <p align="center">
-    <a href="https://github.com/ramsey/identifier"><img src="https://img.shields.io/badge/source-ramsey/identifier-blue.svg?style=flat-square" alt="Source Code"></a>
-    <a href="https://packagist.org/packages/ramsey/identifier"><img src="https://img.shields.io/packagist/v/ramsey/identifier.svg?style=flat-square&label=release" alt="Download Package"></a>
-    <a href="https://php.net"><img src="https://img.shields.io/packagist/dependency-v/ramsey/identifier/php-64bit?style=flat-square&colorB=%238892BF" alt="PHP Programming Language"></a>
-    <a href="https://github.com/ramsey/identifier/blob/main/COPYING.LESSER"><img src="https://img.shields.io/packagist/l/ramsey/identifier?style=flat-square&colorB=darkcyan" alt="Read License"></a>
-    <a href="https://github.com/ramsey/identifier/actions/workflows/continuous-integration.yml"><img src="https://img.shields.io/github/actions/workflow/status/ramsey/identifier/continuous-integration.yml?branch=main&style=flat-square&logo=github" alt="Build Status"></a>
-    <a href="https://codecov.io/gh/ramsey/identifier"><img src="https://img.shields.io/codecov/c/gh/ramsey/identifier?label=codecov&logo=codecov&style=flat-square" alt="Codecov Code Coverage"></a>
+    <a href="https://github.com/ramsey/identifier"><img src="https://img.shields.io/badge/source-ramsey/identifier-blue.svg" alt="Source Code"></a>
+    <a href="https://packagist.org/packages/ramsey/identifier"><img src="https://img.shields.io/packagist/v/ramsey/identifier.svg?label=release" alt="Download Package"></a>
+    <a href="https://php.net"><img src="https://img.shields.io/packagist/dependency-v/ramsey/identifier/php-64bit?colorB=%238892BF" alt="PHP Programming Language"></a>
+    <a href="https://github.com/ramsey/identifier/blob/main/COPYING.LESSER"><img src="https://img.shields.io/packagist/l/ramsey/identifier.svg?colorB=darkcyan" alt="Read License"></a>
+    <a href="https://github.com/ramsey/identifier/actions/workflows/continuous-integration.yml"><img src="https://img.shields.io/github/actions/workflow/status/ramsey/identifier/continuous-integration.yml?branch=main&logo=github" alt="Build Status"></a>
+    <a href="https://codecov.io/gh/ramsey/identifier"><img src="https://img.shields.io/codecov/c/gh/ramsey/identifier?label=codecov&logo=codecov" alt="Codecov Code Coverage"></a>
 </p>
 
 ## About
 
-ramsey/identifier is a PHP library designed for generating, parsing, and working with a variety of unique identifiers.
-It provides an object-oriented interface for several industry-standard identifier formats—including UUIDs, ULIDs, and
-Snowflake IDs. This library emphasizes standards-compliance, interoperability, and developer ergonomics, making it easy
-to create and manipulate identifiers in modern PHP applications.
+ramsey/identifier is a PHP library designed for generating, parsing, and working with a variety of unique identifiers. It provides an object-oriented interface for several industry-standard identifier formats—including UUIDs, ULIDs, and Snowflake IDs. This library emphasizes standards-compliance, interoperability, and developer ergonomics, making it easy to create and manipulate identifiers in modern PHP applications.
 
-This project adheres to a [code of conduct](CODE_OF_CONDUCT.md). By participating in this project and its community, you
-are expected to uphold this code.
+This project adheres to a [code of conduct](CODE_OF_CONDUCT.md). By participating in this project and its community, you are expected to uphold this code.
 
 ## Installation
 
@@ -33,8 +29,7 @@ composer require ramsey/identifier
 
 ## Usage
 
-ramsey/identifier provides ways to generate industry-standard identifiers, such as UUIDs, ULIDs, and Snowflake IDs. You
-can do this using the provided factory classes:
+ramsey/identifier provides ways to generate industry-standard identifiers, such as UUIDs, ULIDs, and Snowflake IDs. You can do this using the provided factory classes:
 
 ```php
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
@@ -98,9 +93,7 @@ This will print:
 2025-06-17 03:24:36.160 +00:00
 ```
 
-The UUID and ULID shown above have the same underlying byte values. Every version 7 UUID can also be expressed as a
-ULID, but not every ULID can be converted into a version 7 UUID. Similarly, Snowflake identifiers and ULIDs both encode
-a timestamp and randomness, but their formats are not directly interchangeable with UUIDs or each other.
+The UUID and ULID shown above have the same underlying byte values. Every version 7 UUID can also be expressed as a ULID, but not every ULID can be converted into a version 7 UUID. Similarly, Snowflake identifiers and ULIDs both encode a timestamp and randomness, but their formats are not directly interchangeable with UUIDs or each other.
 
 ```php
 if ($uuid->equals($ulid)) {
@@ -116,15 +109,10 @@ if ($uuid->equals($snowflake)) {
 
 Contributions are welcome! To contribute, please familiarize yourself with [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Coordinated Disclosure
+## Coordinated vulnerability disclosure policy
 
-Keeping user information safe and secure is a top priority, and we welcome the contribution of external security
-researchers. If you believe you've found a security issue in software that is maintained in this repository, please read
-[SECURITY.md](SECURITY.md) for instructions on submitting a vulnerability report.
+Keeping user information safe and secure is a top priority, and we welcome the contribution of external security researchers. If you believe you've found a security issue in software that is maintained in this repository, please read [SECURITY.md](SECURITY.md) for instructions on submitting a vulnerability report.
 
-## Copyright and License
+## Copyright and license
 
-ramsey/identifier is copyright © [Ben Ramsey](https://ramsey.dev) and [Contributors](https://github.com/ramsey/identifier/graphs/contributors)
-and licensed for use under the terms of the GNU Lesser General Public License (LGPL-3.0-or-later) as published by the
-Free Software Foundation. Please see [COPYING.LESSER](COPYING.LESSER), [COPYING](COPYING), and [NOTICE](NOTICE) for more
-information.
+ramsey/identifier is copyright © [Ben Ramsey](mailto:ben@ramsey.dev) and [Contributors](https://github.com/ramsey/identifier/graphs/contributors) and licensed for use under the terms of the GNU Lesser General Public License (LGPL-3.0-or-later) as published by the Free Software Foundation. Please see [COPYING.LESSER](COPYING.LESSER), [COPYING](COPYING), and [NOTICE](NOTICE) for more information.
