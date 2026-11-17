@@ -377,7 +377,7 @@ class UlidFactoryTest extends TestCase
      * @param non-empty-string $bytes
      */
     #[DataProvider('createFromUuidComparableProvider')]
-    public function testCreateFromUuidComparesAsEqualToTheUuid(string $bytes): void
+    public function testCreateFromUuidSortsWithTheUuid(string $bytes): void
     {
         $ulidFactory = new UlidFactory();
         $uuidFactory = new UuidFactory();
