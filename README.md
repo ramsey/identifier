@@ -102,8 +102,8 @@ if ($uuid->compareTo($ulid) === 0 && !$uuid->equals($ulid)) {
     echo "They sort in the same place, but they aren't equal.\n";
 }
 
-if ($uuid->equals($snowflake)) {
-    echo "The timestamp is the same, but they aren't equal.\n";
+if ($uuid->equals('01977BEA-D1C0-7154-87BB-6550974155C2')) {
+    echo "A UUID is equal to its own string, in either letter case.\n";
 }
 ```
 
