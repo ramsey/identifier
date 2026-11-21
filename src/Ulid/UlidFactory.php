@@ -26,14 +26,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Ulid;
 
 use Brick\Math\BigInteger;
-use Brick\Math\Exception\MathException;
-use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Ulid\Internal\Format;
-use Ramsey\Identifier\Ulid\Internal\Mask;
 use Ramsey\Identifier\Ulid\Internal\Validation;
 use Ramsey\Identifier\UlidFactory as UlidFactoryInterface;
 use Ramsey\Identifier\Uuid;
@@ -43,8 +41,6 @@ use function is_string;
 use function pack;
 use function sprintf;
 use function str_pad;
-use function strlen;
-use function strspn;
 use function strtr;
 
 use const PHP_INT_MAX;
@@ -138,12 +134,18 @@ final class UlidFactory implements UlidFactoryInterface
      */
     public function createFromInteger(int | string $identifier): MaxUlid | NilUlid | Ulid
     {
-        if (
-            is_string($identifier)
-            && strspn($identifier, Mask::INT) === strlen($identifier)
-            && $identifier <= PHP_INT_MAX
-        ) {
-            $identifier = (int) $identifier;
+        if (is_string($identifier)) {
+            if (IntegerString::isNegative($identifier)) {
+                throw new InvalidArgument('Unable to create a ULID from a negative integer');
+            }
+
+            if (!IntegerString::isValid($identifier)) {
+                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
+            }
+
+            if ($identifier <= PHP_INT_MAX) {
+                $identifier = (int) $identifier;
+            }
         }
 
         if (is_int($identifier)) {
@@ -153,13 +155,7 @@ final class UlidFactory implements UlidFactoryInterface
 
             $bytes = pack('J', $identifier);
         } else {
-            try {
-                $bytes = BigInteger::of($identifier)->toBytes(false);
-            } catch (NegativeNumberException $exception) {
-                throw new InvalidArgument('Unable to create a ULID from a negative integer', 0, $exception);
-            } catch (MathException $exception) {
-                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier), 0, $exception);
-            }
+            $bytes = BigInteger::of($identifier)->toBytes(false);
         }
 
         try {

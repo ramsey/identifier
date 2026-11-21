@@ -26,15 +26,13 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
-use Brick\Math\Exception\MathException;
-use Brick\Math\Exception\NegativeNumberException;
 use DateTimeInterface;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Format;
-use Ramsey\Identifier\Uuid\Internal\Mask;
 use Ramsey\Identifier\Uuid\Internal\Validation;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
@@ -44,7 +42,6 @@ use function pack;
 use function sprintf;
 use function str_pad;
 use function strlen;
-use function strspn;
 
 use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
@@ -102,12 +99,18 @@ final class UuidFactory implements UuidFactoryInterface
      */
     public function createFromInteger(int | string $identifier): UntypedUuid
     {
-        if (
-            is_string($identifier)
-            && strspn($identifier, Mask::INT) === strlen($identifier)
-            && $identifier <= PHP_INT_MAX
-        ) {
-            $identifier = (int) $identifier;
+        if (is_string($identifier)) {
+            if (IntegerString::isNegative($identifier)) {
+                throw new InvalidArgument('Unable to create a UUID from a negative integer');
+            }
+
+            if (!IntegerString::isValid($identifier)) {
+                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
+            }
+
+            if ($identifier <= PHP_INT_MAX) {
+                $identifier = (int) $identifier;
+            }
         }
 
         if (is_int($identifier)) {
@@ -117,13 +120,7 @@ final class UuidFactory implements UuidFactoryInterface
 
             $bytes = pack('J', $identifier);
         } else {
-            try {
-                $bytes = BigInteger::of($identifier)->toBytes(false);
-            } catch (NegativeNumberException $exception) {
-                throw new InvalidArgument('Unable to create a UUID from a negative integer', 0, $exception);
-            } catch (MathException $exception) {
-                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier), 0, $exception);
-            }
+            $bytes = BigInteger::of($identifier)->toBytes(false);
         }
 
         return $this->createFromBytes(str_pad($bytes, 16, "\x00", STR_PAD_LEFT));

@@ -26,11 +26,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Internal;
 
 use Brick\Math\BigInteger;
-use Brick\Math\Exception\MathException;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Uuid;
 use Throwable;
 
+use function is_string;
 use function sprintf;
 use function str_pad;
 
@@ -85,11 +86,17 @@ trait StandardFactory
      */
     private function createFromIntegerInternal(int | string $identifier): Uuid
     {
-        try {
-            $bigInteger = BigInteger::of($identifier);
-        } catch (MathException $exception) {
-            throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier), 0, $exception);
+        // A negative integer string is an integer and is refused below with a
+        // negative int.
+        if (
+            is_string($identifier)
+            && !IntegerString::isValid($identifier)
+            && !IntegerString::isNegative($identifier)
+        ) {
+            throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
         }
+
+        $bigInteger = BigInteger::of($identifier);
 
         try {
             return $this->createFromBytesInternal(str_pad($bigInteger->toBytes(false), 16, "\x00", STR_PAD_LEFT));

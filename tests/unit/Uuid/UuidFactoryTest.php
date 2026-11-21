@@ -227,12 +227,26 @@ class UuidFactoryTest extends TestCase
         $this->factory->createFromInteger(-1);
     }
 
-    public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(): void
+    #[DataProvider('createFromIntegerNegativeStringProvider')]
+    public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(string $input): void
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to create a UUID from a negative integer');
 
-        $this->factory->createFromInteger('-9223372036854775809');
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
+    /**
+     * @return list<array{input: string}>
+     */
+    public static function createFromIntegerNegativeStringProvider(): array
+    {
+        return [
+            ['input' => '-1'],
+            ['input' => '-9223372036854775809'],
+            ['input' => '-340282366920938463463374607431768211456'],
+        ];
     }
 
     #[DataProvider('createFromIntegerInvalidIntegerProvider')]
@@ -255,6 +269,17 @@ class UuidFactoryTest extends TestCase
             ['input' => '00000000-0000-1000-a000-000000000000'],
             ['input' => '0000000000001000a000000000000000'],
             ['input' => '123.456'],
+            ['input' => ''],
+            ['input' => '+1'],
+            ['input' => '-0'],
+            ['input' => '-01'],
+            ['input' => '-1.0'],
+            ['input' => '00'],
+            ['input' => '0123'],
+            ['input' => '1.0'],
+            ['input' => '1e3'],
+            ['input' => ' 1'],
+            ['input' => '1 '],
         ];
     }
 

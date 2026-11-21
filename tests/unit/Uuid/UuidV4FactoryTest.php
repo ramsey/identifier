@@ -9,6 +9,8 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\UuidV4Factory;
 use Ramsey\Test\Identifier\TestCase;
 
+use function sprintf;
+
 class UuidV4FactoryTest extends TestCase
 {
     private UuidV4Factory $factory;
@@ -64,6 +66,61 @@ class UuidV4FactoryTest extends TestCase
 
         /** @phpstan-ignore-next-line */
         $this->factory->createFromInteger('foobar');
+    }
+
+    #[DataProvider('createFromIntegerNotAnIntegerProvider')]
+    public function testCreateFromIntegerThrowsExceptionForStringThatIsNotAnInteger(string $input): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(sprintf('Invalid integer: "%s"', $input));
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
+    /**
+     * @return list<array{input: string}>
+     */
+    public static function createFromIntegerNotAnIntegerProvider(): array
+    {
+        return [
+            ['input' => '+302240678275694148452352'],
+            ['input' => '0302240678275694148452352'],
+            ['input' => '302240678275694148452352.0'],
+            ['input' => '302240678275694148452352e0'],
+            ['input' => ' 302240678275694148452352'],
+            ['input' => ''],
+        ];
+    }
+
+    #[DataProvider('createFromIntegerNegativeStringProvider')]
+    public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(string $input): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid version 4 UUID: ' . $input);
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
+    /**
+     * @return list<array{input: string}>
+     */
+    public static function createFromIntegerNegativeStringProvider(): array
+    {
+        return [
+            ['input' => '-1'],
+            ['input' => '-302240678275694148452352'],
+        ];
+    }
+
+    public function testCreateFromIntegerThrowsExceptionForNegativeNativeInteger(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid version 4 UUID: -1');
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger(-1);
     }
 
     public function testCreateFromIntegerThrowsExceptionForNonVersion4Uuid(): void

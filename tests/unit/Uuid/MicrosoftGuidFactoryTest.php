@@ -20,6 +20,8 @@ use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
+use function sprintf;
+
 class MicrosoftGuidFactoryTest extends TestCase
 {
     private MicrosoftGuidFactory $factory;
@@ -87,6 +89,61 @@ class MicrosoftGuidFactoryTest extends TestCase
 
         /** @phpstan-ignore-next-line */
         $this->factory->createFromInteger('foobar');
+    }
+
+    #[DataProvider('createFromIntegerNotAnIntegerProvider')]
+    public function testCreateFromIntegerThrowsExceptionForStringThatIsNotAnInteger(string $input): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(sprintf('Invalid integer: "%s"', $input));
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
+    /**
+     * @return list<array{input: string}>
+     */
+    public static function createFromIntegerNotAnIntegerProvider(): array
+    {
+        return [
+            ['input' => '+75571698783969605582848'],
+            ['input' => '075571698783969605582848'],
+            ['input' => '75571698783969605582848.0'],
+            ['input' => '75571698783969605582848e0'],
+            ['input' => ' 75571698783969605582848'],
+            ['input' => ''],
+        ];
+    }
+
+    #[DataProvider('createFromIntegerNegativeStringProvider')]
+    public function testCreateFromIntegerThrowsExceptionForNegativeStringInteger(string $input): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid Microsoft GUID: ' . $input);
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
+    /**
+     * @return list<array{input: string}>
+     */
+    public static function createFromIntegerNegativeStringProvider(): array
+    {
+        return [
+            ['input' => '-1'],
+            ['input' => '-75571698783969605582848'],
+        ];
+    }
+
+    public function testCreateFromIntegerThrowsExceptionForNegativeNativeInteger(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid Microsoft GUID: -1');
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger(-1);
     }
 
     public function testCreateFromIntegerThrowsExceptionForNonVersion4Uuid(): void
