@@ -25,9 +25,12 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Internal;
 
+use function strcmp;
 use function strlen;
 use function strspn;
 use function substr;
+
+use const PHP_INT_MAX;
 
 /**
  * Checks whether a string is an integer string
@@ -75,5 +78,35 @@ final class IntegerString
         }
 
         return self::isValid(substr($value, 1));
+    }
+
+    /**
+     * Returns a negative integer, zero, or a positive integer when the first
+     * integer string is less than, equal to, or greater than the second
+     *
+     * Both arguments must be integer strings; the result for any other string
+     * has no meaning.
+     */
+    public static function compare(string $first, string $second): int
+    {
+        $lengthComparison = strlen($first) <=> strlen($second);
+
+        if ($lengthComparison !== 0) {
+            return $lengthComparison;
+        }
+
+        return strcmp($first, $second);
+    }
+
+    /**
+     * Returns true if the integer string is no greater than the largest
+     * integer PHP stores as an int
+     *
+     * The argument must be an integer string; the result for any other string
+     * has no meaning.
+     */
+    public static function fitsNativeInteger(string $value): bool
+    {
+        return self::compare($value, (string) PHP_INT_MAX) <= 0;
     }
 }

@@ -30,6 +30,7 @@ use DateTimeImmutable;
 use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Ulid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\UntypedUuid;
@@ -50,7 +51,6 @@ use function strtr;
 use function substr;
 use function unpack;
 
-use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
@@ -187,7 +187,7 @@ trait Standard
         /** @var numeric-string $ulidInteger */
         $ulidInteger = $this->getFormat(null);
 
-        if ($ulidInteger <= PHP_INT_MAX) {
+        if (IntegerString::fitsNativeInteger($ulidInteger)) {
             /** @var int<0, max> */
             return (int) $ulidInteger;
         }

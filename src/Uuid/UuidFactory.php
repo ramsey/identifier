@@ -43,7 +43,6 @@ use function sprintf;
 use function str_pad;
 use function strlen;
 
-use const PHP_INT_MAX;
 use const STR_PAD_LEFT;
 
 /**
@@ -108,7 +107,7 @@ final class UuidFactory implements UuidFactoryInterface
                 throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
             }
 
-            if ($identifier <= PHP_INT_MAX) {
+            if (IntegerString::fitsNativeInteger($identifier)) {
                 $identifier = (int) $identifier;
             }
         }

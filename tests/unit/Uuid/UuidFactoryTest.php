@@ -285,6 +285,65 @@ class UuidFactoryTest extends TestCase
 
     /**
      * @param int<0, max> | numeric-string $value
+     */
+    #[DataProvider('createFromIntegerNearLargestNativeIntegerProvider')]
+    public function testCreateFromIntegerNearLargestNativeInteger(
+        int | string $value,
+        int | string $expected,
+        string $expectedHexadecimal,
+    ): void {
+        $identifier = $this->factory->createFromInteger($value);
+
+        $this->assertSame($expected, $identifier->toInteger());
+        $this->assertSame($expectedHexadecimal, $identifier->toHexadecimal());
+    }
+
+    /**
+     * @return list<array{value: int | numeric-string, expected: int | string, expectedHexadecimal: string}>
+     */
+    public static function createFromIntegerNearLargestNativeIntegerProvider(): array
+    {
+        return [
+            [
+                'value' => PHP_INT_MAX,
+                'expected' => PHP_INT_MAX,
+                'expectedHexadecimal' => '00000000000000007fffffffffffffff',
+            ],
+            [
+                'value' => '9223372036854775806',
+                'expected' => 9223372036854775806,
+                'expectedHexadecimal' => '00000000000000007ffffffffffffffe',
+            ],
+            [
+                'value' => '9223372036854775807',
+                'expected' => PHP_INT_MAX,
+                'expectedHexadecimal' => '00000000000000007fffffffffffffff',
+            ],
+            [
+                'value' => '9223372036854775808',
+                'expected' => '9223372036854775808',
+                'expectedHexadecimal' => '00000000000000008000000000000000',
+            ],
+            [
+                'value' => '9223372036854775809',
+                'expected' => '9223372036854775809',
+                'expectedHexadecimal' => '00000000000000008000000000000001',
+            ],
+            [
+                'value' => '9223372036854776832',
+                'expected' => '9223372036854776832',
+                'expectedHexadecimal' => '00000000000000008000000000000400',
+            ],
+            [
+                'value' => '18446744073709551616',
+                'expected' => '18446744073709551616',
+                'expectedHexadecimal' => '00000000000000010000000000000000',
+            ],
+        ];
+    }
+
+    /**
+     * @param int<0, max> | numeric-string $value
      * @param class-string<Uuid> $expectedType
      */
     #[DataProvider('createFromIntegerProvider')]

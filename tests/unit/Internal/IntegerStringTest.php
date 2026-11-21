@@ -89,4 +89,56 @@ class IntegerStringTest extends TestCase
             ['value' => '+1', 'expected' => false],
         ];
     }
+
+    #[DataProvider('compareProvider')]
+    public function testCompare(string $first, string $second, int $expected): void
+    {
+        $this->assertSame($expected, IntegerString::compare($first, $second) <=> 0);
+        $this->assertSame(-$expected, IntegerString::compare($second, $first) <=> 0);
+    }
+
+    /**
+     * @return list<array{first: string, second: string, expected: int}>
+     */
+    public static function compareProvider(): array
+    {
+        return [
+            ['first' => '0', 'second' => '0', 'expected' => 0],
+            ['first' => '0', 'second' => '1', 'expected' => -1],
+            ['first' => '9', 'second' => '10', 'expected' => -1],
+            ['first' => '100', 'second' => '99', 'expected' => 1],
+            ['first' => '9223372036854775807', 'second' => '9223372036854775807', 'expected' => 0],
+            ['first' => '9223372036854775807', 'second' => '9223372036854775808', 'expected' => -1],
+            ['first' => '9223372036854775808', 'second' => '9223372036854775809', 'expected' => -1],
+            ['first' => '18446744073709551616', 'second' => '18446744073709551615', 'expected' => 1],
+            [
+                'first' => '340282366920938463463374607431768211455',
+                'second' => '340282366920938463463374607431768211454',
+                'expected' => 1,
+            ],
+        ];
+    }
+
+    #[DataProvider('fitsNativeIntegerProvider')]
+    public function testFitsNativeInteger(string $value, bool $expected): void
+    {
+        $this->assertSame($expected, IntegerString::fitsNativeInteger($value));
+    }
+
+    /**
+     * @return list<array{value: string, expected: bool}>
+     */
+    public static function fitsNativeIntegerProvider(): array
+    {
+        return [
+            ['value' => '0', 'expected' => true],
+            ['value' => '9223372036854775806', 'expected' => true],
+            ['value' => '9223372036854775807', 'expected' => true],
+            ['value' => '9223372036854775808', 'expected' => false],
+            ['value' => '9223372036854775809', 'expected' => false],
+            ['value' => '9223372036854776832', 'expected' => false],
+            ['value' => '10000000000000000000', 'expected' => false],
+            ['value' => '340282366920938463463374607431768211455', 'expected' => false],
+        ];
+    }
 }

@@ -26,13 +26,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Snowflake;
-use Ramsey\Identifier\Snowflake\Internal\Mask;
 use Ramsey\Identifier\Snowflake\Internal\Standard;
 
+use function is_string;
 use function sprintf;
-use function strlen;
-use function strspn;
 
 /**
  * A Snowflake identifier for use with the X (formerly Twitter) social media
@@ -55,8 +54,9 @@ final readonly class TwitterSnowflake implements Snowflake
     public function __construct(int | string $snowflake)
     {
         if (
-            (string) $snowflake > (string) 0x7fffffffffffffff
-            && strspn((string) $snowflake, Mask::INT) === strlen((string) $snowflake)
+            is_string($snowflake)
+            && IntegerString::isValid($snowflake)
+            && !IntegerString::fitsNativeInteger($snowflake)
         ) {
             throw new InvalidArgument(sprintf(
                 'Twitter Snowflakes are limited to a 41-bit timestamp; the timestamp in "%s" is greater than 41-bits',

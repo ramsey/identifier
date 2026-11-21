@@ -28,8 +28,6 @@ namespace Ramsey\Identifier\Snowflake\Internal;
 use Ramsey\Identifier\Internal\IntegerString;
 
 use function is_int;
-use function strcmp;
-use function strlen;
 
 /**
  * A utility providing common validation functionality for Snowflake
@@ -54,16 +52,7 @@ trait Validation
             return $snowflake >= 0;
         }
 
-        if (!IntegerString::isValid($snowflake)) {
-            return false;
-        }
-
-        $length = strlen(self::UPPER_BOUNDS);
-
-        if (strlen($snowflake) !== $length) {
-            return strlen($snowflake) < $length;
-        }
-
-        return strcmp($snowflake, self::UPPER_BOUNDS) <= 0;
+        return IntegerString::isValid($snowflake)
+            && IntegerString::compare($snowflake, self::UPPER_BOUNDS) <= 0;
     }
 }

@@ -29,6 +29,7 @@ use Brick\Math\BigInteger;
 use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Variant;
 
@@ -41,8 +42,6 @@ use function str_replace;
 use function strlen;
 use function strtolower;
 use function substr;
-
-use const PHP_INT_MAX;
 
 /**
  * Provides common methods for UUIDs
@@ -152,7 +151,7 @@ trait Standard
         /** @var numeric-string $uuidInteger */
         $uuidInteger = $this->getFormat(null);
 
-        if ($uuidInteger <= PHP_INT_MAX) {
+        if (IntegerString::fitsNativeInteger($uuidInteger)) {
             /** @var int<0, max> */
             return (int) $uuidInteger;
         }
