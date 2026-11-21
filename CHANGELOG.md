@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - A version 1, 2, or 6 UUID, or a snowflake, created from a date-time before the Unix Epoch that has a fraction of a second has that date-time.
 - A snowflake value above the largest unsigned 64-bit integer was accepted when written with a leading zero.
 - Identifiers whose bytes look like numbers to PHP no longer compare as equal.
+- `MonotonicBytesGenerator::bytes()` throws `InvalidArgument` for a date-time before 1970-01-01 or after 10889-08-02 05:31:50.655 UTC, in place of bytes with a wrong timestamp.
 - GUIDs sort in the order of their string form.
 - `GenericSnowflakeFactory::createFromDateTime()` with a negative epoch offset names the factory's epoch and its latest date-time correctly in the exceptions it throws, in place of a PHP error.
 - `Rfc4122ClockSequence` compares date-times before the Unix Epoch that have a fraction of a second in the right order, so its sequence rises only when the date-time moves backward.

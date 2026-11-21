@@ -7,11 +7,14 @@ namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\TestWith;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Test\Identifier\TestCase;
 
+use function bin2hex;
 use function strlen;
 use function substr;
 
@@ -126,5 +129,46 @@ class MonotonicBytesGeneratorTest extends TestCase
             $this->assertTrue($previous < $bytes);
             $previous = $bytes;
         }
+    }
+
+    #[TestWith(['1969-12-31 23:59:59.999', '1969-12-31 23:59:59.999 +00:00'])]
+    #[TestWith(['1969-12-31 23:59:59.500', '1969-12-31 23:59:59.500 +00:00'])]
+    #[TestWith(['1960-06-01 12:00:00.000', '1960-06-01 12:00:00.000 +00:00'])]
+    #[TestWith(['@281474976710.656', '10889-08-02 05:31:50.656 +00:00'])]
+    #[TestWith(['@316516464000', '12000-01-04 00:00:00.000 +00:00'])]
+    public function testBytesThrowsExceptionForDateTimeOutOfRange(string $dateTime, string $received): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator();
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'The date-time must be from 1970-01-01 00:00:00.000 UTC through 10889-08-02 05:31:50.655 UTC; '
+            . 'received ' . $received,
+        );
+
+        $bytesGenerator->bytes(dateTime: new DateTimeImmutable($dateTime));
+    }
+
+    public function testBytesThrowsExceptionWhenClockIsOutOfRange(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(
+            clock: new FrozenClock(new DateTimeImmutable('1969-12-31 23:59:59.999')),
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('received 1969-12-31 23:59:59.999 +00:00');
+
+        $bytesGenerator->bytes();
+    }
+
+    #[TestWith(['1970-01-01 00:00:00.000', '000000000000'])]
+    #[TestWith(['1970-01-01 00:00:00.001', '000000000001'])]
+    #[TestWith(['@281474976710.655', 'ffffffffffff'])]
+    public function testBytesAtTheLimitsOfTheRange(string $dateTime, string $expectedTimestamp): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator();
+        $bytes = $bytesGenerator->bytes(dateTime: new DateTimeImmutable($dateTime));
+
+        $this->assertSame($expectedTimestamp, bin2hex(substr($bytes, 0, 6)));
     }
 }

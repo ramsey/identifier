@@ -27,12 +27,14 @@ namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 
 use function assert;
 use function hash;
 use function pack;
 use function random_bytes;
+use function sprintf;
 use function substr;
 use function unpack;
 
@@ -51,6 +53,11 @@ use function unpack;
  */
 final class MonotonicBytesGenerator implements BytesGenerator
 {
+    /**
+     * The timestamp is 48 bits of milliseconds since the Unix Epoch
+     */
+    private const int MAX_TIMESTAMP = 0x0000ffffffffffff;
+
     private static ?int $time = null;
     private static ?string $seed = null;
     private static int $seedIndex = 0;
@@ -75,12 +82,23 @@ final class MonotonicBytesGenerator implements BytesGenerator
     ) {
     }
 
+    /**
+     * @throws InvalidArgument if the date-time is before 1970-01-01 00:00:00.000 UTC or after 10889-08-02 05:31:50.655 UTC
+     */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
         $argDateTime = $dateTime;
         $dateTime = $argDateTime ?? $this->clock->now();
 
         $time = (int) $dateTime->format('Uv');
+
+        if ($dateTime->getTimestamp() < 0 || $time > self::MAX_TIMESTAMP) {
+            throw new InvalidArgument(sprintf(
+                'The date-time must be from 1970-01-01 00:00:00.000 UTC through 10889-08-02 05:31:50.655 UTC; '
+                . 'received %s',
+                $dateTime->format('Y-m-d H:i:s.v P'),
+            ));
+        }
 
         // If we're within the same millisecond as the last time, let's
         // increment(). Otherwise, we'll randomize().
