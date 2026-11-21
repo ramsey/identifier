@@ -30,11 +30,9 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\TimeBasedUuid;
-use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Version;
 
 use function abs;
-use function hex2bin;
 use function intdiv;
 use function pack;
 use function sprintf;
@@ -147,15 +145,7 @@ final class Time
      */
     private static function getTimestamp(TimeBasedUuid $uuid): string
     {
-        if ($uuid instanceof MicrosoftGuid) {
-            // Convert the hexadecimal representation to bytes, since the
-            // hexadecimal representation of a GUID already has the bytes
-            // swapped.
-            /** @var non-empty-string $bytes */
-            $bytes = (string) hex2bin($uuid->toHexadecimal());
-        } else {
-            $bytes = $uuid->toBytes();
-        }
+        $bytes = Binary::getNetworkBytes($uuid);
 
         return match ($uuid->getVersion()) {
             Version::GregorianTime => self::getTimestampGregorian($bytes),

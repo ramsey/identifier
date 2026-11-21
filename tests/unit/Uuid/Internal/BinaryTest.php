@@ -6,7 +6,12 @@ namespace Ramsey\Test\Identifier\Uuid\Internal;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
+use Ramsey\Identifier\Uuid\NonstandardUuid;
+use Ramsey\Identifier\Uuid\UntypedUuid;
+use Ramsey\Identifier\Uuid\UuidV4;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
@@ -208,5 +213,52 @@ class BinaryTest extends TestCase
         );
 
         Binary::applyVersionAndVariant('foobar', null);
+    }
+
+    #[DataProvider('networkBytesProvider')]
+    public function testGetNetworkBytes(Uuid $uuid, string $expectedHexadecimal): void
+    {
+        $this->assertSame($expectedHexadecimal, bin2hex(Binary::getNetworkBytes($uuid)));
+    }
+
+    /**
+     * @return list<array{uuid: Uuid, expectedHexadecimal: non-empty-string}>
+     */
+    public static function networkBytesProvider(): array
+    {
+        return [
+            [
+                'uuid' => new UuidV4("\x27\x43\x3d\x43\x01\x1d\x4a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9"),
+                'expectedHexadecimal' => '27433d43011d4a6a91611550863792c9',
+            ],
+            [
+                'uuid' => new UuidV4('27433d43-011d-4a6a-9161-1550863792c9'),
+                'expectedHexadecimal' => '27433d43011d4a6a91611550863792c9',
+            ],
+            [
+                'uuid' => new MicrosoftGuid("\x43\x3d\x43\x27\x1d\x01\x6a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9"),
+                'expectedHexadecimal' => '27433d43011d4a6ac1611550863792c9',
+            ],
+            [
+                'uuid' => new MicrosoftGuid('27433d43-011d-4a6a-c161-1550863792c9'),
+                'expectedHexadecimal' => '27433d43011d4a6ac1611550863792c9',
+            ],
+            [
+                'uuid' => new MicrosoftGuid("\x43\x3d\x43\x27\x1d\x01\x6a\x4a\x91\x61\x15\x50\x86\x37\x92\xc9"),
+                'expectedHexadecimal' => '27433d43011d4a6a91611550863792c9',
+            ],
+            [
+                'uuid' => new UntypedUuid("\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9"),
+                'expectedHexadecimal' => '27433d43011d4a6ac1611550863792c9',
+            ],
+            [
+                'uuid' => new UntypedUuid('27433d43-011d-4a6a-c161-1550863792c9'),
+                'expectedHexadecimal' => '27433d43011d4a6ac1611550863792c9',
+            ],
+            [
+                'uuid' => new NonstandardUuid("\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9"),
+                'expectedHexadecimal' => '27433d43011d0a6ac1611550863792c9',
+            ],
+        ];
     }
 }

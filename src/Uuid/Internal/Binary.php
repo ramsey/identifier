@@ -26,9 +26,12 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid\Internal;
 
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 
+use function hex2bin;
 use function pack;
 use function strlen;
 use function unpack;
@@ -88,5 +91,24 @@ final class Binary
 
         /** @var non-empty-string */
         return pack('n8', ...$parts);
+    }
+
+    /**
+     * Returns the 16 bytes of the UUID in network byte order, which is the
+     * layout RFC 9562 defines
+     *
+     * A Microsoft GUID returns its bytes in GUID byte order, but its
+     * hexadecimal form is its value, so the bytes come from that.
+     *
+     * @return non-empty-string
+     */
+    public static function getNetworkBytes(Uuid $uuid): string
+    {
+        if ($uuid instanceof MicrosoftGuid) {
+            /** @var non-empty-string */
+            return (string) hex2bin($uuid->toHexadecimal());
+        }
+
+        return $uuid->toBytes();
     }
 }

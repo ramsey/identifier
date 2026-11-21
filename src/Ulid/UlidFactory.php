@@ -35,6 +35,7 @@ use Ramsey\Identifier\Ulid\Internal\Format;
 use Ramsey\Identifier\Ulid\Internal\Validation;
 use Ramsey\Identifier\UlidFactory as UlidFactoryInterface;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Internal\Binary;
 
 use function is_int;
 use function is_string;
@@ -200,7 +201,7 @@ final class UlidFactory implements UlidFactoryInterface
      */
     public function createFromUuid(Uuid $uuid): MaxUlid | NilUlid | Ulid
     {
-        return $this->createFromBytes($uuid->toBytes());
+        return $this->createFromBytes(Binary::getNetworkBytes($uuid));
     }
 
     /**

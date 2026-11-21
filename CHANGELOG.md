@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Identifiers whose bytes look like numbers to PHP no longer compare as equal.
 - GUIDs sort in the order of their string form.
 - `GenericSnowflakeFactory::createFromDateTime()` with a negative epoch offset names the factory's epoch and its latest date-time correctly in the exceptions it throws, in place of a PHP error.
+- `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, so the two compare as equal.
 
 ## [0.1.0] - 2025-06-19
 
