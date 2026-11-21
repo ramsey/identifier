@@ -1,4 +1,5 @@
 .phpunit.result.cache
+/.phpbench/
 /captainhook.config.json
 /composer.lock
 /phpcs.xml
