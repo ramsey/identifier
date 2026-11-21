@@ -153,7 +153,9 @@ final class Rfc4122ClockSequence implements ClockSequence
 
         // If the state timestamp is later than the current, the clock was set
         // backward, and we must increment the sequence.
-        if ($generatorState->timestamp > (int) $dateTime->format(Precision::Microsecond->value)) {
+        $microseconds = $this->getUnixMicroseconds($dateTime);
+
+        if ($generatorState->timestamp > $microseconds) {
             // If the sequence is at the max value, roll it over to zero.
             if ($generatorState->sequence === PHP_INT_MAX) {
                 $generatorState->sequence = 0;
@@ -161,7 +163,7 @@ final class Rfc4122ClockSequence implements ClockSequence
                 $generatorState->sequence++;
             }
 
-            $generatorState->timestamp = (int) $dateTime->format(Precision::Microsecond->value);
+            $generatorState->timestamp = $microseconds;
             $this->cache->set($cacheKey, $generatorState);
         }
 

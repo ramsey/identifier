@@ -27,9 +27,11 @@ namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
 
+use function intdiv;
 use function random_int;
 
 use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * A utility for fetching the generator state from the cache
@@ -39,6 +41,8 @@ use const PHP_INT_MAX;
  */
 trait GeneratorStateCache
 {
+    private const MICROSECONDS_PER_SECOND = 1_000_000;
+
     /**
      * @var int<0, max> | null
      */
@@ -73,13 +77,38 @@ trait GeneratorStateCache
             $generatorState = new GeneratorState(
                 node: $state,
                 sequence: $this->initializeValue(),
-                timestamp: (int) $dateTime->format(Precision::Microsecond->value),
+                timestamp: $this->getUnixMicroseconds($dateTime),
             );
 
             $this->cache->set($cacheKey, $generatorState);
         }
 
         return $generatorState;
+    }
+
+    /**
+     * Returns the number of microseconds from the Unix Epoch to the date-time,
+     * which is negative for a date-time before the Unix Epoch
+     *
+     * A date-time too far from the Unix Epoch to count in microseconds as an
+     * int returns the largest or the smallest int.
+     */
+    private function getUnixMicroseconds(DateTimeInterface $dateTime): int
+    {
+        $seconds = $dateTime->getTimestamp();
+
+        if ($seconds > intdiv(PHP_INT_MAX, self::MICROSECONDS_PER_SECOND) - 1) {
+            return PHP_INT_MAX;
+        }
+
+        if ($seconds < intdiv(PHP_INT_MIN, self::MICROSECONDS_PER_SECOND)) {
+            return PHP_INT_MIN;
+        }
+
+        // The timestamp is whole seconds rounded down, and the fraction is
+        // never negative, so for a date-time before the Unix Epoch the two
+        // add up to the right number of microseconds.
+        return $seconds * self::MICROSECONDS_PER_SECOND + (int) $dateTime->format('u');
     }
 
     /**

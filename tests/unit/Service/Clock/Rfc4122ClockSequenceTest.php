@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
@@ -51,6 +52,44 @@ class Rfc4122ClockSequenceTest extends TestCase
 
         // But the next time we call, it should still be 1.
         $this->assertSame(1, $sequence->next());
+    }
+
+    #[TestWith(['1970-01-01 00:00:01.200000', '1970-01-01 00:00:01.800000'])]
+    #[TestWith(['1969-12-31 23:59:59.200000', '1969-12-31 23:59:59.800000'])]
+    #[TestWith(['1969-12-31 23:59:58.900000', '1969-12-31 23:59:59.100000'])]
+    #[TestWith(['1969-12-31 23:59:59.999999', '1970-01-01 00:00:00.000000'])]
+    #[TestWith(['1960-06-01 12:00:00.250000', '1960-06-01 12:00:00.250001'])]
+    public function testSequenceRemainsConstantWhenDateTimeMovesForward(string $earlier, string $later): void
+    {
+        $sequence = new Rfc4122ClockSequence(initialValue: 0);
+
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($earlier)));
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($later)));
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($later)));
+    }
+
+    #[TestWith(['1970-01-01 00:00:01.200000', '1970-01-01 00:00:01.800000'])]
+    #[TestWith(['1969-12-31 23:59:59.200000', '1969-12-31 23:59:59.800000'])]
+    #[TestWith(['1969-12-31 23:59:58.900000', '1969-12-31 23:59:59.100000'])]
+    #[TestWith(['1969-12-31 23:59:59.999999', '1970-01-01 00:00:00.000000'])]
+    #[TestWith(['1960-06-01 12:00:00.250000', '1960-06-01 12:00:00.250001'])]
+    public function testSequenceAdvancesWhenDateTimeMovesBackward(string $earlier, string $later): void
+    {
+        $sequence = new Rfc4122ClockSequence(initialValue: 0);
+
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($later)));
+        $this->assertSame(1, $sequence->next('node', new DateTimeImmutable($earlier)));
+        $this->assertSame(1, $sequence->next('node', new DateTimeImmutable($later)));
+    }
+
+    #[TestWith(['@9223372036855', '@9223372036856'])]
+    #[TestWith(['@-9223372036856', '@-9223372036855'])]
+    public function testSequenceAcceptsDateTimesFarFromTheUnixEpoch(string $earlier, string $later): void
+    {
+        $sequence = new Rfc4122ClockSequence(initialValue: 0);
+
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($earlier)));
+        $this->assertSame(0, $sequence->next('node', new DateTimeImmutable($later)));
     }
 
     public function testSequenceRollsOverWhenMaxValueIsReached(): void
