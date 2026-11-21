@@ -83,7 +83,8 @@ final class MonotonicBytesGenerator implements BytesGenerator
     }
 
     /**
-     * @throws InvalidArgument if the date-time is before 1970-01-01 00:00:00.000 UTC or after 10889-08-02 05:31:50.655 UTC
+     * @throws InvalidArgument if the date-time is before 1970-01-01 00:00:00.000
+     *     UTC or after 10889-08-02 05:31:50.655 UTC
      */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {

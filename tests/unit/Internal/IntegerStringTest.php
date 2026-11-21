@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Internal;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -139,6 +140,61 @@ class IntegerStringTest extends TestCase
             ['value' => '9223372036854776832', 'expected' => false],
             ['value' => '10000000000000000000', 'expected' => false],
             ['value' => '340282366920938463463374607431768211455', 'expected' => false],
+        ];
+    }
+
+    #[DataProvider('compareInvalidProvider')]
+    public function testCompareThrowsExceptionForStringThatIsNotAnInteger(
+        string $a,
+        string $b,
+        string $invalid,
+    ): void {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid integer: "' . $invalid . '"');
+
+        IntegerString::compare($a, $b);
+    }
+
+    /**
+     * @return list<array{a: string, b: string, invalid: string}>
+     */
+    public static function compareInvalidProvider(): array
+    {
+        return [
+            ['a' => '', 'b' => '1', 'invalid' => ''],
+            ['a' => '1', 'b' => '', 'invalid' => ''],
+            ['a' => 'abc', 'b' => '9', 'invalid' => 'abc'],
+            ['a' => '9', 'b' => '-1', 'invalid' => '-1'],
+            ['a' => '01', 'b' => '1', 'invalid' => '01'],
+            ['a' => '1.0', 'b' => '1', 'invalid' => '1.0'],
+            ['a' => '+1', 'b' => '-1', 'invalid' => '+1'],
+        ];
+    }
+
+    #[DataProvider('fitsNativeIntegerInvalidProvider')]
+    public function testFitsNativeIntegerThrowsExceptionForStringThatIsNotAnInteger(string $value): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid integer: "' . $value . '"');
+
+        IntegerString::fitsNativeInteger($value);
+    }
+
+    /**
+     * @return list<array{value: string}>
+     */
+    public static function fitsNativeIntegerInvalidProvider(): array
+    {
+        return [
+            ['value' => ''],
+            ['value' => '-1'],
+            ['value' => '+1'],
+            ['value' => '01'],
+            ['value' => '00000000000000000000'],
+            ['value' => '1.0'],
+            ['value' => '1e3'],
+            ['value' => ' 1'],
+            ['value' => 'abc'],
         ];
     }
 }

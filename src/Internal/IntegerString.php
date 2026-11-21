@@ -25,6 +25,9 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Internal;
 
+use Ramsey\Identifier\Exception\InvalidArgument;
+
+use function sprintf;
 use function strcmp;
 use function strlen;
 use function strspn;
@@ -36,9 +39,9 @@ use const PHP_INT_MAX;
  * Checks whether a string is an integer string
  *
  * An integer string is one or more of the digits 0 to 9, with no sign, no
- * decimal point, no exponent, and no whitespace. Zero is "0," and no other
- * integer string begins with a zero. Every integer therefore has exactly one
- * integer string.
+ * decimal point, no exponent, and no whitespace. The value zero is the string
+ * 0, and no other integer string begins with a zero. Every integer therefore
+ * has exactly one integer string.
  *
  * @internal Not intended for use outside ramsey/identifier; may change without
  *     notice.
@@ -84,11 +87,16 @@ final class IntegerString
      * Returns a negative integer, zero, or a positive integer when the first
      * integer string is less than, equal to, or greater than the second
      *
-     * Both arguments must be integer strings; the result for any other string
-     * has no meaning.
+     * @throws InvalidArgument if either argument is not an integer string
      */
     public static function compare(string $first, string $second): int
     {
+        foreach ([$first, $second] as $value) {
+            if (!self::isValid($value)) {
+                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $value));
+            }
+        }
+
         $lengthComparison = strlen($first) <=> strlen($second);
 
         if ($lengthComparison !== 0) {
@@ -102,8 +110,7 @@ final class IntegerString
      * Returns true if the integer string is no greater than the largest
      * integer PHP stores as an int
      *
-     * The argument must be an integer string; the result for any other string
-     * has no meaning.
+     * @throws InvalidArgument if the argument is not an integer string
      */
     public static function fitsNativeInteger(string $value): bool
     {
