@@ -102,22 +102,33 @@ final class Time
                 throw new NotConvertible('The date-time of the snowflake cannot be represented');
             }
 
-            $milliseconds = $shifted + $epochOffset;
-            $timestamp = sprintf(
-                '%s%d.%03d',
-                $milliseconds < 0 ? '-' : '',
-                abs(intdiv($milliseconds, 1000)),
-                abs($milliseconds % 1000),
-            );
-        } else {
-            $timestamp = (string) BigInteger::of($value)
-                ->shiftedRight($rightShifts)
-                ->plus($epochOffset)
-                ->toBigDecimal()
-                ->dividedBy(1000, 3, RoundingMode::HalfUp);
+            return self::getDateTimeForUnixMilliseconds($shifted + $epochOffset);
         }
 
+        $timestamp = (string) BigInteger::of($value)
+            ->shiftedRight($rightShifts)
+            ->plus($epochOffset)
+            ->toBigDecimal()
+            ->dividedBy(1000, 3, RoundingMode::HalfUp);
+
         return new DateTimeImmutable('@' . $timestamp);
+    }
+
+    /**
+     * Returns the date-time that is the given number of milliseconds after the
+     * Unix Epoch, or before it when the number is negative
+     */
+    public static function getDateTimeForUnixMilliseconds(int $milliseconds): DateTimeImmutable
+    {
+        // The sign is written apart from the digits because a time less than
+        // one second before the Unix Epoch has zero whole seconds and would
+        // lose its sign.
+        return new DateTimeImmutable(sprintf(
+            '@%s%d.%03d',
+            $milliseconds < 0 ? '-' : '',
+            abs(intdiv($milliseconds, self::MILLISECONDS)),
+            abs($milliseconds % self::MILLISECONDS),
+        ));
     }
 
     /**

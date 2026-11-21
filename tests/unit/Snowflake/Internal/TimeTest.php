@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake\Epoch;
@@ -261,5 +262,35 @@ class TimeTest extends TestCase
             ['dateTime' => '@-9223372036854775', 'expected' => -9223372036854775000],
             ['dateTime' => '@-9223372036854776', 'expected' => PHP_INT_MIN],
         ];
+    }
+
+    #[TestWith([0, '1970-01-01 00:00:00.000'])]
+    #[TestWith([5, '1970-01-01 00:00:00.005'])]
+    #[TestWith([1005, '1970-01-01 00:00:01.005'])]
+    #[TestWith([946684800123, '2000-01-01 00:00:00.123'])]
+    #[TestWith([-1, '1969-12-31 23:59:59.999'])]
+    #[TestWith([-500, '1969-12-31 23:59:59.500'])]
+    #[TestWith([-995, '1969-12-31 23:59:59.005'])]
+    #[TestWith([-1000, '1969-12-31 23:59:59.000'])]
+    #[TestWith([-1500, '1969-12-31 23:59:58.500'])]
+    #[TestWith([-302443199750, '1960-06-01 12:00:00.250'])]
+    public function testGetDateTimeForUnixMilliseconds(int $milliseconds, string $expected): void
+    {
+        $this->assertSame($expected, Time::getDateTimeForUnixMilliseconds($milliseconds)->format('Y-m-d H:i:s.v'));
+    }
+
+    #[TestWith([0])]
+    #[TestWith([-1])]
+    #[TestWith([-999])]
+    #[TestWith([-1000])]
+    #[TestWith([-1001])]
+    #[TestWith([-302443199750])]
+    #[TestWith([946684800123])]
+    public function testGetUnixMillisecondsReturnsWhatGetDateTimeForUnixMillisecondsWasGiven(int $milliseconds): void
+    {
+        $this->assertSame(
+            $milliseconds,
+            Time::getUnixMilliseconds(Time::getDateTimeForUnixMilliseconds($milliseconds)),
+        );
     }
 }

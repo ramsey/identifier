@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
@@ -334,5 +335,43 @@ class GenericSnowflakeFactoryTest extends TestCase
             ['epochOffset' => -1000000000000, 'dateTime' => '1969-12-31 23:59:59.900'],
             ['epochOffset' => -1000000000000, 'dateTime' => '1960-06-01 12:00:00.250'],
         ];
+    }
+
+    #[TestWith([-1, '1969-12-31 23:59:59.998', '1969-12-31T23:59:59.999Z'])]
+    #[TestWith([-500, '1969-12-31 23:59:59.499', '1969-12-31T23:59:59.500Z'])]
+    #[TestWith([-1000, '1969-12-31 23:59:58.999', '1969-12-31T23:59:59.000Z'])]
+    #[TestWith([-1500, '1969-12-31 23:59:58.499', '1969-12-31T23:59:58.500Z'])]
+    #[TestWith([5, '1970-01-01 00:00:00.004', '1970-01-01T00:00:00.005Z'])]
+    public function testCreateFromDateTimeThrowsExceptionForDateTimeBeforeEpoch(
+        int $epochOffset,
+        string $dateTime,
+        string $expectedEpoch,
+    ): void {
+        $factory = new GenericSnowflakeFactory(1, $epochOffset);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Timestamp may not be earlier than the epoch, ' . $expectedEpoch);
+
+        $factory->createFromDateTime(new DateTimeImmutable($dateTime));
+    }
+
+    #[TestWith([-98, '2109-05-15 07:35:11.006', '2109-05-15T07:35:11.005Z'])]
+    #[TestWith([-4398046511603, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.500Z'])]
+    #[TestWith([-4398046512103, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.000Z'])]
+    public function testCreateFromDateTimeThrowsExceptionForDateTimeAfterLatest(
+        int $epochOffset,
+        string $dateTime,
+        string $expectedLatest,
+    ): void {
+        $factory = new GenericSnowflakeFactory(1, $epochOffset);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(sprintf(
+            'Snowflakes with epoch offset %d cannot have a date-time greater than %s',
+            $epochOffset,
+            $expectedLatest,
+        ));
+
+        $factory->createFromDateTime(new DateTimeImmutable($dateTime));
     }
 }

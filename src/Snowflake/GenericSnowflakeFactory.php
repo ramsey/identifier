@@ -26,7 +26,6 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
-use DateTimeImmutable;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -38,9 +37,7 @@ use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
 use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\SnowflakeFactory;
 
-use function intdiv;
 use function sprintf;
-use function substr;
 
 /**
  * A factory that generates generic Snowflakes identifiers that may use any
@@ -119,13 +116,12 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
                 'Timestamp may not be earlier than the epoch, %s',
-                $this->getEpochDate()->format(Epoch::ISO_EXTENDED_FORMAT),
+                Time::getDateTimeForUnixMilliseconds($this->epochOffset)->format(Epoch::ISO_EXTENDED_FORMAT),
             ));
         }
 
         if ($milliseconds > 0x3ffffffffff) {
-            $maxMilliseconds = 0x3ffffffffff + $this->epochOffset;
-            $maxDateTime = new DateTimeImmutable('@' . intdiv($maxMilliseconds, 1000) . '.' . $maxMilliseconds % 1000);
+            $maxDateTime = Time::getDateTimeForUnixMilliseconds(0x3ffffffffff + $this->epochOffset);
 
             throw new InvalidArgument(sprintf(
                 'Snowflakes with epoch offset %d cannot have a date-time greater than %s',
@@ -189,13 +185,5 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     public function createFromString(string $identifier): Snowflake
     {
         return new GenericSnowflake($identifier, $this->epochOffset);
-    }
-
-    private function getEpochDate(): DateTimeImmutable
-    {
-        $timestamp = sprintf('%04s', $this->epochOffset);
-        $timestamp = substr($timestamp, 0, -3) . '.' . substr($timestamp, -3);
-
-        return new DateTimeImmutable('@' . $timestamp);
     }
 }
