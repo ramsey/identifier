@@ -55,7 +55,7 @@ final class UuidV5Factory implements UuidFactoryInterface
         }
 
         /** @var non-empty-string $bytes */
-        $bytes = substr(hash('sha1', $namespace->toBytes() . $name, true), 0, 16);
+        $bytes = substr(hash('sha1', Binary::getNetworkBytes($namespace) . $name, true), 0, 16);
         $bytes = Binary::applyVersionAndVariant($bytes, Version::NameSha1);
 
         return new UuidV5($bytes);

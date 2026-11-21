@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
+use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidV4Factory;
 use Ramsey\Identifier\Uuid\UuidV5Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -29,6 +33,17 @@ class UuidV5FactoryTest extends TestCase
         // Two version 5 UUIDs created in the same namespace with the
         // same name must be equal.
         $this->assertTrue($uuid1->equals($uuid2));
+    }
+
+    #[TestWith([new UntypedUuid('27433d43-011d-4a6a-c161-1550863792c9')])]
+    #[TestWith([new UntypedUuid("\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9")])]
+    #[TestWith([new MicrosoftGuid('27433d43-011d-4a6a-c161-1550863792c9')])]
+    #[TestWith([new MicrosoftGuid("\x43\x3d\x43\x27\x1d\x01\x6a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9")])]
+    public function testCreateUsesTheValueOfTheNamespace(Uuid $namespace): void
+    {
+        $uuid = $this->factory->create($namespace, 'name');
+
+        $this->assertSame('2545aff5-2ee6-532e-a3e5-68362830e9eb', $uuid->toString());
     }
 
     public function testCreateWithoutNamespaceThrowsException(): void

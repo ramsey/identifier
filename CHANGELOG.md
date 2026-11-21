@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `equals()` returns `true` only for an identifier of the same kind (UUID, ULID, or snowflake) with the same sort key, or a string in the identifier's own string form with the same value; a UUID and a ULID with the same bytes are no longer equal.
 - **Breaking:** `toUuid()` on a ULID returns an `UntypedUuid` with the same bytes as the ULID. Call `toTypedUuid()` on it to get a typed UUID, such as `UuidV7` or `NonstandardUuid`.
 - **Breaking:** `UntypedUuid` and `NonstandardUuid` read a byte string in RFC 9562 layout, whatever its variant, so the bytes have the version and the value their string form shows. Use `MicrosoftGuid` or `MicrosoftGuidFactory` for bytes in Microsoft GUID byte order.
+- **Breaking:** A version 3 or 5 UUID created from a `MicrosoftGuid` namespace has a different value than before.
 
 ### Fixed
 
@@ -38,6 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - GUIDs sort in the order of their string form.
 - `GenericSnowflakeFactory::createFromDateTime()` with a negative epoch offset names the factory's epoch and its latest date-time correctly in the exceptions it throws, in place of a PHP error.
 - `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, so the two compare as equal.
+- `UuidV3Factory` and `UuidV5Factory` given a `MicrosoftGuid` namespace create the same UUID as for any other UUID with the same string form.
 
 ## [0.1.0] - 2025-06-19
 
