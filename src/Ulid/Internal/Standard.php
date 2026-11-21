@@ -31,9 +31,8 @@ use Identifier\Identifier;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
 use Ramsey\Identifier\Ulid;
-use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
-use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
 
@@ -207,17 +206,15 @@ trait Standard
     /**
      * Returns this ULID as a binary-equal UUID instance
      *
-     * Both ULIDs and UUIDs are 128-bit integers. At the binary level, their
-     * bits are identical.
-     *
-     * This method returns a UUID instance that has the same bytes as the ULID
-     * from which it was created. As a result, the UUID might not be a valid RFC
-     * 9562 variant UUID. If this is the case, the resulting UUID will be of the
-     * type {@see \Ramsey\Identifier\Uuid\NonstandardUuid NonstandardUuid}.
+     * This method returns an {@see UntypedUuid} instance that has the same
+     * bytes as the ULID from which it was created. As a result, the UUID might
+     * not be a valid RFC 9562 variant UUID. If this is the case, the UUID
+     * returned from {@see UntypedUuid::toTypedUuid()} will be of the type
+     * {@see \Ramsey\Identifier\Uuid\NonstandardUuid NonstandardUuid}.
      */
-    public function toUuid(): Uuid
+    public function toUuid(): UntypedUuid
     {
-        return (new UuidFactory())->createFromBytes($this->toBytes())->toTypedUuid();
+        return new UntypedUuid($this->toBytes());
     }
 
     /**

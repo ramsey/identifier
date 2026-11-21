@@ -278,7 +278,7 @@ class NilUlidTest extends TestCase
 
     public function testToUuid(): void
     {
-        $uuid = $this->nilUlid->toUuid();
+        $uuid = $this->nilUlid->toUuid()->toTypedUuid();
 
         $this->assertInstanceOf(NilUuid::class, $uuid);
         $this->assertSame(0, $this->nilUlid->compareTo($uuid));

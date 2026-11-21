@@ -310,7 +310,7 @@ class MaxUlidTest extends TestCase
 
     public function testToUuid(): void
     {
-        $uuid = $this->maxUlid->toUuid();
+        $uuid = $this->maxUlid->toUuid()->toTypedUuid();
 
         $this->assertInstanceOf(MaxUuid::class, $uuid);
         $this->assertSame(0, $this->maxUlid->compareTo($uuid));

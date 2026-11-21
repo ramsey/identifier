@@ -352,7 +352,7 @@ class UlidTest extends TestCase
     {
         $ulidBytes = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
         $ulid = new Ulid($ulidBytes);
-        $uuid = $ulid->toUuid();
+        $uuid = $ulid->toUuid()->toTypedUuid();
 
         $this->assertInstanceOf(UuidV7::class, $uuid);
         $this->assertSame(0, $ulid->compareTo($uuid));
@@ -363,7 +363,7 @@ class UlidTest extends TestCase
     {
         $ulidBytes = "\x01\x7f\x22\xe2\x79\xb0\x4c\xc3\x68\xc4\xdc\x0c\x0c\x07\x39\x8f";
         $ulid = new Ulid($ulidBytes);
-        $uuid = $ulid->toUuid();
+        $uuid = $ulid->toUuid()->toTypedUuid();
 
         $this->assertInstanceOf(NonstandardUuid::class, $uuid);
         $this->assertSame(0, $ulid->compareTo($uuid));
