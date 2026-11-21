@@ -31,9 +31,9 @@ use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
-use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function sprintf;
@@ -106,7 +106,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): InstagramSnowflake
     {
-        $milliseconds = (int) $dateTime->format(Precision::Millisecond->value) - Epoch::Instagram->value;
+        $milliseconds = Time::getUnixMilliseconds($dateTime) - Epoch::Instagram->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(

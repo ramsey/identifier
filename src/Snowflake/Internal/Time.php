@@ -28,6 +28,7 @@ namespace Ramsey\Identifier\Snowflake\Internal;
 use Brick\Math\BigInteger;
 use Brick\Math\RoundingMode;
 use DateTimeImmutable;
+use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
@@ -38,6 +39,7 @@ use function is_int;
 use function sprintf;
 
 use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 /**
  * A utility for getting the date-time from a Snowflake identifier
@@ -48,6 +50,11 @@ use const PHP_INT_MAX;
 final class Time
 {
     private const SNOWFLAKE_BITS = 64;
+
+    /**
+     * The number of milliseconds in one second
+     */
+    private const MILLISECONDS = 1000;
 
     private function __construct()
     {
@@ -111,5 +118,30 @@ final class Time
         }
 
         return new DateTimeImmutable('@' . $timestamp);
+    }
+
+    /**
+     * Returns the number of milliseconds from the Unix Epoch to the date-time,
+     * which is negative for a date-time before the Unix Epoch
+     *
+     * A date-time too far from the Unix Epoch to count in milliseconds as an
+     * int returns the largest or the smallest int.
+     */
+    public static function getUnixMilliseconds(DateTimeInterface $dateTime): int
+    {
+        $timestamp = $dateTime->getTimestamp();
+
+        if ($timestamp > intdiv(PHP_INT_MAX, self::MILLISECONDS) - 1) {
+            return PHP_INT_MAX;
+        }
+
+        if ($timestamp < intdiv(PHP_INT_MIN, self::MILLISECONDS)) {
+            return PHP_INT_MIN;
+        }
+
+        // The timestamp is whole seconds, rounded down, and the fraction of a
+        // second is never negative, so adding them gives the right number of
+        // milliseconds on both sides of the Unix Epoch.
+        return $timestamp * self::MILLISECONDS + (int) $dateTime->format('v');
     }
 }

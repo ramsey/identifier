@@ -32,10 +32,10 @@ use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
-use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function intdiv;
@@ -114,7 +114,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake
     {
-        $milliseconds = (int) $dateTime->format(Precision::Millisecond->value) - $this->epochOffset;
+        $milliseconds = Time::getUnixMilliseconds($dateTime) - $this->epochOffset;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(

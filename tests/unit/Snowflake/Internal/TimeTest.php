@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Snowflake\Internal;
 
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
@@ -232,5 +233,33 @@ class TimeTest extends TestCase
             '292279133-12-30 14:48:06.910',
             Time::getDateTimeForSnowflake($snowflake, PHP_INT_MAX, 22)->format('Y-m-d H:i:s.v'),
         );
+    }
+
+    #[DataProvider('unixMillisecondsProvider')]
+    public function testGetUnixMilliseconds(string $dateTime, int $expected): void
+    {
+        $this->assertSame($expected, Time::getUnixMilliseconds(new DateTimeImmutable($dateTime)));
+    }
+
+    /**
+     * @return list<array{dateTime: string, expected: int}>
+     */
+    public static function unixMillisecondsProvider(): array
+    {
+        return [
+            ['dateTime' => '1970-01-01 00:00:00.000', 'expected' => 0],
+            ['dateTime' => '1970-01-01 00:00:00.001', 'expected' => 1],
+            ['dateTime' => '2000-01-01 00:00:00.123', 'expected' => 946684800123],
+            ['dateTime' => '1969-12-31 23:59:59.999', 'expected' => -1],
+            ['dateTime' => '1969-12-31 23:59:59.900', 'expected' => -100],
+            ['dateTime' => '1969-12-31 23:59:59.000', 'expected' => -1000],
+            ['dateTime' => '1969-12-31 23:59:58.100', 'expected' => -1900],
+            ['dateTime' => '1960-06-01 12:00:00.250', 'expected' => -302443199750],
+            ['dateTime' => '@9223372036854774', 'expected' => 9223372036854774000],
+            ['dateTime' => '@9223372036854775', 'expected' => PHP_INT_MAX],
+            ['dateTime' => '@9223372036854776', 'expected' => PHP_INT_MAX],
+            ['dateTime' => '@-9223372036854775', 'expected' => -9223372036854775000],
+            ['dateTime' => '@-9223372036854776', 'expected' => PHP_INT_MIN],
+        ];
     }
 }

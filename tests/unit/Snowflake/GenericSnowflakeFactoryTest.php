@@ -312,4 +312,27 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());
     }
+
+    #[DataProvider('dateTimeBeforeUnixEpochProvider')]
+    public function testCreateFromDateTimeBeforeUnixEpoch(int $epochOffset, string $dateTime): void
+    {
+        $factory = new GenericSnowflakeFactory(1, $epochOffset);
+        $snowflake = $factory->createFromDateTime(new DateTimeImmutable($dateTime));
+
+        $this->assertSame($dateTime, $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
+    }
+
+    /**
+     * @return list<array{epochOffset: int, dateTime: string}>
+     */
+    public static function dateTimeBeforeUnixEpochProvider(): array
+    {
+        return [
+            ['epochOffset' => -500, 'dateTime' => '1969-12-31 23:59:59.900'],
+            ['epochOffset' => -1000, 'dateTime' => '1969-12-31 23:59:59.000'],
+            ['epochOffset' => -2000, 'dateTime' => '1969-12-31 23:59:58.001'],
+            ['epochOffset' => -1000000000000, 'dateTime' => '1969-12-31 23:59:59.900'],
+            ['epochOffset' => -1000000000000, 'dateTime' => '1960-06-01 12:00:00.250'],
+        ];
+    }
 }

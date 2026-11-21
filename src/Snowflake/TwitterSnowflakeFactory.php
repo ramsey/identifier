@@ -32,6 +32,7 @@ use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function sprintf;
@@ -104,7 +105,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
      */
     public function createFromDateTime(DateTimeInterface $dateTime): TwitterSnowflake
     {
-        $milliseconds = (int) $dateTime->format('Uv') - Epoch::Twitter->value;
+        $milliseconds = Time::getUnixMilliseconds($dateTime) - Epoch::Twitter->value;
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(

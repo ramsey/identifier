@@ -66,6 +66,16 @@ final class Time
      */
     private const MICROSECONDS = 1_000_000;
 
+    /**
+     * The number of 100-nanosecond intervals in one second
+     */
+    private const INTERVALS_PER_SECOND = 10_000_000;
+
+    /**
+     * The number of 100-nanosecond intervals in one microsecond
+     */
+    private const INTERVALS_PER_MICROSECOND = 10;
+
     private function __construct()
     {
     }
@@ -94,24 +104,39 @@ final class Time
      */
     public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
-        // A count of 100-nanosecond intervals
-        $intervals = (int) $dateTime->format('Uu0');
+        $timestamp = $dateTime->getTimestamp();
 
-        if ($intervals < 0 - self::GREGORIAN_OFFSET) {
+        if ($timestamp < -intdiv(self::GREGORIAN_OFFSET, self::INTERVALS_PER_SECOND)) {
             throw new InvalidArgument('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
         }
 
-        $intervals = $intervals + self::GREGORIAN_OFFSET;
+        // Test the range before multiplying, so the multiplication stays within
+        // the range of an int.
+        if ($timestamp > intdiv(self::MAX_GREGORIAN_TIME - self::GREGORIAN_OFFSET, self::INTERVALS_PER_SECOND)) {
+            throw self::exceedsMaximum($dateTime);
+        }
+
+        // The timestamp is whole seconds, rounded down, and the fraction of a
+        // second is never negative, so adding them counts the intervals right
+        // on both sides of the Unix Epoch.
+        $intervals = $timestamp * self::INTERVALS_PER_SECOND
+            + (int) $dateTime->format('u') * self::INTERVALS_PER_MICROSECOND
+            + self::GREGORIAN_OFFSET;
 
         if ($intervals > self::MAX_GREGORIAN_TIME) {
-            throw new InvalidArgument(sprintf(
-                'The date exceeds the maximum value allowed for Gregorian time UUIDs: %s',
-                $dateTime->format('Y-m-d H:i:s.u P'),
-            ));
+            throw self::exceedsMaximum($dateTime);
         }
 
         /** @var non-empty-string */
         return pack('J', $intervals);
+    }
+
+    private static function exceedsMaximum(DateTimeInterface $dateTime): InvalidArgument
+    {
+        return new InvalidArgument(sprintf(
+            'The date exceeds the maximum value allowed for Gregorian time UUIDs: %s',
+            $dateTime->format('Y-m-d H:i:s.u P'),
+        ));
     }
 
     /**
@@ -217,11 +242,16 @@ final class Time
         // Convert time to microseconds from 100-nanosecond intervals.
         $timestamp = intdiv($timestamp, 10);
 
+        // The sign is written apart from the digits because a timestamp after
+        // "@" is a sign and a magnitude, so a time less than one second before
+        // the Unix Epoch, which has zero whole seconds, keeps its sign.
+
         /** @var numeric-string */
         return sprintf(
-            '%d.%06d',
-            intdiv($timestamp, self::MICROSECONDS),
-            abs($timestamp) % self::MICROSECONDS,
+            '%s%d.%06d',
+            $timestamp < 0 ? '-' : '',
+            abs(intdiv($timestamp, self::MICROSECONDS)),
+            abs($timestamp % self::MICROSECONDS),
         );
     }
 }

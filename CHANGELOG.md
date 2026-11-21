@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `createFromInteger()` and `toInteger()` on UUIDs and ULIDs keep the exact value of an integer just above `PHP_INT_MAX`, such as `9223372036854775808`.
 - `getDateTime()` on a snowflake whose epoch offset puts the date-time out of range throws `NotConvertible` in place of a PHP error.
 - `getDateTime()` on a snowflake returned the wrong date-time when the date-time was less than one second before the Unix Epoch.
+- A version 1, 2, or 6 UUID, or a snowflake, created from a date-time before the Unix Epoch that has a fraction of a second has that date-time.
 - A snowflake value above the largest unsigned 64-bit integer was accepted when written with a leading zero.
 - Identifiers whose bytes look like numbers to PHP no longer compare as equal.
 - GUIDs sort in the order of their string form.

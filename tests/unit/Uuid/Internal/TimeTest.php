@@ -7,6 +7,7 @@ namespace Ramsey\Test\Identifier\Uuid\Internal;
 use DateTimeImmutable;
 use DateTimeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Internal\Time;
 use Ramsey\Identifier\Uuid\UuidFactory;
@@ -51,6 +52,18 @@ class TimeTest extends TestCase
                 'dateTime' => new DateTimeImmutable('5236-03-31 21:21:00.684697'),
                 'expectedBytes' => "\x0f\xff\xff\xff\xff\xff\xff\xfa",
             ],
+            [
+                'dateTime' => new DateTimeImmutable('1582-10-15 00:00:00.000001'),
+                'expectedBytes' => "\x00\x00\x00\x00\x00\x00\x00\x0a",
+            ],
+            [
+                'dateTime' => new DateTimeImmutable('1969-12-31 23:59:59.500000'),
+                'expectedBytes' => "\x01\xb2\x1d\xd2\x13\x34\xf4\xc0",
+            ],
+            [
+                'dateTime' => new DateTimeImmutable('1969-12-31 23:59:59.999999'),
+                'expectedBytes' => "\x01\xb2\x1d\xd2\x13\x81\x3f\xf6",
+            ],
         ];
     }
 
@@ -74,6 +87,17 @@ class TimeTest extends TestCase
         );
 
         Time::getTimeBytesForGregorianEpoch($dateTime);
+    }
+
+    #[TestWith(['@103072857661'])]
+    #[TestWith(['@1000000000000'])]
+    #[TestWith(['@9223372036854775'])]
+    public function testGetTimeBytesForGregorianEpochThrowsExceptionForDateFarAfterMaximum(string $dateTime): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The date exceeds the maximum value allowed for Gregorian time UUIDs');
+
+        Time::getTimeBytesForGregorianEpoch(new DateTimeImmutable($dateTime));
     }
 
     /**

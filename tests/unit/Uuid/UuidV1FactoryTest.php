@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
@@ -242,5 +243,18 @@ class UuidV1FactoryTest extends TestCase
             'too long' => ['hexadecimal' => '27433d43011d1a6a91611550863792c9a'],
             'not hexadecimal' => ['hexadecimal' => '27433d43011d1a6a91611550863792cg'],
         ];
+    }
+
+    #[TestWith(['1582-10-15 00:00:00.000001'])]
+    #[TestWith(['1960-06-01 12:00:00.250000'])]
+    #[TestWith(['1969-12-31 23:59:58.000001'])]
+    #[TestWith(['1969-12-31 23:59:59.000000'])]
+    #[TestWith(['1969-12-31 23:59:59.500000'])]
+    #[TestWith(['1969-12-31 23:59:59.999999'])]
+    public function testCreateFromDateTimeBeforeUnixEpoch(string $dateTime): void
+    {
+        $uuid = $this->factory->createFromDateTime(new DateTimeImmutable($dateTime));
+
+        $this->assertSame($dateTime, $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
 }

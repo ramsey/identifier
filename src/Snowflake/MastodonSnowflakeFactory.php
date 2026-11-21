@@ -31,13 +31,13 @@ use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
-use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Hash\Hash;
 use Ramsey\Identifier\Service\Hash\Md5Hash;
 use Ramsey\Identifier\Service\Sequence\MonotonicSequence;
 use Ramsey\Identifier\Service\Sequence\Sequence;
 use Ramsey\Identifier\Snowflake\Internal\StandardFactory;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\SnowflakeFactory;
 
 use function bin2hex;
@@ -108,7 +108,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     public function createFromDateTime(DateTimeInterface $dateTime): MastodonSnowflake
     {
         /** @var int<0, 281474976710655> $milliseconds */
-        $milliseconds = (int) $dateTime->format(Precision::Millisecond->value);
+        $milliseconds = Time::getUnixMilliseconds($dateTime);
 
         if ($milliseconds < 0) {
             throw new InvalidArgument(sprintf(
