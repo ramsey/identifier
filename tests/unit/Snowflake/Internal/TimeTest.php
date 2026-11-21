@@ -29,11 +29,10 @@ class TimeTest extends TestCase
         string $expectedTime,
     ): void {
         $snowflake = (new TwitterSnowflakeFactory(123))->createFromString($snowflake);
-        $time = new Time();
 
         $this->assertSame(
             $expectedTime,
-            $time->getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.u'),
+            Time::getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.u'),
         );
     }
 
@@ -85,12 +84,11 @@ class TimeTest extends TestCase
         int $epochOffset,
     ): void {
         $snowflake = new GenericSnowflake($value, $epochOffset);
-        $time = new Time();
 
         $this->expectException(NotConvertible::class);
         $this->expectExceptionMessage('The date-time of the snowflake cannot be represented');
 
-        $time->getDateTimeForSnowflake($snowflake, $epochOffset, 22);
+        Time::getDateTimeForSnowflake($snowflake, $epochOffset, 22);
     }
 
     /**
@@ -110,12 +108,11 @@ class TimeTest extends TestCase
     public function testGetDateTimeForSnowflakeThrowsExceptionForNegativeRightShifts(int | string $value): void
     {
         $snowflake = new GenericSnowflake($value, 0);
-        $time = new Time();
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('The number of right shifts must not be negative; received -1');
 
-        $time->getDateTimeForSnowflake($snowflake, 0, -1);
+        Time::getDateTimeForSnowflake($snowflake, 0, -1);
     }
 
     /**
@@ -140,11 +137,10 @@ class TimeTest extends TestCase
         string $expected,
     ): void {
         $snowflake = new GenericSnowflake($value, $epochOffset);
-        $time = new Time();
 
         $this->assertSame(
             $expected,
-            $time->getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.v'),
+            Time::getDateTimeForSnowflake($snowflake, $epochOffset, $rightShifts)->format('Y-m-d H:i:s.v'),
         );
     }
 
@@ -191,16 +187,14 @@ class TimeTest extends TestCase
     #[DataProvider('millisecondsBeforeEpochProvider')]
     public function testGetDateTimeForSnowflakeBeforeUnixEpoch(int $epochOffset, string $expected): void
     {
-        $time = new Time();
-
         $this->assertSame(
             $expected,
-            $time->getDateTimeForSnowflake(new GenericSnowflake(0, $epochOffset), $epochOffset, 0)
+            Time::getDateTimeForSnowflake(new GenericSnowflake(0, $epochOffset), $epochOffset, 0)
                 ->format('Y-m-d H:i:s.v'),
         );
         $this->assertSame(
             $expected,
-            $time->getDateTimeForSnowflake(new GenericSnowflake('0', $epochOffset), $epochOffset, 22)
+            Time::getDateTimeForSnowflake(new GenericSnowflake('0', $epochOffset), $epochOffset, 22)
                 ->format('Y-m-d H:i:s.v'),
         );
     }
@@ -223,22 +217,20 @@ class TimeTest extends TestCase
     public function testGetDateTimeForSnowflakeReturnsDateTimeForMinimumOffset(): void
     {
         $snowflake = new GenericSnowflake(0, PHP_INT_MIN);
-        $time = new Time();
 
         $this->assertSame(
             '-292275055-05-16 16:47:04.192',
-            $time->getDateTimeForSnowflake($snowflake, PHP_INT_MIN, 22)->format('Y-m-d H:i:s.v'),
+            Time::getDateTimeForSnowflake($snowflake, PHP_INT_MIN, 22)->format('Y-m-d H:i:s.v'),
         );
     }
 
     public function testGetDateTimeForSnowflakeReturnsDateTimeForMaximumValueAndOffset(): void
     {
         $snowflake = new GenericSnowflake('18446744073709551615', PHP_INT_MAX);
-        $time = new Time();
 
         $this->assertSame(
             '292279133-12-30 14:48:06.910',
-            $time->getDateTimeForSnowflake($snowflake, PHP_INT_MAX, 22)->format('Y-m-d H:i:s.v'),
+            Time::getDateTimeForSnowflake($snowflake, PHP_INT_MAX, 22)->format('Y-m-d H:i:s.v'),
         );
     }
 }

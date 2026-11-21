@@ -37,6 +37,6 @@ trait TimeBased
 {
     public function getDateTime(): DateTimeImmutable
     {
-        return (new Time())->getDateTimeForUuid($this);
+        return Time::getDateTimeForUuid($this);
     }
 }

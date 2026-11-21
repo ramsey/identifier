@@ -26,7 +26,7 @@ class BinaryTest extends TestCase
         Variant $variant,
         string $expectedBytes,
     ): void {
-        $applied = (new Binary())->applyVersionAndVariant($bytes, $version, $variant);
+        $applied = Binary::applyVersionAndVariant($bytes, $version, $variant);
 
         $this->assertSame(
             $expectedBytes,
@@ -207,6 +207,6 @@ class BinaryTest extends TestCase
             'When applying the version and variant bits, the bytes must be a 16-byte octet string',
         );
 
-        (new Binary())->applyVersionAndVariant('foobar', null);
+        Binary::applyVersionAndVariant('foobar', null);
     }
 }

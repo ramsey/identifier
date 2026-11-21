@@ -88,7 +88,6 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         getDateTime as private baseGetDateTime;
     }
 
-    private Binary $binary;
     private ?Variant $variant;
     private ?Version $version;
 
@@ -107,8 +106,6 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         if (!$this->isValid($this->uuid, $this->format)) {
             throw new InvalidArgument(sprintf('Invalid Microsoft GUID: "%s"', $this->uuid));
         }
-
-        $this->binary = new Binary();
     }
 
     /**
@@ -244,7 +241,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     public function toRfc(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
         $bytes = $this->swapBytes($this->toBytes());
-        $bytes = $this->binary->applyVersionAndVariant($bytes, $this->getVersion());
+        $bytes = Binary::applyVersionAndVariant($bytes, $this->getVersion());
 
         return match ($this->getVersion()) {
             Version::V1 => new UuidV1($bytes),

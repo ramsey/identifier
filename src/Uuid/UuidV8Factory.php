@@ -39,13 +39,6 @@ final class UuidV8Factory implements UuidFactoryInterface
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
-
-    public function __construct()
-    {
-        $this->binary = new Binary();
-    }
-
     /**
      * Creates a new instance of an identifier
      *
@@ -68,7 +61,7 @@ final class UuidV8Factory implements UuidFactoryInterface
             throw new InvalidArgument('To create a version 8 UUID, the bytes must be a 16-byte octet string');
         }
 
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Custom);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::Custom);
 
         return new UuidV8($bytes);
     }

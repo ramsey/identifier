@@ -66,13 +66,17 @@ final class Time
      */
     private const MICROSECONDS = 1_000_000;
 
+    private function __construct()
+    {
+    }
+
     /**
      * Returns a date-time instance created from the timestamp extracted from a
      * time-based UUID
      */
-    public function getDateTimeForUuid(TimeBasedUuid $uuid): DateTimeImmutable
+    public static function getDateTimeForUuid(TimeBasedUuid $uuid): DateTimeImmutable
     {
-        return new DateTimeImmutable('@' . $this->getTimestamp($uuid));
+        return new DateTimeImmutable('@' . self::getTimestamp($uuid));
     }
 
     /**
@@ -88,7 +92,7 @@ final class Time
      *
      * @throws InvalidArgument
      */
-    public function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
+    public static function getTimeBytesForGregorianEpoch(DateTimeInterface $dateTime): string
     {
         // A count of 100-nanosecond intervals
         $intervals = (int) $dateTime->format('Uu0');
@@ -116,7 +120,7 @@ final class Time
      *
      * @return numeric-string
      */
-    private function getTimestamp(TimeBasedUuid $uuid): string
+    private static function getTimestamp(TimeBasedUuid $uuid): string
     {
         if ($uuid instanceof MicrosoftGuid) {
             // Convert the hexadecimal representation to bytes, since the
@@ -129,10 +133,10 @@ final class Time
         }
 
         return match ($uuid->getVersion()) {
-            Version::GregorianTime => $this->getTimestampGregorian($bytes),
-            Version::DceSecurity => $this->getTimestampDceSecurity($bytes),
-            Version::ReorderedGregorianTime => $this->getTimestampReorderedGregorian($bytes),
-            Version::UnixTime => $this->getTimestampUnix($bytes),
+            Version::GregorianTime => self::getTimestampGregorian($bytes),
+            Version::DceSecurity => self::getTimestampDceSecurity($bytes),
+            Version::ReorderedGregorianTime => self::getTimestampReorderedGregorian($bytes),
+            Version::UnixTime => self::getTimestampUnix($bytes),
             default => throw new BadMethodCall('method called out of context'),
         };
     }
@@ -142,12 +146,12 @@ final class Time
      *
      * @return numeric-string
      */
-    private function getTimestampGregorian(string $bytes): string
+    private static function getTimestampGregorian(string $bytes): string
     {
         /** @var int[] $parts */
         $parts = unpack('n4', substr($bytes, 0, 8));
 
-        return $this->divideTimestampGregorian(
+        return self::divideTimestampGregorian(
             ($parts[4] & 0x0fff) << 48 | $parts[3] << 32 | $parts[1] << 16 | $parts[2],
         );
     }
@@ -157,12 +161,12 @@ final class Time
      *
      * @return numeric-string
      */
-    private function getTimestampDceSecurity(string $bytes): string
+    private static function getTimestampDceSecurity(string $bytes): string
     {
         /** @var int[] $parts */
         $parts = unpack('n4', substr($bytes, 0, 8));
 
-        return $this->divideTimestampGregorian(
+        return self::divideTimestampGregorian(
             ($parts[4] & 0x0fff) << 48 | $parts[3] << 32,
         );
     }
@@ -172,12 +176,12 @@ final class Time
      *
      * @return numeric-string
      */
-    private function getTimestampReorderedGregorian(string $bytes): string
+    private static function getTimestampReorderedGregorian(string $bytes): string
     {
         /** @var int[] $parts */
         $parts = unpack('n4', substr($bytes, 0, 8));
 
-        return $this->divideTimestampGregorian(
+        return self::divideTimestampGregorian(
             $parts[1] << 44 | $parts[2] << 28 | $parts[3] << 12 | $parts[4] & 0x0fff,
         );
     }
@@ -187,7 +191,7 @@ final class Time
      *
      * @return numeric-string
      */
-    private function getTimestampUnix(string $bytes): string
+    private static function getTimestampUnix(string $bytes): string
     {
         /** @var int[] $parts */
         $parts = unpack('J', "\x00\x00" . substr($bytes, 0, 6));
@@ -206,7 +210,7 @@ final class Time
      *
      * @return numeric-string
      */
-    private function divideTimestampGregorian(int $timestamp): string
+    private static function divideTimestampGregorian(int $timestamp): string
     {
         $timestamp -= self::GREGORIAN_OFFSET;
 

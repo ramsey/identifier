@@ -235,7 +235,7 @@ trait Standard
      */
     public function toUuidV7(): UuidV7
     {
-        return new UuidV7((new Binary())->applyVersionAndVariant($this->toBytes(), Version::UnixTime));
+        return new UuidV7(Binary::applyVersionAndVariant($this->toBytes(), Version::UnixTime));
     }
 
     private function isSameKind(Identifier $other): bool

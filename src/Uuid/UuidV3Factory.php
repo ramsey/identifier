@@ -40,13 +40,6 @@ final class UuidV3Factory implements UuidFactoryInterface
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
-
-    public function __construct()
-    {
-        $this->binary = new Binary();
-    }
-
     /**
      * @throws InvalidArgument
      */
@@ -61,7 +54,7 @@ final class UuidV3Factory implements UuidFactoryInterface
         }
 
         $bytes = hash('md5', $namespace->toBytes() . $name, true);
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::NameMd5);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::NameMd5);
 
         return new UuidV3($bytes);
     }

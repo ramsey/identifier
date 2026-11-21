@@ -41,6 +41,10 @@ use function unpack;
  */
 final class Binary
 {
+    private function __construct()
+    {
+    }
+
     /**
      * Applies the version number and variant field to the 128-bit integer (as a
      * 16-byte string) provided
@@ -56,7 +60,7 @@ final class Binary
      *
      * @throws InvalidArgument
      */
-    public function applyVersionAndVariant(
+    public static function applyVersionAndVariant(
         string $bytes,
         ?Version $version,
         Variant $variant = Variant::Rfc,

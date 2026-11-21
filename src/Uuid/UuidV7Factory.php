@@ -42,15 +42,12 @@ final class UuidV7Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
-
     /**
      * @param BytesGenerator $bytesGenerator A generator used to generate bytes
      *     for a version 7 UUID; defaults to {@see MonotonicBytesGenerator}
      */
     public function __construct(private readonly BytesGenerator $bytesGenerator = new MonotonicBytesGenerator())
     {
-        $this->binary = new Binary();
     }
 
     /**
@@ -71,7 +68,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
         }
 
         $bytes = $this->bytesGenerator->bytes(dateTime: $dateTime);
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::UnixTime);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::UnixTime);
 
         return new UuidV7($bytes);
     }

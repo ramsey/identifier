@@ -44,8 +44,6 @@ final readonly class InstagramSnowflake implements Snowflake
 
     private const TIMESTAMP_BIT_SHIFTS = 23;
 
-    private Time $time;
-
     /**
      * @param int<0, max> | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form
@@ -55,11 +53,10 @@ final readonly class InstagramSnowflake implements Snowflake
     public function __construct(int | string $snowflake)
     {
         $this->snowflake = new GenericSnowflake($snowflake, Epoch::Instagram);
-        $this->time = new Time();
     }
 
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, Epoch::Instagram->value, self::TIMESTAMP_BIT_SHIFTS);
+        return Time::getDateTimeForSnowflake($this, Epoch::Instagram->value, self::TIMESTAMP_BIT_SHIFTS);
     }
 }

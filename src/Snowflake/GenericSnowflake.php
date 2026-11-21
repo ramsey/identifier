@@ -50,8 +50,6 @@ final readonly class GenericSnowflake implements Snowflake
 
     private const TIMESTAMP_BIT_SHIFTS = 22;
 
-    private Time $time;
-
     private int $epochOffset;
 
     /**
@@ -75,7 +73,6 @@ final readonly class GenericSnowflake implements Snowflake
         }
 
         $this->epochOffset = $epochOffset;
-        $this->time = new Time();
     }
 
     /**
@@ -118,7 +115,7 @@ final readonly class GenericSnowflake implements Snowflake
      */
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);
+        return Time::getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);
     }
 
     /**

@@ -39,21 +39,18 @@ final class UuidV4Factory implements UuidFactoryInterface
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
-
     /**
      * @param BytesGenerator $bytesGenerator A random generator used to generate
      *     bytes; defaults to {@see RandomBytesGenerator}
      */
     public function __construct(private readonly BytesGenerator $bytesGenerator = new RandomBytesGenerator())
     {
-        $this->binary = new Binary();
     }
 
     public function create(): UuidV4
     {
         $bytes = $this->bytesGenerator->bytes();
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::Random);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::Random);
 
         return new UuidV4($bytes);
     }

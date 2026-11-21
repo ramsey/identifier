@@ -71,8 +71,6 @@ final readonly class MastodonSnowflake implements Snowflake
 
     private const TIMESTAMP_BIT_SHIFTS = 16;
 
-    private Time $time;
-
     /**
      * @param int<0, max> | numeric-string $snowflake A representation of the
      *     Snowflake in integer or numeric string form
@@ -82,11 +80,10 @@ final readonly class MastodonSnowflake implements Snowflake
     public function __construct(int | string $snowflake)
     {
         $this->snowflake = new GenericSnowflake($snowflake, Epoch::Mastodon);
-        $this->time = new Time();
     }
 
     public function getDateTime(): DateTimeImmutable
     {
-        return $this->time->getDateTimeForSnowflake($this, Epoch::Mastodon->value, self::TIMESTAMP_BIT_SHIFTS);
+        return Time::getDateTimeForSnowflake($this, Epoch::Mastodon->value, self::TIMESTAMP_BIT_SHIFTS);
     }
 }

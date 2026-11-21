@@ -20,7 +20,7 @@ class TimeTest extends TestCase
     #[DataProvider('timeBytesForGregorianEpochProvider')]
     public function testGetTimeBytesForGregorianEpoch(DateTimeInterface $dateTime, string $expectedBytes): void
     {
-        $bytes = (new Time())->getTimeBytesForGregorianEpoch($dateTime);
+        $bytes = Time::getTimeBytesForGregorianEpoch($dateTime);
 
         $this->assertSame(
             $expectedBytes,
@@ -61,7 +61,7 @@ class TimeTest extends TestCase
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Unable to get bytes for a timestamp earlier than the Gregorian epoch');
 
-        (new Time())->getTimeBytesForGregorianEpoch($dateTime);
+        Time::getTimeBytesForGregorianEpoch($dateTime);
     }
 
     public function testGetTimeBytesForGregorianEpochThrowsExceptionForOutOfBoundsDate(): void
@@ -73,7 +73,7 @@ class TimeTest extends TestCase
             'The date exceeds the maximum value allowed for Gregorian time UUIDs: 5236-03-31 21:21:00.684698',
         );
 
-        (new Time())->getTimeBytesForGregorianEpoch($dateTime);
+        Time::getTimeBytesForGregorianEpoch($dateTime);
     }
 
     /**
@@ -83,9 +83,8 @@ class TimeTest extends TestCase
     public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
     {
         $uuid = (new UuidFactory())->createFromString($uuid);
-        $time = new Time();
 
-        $this->assertSame($expectedTime, $time->getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
+        $this->assertSame($expectedTime, Time::getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
     }
 
     /**

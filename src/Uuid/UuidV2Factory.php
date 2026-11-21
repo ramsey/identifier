@@ -54,9 +54,6 @@ final class UuidV2Factory implements TimeBasedUuidFactory
 {
     use StandardFactory;
 
-    private readonly Binary $binary;
-    private readonly Time $time;
-
     /**
      * @param Clock $clock A clock used to provide a date-time instance;
      *     defaults to {@see SystemClock}
@@ -73,8 +70,6 @@ final class UuidV2Factory implements TimeBasedUuidFactory
         private readonly Nic $nic = new RandomNic(),
         private readonly ClockSequence $sequence = new RandomClockSequence(),
     ) {
-        $this->binary = new Binary();
-        $this->time = new Time();
     }
 
     /**
@@ -132,7 +127,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
         // (64).
         $clockSequence = ($clockSequence ?? $this->sequence->next($node, $dateTime)) % 0x40;
 
-        $timeBytes = $this->time->getTimeBytesForGregorianEpoch($dateTime);
+        $timeBytes = Time::getTimeBytesForGregorianEpoch($dateTime);
 
         $bytes = pack('N', $localIdentifier)
             . substr($timeBytes, 2, 2)
@@ -141,7 +136,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
             . pack('n', $localDomain->value)[1]
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = $this->binary->applyVersionAndVariant($bytes, Version::DceSecurity);
+        $bytes = Binary::applyVersionAndVariant($bytes, Version::DceSecurity);
 
         return new UuidV2($bytes);
     }

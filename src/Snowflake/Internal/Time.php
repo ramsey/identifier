@@ -49,6 +49,10 @@ final class Time
 {
     private const SNOWFLAKE_BITS = 64;
 
+    private function __construct()
+    {
+    }
+
     /**
      * Returns a date-time instance created from the timestamp extracted from a
      * Snowflake
@@ -60,7 +64,7 @@ final class Time
      * @throws NotConvertible when the date-time of the Snowflake cannot be
      *     represented
      */
-    public function getDateTimeForSnowflake(
+    public static function getDateTimeForSnowflake(
         Snowflake $snowflake,
         int $epochOffset,
         int $rightShifts,
