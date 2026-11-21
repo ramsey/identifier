@@ -9,6 +9,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
 use Ramsey\Identifier\Ulid\Ulid;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Test\Identifier\TestCase;
@@ -368,6 +369,23 @@ class UlidTest extends TestCase
         $this->assertInstanceOf(NonstandardUuid::class, $uuid);
         $this->assertSame(0, $ulid->compareTo($uuid));
         $this->assertFalse($ulid->equals($uuid));
+    }
+
+    public function testToUuidWhenUlidBytesHaveTheMicrosoftVariant(): void
+    {
+        $ulidBytes = "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9";
+        $ulid = new Ulid($ulidBytes);
+        $uuid = $ulid->toUuid();
+        $typed = $uuid->toTypedUuid();
+
+        $this->assertSame($ulid->toBytes(), $uuid->toBytes());
+        $this->assertSame('27433d43-011d-4a6a-c161-1550863792c9', $uuid->toString());
+        $this->assertSame($ulid->toInteger(), $uuid->toInteger());
+        $this->assertSame(0, $ulid->compareTo($uuid));
+        $this->assertSame(0, $uuid->compareTo($ulid));
+        $this->assertInstanceOf(MicrosoftGuid::class, $typed);
+        $this->assertSame($uuid->toString(), $typed->toString());
+        $this->assertSame(0, $ulid->compareTo($typed));
     }
 
     public function testToUuidV7(): void

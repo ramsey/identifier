@@ -24,12 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `compareTo()` throws `NotComparable` for `null`, numbers, booleans, objects that are neither identifiers nor `Stringable`, and strings (or `Stringable` objects) not in the identifier's own string form; raw bytes and bare hexadecimal strings are no longer compared.
 - **Breaking:** `equals()` returns `true` only for an identifier of the same kind (UUID, ULID, or snowflake) with the same sort key, or a string in the identifier's own string form with the same value; a UUID and a ULID with the same bytes are no longer equal.
 - **Breaking:** `toUuid()` on a ULID returns an `UntypedUuid` with the same bytes as the ULID. Call `toTypedUuid()` on it to get a typed UUID, such as `UuidV7` or `NonstandardUuid`.
+- **Breaking:** `UntypedUuid` and `NonstandardUuid` read a byte string in RFC 9562 layout, whatever its variant, so the bytes have the version and the value their string form shows. Use `MicrosoftGuid` or `MicrosoftGuidFactory` for bytes in Microsoft GUID byte order.
 
 ### Fixed
 
 - `createFromInteger()` and `toInteger()` on UUIDs and ULIDs keep the exact value of an integer just above `PHP_INT_MAX`, such as `9223372036854775808`.
 - `getDateTime()` on a snowflake whose epoch offset puts the date-time out of range throws `NotConvertible` in place of a PHP error.
 - `getDateTime()` on a snowflake returned the wrong date-time when the date-time was less than one second before the Unix Epoch.
+- An `UntypedUuid` created from bytes of the Microsoft variant is equal to the `MicrosoftGuid` that `toTypedUuid()` returns, and the two have the same string form.
 - A version 1, 2, or 6 UUID, or a snowflake, created from a date-time before the Unix Epoch that has a fraction of a second has that date-time.
 - A snowflake value above the largest unsigned 64-bit integer was accepted when written with a leading zero.
 - Identifiers whose bytes look like numbers to PHP no longer compare as equal.

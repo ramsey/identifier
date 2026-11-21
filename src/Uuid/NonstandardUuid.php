@@ -101,7 +101,7 @@ final readonly class NonstandardUuid implements Uuid
             return true;
         }
 
-        $version = $this->getVersionFromUuid($uuid, $format, $this->variant === Variant::Microsoft);
+        $version = $this->getVersionFromUuid($uuid, $format);
 
         // Version 2 UUIDs that do not have a proper domain are nonstandard.
         if ($version === 2 && $this->getLocalDomainFromUuid($uuid, $format) === null) {

@@ -147,25 +147,25 @@ class NonstandardUuidTest extends TestCase
             // are invalid, so they are nonstandard.
             ['value' => 'ffffffff-ffff-0fff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffff0fffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\x0f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x0f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-9fff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffff9fffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\x9f\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\x9f\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-afff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffafffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xaf\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xaf\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-bfff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffbfffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xbf\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xbf\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-cfff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffcfffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xcf\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xcf\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-dfff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffdfffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xdf\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xdf\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-efff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffefffcfffffffffffffff'],
-            ['value' => "\xff\xff\xff\xff\xff\xff\xff\xef\xcf\xff\xff\xff\xff\xff\xff\xff"],
+            ['value' => "\xff\xff\xff\xff\xff\xff\xef\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
             ['value' => 'ffffffff-ffff-ffff-cfff-ffffffffffff'],
             ['value' => 'ffffffffffffffffcfffffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\xff\xff\xcf\xff\xff\xff\xff\xff\xff\xff"],
@@ -182,6 +182,16 @@ class NonstandardUuidTest extends TestCase
             ['value' => 'ffffffffffff2fff9f03ffffffffffff'],
             ['value' => "\xff\xff\xff\xff\xff\xff\x2f\xff\x9f\x03\xff\xff\xff\xff\xff\xff"],
         ];
+    }
+
+    public function testMicrosoftVariantBytesHaveTheVersionOfTheirStringForm(): void
+    {
+        $bytes = "\x27\x43\x3d\x43\x01\x1d\x0a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9";
+        $uuid = new Uuid\NonstandardUuid($bytes);
+
+        $this->assertSame('27433d43-011d-0a4a-c161-1550863792c9', $uuid->toString());
+        $this->assertSame(Variant::Microsoft, $uuid->getVariant());
+        $this->assertTrue($uuid->equals(new Uuid\NonstandardUuid('27433d43-011d-0a4a-c161-1550863792c9')));
     }
 
     public function testSerializeForString(): void
@@ -529,11 +539,11 @@ class NonstandardUuidTest extends TestCase
                 Variant::Rfc,
             ],
             'bytes: reserved Microsoft: c' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x0a\xc1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9",
                 Variant::Microsoft,
             ],
             'bytes: reserved Microsoft: d' => [
-                "\x27\x43\x3d\x43\x01\x1d\x6a\x0a\xd1\x61\x15\x50\x86\x37\x92\xc9",
+                "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\xd1\x61\x15\x50\x86\x37\x92\xc9",
                 Variant::Microsoft,
             ],
             'bytes: reserved future: e' => [
@@ -583,6 +593,12 @@ class NonstandardUuidTest extends TestCase
             'hex: RFC 9562, version 6, variant "8"' => ['27433d43011d6a6a81011550863792c9'],
             'hex: RFC 9562, version 7, variant "8"' => ['27433d43011d7a6a81011550863792c9'],
             'hex: RFC 9562, version 8, variant "8"' => ['27433d43011d8a6a81011550863792c9'],
+
+            'string: Microsoft GUID' => ['27433d43-011d-4a6a-c161-1550863792c9'],
+            'hex: Microsoft GUID' => ['27433d43011d4a6ac1611550863792c9'],
+            'bytes: Microsoft GUID' => [
+                "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9",
+            ],
 
             'bytes: RFC 9562, version 1, variant "8"' => [
                 "\x27\x43\x3d\x43\x01\x1d\x1a\x6a\x81\x01\x15\x50\x86\x37\x92\xc9",

@@ -9,12 +9,14 @@ use DateTimeInterface;
 use Exception;
 use Identifier\Exception\NotConvertible as IdentifierNotConvertible;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\MaxUuid;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\NilUuid;
 use Ramsey\Identifier\Uuid\NonstandardUuid;
 use Ramsey\Identifier\Uuid\UntypedUuid;
@@ -425,6 +427,71 @@ class UntypedUuidTest extends TestCase
         $this->expectException(CannotDetermineVersion::class);
         $this->expectExceptionMessage(
             'Unable to determine version of untyped UUID "81daa361-8088-499a-edbd-71e4a45ae25c"',
+        );
+
+        $uuid->getVersion();
+    }
+
+    /**
+     * @param non-empty-string $value
+     */
+    #[TestWith(["\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9"])]
+    #[TestWith(['27433d43011d4a6ac1611550863792c9'])]
+    #[TestWith(['27433d43-011d-4a6a-c161-1550863792c9'])]
+    public function testMicrosoftVariantUuidAgreesWithItsTypedUuid(string $value): void
+    {
+        $uuid = new UntypedUuid($value);
+        $typed = $uuid->toTypedUuid();
+
+        $this->assertInstanceOf(MicrosoftGuid::class, $typed);
+        $this->assertSame(Variant::Microsoft, $uuid->getVariant());
+        $this->assertSame(Version::Random, $uuid->getVersion());
+        $this->assertSame(Version::Random, $typed->getVersion());
+        $this->assertSame('27433d43-011d-4a6a-c161-1550863792c9', $uuid->toString());
+        $this->assertSame('27433d43-011d-4a6a-c161-1550863792c9', $typed->toString());
+        $this->assertSame($uuid->toHexadecimal(), $typed->toHexadecimal());
+        $this->assertSame($uuid->toInteger(), $typed->toInteger());
+        $this->assertSame($uuid->getSortKey(), $typed->getSortKey());
+        $this->assertTrue($uuid->equals($typed));
+        $this->assertTrue($typed->equals($uuid));
+        $this->assertSame(0, $uuid->compareTo($typed));
+        $this->assertSame(0, $typed->compareTo($uuid));
+        $this->assertSame(
+            "\x27\x43\x3d\x43\x01\x1d\x4a\x6a\xc1\x61\x15\x50\x86\x37\x92\xc9",
+            $uuid->toBytes(),
+        );
+        $this->assertSame(
+            "\x43\x3d\x43\x27\x1d\x01\x6a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9",
+            $typed->toBytes(),
+        );
+    }
+
+    /**
+     * @param non-empty-string $value
+     */
+    #[TestWith(["\x27\x43\x3d\x43\x01\x1d\x0a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9"])]
+    #[TestWith(['27433d43011d0a4ac1611550863792c9'])]
+    #[TestWith(['27433d43-011d-0a4a-c161-1550863792c9'])]
+    public function testMicrosoftVariantUuidWithoutVersionIsNonstandard(string $value): void
+    {
+        $uuid = new UntypedUuid($value);
+        $typed = $uuid->toTypedUuid();
+
+        $this->assertInstanceOf(NonstandardUuid::class, $typed);
+        $this->assertSame('27433d43-011d-0a4a-c161-1550863792c9', $uuid->toString());
+        $this->assertSame('27433d43-011d-0a4a-c161-1550863792c9', $typed->toString());
+        $this->assertSame($uuid->toBytes(), $typed->toBytes());
+        $this->assertTrue($uuid->equals($typed));
+        $this->assertSame(0, $uuid->compareTo($typed));
+    }
+
+    public function testGetVersionThrowsExceptionForMicrosoftVariantBytesWithoutVersion(): void
+    {
+        $uuid = new UntypedUuid("\x27\x43\x3d\x43\x01\x1d\x0a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9");
+
+        $this->expectException(CannotDetermineVersion::class);
+        $this->expectExceptionMessage(
+            'Unable to determine version of untyped UUID "27433d43-011d-0a4a-c161-1550863792c9"',
         );
 
         $uuid->getVersion();

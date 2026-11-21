@@ -141,9 +141,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         $variant = $this->getVariant();
 
         if ($this->version === null && ($variant === Variant::Rfc || $variant === Variant::Microsoft)) {
-            $this->version = Version::tryFrom(
-                (int) $this->getVersionFromUuid($this->uuid, $this->format, $variant === Variant::Microsoft),
-            );
+            $this->version = Version::tryFrom((int) $this->getVersionFromUuid($this->uuid, $this->format));
         }
 
         return $this->version
@@ -155,6 +153,11 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
 
     /**
      * Returns a typed version of this UUID
+     *
+     * The typed UUID has the same string form as this UUID. For a UUID of the
+     * Microsoft variant, it is a MicrosoftGuid, whose toBytes() returns the
+     * bytes in GUID byte order, so those bytes differ from the bytes this UUID
+     * returns.
      */
     public function toTypedUuid(): MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 // phpcs:ignore Generic.Files.LineLength
     {
@@ -184,7 +187,12 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
                 $version === Version::V6 && $variant === Variant::Rfc => new UuidV6($this->uuid),
                 $version === Version::V7 && $variant === Variant::Rfc => new UuidV7($this->uuid),
                 $version === Version::V8 && $variant === Variant::Rfc => new UuidV8($this->uuid),
-                $version !== null && $variant === Variant::Microsoft => new MicrosoftGuid($this->uuid),
+                // A GUID reads a byte string in GUID byte order, so one made
+                // from this UUID's bytes would have another value. The
+                // hexadecimal form is the same for both.
+                $version !== null && $variant === Variant::Microsoft => new MicrosoftGuid(
+                    $this->format === Format::Bytes ? $this->getFormat(Format::Hex) : $this->uuid,
+                ),
                 $this->isMax($this->uuid, $this->format) => new MaxUuid(),
                 $this->isNil($this->uuid, $this->format) => new NilUuid(),
                 default => new NonstandardUuid($this->uuid),
