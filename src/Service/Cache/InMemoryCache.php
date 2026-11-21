@@ -45,8 +45,6 @@ use function count;
  *
  * @link https://github.com/marvin255/in-memory-cache marvin255/in-memory-cache
  * @link https://github.com/marvin255/in-memory-cache/blob/v2.3.3/LICENSE MIT License
- *
- * @phpstan-type CacheItem array{value: mixed, ttl: int, last_access: int}
  */
 final class InMemoryCache implements CacheInterface
 {
@@ -75,9 +73,9 @@ final class InMemoryCache implements CacheInterface
         $cacheItem = $this->cache[$key] ?? null;
 
         if ($this->isValid($key, $cacheItem)) {
-            $this->cache[$key]['last_access'] = (int) $this->clock->now()->format(Precision::Microsecond->value);
+            $cacheItem->lastAccess = (int) $this->clock->now()->format(Precision::Microsecond->value);
 
-            return $cacheItem['value'];
+            return $cacheItem->value;
         }
 
         return $default;
@@ -90,11 +88,11 @@ final class InMemoryCache implements CacheInterface
             $this->evictCacheItem();
         }
 
-        $this->cache[$key] = [
-            'value' => $value,
-            'ttl' => $this->createTtl($ttl),
-            'last_access' => (int) $this->clock->now()->format(Precision::Microsecond->value),
-        ];
+        $this->cache[$key] = new CacheItem(
+            $value,
+            $this->createTtl($ttl),
+            (int) $this->clock->now()->format(Precision::Microsecond->value),
+        );
 
         return true;
     }
@@ -178,17 +176,15 @@ final class InMemoryCache implements CacheInterface
      *
      * An item with an expired TTL is invalid.
      *
-     * @param CacheItem | null $cacheItem
-     *
      * @phpstan-assert-if-true CacheItem $cacheItem
      */
-    private function isValid(string $key, ?array $cacheItem): bool
+    private function isValid(string $key, ?CacheItem $cacheItem): bool
     {
         if ($cacheItem === null) {
             return false;
         }
 
-        $isValid = $cacheItem['ttl'] >= $this->clock->now()->getTimestamp();
+        $isValid = $cacheItem->ttl >= $this->clock->now()->getTimestamp();
 
         if ($isValid === false) {
             // If it's no longer valid, evict it from the cache.
@@ -214,7 +210,7 @@ final class InMemoryCache implements CacheInterface
                 break;
             }
 
-            $lastAccess = $cacheItem['last_access'];
+            $lastAccess = $cacheItem->lastAccess;
             if ($leastRecentlyUsed === null || $lastAccess < $leastRecentlyUsed) {
                 $keyToRemove = $key;
                 $leastRecentlyUsed = $lastAccess;
