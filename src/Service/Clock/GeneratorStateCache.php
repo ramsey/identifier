@@ -91,7 +91,8 @@ trait GeneratorStateCache
      * which is negative for a date-time before the Unix Epoch
      *
      * A date-time too far from the Unix Epoch to count in microseconds as an
-     * int returns the largest or the smallest int.
+     * int returns the largest or the smallest int. So does a date-time in the
+     * last second that an int can count.
      */
     private function getUnixMicroseconds(DateTimeInterface $dateTime): int
     {

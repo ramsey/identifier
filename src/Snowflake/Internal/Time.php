@@ -136,7 +136,8 @@ final class Time
      * which is negative for a date-time before the Unix Epoch
      *
      * A date-time too far from the Unix Epoch to count in milliseconds as an
-     * int returns the largest or the smallest int.
+     * int returns the largest or the smallest int. So does a date-time in the
+     * last second that an int can count.
      */
     public static function getUnixMilliseconds(DateTimeInterface $dateTime): int
     {
