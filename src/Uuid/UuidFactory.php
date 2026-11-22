@@ -122,7 +122,7 @@ final class UuidFactory implements UuidFactoryInterface
             $bytes = BigInteger::of($identifier)->toBytes(false);
 
             if (strlen($bytes) > Format::Bytes->value) {
-                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
+                throw new InvalidArgument(sprintf('Invalid UUID: %s', $identifier));
             }
         }
 

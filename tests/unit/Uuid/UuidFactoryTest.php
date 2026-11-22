@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
@@ -249,6 +250,18 @@ class UuidFactoryTest extends TestCase
         ];
     }
 
+    #[TestWith(['340282366920938463463374607431768211456'])]
+    #[TestWith(['340282366920938463463374607431768211457'])]
+    #[TestWith(['99999999999999999999999999999999999999999999999999'])]
+    public function testCreateFromIntegerThrowsExceptionForIntegerThatIsTooLarge(string $input): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Invalid UUID: ' . $input);
+
+        /** @phpstan-ignore argument.type */
+        $this->factory->createFromInteger($input);
+    }
+
     #[DataProvider('createFromIntegerInvalidIntegerProvider')]
     public function testCreateFromIntegerThrowsExceptionForInvalidInteger(int | string $input): void
     {
@@ -280,8 +293,6 @@ class UuidFactoryTest extends TestCase
             ['input' => '1e3'],
             ['input' => ' 1'],
             ['input' => '1 '],
-            ['input' => '340282366920938463463374607431768211456'],
-            ['input' => '340282366920938463463374607431768211457'],
         ];
     }
 
