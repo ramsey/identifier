@@ -32,7 +32,6 @@ use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
-use function escapeshellarg;
 use function preg_split;
 use function sprintf;
 use function str_getcsv;
@@ -286,7 +285,7 @@ final class SystemDce implements Dce
             return null;
         }
 
-        $response = $this->os->run('wmic group get name,sid | findstr /b /i ' . escapeshellarg($firstGroup));
+        $response = $this->os->run('wmic group get name,sid | findstr /b /i ' . $this->os->escapeShellArg($firstGroup));
 
         if ($response === '') {
             return null;

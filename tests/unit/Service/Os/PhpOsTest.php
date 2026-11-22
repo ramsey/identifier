@@ -10,6 +10,7 @@ use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Test\Identifier\TestCase;
 use ReflectionClass;
 
+use function escapeshellarg;
 use function file_get_contents;
 use function str_repeat;
 use function trim;
@@ -30,11 +31,25 @@ class PhpOsTest extends TestCase
     {
         $class = new ReflectionClass(PhpOs::class);
 
-        foreach (['hasEscapeShellCmd', 'hasFileGetContents', 'hasGlob', 'hasIsReadable', 'hasShellExec'] as $property) {
+        $properties = [
+            'hasEscapeShellArg',
+            'hasEscapeShellCmd',
+            'hasFileGetContents',
+            'hasGlob',
+            'hasIsReadable',
+            'hasShellExec',
+        ];
+
+        foreach ($properties as $property) {
             $class->setStaticPropertyValue($property, null);
         }
 
         parent::tearDown();
+    }
+
+    public function testEscapeShellArg(): void
+    {
+        $this->assertSame(escapeshellarg("it's a group"), $this->os->escapeShellArg("it's a group"));
     }
 
     public function testFileGetContents(): void
@@ -84,6 +99,7 @@ class PhpOsTest extends TestCase
         $this->assertSame($expected, trim($this->os->run('echo "foo bar"')));
     }
 
+    #[TestWith(['hasEscapeShellArg', 'escapeShellArg', 'escapeshellarg() is not available on this system'])]
     #[TestWith(['hasFileGetContents', 'fileGetContents', 'file_get_contents() is not available on this system'])]
     #[TestWith(['hasGlob', 'glob', 'glob() is not available on this system'])]
     #[TestWith(['hasIsReadable', 'isReadable', 'is_readable() is not available on this system'])]

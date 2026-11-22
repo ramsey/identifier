@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Os;
 
+use function escapeshellarg;
 use function escapeshellcmd;
 use function file_get_contents;
 use function function_exists;
@@ -41,6 +42,11 @@ use const PHP_OS_FAMILY;
  */
 final class PhpOs implements Os
 {
+    /**
+     * Whether escapeshellarg() is available; null until it is first needed
+     */
+    private static ?bool $hasEscapeShellArg = null;
+
     /**
      * Whether escapeshellcmd() is available; null until it is first needed
      */
@@ -65,6 +71,21 @@ final class PhpOs implements Os
      * Whether shell_exec() is available; null until it is first needed
      */
     private static ?bool $hasShellExec = null;
+
+    /**
+     * @throws MissingFunction if escapeshellarg() is not available on this
+     *     system
+     */
+    public function escapeShellArg(string $argument): string
+    {
+        self::$hasEscapeShellArg ??= function_exists('escapeshellarg');
+
+        if (!self::$hasEscapeShellArg) {
+            throw new MissingFunction('escapeshellarg() is not available on this system');
+        }
+
+        return escapeshellarg($argument);
+    }
 
     /**
      * @throws MissingFunction if file_get_contents() is not available on this

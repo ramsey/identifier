@@ -169,12 +169,14 @@ class SystemDceTest extends TestCase
             ->andReturn($netUserResponse);
 
         if ($wmicGroupResponse === null) {
+            $os->expects('escapeShellArg')->never();
             $os->expects('run')
                 ->with(Mockery::pattern('/^wmic group get name,sid \| findstr \/b \/i .*$/'))
                 ->never();
         } else {
+            $os->expects('escapeShellArg')->with($expectedGroup)->andReturn('"' . $expectedGroup . '"');
             $os->expects('run')
-                ->with(Mockery::pattern("/^wmic group get name,sid \| findstr \/b \/i (\"|\')$expectedGroup(\"|\')$/"))
+                ->with('wmic group get name,sid | findstr /b /i "' . $expectedGroup . '"')
                 ->andReturn($wmicGroupResponse);
         }
 
@@ -478,6 +480,34 @@ class SystemDceTest extends TestCase
         } catch (DceIdentifierNotFound $exception) {
             $this->assertSame(
                 'Unable to get a user identifier using the system DCE service; please provide a custom identifier '
+                . 'or use a different DCE service class',
+                $exception->getMessage(),
+            );
+            $this->assertSame($missingFunction, $exception->getPrevious());
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGroupIdWindowsThrowsExceptionWhenEscapeShellArgIsNotAvailable(): void
+    {
+        $missingFunction = new MissingFunction('escapeshellarg() is not available on this system');
+
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Windows');
+        $os->expects('run')
+            ->with('net user %username% | findstr /b /i "Local Group Memberships"')
+            ->andReturn('Local Group Memberships    *Administrators  *Users');
+        $os->expects('escapeShellArg')->with('Administrators')->andThrow($missingFunction);
+
+        $dce = new SystemDce(os: $os);
+
+        try {
+            $dce->groupId();
+            $this->fail('Expected ' . DceIdentifierNotFound::class);
+        } catch (DceIdentifierNotFound $exception) {
+            $this->assertSame(
+                'Unable to get a group identifier using the system DCE service; please provide a custom identifier '
                 . 'or use a different DCE service class',
                 $exception->getMessage(),
             );
