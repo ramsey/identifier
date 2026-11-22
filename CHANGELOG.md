@@ -52,7 +52,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `InMemoryCache` evicts the least recently used item when its clock is before the Unix Epoch.
 - `UuidFactory::createFromInteger()` given an integer greater than 128 bits throws `InvalidArgument` with a message that names the integer.
 - Unserializing an identifier whose serialized data has a value of the wrong type, or no value, throws `InvalidArgument` in place of a PHP `TypeError`.
-- `GenericSnowflakeFactory::createFromDateTime()` throws `InvalidArgument` for a date-time too far from the Unix Epoch to count in milliseconds, in place of a snowflake with a wrong timestamp. This affected only a factory whose epoch offset is near the largest or the smallest integer.
+- `GenericSnowflakeFactory::createFromDateTime()` throws `InvalidArgument` for a date-time too far from the Unix Epoch to count in milliseconds, in place of a snowflake with a wrong timestamp.
 
 ## [0.1.0] - 2025-06-19
 

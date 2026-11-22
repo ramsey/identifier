@@ -314,6 +314,7 @@ class GenericSnowflakeFactoryTest extends TestCase
     #[TestWith([PHP_INT_MIN, '@-9223372036858375.808'], 'the smallest offset, one hour before its epoch')]
     #[TestWith([PHP_INT_MIN, '@-9223372036854775.808'], 'the smallest offset, at its epoch')]
     #[TestWith([PHP_INT_MIN + 500, '@-9223372036854775.308'], 'an offset 500 ms above the smallest, at its epoch')]
+    #[TestWith([9223367638808264703, '@9223372036854775.000'], 'an offset whose latest date-time cannot be counted')]
     #[TestWith([PHP_INT_MAX, '@9223372036854775.807'], 'the largest offset, at its epoch')]
     #[TestWith([PHP_INT_MAX, '@9223372036854775.808'], 'the largest offset, one millisecond after its epoch')]
     #[TestWith([PHP_INT_MAX, '@9223372036858375.807'], 'the largest offset, one hour after its epoch')]
@@ -327,6 +328,18 @@ class GenericSnowflakeFactoryTest extends TestCase
         $this->expectExceptionMessage('is too far from the Unix Epoch to count in milliseconds');
 
         $factory->createFromDateTime(new DateTimeImmutable($dateTime));
+    }
+
+    public function testCreateFromDateTimeNamesTheLatestDateTimeWhenDateTimeCannotBeCounted(): void
+    {
+        $factory = new GenericSnowflakeFactory(1, 0);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'Snowflakes with epoch offset 0 cannot have a date-time greater than 2109-05-15T07:35:11.103Z',
+        );
+
+        $factory->createFromDateTime(new DateTimeImmutable('@9223372036858375.807'));
     }
 
     public function testCreateFromDateTimeNamesTheDateTimeThatCannotBeCounted(): void

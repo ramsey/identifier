@@ -123,7 +123,12 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             ));
         }
 
-        if ($milliseconds > 0x3ffffffffff) {
+        // A date-time too late to count exactly is later than every latest
+        // date-time that can be counted exactly.
+        if (
+            $milliseconds > 0x3ffffffffff
+            && ($isExact || $this->epochOffset <= Time::MAX_EXACT_UNIX_MILLISECONDS - 0x3ffffffffff)
+        ) {
             $maxDateTime = Time::getDateTimeForUnixMilliseconds(0x3ffffffffff + $this->epochOffset);
 
             throw new InvalidArgument(sprintf(
