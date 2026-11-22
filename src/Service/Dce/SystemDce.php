@@ -28,6 +28,7 @@ namespace Ramsey\Identifier\Service\Dce;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
@@ -107,7 +108,7 @@ final class SystemDce implements Dce
         if (self::$groupId === null) {
             try {
                 $groupId = $this->getSystemGidFromCache();
-            } catch (CacheException $cacheException) {
+            } catch (CacheException | MissingFunction $exception) {
                 $groupId = null;
             }
 
@@ -115,7 +116,7 @@ final class SystemDce implements Dce
                 throw new DceIdentifierNotFound(
                     message: 'Unable to get a group identifier using the system DCE service; please provide a custom '
                         . 'identifier or use a different DCE service class',
-                    previous: $cacheException ?? null,
+                    previous: $exception ?? null,
                 );
             }
 
@@ -149,7 +150,7 @@ final class SystemDce implements Dce
         if (self::$userId === null) {
             try {
                 $userId = $this->getSystemUidFromCache();
-            } catch (CacheException $cacheException) {
+            } catch (CacheException | MissingFunction $exception) {
                 $userId = null;
             }
 
@@ -157,7 +158,7 @@ final class SystemDce implements Dce
                 throw new DceIdentifierNotFound(
                     message: 'Unable to get a user identifier using the system DCE service; please provide a custom '
                         . 'identifier or use a different DCE service class',
-                    previous: $cacheException ?? null,
+                    previous: $exception ?? null,
                 );
             }
 

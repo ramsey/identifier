@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
@@ -122,10 +123,18 @@ final class SystemNic implements Nic
      */
     private function getAddressFromSystem(): string
     {
-        $address = $this->getSysfs();
+        try {
+            $address = $this->getSysfs();
+        } catch (MissingFunction) {
+            $address = '';
+        }
 
         if ($address === '') {
-            $address = $this->getIfconfig();
+            try {
+                $address = $this->getIfconfig();
+            } catch (MissingFunction) {
+                $address = '';
+            }
         }
 
         if ($address === '') {

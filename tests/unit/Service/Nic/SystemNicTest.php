@@ -12,6 +12,7 @@ use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Nic\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\SystemNic;
+use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -371,5 +372,44 @@ class SystemNicTest extends TestCase
         $this->expectExceptionMessage('Unable to retrieve MAC address from cache');
 
         $nic->address();
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressUsesRandomNicIfAFunctionIsNotAvailable(): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Linux',
+        ]);
+
+        $os->expects('glob')->with('/sys/class/net/*/address')->andThrow(new MissingFunction());
+        $os->expects('run')->with('netstat -ie')->andThrow(new MissingFunction());
+
+        $nic = new SystemNic(os: $os);
+        $address = $nic->address();
+
+        $this->assertSame(12, strlen($address));
+        $this->assertSame(1, hexdec(substr($address, 1, 1)) & 1);
+
+        // Called again returns the same MAC address.
+        $this->assertSame($address, $nic->address());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressOnLinuxFallsBackToNetstatIfAFunctionIsNotAvailable(): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Linux',
+        ]);
+
+        $os->expects('glob')->with('/sys/class/net/*/address')->andThrow(new MissingFunction());
+        $os->expects('run')
+            ->with('netstat -ie')
+            ->andReturn("enp3s0    Link encap:Ethernet  HWaddr fe:dc:ba:98:76:54\n");
+
+        $nic = new SystemNic(os: $os);
+
+        $this->assertSame('fedcba987654', $nic->address());
     }
 }

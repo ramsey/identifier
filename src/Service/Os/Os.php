@@ -34,6 +34,9 @@ interface Os
      * Returns the entire contents of the named file
      *
      * @param string $filename The name of the file to read
+     *
+     * @throws MissingFunction if a PHP function the method needs is not
+     *     available on this system
      */
     public function fileGetContents(string $filename): string;
 
@@ -53,6 +56,9 @@ interface Os
      * @param string $pattern Pattern to match
      *
      * @return string[]
+     *
+     * @throws MissingFunction if a PHP function the method needs is not
+     *     available on this system
      */
     public function glob(string $pattern): array;
 
@@ -60,6 +66,9 @@ interface Os
      * Returns true if the file or directory exists and is readable
      *
      * @param string $filename The path to the file or directory
+     *
+     * @throws MissingFunction if a PHP function the method needs is not
+     *     available on this system
      */
     public function isReadable(string $filename): bool;
 
@@ -67,6 +76,9 @@ interface Os
      * Executes the given command and returns its full output
      *
      * @param string $command The command to execute
+     *
+     * @throws MissingFunction if a PHP function the method needs is not
+     *     available on this system
      */
     public function run(string $command): string;
 }

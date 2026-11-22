@@ -15,6 +15,7 @@ use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Dce\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\SystemDce;
+use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -432,5 +433,55 @@ class SystemDceTest extends TestCase
 
         /** @phpstan-ignore argument.type */
         new SystemDce(orgId: 0x100000000);
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGroupIdThrowsExceptionWhenAFunctionIsNotAvailable(): void
+    {
+        $missingFunction = new MissingFunction('shell_exec() is not available on this system');
+
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -g')->andThrow($missingFunction);
+
+        $dce = new SystemDce(os: $os);
+
+        try {
+            $dce->groupId();
+            $this->fail('Expected ' . DceIdentifierNotFound::class);
+        } catch (DceIdentifierNotFound $exception) {
+            $this->assertSame(
+                'Unable to get a group identifier using the system DCE service; please provide a custom identifier '
+                . 'or use a different DCE service class',
+                $exception->getMessage(),
+            );
+            $this->assertSame($missingFunction, $exception->getPrevious());
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testUserIdThrowsExceptionWhenAFunctionIsNotAvailable(): void
+    {
+        $missingFunction = new MissingFunction('shell_exec() is not available on this system');
+
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -u')->andThrow($missingFunction);
+
+        $dce = new SystemDce(os: $os);
+
+        try {
+            $dce->userId();
+            $this->fail('Expected ' . DceIdentifierNotFound::class);
+        } catch (DceIdentifierNotFound $exception) {
+            $this->assertSame(
+                'Unable to get a user identifier using the system DCE service; please provide a custom identifier '
+                . 'or use a different DCE service class',
+                $exception->getMessage(),
+            );
+            $this->assertSame($missingFunction, $exception->getPrevious());
+        }
     }
 }

@@ -42,30 +42,37 @@ use const PHP_OS_FAMILY;
 class PhpOs implements Os
 {
     /**
-     * @throws MissingFunction if a required PHP function is not available on
-     *     this system
+     * Whether file_get_contents() is available; null until it is first needed
      */
-    public function __construct()
-    {
-        if (!function_exists('shell_exec')) {
-            throw new MissingFunction('shell_exec() is not available on this system'); // @codeCoverageIgnore
-        }
+    private static ?bool $hasFileGetContents = null;
 
-        if (!function_exists('file_get_contents')) {
-            throw new MissingFunction('file_get_contents() is not available on this system'); // @codeCoverageIgnore
-        }
+    /**
+     * Whether glob() is available; null until it is first needed
+     */
+    private static ?bool $hasGlob = null;
 
-        if (!function_exists('glob')) {
-            throw new MissingFunction('glob() is not available on this system'); // @codeCoverageIgnore
-        }
+    /**
+     * Whether is_readable() is available; null until it is first needed
+     */
+    private static ?bool $hasIsReadable = null;
 
-        if (!function_exists('is_readable')) {
-            throw new MissingFunction('is_readable() is not available on this system'); // @codeCoverageIgnore
-        }
-    }
+    /**
+     * Whether shell_exec() is available; null until it is first needed
+     */
+    private static ?bool $hasShellExec = null;
 
+    /**
+     * @throws MissingFunction if file_get_contents() is not available on this
+     *     system
+     */
     public function fileGetContents(string $filename): string
     {
+        self::$hasFileGetContents ??= function_exists('file_get_contents');
+
+        if (!self::$hasFileGetContents) {
+            throw new MissingFunction('file_get_contents() is not available on this system');
+        }
+
         return (string) file_get_contents($filename);
     }
 
@@ -76,22 +83,48 @@ class PhpOs implements Os
     }
 
     /**
-     * @inheritDoc
+     * @return string[]
+     *
+     * @throws MissingFunction if glob() is not available on this system
      */
     public function glob(string $pattern): array
     {
+        self::$hasGlob ??= function_exists('glob');
+
+        if (!self::$hasGlob) {
+            throw new MissingFunction('glob() is not available on this system');
+        }
+
         $paths = @glob($pattern, GLOB_NOSORT);
 
         return $paths ?: [];
     }
 
+    /**
+     * @throws MissingFunction if is_readable() is not available on this system
+     */
     public function isReadable(string $filename): bool
     {
+        self::$hasIsReadable ??= function_exists('is_readable');
+
+        if (!self::$hasIsReadable) {
+            throw new MissingFunction('is_readable() is not available on this system');
+        }
+
         return is_readable($filename);
     }
 
+    /**
+     * @throws MissingFunction if shell_exec() is not available on this system
+     */
     public function run(string $command): string
     {
+        self::$hasShellExec ??= function_exists('shell_exec');
+
+        if (!self::$hasShellExec) {
+            throw new MissingFunction('shell_exec() is not available on this system');
+        }
+
         $command = escapeshellcmd($command);
 
         // Redirect stderr to stdout.
