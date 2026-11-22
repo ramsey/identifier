@@ -42,6 +42,7 @@ use function assert;
 use function bin2hex;
 use function hex2bin;
 use function hexdec;
+use function is_string;
 use function sprintf;
 use function str_replace;
 use function strlen;
@@ -117,13 +118,16 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     }
 
     /**
-     * @param array{guid: non-empty-string} $data
+     * @param array{guid?: non-empty-string} $data
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if the data has no string for the key "guid", or
+     *     the string is not a valid identifier
      */
     public function __unserialize(array $data): void
     {
-        assert(isset($data['guid']), "'guid' is not set in serialized data");
+        if (!is_string($data['guid'] ?? null)) {
+            throw new InvalidArgument('The serialized data must have a string value for "guid"');
+        }
 
         $this->__construct($data['guid']);
     }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Uuid;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\UuidV3;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
@@ -14,6 +16,7 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class UuidV3Test extends TestCase
@@ -219,6 +222,34 @@ class UuidV3Test extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid version 3 UUID: ""');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['i:1;'], 'an integer')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenUuidIsNotAString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:4:"uuid";%s}',
+            strlen(UuidV3::class),
+            UuidV3::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "uuid"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenUuidIsMissing(): void
+    {
+        $serialized = sprintf('O:%d:"%s":0:{}', strlen(UuidV3::class), UuidV3::class);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "uuid"');
 
         unserialize($serialized);
     }

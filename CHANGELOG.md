@@ -46,6 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `UuidV3Factory` and `UuidV5Factory` given a `MicrosoftGuid` namespace create the same UUID as for any other UUID with the same string form.
 - `InMemoryCache` evicts the least recently used item when its clock is before the Unix Epoch.
 - `UuidFactory::createFromInteger()` given an integer greater than 128 bits throws `InvalidArgument` with a message that names the integer.
+- Unserializing an identifier whose serialized data has a value of the wrong type, or no value, throws `InvalidArgument` in place of a PHP `TypeError`.
 
 ## [0.1.0] - 2025-06-19
 

@@ -42,6 +42,7 @@ use function assert;
 use function bin2hex;
 use function hex2bin;
 use function intdiv;
+use function is_string;
 use function sprintf;
 use function str_pad;
 use function strlen;
@@ -117,13 +118,16 @@ trait Standard
     }
 
     /**
-     * @param array{ulid: non-empty-string} $data
+     * @param array{ulid?: non-empty-string} $data
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if the data has no string for the key "ulid", or
+     *     the string is not a valid identifier
      */
     public function __unserialize(array $data): void
     {
-        assert(isset($data['ulid']), "'ulid' is not set in serialized data");
+        if (!is_string($data['ulid'] ?? null)) {
+            throw new InvalidArgument('The serialized data must have a string value for "ulid"');
+        }
 
         $this->__construct($data['ulid']);
     }

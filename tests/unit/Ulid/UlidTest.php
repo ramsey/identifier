@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Ulid;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Ulid\MaxUlid;
 use Ramsey\Identifier\Ulid\NilUlid;
@@ -17,6 +18,7 @@ use Ramsey\Test\Identifier\TestCase;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class UlidTest extends TestCase
@@ -161,6 +163,34 @@ class UlidTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid ULID: ""');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['i:1;'], 'an integer')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenUlidIsNotAString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:4:"ulid";%s}',
+            strlen(Ulid::class),
+            Ulid::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "ulid"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenUlidIsMissing(): void
+    {
+        $serialized = sprintf('O:%d:"%s":0:{}', strlen(Ulid::class), Ulid::class);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "ulid"');
 
         unserialize($serialized);
     }

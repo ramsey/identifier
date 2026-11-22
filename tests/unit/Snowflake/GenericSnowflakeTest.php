@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
@@ -167,6 +168,72 @@ class GenericSnowflakeTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: ""');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['d:1.5;'], 'a float')]
+    #[TestWith(['b:1;'], 'a boolean')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenSnowflakeIsNotAnIntegerOrString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":2:{s:9:"snowflake";%ss:11:"epochOffset";i:0;}',
+            strlen(GenericSnowflake::class),
+            GenericSnowflake::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer or string value for "snowflake"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenSnowflakeIsMissing(): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:11:"epochOffset";i:0;}',
+            strlen(GenericSnowflake::class),
+            GenericSnowflake::class,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer or string value for "snowflake"');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['s:1:"0";'], 'a string of digits')]
+    #[TestWith(['d:1.5;'], 'a float')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenEpochOffsetIsNotAnInteger(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":2:{s:9:"snowflake";i:1;s:11:"epochOffset";%s}',
+            strlen(GenericSnowflake::class),
+            GenericSnowflake::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer value for "epochOffset"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenEpochOffsetIsMissing(): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:9:"snowflake";i:1;}',
+            strlen(GenericSnowflake::class),
+            GenericSnowflake::class,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer value for "epochOffset"');
 
         unserialize($serialized);
     }

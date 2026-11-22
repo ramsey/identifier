@@ -31,7 +31,8 @@ use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Snowflake;
 
-use function assert;
+use function is_int;
+use function is_string;
 
 /**
  * Provides common methods for Snowflake identifiers
@@ -60,15 +61,20 @@ trait Standard
     }
 
     /**
-     * @param array{snowflake: int<0, max> | numeric-string} $data
+     * @param array{snowflake?: int<0, max> | numeric-string} $data
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if the data has no integer or string for the key
+     *     "snowflake", or the value is not a valid identifier
      */
     public function __unserialize(array $data): void
     {
-        assert(isset($data['snowflake']), "'snowflake' is not set in serialized data");
+        $snowflake = $data['snowflake'] ?? null;
 
-        $this->__construct($data['snowflake']);
+        if (!is_int($snowflake) && !is_string($snowflake)) {
+            throw new InvalidArgument('The serialized data must have an integer or string value for "snowflake"');
+        }
+
+        $this->__construct($snowflake);
     }
 
     /**

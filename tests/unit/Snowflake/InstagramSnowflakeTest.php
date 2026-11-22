@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake\DiscordSnowflake;
 use Ramsey\Identifier\Snowflake\InstagramSnowflake;
@@ -161,6 +162,35 @@ class InstagramSnowflakeTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Snowflake: ""');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['d:1.5;'], 'a float')]
+    #[TestWith(['b:1;'], 'a boolean')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenSnowflakeIsNotAnIntegerOrString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:9:"snowflake";%s}',
+            strlen(InstagramSnowflake::class),
+            InstagramSnowflake::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer or string value for "snowflake"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenSnowflakeIsMissing(): void
+    {
+        $serialized = sprintf('O:%d:"%s":0:{}', strlen(InstagramSnowflake::class), InstagramSnowflake::class);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have an integer or string value for "snowflake"');
 
         unserialize($serialized);
     }

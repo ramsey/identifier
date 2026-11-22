@@ -36,6 +36,8 @@ use Throwable;
 use function class_exists;
 use function json_encode;
 use function serialize;
+use function sprintf;
+use function strlen;
 use function unserialize;
 
 class UntypedUuidTest extends TestCase
@@ -542,5 +544,33 @@ class UntypedUuidTest extends TestCase
             'the MaxUuid' => new MaxUuid(),
             'a greater UUID string' => 'ffffffff-ffff-ffff-ffff-ffffffffffff',
         ];
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['i:1;'], 'an integer')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenUuidIsNotAString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:4:"uuid";%s}',
+            strlen(UntypedUuid::class),
+            UntypedUuid::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "uuid"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenUuidIsMissing(): void
+    {
+        $serialized = sprintf('O:%d:"%s":0:{}', strlen(UntypedUuid::class), UntypedUuid::class);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "uuid"');
+
+        unserialize($serialized);
     }
 }

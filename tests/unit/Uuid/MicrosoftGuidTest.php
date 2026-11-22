@@ -6,11 +6,13 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use Identifier\Exception\NotConvertible as IdentifierNotConvertible;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\DceDomain;
+use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
@@ -19,6 +21,7 @@ use function hex2bin;
 use function json_encode;
 use function serialize;
 use function sprintf;
+use function strlen;
 use function unserialize;
 
 class MicrosoftGuidTest extends TestCase
@@ -274,6 +277,34 @@ class MicrosoftGuidTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage('Invalid Microsoft GUID: ""');
+
+        unserialize($serialized);
+    }
+
+    #[TestWith(['a:0:{}'], 'an array')]
+    #[TestWith(['i:1;'], 'an integer')]
+    #[TestWith(['N;'], 'null')]
+    public function testUnserializeFailsWhenGuidIsNotAString(string $value): void
+    {
+        $serialized = sprintf(
+            'O:%d:"%s":1:{s:4:"guid";%s}',
+            strlen(MicrosoftGuid::class),
+            MicrosoftGuid::class,
+            $value,
+        );
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "guid"');
+
+        unserialize($serialized);
+    }
+
+    public function testUnserializeFailsWhenGuidIsMissing(): void
+    {
+        $serialized = sprintf('O:%d:"%s":0:{}', strlen(MicrosoftGuid::class), MicrosoftGuid::class);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The serialized data must have a string value for "guid"');
 
         unserialize($serialized);
     }

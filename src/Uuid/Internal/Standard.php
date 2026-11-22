@@ -36,6 +36,7 @@ use Ramsey\Identifier\Uuid\Variant;
 use function assert;
 use function bin2hex;
 use function hex2bin;
+use function is_string;
 use function preg_match;
 use function sprintf;
 use function str_replace;
@@ -92,13 +93,16 @@ trait Standard
     }
 
     /**
-     * @param array{uuid: non-empty-string} $data
+     * @param array{uuid?: non-empty-string} $data
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if the data has no string for the key "uuid", or
+     *     the string is not a valid identifier
      */
     public function __unserialize(array $data): void
     {
-        assert(isset($data['uuid']), "'uuid' is not set in serialized data");
+        if (!is_string($data['uuid'] ?? null)) {
+            throw new InvalidArgument('The serialized data must have a string value for "uuid"');
+        }
 
         $this->__construct($data['uuid']);
     }

@@ -35,7 +35,8 @@ use Ramsey\Identifier\Snowflake\Internal\Format;
 use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Identifier\Snowflake\Internal\Validation;
 
-use function assert;
+use function is_int;
+use function is_string;
 use function sprintf;
 
 /**
@@ -96,18 +97,28 @@ final readonly class GenericSnowflake implements Snowflake
 
     /**
      * @param array{
-     *     snowflake: int<0, max> | numeric-string,
-     *     epochOffset: int,
+     *     snowflake?: int<0, max> | numeric-string,
+     *     epochOffset?: int,
      * } $data
      *
-     * @throws InvalidArgument
+     * @throws InvalidArgument if the data has no integer or string for the key
+     *     "snowflake" or no integer for the key "epochOffset", or the values
+     *     are not a valid identifier
      */
     public function __unserialize(array $data): void
     {
-        assert(isset($data['snowflake']), "'snowflake' is not set in serialized data");
-        assert(isset($data['epochOffset']), "'epochOffset' is not set in serialized data");
+        $snowflake = $data['snowflake'] ?? null;
+        $epochOffset = $data['epochOffset'] ?? null;
 
-        $this->__construct($data['snowflake'], $data['epochOffset']);
+        if (!is_int($snowflake) && !is_string($snowflake)) {
+            throw new InvalidArgument('The serialized data must have an integer or string value for "snowflake"');
+        }
+
+        if (!is_int($epochOffset)) {
+            throw new InvalidArgument('The serialized data must have an integer value for "epochOffset"');
+        }
+
+        $this->__construct($snowflake, $epochOffset);
     }
 
     /**
