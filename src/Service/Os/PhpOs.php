@@ -42,6 +42,11 @@ use const PHP_OS_FAMILY;
 class PhpOs implements Os
 {
     /**
+     * Whether escapeshellcmd() is available; null until it is first needed
+     */
+    private static ?bool $hasEscapeShellCmd = null;
+
+    /**
      * Whether file_get_contents() is available; null until it is first needed
      */
     private static ?bool $hasFileGetContents = null;
@@ -115,7 +120,8 @@ class PhpOs implements Os
     }
 
     /**
-     * @throws MissingFunction if shell_exec() is not available on this system
+     * @throws MissingFunction if shell_exec() or escapeshellcmd() is not
+     *     available on this system
      */
     public function run(string $command): string
     {
@@ -123,6 +129,12 @@ class PhpOs implements Os
 
         if (!self::$hasShellExec) {
             throw new MissingFunction('shell_exec() is not available on this system');
+        }
+
+        self::$hasEscapeShellCmd ??= function_exists('escapeshellcmd');
+
+        if (!self::$hasEscapeShellCmd) {
+            throw new MissingFunction('escapeshellcmd() is not available on this system');
         }
 
         $command = escapeshellcmd($command);

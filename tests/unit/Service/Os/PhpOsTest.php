@@ -30,7 +30,7 @@ class PhpOsTest extends TestCase
     {
         $class = new ReflectionClass(PhpOs::class);
 
-        foreach (['hasFileGetContents', 'hasGlob', 'hasIsReadable', 'hasShellExec'] as $property) {
+        foreach (['hasEscapeShellCmd', 'hasFileGetContents', 'hasGlob', 'hasIsReadable', 'hasShellExec'] as $property) {
             $class->setStaticPropertyValue($property, null);
         }
 
@@ -88,6 +88,7 @@ class PhpOsTest extends TestCase
     #[TestWith(['hasGlob', 'glob', 'glob() is not available on this system'])]
     #[TestWith(['hasIsReadable', 'isReadable', 'is_readable() is not available on this system'])]
     #[TestWith(['hasShellExec', 'run', 'shell_exec() is not available on this system'])]
+    #[TestWith(['hasEscapeShellCmd', 'run', 'escapeshellcmd() is not available on this system'])]
     public function testMethodThrowsWhenItsFunctionIsNotAvailable(
         string $property,
         string $method,
