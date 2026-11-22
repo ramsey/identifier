@@ -293,4 +293,23 @@ class TimeTest extends TestCase
             Time::getUnixMilliseconds(Time::getDateTimeForUnixMilliseconds($milliseconds)),
         );
     }
+
+    #[TestWith(['@9223372036854774.999', true], 'the last millisecond counted exactly')]
+    #[TestWith(['@9223372036854775.000', false], 'the first millisecond of the last second')]
+    #[TestWith(['@9223372036858375.807', false], 'past the largest integer')]
+    #[TestWith(['@-9223372036854775.000', true], 'the first millisecond counted exactly')]
+    #[TestWith(['@-9223372036854775.001', false], 'the millisecond before it')]
+    #[TestWith(['@-9223372036858375.808', false], 'past the smallest integer')]
+    #[TestWith(['1970-01-01 00:00:00.000', true], 'the Unix Epoch')]
+    public function testHasExactUnixMilliseconds(string $dateTime, bool $expected): void
+    {
+        $this->assertSame($expected, Time::hasExactUnixMilliseconds(new DateTimeImmutable($dateTime)));
+    }
+
+    #[TestWith(['@9223372036854774.999', Time::MAX_EXACT_UNIX_MILLISECONDS])]
+    #[TestWith(['@-9223372036854775.000', Time::MIN_EXACT_UNIX_MILLISECONDS])]
+    public function testExactLimitsAreTheMillisecondsOfTheirDateTimes(string $dateTime, int $expected): void
+    {
+        $this->assertSame($expected, Time::getUnixMilliseconds(new DateTimeImmutable($dateTime)));
+    }
 }

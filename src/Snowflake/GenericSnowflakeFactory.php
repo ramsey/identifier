@@ -112,8 +112,11 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake
     {
         $milliseconds = Time::getUnixMilliseconds($dateTime) - $this->epochOffset;
+        $isExact = Time::hasExactUnixMilliseconds($dateTime);
 
-        if ($milliseconds < 0) {
+        // A date-time too early to count exactly is earlier than every epoch
+        // that can be counted exactly.
+        if ($milliseconds < 0 && ($isExact || $this->epochOffset >= Time::MIN_EXACT_UNIX_MILLISECONDS)) {
             throw new InvalidArgument(sprintf(
                 'Timestamp may not be earlier than the epoch, %s',
                 Time::getDateTimeForUnixMilliseconds($this->epochOffset)->format(Epoch::ISO_EXTENDED_FORMAT),
@@ -127,6 +130,15 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
                 'Snowflakes with epoch offset %d cannot have a date-time greater than %s',
                 $this->epochOffset,
                 $maxDateTime->format(Epoch::ISO_EXTENDED_FORMAT),
+            ));
+        }
+
+        // The count of a date-time this far from the Unix Epoch is not its true
+        // count, so it must not become the timestamp of a snowflake.
+        if (!$isExact) {
+            throw new InvalidArgument(sprintf(
+                'The date-time %s is too far from the Unix Epoch to count in milliseconds',
+                $dateTime->format(Epoch::ISO_EXTENDED_FORMAT),
             ));
         }
 

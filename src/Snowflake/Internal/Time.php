@@ -49,6 +49,18 @@ use const PHP_INT_MIN;
  */
 final class Time
 {
+    /**
+     * The latest date-time that getUnixMilliseconds() counts exactly, in
+     * milliseconds from the Unix Epoch
+     */
+    public const MAX_EXACT_UNIX_MILLISECONDS = PHP_INT_MAX - PHP_INT_MAX % self::MILLISECONDS - 1;
+
+    /**
+     * The earliest date-time that getUnixMilliseconds() counts exactly, in
+     * milliseconds from the Unix Epoch
+     */
+    public const MIN_EXACT_UNIX_MILLISECONDS = PHP_INT_MIN - PHP_INT_MIN % self::MILLISECONDS;
+
     private const SNOWFLAKE_BITS = 64;
 
     /**
@@ -155,5 +167,18 @@ final class Time
         // second is never negative, so adding them gives the right number of
         // milliseconds on both sides of the Unix Epoch.
         return $timestamp * self::MILLISECONDS + (int) $dateTime->format('v');
+    }
+
+    /**
+     * Returns true if getUnixMilliseconds() counts the date-time exactly, and
+     * false if the date-time is so far from the Unix Epoch that it returns the
+     * largest or the smallest int in its place
+     */
+    public static function hasExactUnixMilliseconds(DateTimeInterface $dateTime): bool
+    {
+        $timestamp = $dateTime->getTimestamp();
+
+        return $timestamp <= intdiv(self::MAX_EXACT_UNIX_MILLISECONDS, self::MILLISECONDS)
+            && $timestamp >= intdiv(self::MIN_EXACT_UNIX_MILLISECONDS, self::MILLISECONDS);
     }
 }

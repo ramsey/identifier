@@ -16,6 +16,9 @@ use Ramsey\Test\Identifier\TestCase;
 
 use function sprintf;
 
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
+
 class GenericSnowflakeFactoryTest extends TestCase
 {
     private const EPOCH_OFFSET = 946684800000;
@@ -306,6 +309,50 @@ class GenericSnowflakeFactoryTest extends TestCase
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2139-05-15 07:35:11.104'));
+    }
+
+    #[TestWith([PHP_INT_MIN, '@-9223372036858375.808'], 'the smallest offset, one hour before its epoch')]
+    #[TestWith([PHP_INT_MIN, '@-9223372036854775.808'], 'the smallest offset, at its epoch')]
+    #[TestWith([PHP_INT_MIN + 500, '@-9223372036854775.308'], 'an offset 500 ms above the smallest, at its epoch')]
+    #[TestWith([PHP_INT_MAX, '@9223372036854775.807'], 'the largest offset, at its epoch')]
+    #[TestWith([PHP_INT_MAX, '@9223372036854775.808'], 'the largest offset, one millisecond after its epoch')]
+    #[TestWith([PHP_INT_MAX, '@9223372036858375.807'], 'the largest offset, one hour after its epoch')]
+    public function testCreateFromDateTimeThrowsExceptionWhenDateTimeCannotBeCounted(
+        int $epochOffset,
+        string $dateTime,
+    ): void {
+        $factory = new GenericSnowflakeFactory(1, $epochOffset);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('is too far from the Unix Epoch to count in milliseconds');
+
+        $factory->createFromDateTime(new DateTimeImmutable($dateTime));
+    }
+
+    public function testCreateFromDateTimeNamesTheDateTimeThatCannotBeCounted(): void
+    {
+        $factory = new GenericSnowflakeFactory(1, PHP_INT_MAX);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'The date-time 292278994-08-17T07:12:55.808Z is too far from the Unix Epoch to count in milliseconds',
+        );
+
+        $factory->createFromDateTime(new DateTimeImmutable('@9223372036854775.808'));
+    }
+
+    #[TestWith([9223367638808263896, '@9223372036854774.999'], 'the last date-time counted exactly')]
+    #[TestWith([-9223372036854775000, '@-9223372036854775.000'], 'the first date-time counted exactly')]
+    public function testCreateFromDateTimeForDateTimeAtTheEdgeOfWhatCanBeCounted(
+        int $epochOffset,
+        string $dateTime,
+    ): void {
+        $factory = new GenericSnowflakeFactory(1, $epochOffset);
+        $expected = new DateTimeImmutable($dateTime);
+
+        $snowflake = $factory->createFromDateTime($expected);
+
+        $this->assertSame($expected->format('U.v'), $snowflake->getDateTime()->format('U.v'));
     }
 
     public function testCreateFromDateTimeWithMaxValuesReturnsMaxIdentifier(): void
