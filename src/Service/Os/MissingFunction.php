@@ -23,9 +23,10 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
+namespace Ramsey\Identifier\Service\Os;
 
 use LogicException;
+use Ramsey\Identifier\Exception\IdentifierException;
 
 /**
  * Thrown when attempting to use functionality that relies on a PHP function

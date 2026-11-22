@@ -25,7 +25,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Dce;
 
-use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function sprintf;

@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
+use Ramsey\Identifier\Service\Nic\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Test\Identifier\TestCase;
 

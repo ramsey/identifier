@@ -23,13 +23,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
+namespace Ramsey\Identifier\Service\Dce;
 
+use Ramsey\Identifier\Exception\IdentifierException;
 use RuntimeException;
 
 /**
- * Thrown when unable to find a suitable MAC address
+ * Thrown when unable to find a suitable DCE identifier
  */
-class MacAddressNotFound extends RuntimeException implements IdentifierException
+class DceIdentifierNotFound extends RuntimeException implements IdentifierException
 {
 }

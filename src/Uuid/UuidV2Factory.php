@@ -27,12 +27,12 @@ namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
-use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\RandomClockSequence;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Dce\Dce;
+use Ramsey\Identifier\Service\Dce\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;

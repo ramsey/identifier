@@ -25,8 +25,6 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Os;
 
-use Ramsey\Identifier\Exception\MissingFunction;
-
 use function escapeshellcmd;
 use function file_get_contents;
 use function function_exists;

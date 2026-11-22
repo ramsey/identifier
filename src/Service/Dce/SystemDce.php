@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Service\Dce;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;

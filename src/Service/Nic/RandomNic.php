@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
 
 use function random_int;
 use function sprintf;

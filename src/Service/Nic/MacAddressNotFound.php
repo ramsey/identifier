@@ -23,13 +23,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
+namespace Ramsey\Identifier\Service\Nic;
 
-use LogicException;
+use Ramsey\Identifier\Exception\IdentifierException;
+use RuntimeException;
 
 /**
- * Thrown when unable to determine the version of an untyped UUID
+ * Thrown when unable to find a suitable MAC address
  */
-class CannotDetermineVersion extends LogicException implements IdentifierException
+class MacAddressNotFound extends RuntimeException implements IdentifierException
 {
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Dce;
 
-use Ramsey\Identifier\Exception\DceIdentifierNotFound;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Dce\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\StaticDce;
 use Ramsey\Test\Identifier\TestCase;
 

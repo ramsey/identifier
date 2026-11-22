@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
 use Ramsey\Identifier\Exception\BadMethodCall;
-use Ramsey\Identifier\Exception\CannotDetermineVersion;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\NodeBasedUuid;

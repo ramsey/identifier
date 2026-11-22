@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** A version 3 or 5 UUID created from a `MicrosoftGuid` namespace hashes the namespace by its value in RFC 9562 layout, so it is the same UUID as one created from the namespace's string form; a version 3 or 5 UUID stored from a `MicrosoftGuid` namespace by an earlier release differs.
 - **Breaking:** `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, the same value as its string form; a ULID created from a `MicrosoftGuid` by an earlier release differs.
 - `getDateTime()` on a version 1, 2, or 6 UUID whose timestamp is not a whole number of microseconds rounds to the nearest microsecond, with a half rounded up, on both sides of the Unix Epoch.
+- **Breaking:** Four exceptions are in the namespace of the code that throws them: `Ramsey\Identifier\Service\Nic\MacAddressNotFound`, `Ramsey\Identifier\Service\Os\MissingFunction`, `Ramsey\Identifier\Service\Dce\DceIdentifierNotFound`, and `Ramsey\Identifier\Uuid\CannotDetermineVersion`. Each was in `Ramsey\Identifier\Exception`.
 
 ### Fixed
 

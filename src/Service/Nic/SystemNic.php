@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Service\Nic;
 
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Exception\MacAddressNotFound;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 

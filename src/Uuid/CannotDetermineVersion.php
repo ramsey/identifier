@@ -23,13 +23,14 @@
 
 declare(strict_types=1);
 
-namespace Ramsey\Identifier\Exception;
+namespace Ramsey\Identifier\Uuid;
 
-use RuntimeException;
+use LogicException;
+use Ramsey\Identifier\Exception\IdentifierException;
 
 /**
- * Thrown when unable to find a suitable DCE identifier
+ * Thrown when unable to determine the version of an untyped UUID
  */
-class DceIdentifierNotFound extends RuntimeException implements IdentifierException
+class CannotDetermineVersion extends LogicException implements IdentifierException
 {
 }
