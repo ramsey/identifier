@@ -357,7 +357,7 @@ class UuidV2Test extends TestCase
         $dateTime = $this->uuidWithString->getDateTime();
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromHexUuid(): void
@@ -365,7 +365,7 @@ class UuidV2Test extends TestCase
         $dateTime = $this->uuidWithHex->getDateTime();
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetDateTimeFromBytesUuid(): void
@@ -373,7 +373,7 @@ class UuidV2Test extends TestCase
         $dateTime = $this->uuidWithBytes->getDateTime();
 
         // v2 UUIDs have a loss of fidelity in the timestamp.
-        $this->assertSame('3960-10-02 03:46:37.628825', $dateTime->format('Y-m-d H:i:s.u'));
+        $this->assertSame('3960-10-02 03:46:37.628826', $dateTime->format('Y-m-d H:i:s.u'));
     }
 
     public function testGetNode(): void

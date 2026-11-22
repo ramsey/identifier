@@ -216,21 +216,34 @@ final class Time
     }
 
     /**
-     * Divides the Gregorian timestamp by 100-nanosecond intervals (i.e.,
-     * 10_000_000) and returns the timestamp as a string with microsecond
-     * precision (i.e., 6)
+     * Converts a count of 100-nanosecond intervals from the Gregorian epoch
+     * to a Unix timestamp in seconds, as a string with six decimal places
      *
-     * We specifically do not do any rounding here, since we don't want the time
-     * to accidentally bump forward to the next second.
+     * The whole seconds are rounded down, and the rest of the time is rounded
+     * to the nearest microsecond, with a half rounded up.
      *
      * @return numeric-string
      */
     private static function divideTimestampGregorian(int $timestamp): string
     {
-        $timestamp -= self::GREGORIAN_OFFSET;
+        $intervals = $timestamp - self::GREGORIAN_OFFSET;
 
-        // Convert time to microseconds from 100-nanosecond intervals.
-        $timestamp = intdiv($timestamp, 10);
+        // Round the seconds down, so the remainder is never negative.
+        $seconds = intdiv($intervals, self::INTERVALS_PER_SECOND);
+        $remainder = $intervals % self::INTERVALS_PER_SECOND;
+
+        if ($remainder < 0) {
+            $seconds--;
+            $remainder += self::INTERVALS_PER_SECOND;
+        }
+
+        // Round the remainder to the nearest microsecond, with halves rounded
+        // up. A remainder that rounds up to a whole second adds to the seconds
+        // below.
+        $microseconds = $seconds * self::MICROSECONDS + intdiv(
+            $remainder + intdiv(self::INTERVALS_PER_MICROSECOND, 2),
+            self::INTERVALS_PER_MICROSECOND,
+        );
 
         // The sign is written apart from the digits because a timestamp after
         // "@" is a sign and a magnitude, so a time less than one second before
@@ -239,9 +252,9 @@ final class Time
         /** @var numeric-string */
         return sprintf(
             '%s%d.%06d',
-            $timestamp < 0 ? '-' : '',
-            abs(intdiv($timestamp, self::MICROSECONDS)),
-            abs($timestamp % self::MICROSECONDS),
+            $microseconds < 0 ? '-' : '',
+            abs(intdiv($microseconds, self::MICROSECONDS)),
+            abs($microseconds % self::MICROSECONDS),
         );
     }
 }

@@ -103,6 +103,39 @@ class TimeTest extends TestCase
     /**
      * @param non-empty-string $uuid
      */
+    #[TestWith(['0548567a-833b-11ee-8000-000000000000', '2023-11-14 22:13:20.999999'])]
+    #[TestWith(['1ee833b0-5485-667a-8000-000000000000', '2023-11-14 22:13:20.999999'])]
+    #[TestWith(['0548567b-833b-11ee-8000-000000000000', '2023-11-14 22:13:21.000000'])]
+    #[TestWith(['1ee833b0-5485-667b-8000-000000000000', '2023-11-14 22:13:21.000000'])]
+    #[TestWith(['04afc004-833b-11ee-8000-000000000000', '2023-11-14 22:13:20.000000'])]
+    #[TestWith(['1ee833b0-4afc-6004-8000-000000000000', '2023-11-14 22:13:20.000000'])]
+    #[TestWith(['04afc005-833b-11ee-8000-000000000000', '2023-11-14 22:13:20.000001'])]
+    #[TestWith(['1ee833b0-4afc-6005-8000-000000000000', '2023-11-14 22:13:20.000001'])]
+    #[TestWith(['13813ffb-1dd2-11b2-8000-000000000000', '1970-01-01 00:00:00.000000'])]
+    #[TestWith(['1b21dd21-3813-6ffb-8000-000000000000', '1970-01-01 00:00:00.000000'])]
+    #[TestWith(['13813ffa-1dd2-11b2-8000-000000000000', '1969-12-31 23:59:59.999999'])]
+    #[TestWith(['1b21dd21-3813-6ffa-8000-000000000000', '1969-12-31 23:59:59.999999'])]
+    #[TestWith(['13813ff1-1dd2-11b2-8000-000000000000', '1969-12-31 23:59:59.999999'])]
+    #[TestWith(['1b21dd21-3813-6ff1-8000-000000000000', '1969-12-31 23:59:59.999999'])]
+    #[TestWith(['13813ff0-1dd2-11b2-8000-000000000000', '1969-12-31 23:59:59.999998'])]
+    #[TestWith(['1b21dd21-3813-6ff0-8000-000000000000', '1969-12-31 23:59:59.999998'])]
+    #[TestWith(['12e8a97b-1dd2-11b2-8000-000000000000', '1969-12-31 23:59:59.000000'])]
+    #[TestWith(['1b21dd21-2e8a-697b-8000-000000000000', '1969-12-31 23:59:59.000000'])]
+    #[TestWith(['12e8a97a-1dd2-11b2-8000-000000000000', '1969-12-31 23:59:58.999999'])]
+    #[TestWith(['1b21dd21-2e8a-697a-8000-000000000000', '1969-12-31 23:59:58.999999'])]
+    public function testGetDateTimeForUuidRoundsToTheNearestMicrosecond(string $uuid, string $expectedTime): void
+    {
+        // Each timestamp is not a whole number of microseconds. The seconds
+        // are rounded down and the rest is rounded to the nearest microsecond,
+        // with a half rounded up, on both sides of the Unix Epoch.
+        $uuid = (new UuidFactory())->createFromString($uuid);
+
+        $this->assertSame($expectedTime, Time::getDateTimeForUuid($uuid)->format('Y-m-d H:i:s.u'));
+    }
+
+    /**
+     * @param non-empty-string $uuid
+     */
     #[DataProvider('getDateTimeForUuidProvider')]
     public function testGetDateTimeForUuid(string $uuid, string $expectedTime): void
     {
@@ -119,15 +152,15 @@ class TimeTest extends TestCase
         return [
             'v1 UUID' => [
                 'uuid' => '27433d43-011d-1a6a-8161-1550863792c9',
-                'expectedTime' => '3960-10-02 03:47:43.500627',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
             ],
             'v2 UUID' => [
                 'uuid' => '27433d43-011d-2a6a-8101-1550863792c9',
-                'expectedTime' => '3960-10-02 03:46:37.628825',
+                'expectedTime' => '3960-10-02 03:46:37.628826',
             ],
             'v6 UUID' => [
                 'uuid' => 'a6a011d2-7433-6d43-8161-1550863792c9',
-                'expectedTime' => '3960-10-02 03:47:43.500627',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
             ],
             'v7 UUID' => [
                 'uuid' => '3922e67a-910c-704c-8bd3-a5765a69f0d9',
@@ -135,15 +168,15 @@ class TimeTest extends TestCase
             ],
             'v1 GUID' => [
                 'uuid' => '27433d43-011d-1a6a-d161-1550863792c9',
-                'expectedTime' => '3960-10-02 03:47:43.500627',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
             ],
             'v2 GUID' => [
                 'uuid' => '27433d43-011d-2a6a-d101-1550863792c9',
-                'expectedTime' => '3960-10-02 03:46:37.628825',
+                'expectedTime' => '3960-10-02 03:46:37.628826',
             ],
             'v6 GUID' => [
                 'uuid' => 'a6a011d2-7433-6d43-d161-1550863792c9',
-                'expectedTime' => '3960-10-02 03:47:43.500627',
+                'expectedTime' => '3960-10-02 03:47:43.500628',
             ],
             'v7 GUID' => [
                 'uuid' => '3922e67a-910c-704c-bbd3-a5765a69f0d9',
@@ -155,7 +188,7 @@ class TimeTest extends TestCase
             ],
             'maximum UUID' => [
                 'uuid' => 'ffffffff-ffff-1fff-8000-000000000000',
-                'expectedTime' => '5236-03-31 21:21:00.684697',
+                'expectedTime' => '5236-03-31 21:21:00.684698',
             ],
 
             // PHP uses microsecond resolution, while UUIDs use 100-nanosecond
