@@ -43,7 +43,7 @@ class MonotonicBytesGeneratorTest extends TestCase
 
     public function testBytesWithDateTime(): void
     {
-        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.123456');
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.123456 +00:00');
         $bytesGenerator = new MonotonicBytesGenerator();
         $bytes = $bytesGenerator->bytes(dateTime: $dateTime);
 
@@ -131,9 +131,9 @@ class MonotonicBytesGeneratorTest extends TestCase
         }
     }
 
-    #[TestWith(['1969-12-31 23:59:59.999', '1969-12-31 23:59:59.999 +00:00'])]
-    #[TestWith(['1969-12-31 23:59:59.500', '1969-12-31 23:59:59.500 +00:00'])]
-    #[TestWith(['1960-06-01 12:00:00.000', '1960-06-01 12:00:00.000 +00:00'])]
+    #[TestWith(['1969-12-31 23:59:59.999 +00:00', '1969-12-31 23:59:59.999 +00:00'])]
+    #[TestWith(['1969-12-31 23:59:59.500 +00:00', '1969-12-31 23:59:59.500 +00:00'])]
+    #[TestWith(['1960-06-01 12:00:00.000 +00:00', '1960-06-01 12:00:00.000 +00:00'])]
     #[TestWith(['@281474976710.656', '10889-08-02 05:31:50.656 +00:00'])]
     #[TestWith(['@316516464000', '12000-01-04 00:00:00.000 +00:00'])]
     public function testBytesThrowsExceptionForDateTimeOutOfRange(string $dateTime, string $received): void
@@ -152,7 +152,7 @@ class MonotonicBytesGeneratorTest extends TestCase
     public function testBytesThrowsExceptionWhenClockIsOutOfRange(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(
-            clock: new FrozenClock(new DateTimeImmutable('1969-12-31 23:59:59.999')),
+            clock: new FrozenClock(new DateTimeImmutable('1969-12-31 23:59:59.999 +00:00')),
         );
 
         $this->expectException(InvalidArgument::class);
@@ -161,8 +161,8 @@ class MonotonicBytesGeneratorTest extends TestCase
         $bytesGenerator->bytes();
     }
 
-    #[TestWith(['1970-01-01 00:00:00.000', '000000000000'])]
-    #[TestWith(['1970-01-01 00:00:00.001', '000000000001'])]
+    #[TestWith(['1970-01-01 00:00:00.000 +00:00', '000000000000'])]
+    #[TestWith(['1970-01-01 00:00:00.001 +00:00', '000000000001'])]
     #[TestWith(['@281474976710.655', 'ffffffffffff'])]
     public function testBytesAtTheLimitsOfTheRange(string $dateTime, string $expectedTimestamp): void
     {
