@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `Rfc4122ClockSequence` compares date-times before the Unix Epoch that have a fraction of a second in the right order, so its sequence rises only when the date-time moves backward.
 - `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, so the two compare as equal.
 - `UuidV3Factory` and `UuidV5Factory` given a `MicrosoftGuid` namespace create the same UUID as for any other UUID with the same string form.
+- `UuidFactory::createFromInteger()` given an integer greater than 128 bits throws `InvalidArgument` with a message that names the integer.
 
 ## [0.1.0] - 2025-06-19
 

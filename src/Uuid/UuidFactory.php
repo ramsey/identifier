@@ -120,6 +120,10 @@ final class UuidFactory implements UuidFactoryInterface
             $bytes = pack('J', $identifier);
         } else {
             $bytes = BigInteger::of($identifier)->toBytes(false);
+
+            if (strlen($bytes) > Format::Bytes->value) {
+                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $identifier));
+            }
         }
 
         return $this->createFromBytes(str_pad($bytes, 16, "\x00", STR_PAD_LEFT));
