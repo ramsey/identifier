@@ -365,10 +365,13 @@ class UlidFactoryTest extends TestCase
         // Create a ton of ULIDs and assert that each one is greater than the
         // last.
         for ($i = 0; $i < 40_000; $i++) {
+            // Capture the time before and after creating the ULID, in case this
+            // test rolls over from one minute to the next.
+            $before = gmdate('Y-m-d H:i');
             $ulid = $this->factory->create();
-            $now = gmdate('Y-m-d H:i');
+            $after = gmdate('Y-m-d H:i');
+            $this->assertContains($ulid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
             $this->assertTrue($ulid->compareTo($previous) > 0);
-            $this->assertSame($now, $ulid->getDateTime()->format('Y-m-d H:i'));
             $previous = $ulid;
         }
     }
