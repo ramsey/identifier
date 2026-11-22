@@ -239,7 +239,9 @@ class DiscordSnowflakeFactoryTest extends TestCase
     public function testCreateEachSnowflakeFromSameDateTimeIsMonotonicallyIncreasing(): void
     {
         $factory = new DiscordSnowflakeFactory(15, 30);
-        $dateTime = new DateTimeImmutable();
+        // A fixed date-time, far enough from the end of its second that the
+        // milliseconds the factory moves ahead by stay within that second.
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345');
         $previous = $factory->createFromDateTime($dateTime);
 
         // This is 4095 * 2 + 1, so that we loop through the clock sequence

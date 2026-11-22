@@ -262,7 +262,9 @@ class GenericSnowflakeFactoryTest extends TestCase
 
     public function testCreateEachSnowflakeFromSameDateTimeIsMonotonicallyIncreasing(): void
     {
-        $dateTime = new DateTimeImmutable();
+        // A fixed date-time, far enough from the end of its second that the
+        // milliseconds the factory moves ahead by stay within that second.
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345');
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
@@ -279,7 +281,7 @@ class GenericSnowflakeFactoryTest extends TestCase
                     $i,
                 ),
             );
-            $this->assertSame($dateTime->format('Y-m-d H:is'), $snowflake->getDateTime()->format('Y-m-d H:is'));
+            $this->assertSame($dateTime->format('Y-m-d H:i:s'), $snowflake->getDateTime()->format('Y-m-d H:i:s'));
             $previous = $snowflake;
         }
     }

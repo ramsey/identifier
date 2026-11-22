@@ -241,7 +241,9 @@ class TwitterSnowflakeFactoryTest extends TestCase
 
     public function testCreateEachSnowflakeFromSameDateTimeIsMonotonicallyIncreasing(): void
     {
-        $dateTime = new DateTimeImmutable();
+        // A fixed date-time, far enough from the end of its second that the
+        // milliseconds the factory moves ahead by stay within that second.
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345');
 
         $previous = $this->factory->createFromDateTime($dateTime);
 
