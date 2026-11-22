@@ -412,4 +412,43 @@ class SystemNicTest extends TestCase
 
         $this->assertSame('fedcba987654', $nic->address());
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressOnLinuxFallsBackToNetstatIfIsReadableIsNotAvailable(): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Linux',
+        ]);
+
+        $os->expects('glob')->with('/sys/class/net/*/address')->andReturn(['/sys/class/net/foo/address']);
+        $os->expects('isReadable')->with('/sys/class/net/foo/address')->andThrow(new MissingFunction());
+        $os->expects('run')
+            ->with('netstat -ie')
+            ->andReturn("enp3s0    Link encap:Ethernet  HWaddr fe:dc:ba:98:76:54\n");
+
+        $nic = new SystemNic(os: $os);
+
+        $this->assertSame('fedcba987654', $nic->address());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressOnLinuxFallsBackToNetstatIfFileGetContentsIsNotAvailable(): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Linux',
+        ]);
+
+        $os->expects('glob')->with('/sys/class/net/*/address')->andReturn(['/sys/class/net/foo/address']);
+        $os->expects('isReadable')->with('/sys/class/net/foo/address')->andReturnTrue();
+        $os->expects('fileGetContents')->with('/sys/class/net/foo/address')->andThrow(new MissingFunction());
+        $os->expects('run')
+            ->with('netstat -ie')
+            ->andReturn("enp3s0    Link encap:Ethernet  HWaddr fe:dc:ba:98:76:54\n");
+
+        $nic = new SystemNic(os: $os);
+
+        $this->assertSame('fedcba987654', $nic->address());
+    }
 }
