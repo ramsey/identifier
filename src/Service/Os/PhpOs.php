@@ -39,7 +39,7 @@ use const PHP_OS_FAMILY;
  * An OS interface that uses pure PHP functions to interact with the operating
  * system
  */
-class PhpOs implements Os
+final class PhpOs implements Os
 {
     /**
      * Whether escapeshellcmd() is available; null until it is first needed

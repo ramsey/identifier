@@ -32,7 +32,7 @@ use function hash;
  *
  * @link https://en.wikipedia.org/wiki/MD5 Wikipedia: MD5
  */
-class Md5Hash implements Hash
+final class Md5Hash implements Hash
 {
     public function hash(string $data, bool $binary = false): string
     {

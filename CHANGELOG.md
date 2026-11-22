@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, the same value as its string form; a ULID created from a `MicrosoftGuid` by an earlier release differs.
 - `getDateTime()` on a version 1, 2, or 6 UUID whose timestamp is not a whole number of microseconds rounds to the nearest microsecond, with a half rounded up, on both sides of the Unix Epoch.
 - **Breaking:** Four exceptions are in the namespace of the code that throws them: `Ramsey\Identifier\Service\Nic\MacAddressNotFound`, `Ramsey\Identifier\Service\Os\MissingFunction`, `Ramsey\Identifier\Service\Dce\DceIdentifierNotFound`, and `Ramsey\Identifier\Uuid\CannotDetermineVersion`. Each was in `Ramsey\Identifier\Exception`.
+- **Breaking:** `PhpOs` and `Md5Hash` are final, as the other service classes are.
 - `PhpOs` checks for `shell_exec()`, `escapeshellcmd()`, `file_get_contents()`, `glob()`, and `is_readable()` when the method that needs each one is called, and that method throws `MissingFunction`. Its constructor throws nothing, so `SystemNic`, `SystemDce`, and `UuidV2Factory` can be created on a system that disables one of these functions.
 - When a PHP function it needs is not available, `SystemNic` goes on to its next way of finding the address, ending with a random address, and `SystemDce` throws `DceIdentifierNotFound`.
 
