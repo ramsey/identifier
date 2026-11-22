@@ -25,6 +25,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Cache;
 
+use DateTimeInterface;
+
 /**
  * A value held in {@see InMemoryCache}, with its expiration time and the time
  * it was last stored or read
@@ -37,7 +39,7 @@ final class CacheItem
     public function __construct(
         public readonly mixed $value,
         public readonly int $ttl,
-        public int $lastAccess,
+        public DateTimeInterface $lastAccess,
     ) {
     }
 }

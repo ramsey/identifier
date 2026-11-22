@@ -29,7 +29,6 @@ use DateInterval;
 use DateTimeImmutable;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
-use Ramsey\Identifier\Service\Clock\Precision;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 
 use function count;
@@ -73,7 +72,7 @@ final class InMemoryCache implements CacheInterface
         $cacheItem = $this->cache[$key] ?? null;
 
         if ($this->isValid($key, $cacheItem)) {
-            $cacheItem->lastAccess = (int) $this->clock->now()->format(Precision::Microsecond->value);
+            $cacheItem->lastAccess = $this->clock->now();
 
             return $cacheItem->value;
         }
@@ -91,7 +90,7 @@ final class InMemoryCache implements CacheInterface
         $this->cache[$key] = new CacheItem(
             $value,
             $this->createTtl($ttl),
-            (int) $this->clock->now()->format(Precision::Microsecond->value),
+            $this->clock->now(),
         );
 
         return true;

@@ -5,14 +5,17 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Cache;
 
 use DateInterval;
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
+use Psr\Clock\ClockInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use stdClass;
 
 use function array_keys;
 use function array_slice;
+use function count;
 use function iterator_to_array;
 use function usleep;
 
@@ -176,6 +179,48 @@ class InMemoryCacheTest extends TestCase
             ],
             'providing an integer TTL' => ['ttl' => -900],
         ];
+    }
+
+    #[TestDox('set() evicts the least recently used item when the clock is before the Unix Epoch')]
+    public function testCacheEvictionBeforeUnixEpoch(): void
+    {
+        $clock = new class implements ClockInterface {
+            /**
+             * @var list<string>
+             */
+            private array $times = [
+                '1969-12-31 23:59:58.900000 +00:00',
+                '1969-12-31 23:59:59.000000 +00:00',
+                '1969-12-31 23:59:59.400000 +00:00',
+                '1969-12-31 23:59:59.500000 +00:00',
+            ];
+
+            private int $calls = 0;
+
+            public function now(): DateTimeImmutable
+            {
+                // Each call returns the next time, and the last time from then
+                // on.
+                $time = $this->times[$this->calls] ?? $this->times[count($this->times) - 1];
+                $this->calls++;
+
+                return new DateTimeImmutable($time);
+            }
+        };
+
+        $inMemoryCache = new InMemoryCache(cacheSize: 2, clock: $clock);
+
+        // The cache reads the clock twice for each item it stores: once for
+        // the expiration time and once for the time of last use. So 'foo' was
+        // last used 1.0 second before the Unix Epoch and 'bar' 0.5 seconds
+        // before it, and 'foo' is the least recently used item.
+        $inMemoryCache->set('foo', 1234);
+        $inMemoryCache->set('bar', 5678);
+        $inMemoryCache->set('baz', 9012);
+
+        $this->assertNull($inMemoryCache->get('foo'));
+        $this->assertSame(5678, $inMemoryCache->get('bar'));
+        $this->assertSame(9012, $inMemoryCache->get('baz'));
     }
 
     #[TestDox('set() evicts the least recently used item when the cache is full')]
