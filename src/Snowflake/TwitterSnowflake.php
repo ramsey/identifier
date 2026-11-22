@@ -38,7 +38,7 @@ use function sprintf;
  * platform
  *
  * @link https://x.com X/Twitter
- * @link https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake
+ * @link https://web.archive.org/web/20231210065147/https://blog.twitter.com/engineering/en_us/a/2010/announcing-snowflake Announcing Snowflake
  * @link https://github.com/twitter-archive/snowflake/tree/snowflake-2010 Snowflake
  */
 final readonly class TwitterSnowflake implements Snowflake

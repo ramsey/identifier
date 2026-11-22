@@ -34,7 +34,7 @@ use Ramsey\Identifier\Snowflake\Internal\Standard;
  * video platform
  *
  * @link https://discord.com Discord
- * @link https://discord.com/developers/docs/reference#snowflakes Discord Snowflakes
+ * @link https://web.archive.org/web/20261116214819/https://docs.discord.com/developers/reference#snowflakes Discord Snowflakes
  */
 final readonly class DiscordSnowflake implements Snowflake
 {

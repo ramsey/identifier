@@ -36,7 +36,7 @@ use Ramsey\Identifier\Snowflake\Internal\Time;
  * social media platform
  *
  * @link https://www.instagram.com Instagram
- * @link https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c Sharding & IDs at Instagram
+ * @link https://web.archive.org/web/20181114230358/https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c?gi=7f093901aeec Sharding & IDs at Instagram
  */
 final readonly class InstagramSnowflake implements Snowflake
 {
