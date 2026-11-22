@@ -209,10 +209,13 @@ class UuidV7FactoryTest extends TestCase
         // Create a bunch of UUIDs and assert that each one is greater than the
         // last.
         for ($i = 0; $i < 40_000; $i++) {
+            // Capture the time before and after creating the UUID, in case this
+            // test rolls over from one minute to the next.
+            $before = gmdate('Y-m-d H:i');
             $uuid = $this->factory->create();
-            $now = gmdate('Y-m-d H:i');
+            $after = gmdate('Y-m-d H:i');
+            $this->assertContains($uuid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
             $this->assertGreaterThan(0, $uuid->compareTo($previous));
-            $this->assertSame($now, $uuid->getDateTime()->format('Y-m-d H:i'));
             $previous = $uuid;
         }
     }
