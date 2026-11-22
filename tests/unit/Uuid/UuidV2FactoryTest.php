@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
@@ -164,6 +165,18 @@ class UuidV2FactoryTest extends TestCase
         // We lose up to 7+ minutes of time with UUID version 2.
         $this->assertSame('2022-09-25 17:25:07.294208', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
         $this->assertSame('3cf7-21ed', substr($uuid->toString(), 9, 9));
+    }
+
+    #[TestWith(['1969-12-31 23:59:59.500000', '1969-12-31 23:59:27.276237'])]
+    #[TestWith(['1960-06-01 12:00:00.000000', '1960-06-01 11:55:30.729779'])]
+    public function testCreateFromDateTimeBeforeUnixEpoch(string $dateTime, string $expected): void
+    {
+        $uuid = $this->factory->createFromDateTime(new DateTimeImmutable($dateTime));
+
+        // A version 2 UUID keeps the upper bits of the timestamp only, so its
+        // date-time is the start of the block of about 7 minutes that holds
+        // the date-time it was created from.
+        $this->assertSame($expected, $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
 
     public function testCreateFromMaximumDateTime(): void
