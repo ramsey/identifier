@@ -26,14 +26,14 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Internal;
 
 use Brick\Math\BigInteger;
+use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 
 use function is_int;
 use function is_string;
 use function pack;
 use function sprintf;
 use function str_pad;
-use function strlen;
-use function strspn;
 
 use const STR_PAD_LEFT;
 
@@ -59,13 +59,31 @@ enum Format: int
     case Hex = 16;
 
     /**
+     * The largest unsigned 64-bit integer, which is the largest value a
+     * Snowflake identifier has
+     */
+    private const MAXIMUM = '18446744073709551615';
+
+    /**
      * Formats a Snowflake identifier from its integer or numeric string form
      * into {@see self::Hex}, {@see self::Bytes}, or int forms
+     *
+     * @throws InvalidArgument if the value is negative, is a string that is not
+     *     an integer string, or is greater than the largest unsigned 64-bit
+     *     integer
      */
     public static function format(int | string $value, ?self $to): int | string
     {
-        if (is_string($value) && self::isStringInt($value) && is_int($value + 0)) {
-            $value = (int) $value;
+        if (is_string($value)) {
+            if (!IntegerString::isValid($value) || IntegerString::compare($value, self::MAXIMUM) > 0) {
+                throw new InvalidArgument(sprintf('Invalid integer: "%s"', $value));
+            }
+
+            if (IntegerString::fitsNativeInteger($value)) {
+                $value = (int) $value;
+            }
+        } elseif ($value < 0) {
+            throw new InvalidArgument(sprintf('Invalid integer: "%d"', $value));
         }
 
         return match ($to) {
@@ -104,13 +122,5 @@ enum Format: int
     {
         /** @var int<0, max> | numeric-string */
         return self::format($value, null);
-    }
-
-    /**
-     * @phpstan-assert-if-true numeric-string $value
-     */
-    private static function isStringInt(string $value): bool
-    {
-        return strspn($value, Mask::INT) === strlen($value);
     }
 }

@@ -40,12 +40,6 @@ final class Mask
     public const HEX = '0123456789abcdefABCDEF';
 
     /**
-     * A mask used with functions like {@see strspn()} to validate string
-     * integers
-     */
-    public const INT = '0123456789';
-
-    /**
      * @codeCoverageIgnore
      */
     private function __construct()
