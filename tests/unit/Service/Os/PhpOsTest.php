@@ -12,6 +12,8 @@ use ReflectionClass;
 
 use function escapeshellarg;
 use function file_get_contents;
+use function getmypid;
+use function microtime;
 use function str_repeat;
 use function trim;
 
@@ -35,8 +37,10 @@ class PhpOsTest extends TestCase
             'hasEscapeShellArg',
             'hasEscapeShellCmd',
             'hasFileGetContents',
+            'hasGetMyPid',
             'hasGlob',
             'hasIsReadable',
+            'hasMicrotime',
             'hasShellExec',
         ];
 
@@ -57,6 +61,18 @@ class PhpOsTest extends TestCase
         $expectedContents = file_get_contents(__FILE__);
 
         $this->assertSame($expectedContents, $this->os->fileGetContents(__FILE__));
+    }
+
+    public function testGetMyPid(): void
+    {
+        $this->assertSame(getmypid(), $this->os->getMyPid());
+    }
+
+    public function testGetMyPidReturnsFalseWhenItsFunctionIsNotAvailable(): void
+    {
+        (new ReflectionClass(PhpOs::class))->setStaticPropertyValue('hasGetMyPid', false);
+
+        $this->assertFalse($this->os->getMyPid());
     }
 
     public function testGetOsFamily(): void
@@ -87,6 +103,30 @@ class PhpOsTest extends TestCase
     public function testIsReadableReturnsFalse(): void
     {
         $this->assertFalse($this->os->isReadable(__DIR__ . '/foo-bar'));
+    }
+
+    public function testMicrotime(): void
+    {
+        $before = microtime(true);
+        $microtime = $this->os->microtime();
+        $after = microtime(true);
+
+        $this->assertGreaterThanOrEqual($before, $microtime);
+        $this->assertLessThanOrEqual($after, $microtime);
+    }
+
+    public function testMicrotimeReturnsTheTimeWhenItsFunctionIsNotAvailable(): void
+    {
+        (new ReflectionClass(PhpOs::class))->setStaticPropertyValue('hasMicrotime', false);
+
+        $before = microtime(true);
+        $microtime = $this->os->microtime();
+        $after = microtime(true);
+
+        // The two ways of reading the time may round the same microsecond to
+        // floats one step apart.
+        $this->assertGreaterThanOrEqual($before - 0.000001, $microtime);
+        $this->assertLessThanOrEqual($after + 0.000001, $microtime);
     }
 
     public function testRun(): void

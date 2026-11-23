@@ -25,12 +25,16 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Os;
 
+use DateTimeImmutable;
+
 use function escapeshellarg;
 use function escapeshellcmd;
 use function file_get_contents;
 use function function_exists;
+use function getmypid;
 use function glob;
 use function is_readable;
+use function microtime;
 use function shell_exec;
 
 use const GLOB_NOSORT;
@@ -58,6 +62,11 @@ final class PhpOs implements Os
     private static ?bool $hasFileGetContents = null;
 
     /**
+     * Whether getmypid() is available; null until it is first needed
+     */
+    private static ?bool $hasGetMyPid = null;
+
+    /**
      * Whether glob() is available; null until it is first needed
      */
     private static ?bool $hasGlob = null;
@@ -66,6 +75,11 @@ final class PhpOs implements Os
      * Whether is_readable() is available; null until it is first needed
      */
     private static ?bool $hasIsReadable = null;
+
+    /**
+     * Whether microtime() is available; null until it is first needed
+     */
+    private static ?bool $hasMicrotime = null;
 
     /**
      * Whether shell_exec() is available; null until it is first needed
@@ -100,6 +114,17 @@ final class PhpOs implements Os
         }
 
         return (string) file_get_contents($filename);
+    }
+
+    public function getMyPid(): int | false
+    {
+        self::$hasGetMyPid ??= function_exists('getmypid');
+
+        if (!self::$hasGetMyPid) {
+            return false;
+        }
+
+        return getmypid();
     }
 
     public function getOsFamily(): string
@@ -138,6 +163,21 @@ final class PhpOs implements Os
         }
 
         return is_readable($filename);
+    }
+
+    /**
+     * Returns the time from a new date-time object when microtime() is not
+     * available on this system
+     */
+    public function microtime(): float
+    {
+        self::$hasMicrotime ??= function_exists('microtime');
+
+        if (!self::$hasMicrotime) {
+            return (float) (new DateTimeImmutable())->format('U.u');
+        }
+
+        return microtime(true);
     }
 
     /**

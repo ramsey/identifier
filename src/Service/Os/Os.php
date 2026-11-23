@@ -53,6 +53,14 @@ interface Os
     public function fileGetContents(string $filename): string;
 
     /**
+     * Returns the identifier of the current process, or false if it cannot be
+     * read
+     *
+     * @link https://www.php.net/manual/en/function.getmypid.php PHP getmypid() function
+     */
+    public function getMyPid(): int | false;
+
+    /**
      * Returns the operating system family of the current system (i.e.,
      * `PHP_OS_FAMILY`)
      *
@@ -83,6 +91,14 @@ interface Os
      *     available on this system
      */
     public function isReadable(string $filename): bool;
+
+    /**
+     * Returns the current Unix timestamp in seconds, with microseconds as the
+     * fraction
+     *
+     * @link https://www.php.net/manual/en/function.microtime.php PHP microtime() function
+     */
+    public function microtime(): float;
 
     /**
      * Executes the given command and returns its full output
