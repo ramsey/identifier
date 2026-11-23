@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add `getSortKey()` to every identifier. It returns a string of bytes that places the identifier in order among other identifiers. A Microsoft GUID's sort key is in RFC 9562 layout, so it differs from the bytes `toBytes()` returns.
 - Add `Ramsey\Identifier\Exception\NotConvertible`, which `getDateTime()` throws when an identifier cannot return a date-time.
 - **Breaking:** Add `escapeShellArg()` to `Ramsey\Identifier\Service\Os\Os`. It returns an argument quoted and escaped for a shell command, and an implementation of `Os` must have it. `SystemDce` uses it on Windows.
-- Add `Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure`. `MonotonicBytesGenerator::bytes()` throws it when the current time is before 1970-01-01 or after 10889-08-02 05:31:50.655 UTC, when the operating system service returns a value that is not a time, and when the timestamp would have to move past the last millisecond.
+- Add `Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure`. `MonotonicBytesGenerator::bytes()` throws it when the current time is after 10889-08-02 05:31:50.655 UTC, when the current time is before 1970-01-01 and no earlier call gave the generator a time to continue from, when the operating system service returns a value that is not a time, and when the timestamp would have to move past the last millisecond.
 - Add `Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure`. `MonotonicBytesGenerator::bytes()` throws it when the bytes generator it was given returns a different number of bytes than it was asked for.
 - **Breaking:** Add `microtime()` and `getMyPid()` to `Ramsey\Identifier\Service\Os\Os`. `microtime()` returns the current time as a float of seconds, and `getMyPid()` returns the identifier of the current process, or `false` when it cannot be read. An implementation of `Os` must have both.
 - Add a third constructor parameter to `MonotonicBytesGenerator`, the `Os` service it reads the system time and the process identifier from. It defaults to `PhpOs`.
@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `toUuidV7()` on a ULID created by `UlidFactory` with its default bytes generator returns the version 7 UUID with the same timestamp, fraction, and counter.
 - A `MonotonicBytesGenerator` created with a clock other than `SystemClock` keeps its own timestamp and counter. Generators created with `SystemClock` share one.
 - `MonotonicBytesGenerator` asks the bytes generator it was given for 8 bytes for each new counter, for 16 bytes for a seed, and, when more than 16 bytes are wanted, for the bytes beyond 16.
-- `MonotonicBytesGenerator::bytes()` throws `TimeSourceFailure` when the current time is before 1970-01-01 or after 10889-08-02 05:31:50.655 UTC. `UuidV7Factory::create()` and `UlidFactory::create()` can throw it.
+- `MonotonicBytesGenerator::bytes()` throws `TimeSourceFailure` when the current time is after 10889-08-02 05:31:50.655 UTC, or is before 1970-01-01 and no earlier call gave the generator a time to continue from. `UuidV7Factory::create()` and `UlidFactory::create()` can throw it.
 - When a PHP function it needs is not available, `SystemNic` goes on to its next way of finding the address, ending with a random address, and `SystemDce` throws `DceIdentifierNotFound`.
 
 ### Fixed
