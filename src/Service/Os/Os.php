@@ -31,18 +31,6 @@ namespace Ramsey\Identifier\Service\Os;
 interface Os
 {
     /**
-     * Returns the argument quoted and escaped for use in a shell command
-     *
-     * @link https://www.php.net/manual/en/function.escapeshellarg.php PHP escapeshellarg() function
-     *
-     * @param string $argument The argument to escape
-     *
-     * @throws MissingFunction if a PHP function the method needs is not
-     *     available on this system
-     */
-    public function escapeShellArg(string $argument): string;
-
-    /**
      * Returns the entire contents of the named file
      *
      * @param string $filename The name of the file to read

@@ -10,7 +10,6 @@ use Ramsey\Identifier\Service\Os\PhpOs;
 use Ramsey\Test\Identifier\TestCase;
 use ReflectionClass;
 
-use function escapeshellarg;
 use function file_get_contents;
 use function getmypid;
 use function microtime;
@@ -34,7 +33,6 @@ class PhpOsTest extends TestCase
         $class = new ReflectionClass(PhpOs::class);
 
         $properties = [
-            'hasEscapeShellArg',
             'hasFileGetContents',
             'hasGetMyPid',
             'hasGlob',
@@ -48,11 +46,6 @@ class PhpOsTest extends TestCase
         }
 
         parent::tearDown();
-    }
-
-    public function testEscapeShellArg(): void
-    {
-        $this->assertSame(escapeshellarg("it's a group"), $this->os->escapeShellArg("it's a group"));
     }
 
     public function testFileGetContents(): void
@@ -165,7 +158,6 @@ class PhpOsTest extends TestCase
         $this->assertStringContainsString('ramsey-identifier-no-such-command', $output);
     }
 
-    #[TestWith(['hasEscapeShellArg', 'escapeShellArg', 'escapeshellarg() is not available on this system'])]
     #[TestWith(['hasFileGetContents', 'fileGetContents', 'file_get_contents() is not available on this system'])]
     #[TestWith(['hasGlob', 'glob', 'glob() is not available on this system'])]
     #[TestWith(['hasIsReadable', 'isReadable', 'is_readable() is not available on this system'])]

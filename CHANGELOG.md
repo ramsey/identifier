@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
-- **Breaking:** Add `escapeShellArg()` to `Ramsey\Identifier\Service\Os\Os`. It returns an argument quoted and escaped for a shell command, and an implementation of `Os` must have it. `SystemDce` uses it on Windows.
 - **Breaking:** Add `microtime()` and `getMyPid()` to `Ramsey\Identifier\Service\Os\Os`. `microtime()` returns the current time as a float of seconds, and `getMyPid()` returns the identifier of the current process, or `false` when it cannot be read. An implementation of `Os` must have both.
 - Add `getSortKey()` to every identifier. It returns a string of bytes that places the identifier in order among other identifiers. A Microsoft GUID's sort key is in RFC 9562 layout, so it differs from the bytes `toBytes()` returns.
 - Add `Ramsey\Identifier\Exception\NotConvertible`, which `getDateTime()` throws when an identifier cannot return a date-time.
@@ -40,7 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
 - `getDateTime()` on a version 1, 2, or 6 UUID whose timestamp is not a whole number of microseconds rounds to the nearest microsecond, with a half rounded up, on both sides of the Unix Epoch.
-- `PhpOs` checks for `shell_exec()`, `escapeshellarg()`, `file_get_contents()`, `glob()`, and `is_readable()` when the method that needs each one is called, and that method throws `MissingFunction`. Its constructor throws nothing, so `SystemNic`, `SystemDce`, and `UuidV2Factory` can be created on a system that disables one of these functions.
+- `PhpOs` checks for `shell_exec()`, `file_get_contents()`, `glob()`, and `is_readable()` when the method that needs each one is called, and that method throws `MissingFunction`. Its constructor throws nothing, so `SystemNic`, `SystemDce`, and `UuidV2Factory` can be created on a system that disables one of these functions.
 - When a PHP function it needs is not available, `SystemNic` goes on to its next way of finding the address, ending with a random address, and `SystemDce` throws `DceIdentifierNotFound`.
 - `toUuidV7()` on a ULID created by `UlidFactory` with its default bytes generator returns the version 7 UUID with the same timestamp, fraction, and counter.
 - A `MonotonicBytesGenerator` created with a clock other than `SystemClock` keeps its own timestamp and counter. Generators created with `SystemClock` share one.
