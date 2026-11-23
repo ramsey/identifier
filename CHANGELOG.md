@@ -78,6 +78,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `InMemoryCache` evicts the least recently used item when its clock is before the Unix Epoch.
 - `InMemoryCache` handles keys that look like integers, such as `123`, in `setMultiple()` and when it evicts an item, in place of a PHP `TypeError`.
 - `SystemDce::groupId()` returns a group identifier on Windows. It is the lowest relative identifier among the built-in groups of the running user, or, for a user in no built-in group, the lowest among the user's machine and domain groups.
+- `SystemNic` does not take part of a longer value, such as a DHCPv6 identifier in the output of `ipconfig /all`, for a hardware address.
 
 ## [0.1.0] - 2025-06-19
 

@@ -8,6 +8,7 @@ use Exception;
 use Mockery;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\TestWith;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Nic\MacAddressNotFound;
@@ -18,6 +19,7 @@ use Ramsey\Test\Identifier\TestCase;
 
 use function hexdec;
 use function strlen;
+use function strtoupper;
 use function substr;
 
 class SystemNicTest extends TestCase
@@ -126,6 +128,122 @@ class SystemNicTest extends TestCase
 
         // Called again returns the same MAC address.
         $this->assertSame('080027B842C6', $nic->address());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressOnWindowsServer2025(): void
+    {
+        $ipconfig = <<<'IPCONFIG'
+
+            Windows IP Configuration
+
+               Host Name . . . . . . . . . . . . : EXAMPLE
+               Primary Dns Suffix  . . . . . . . : example.test
+               Node Type . . . . . . . . . . . . : Hybrid
+               IP Routing Enabled. . . . . . . . : No
+               WINS Proxy Enabled. . . . . . . . : No
+               DNS Suffix Search List. . . . . . : example.test
+
+            Ethernet adapter Ethernet 2:
+
+               Connection-specific DNS Suffix  . : example.test
+               Description . . . . . . . . . . . : Amazon Elastic Network Adapter #2
+               Physical Address. . . . . . . . . : 0A-FF-FC-71-A4-DD
+               DHCP Enabled. . . . . . . . . . . : Yes
+               Autoconfiguration Enabled . . . . : Yes
+               Link-local IPv6 Address . . . . . : fe80::89ad:6177:3a02:6d35%6(Preferred)
+               IPv4 Address. . . . . . . . . . . : 172.31.32.147(Preferred)
+               Subnet Mask . . . . . . . . . . . : 255.255.240.0
+               Default Gateway . . . . . . . . . : 172.31.32.1
+               DHCP Server . . . . . . . . . . . : 172.31.32.1
+               DHCPv6 IAID . . . . . . . . . . . : 118161404
+               DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-32-96-5C-C8-0A-FF-D7-85-4C-0B
+               DNS Servers . . . . . . . . . . . : ::1
+                                                   127.0.0.1
+               NetBIOS over Tcpip. . . . . . . . : Enabled
+            IPCONFIG;
+
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Windows',
+        ]);
+
+        $os->expects('run')->with('ipconfig /all')->andReturn($ipconfig);
+
+        $this->assertSame('0AFFFC71A4DD', (new SystemNic(os: $os))->address());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressIsNotTakenFromALongerValueThatComesFirst(): void
+    {
+        $ipconfig = <<<'IPCONFIG'
+            PPP adapter Example:
+               Description . . . . . . . . . . . : Example
+               Physical Address. . . . . . . . . :
+               DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-32-96-5C-C8-0A-FF-D7-85-4C-0B
+            Tunnel adapter Example:
+               Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+            Ethernet adapter Ethernet:
+               Physical Address. . . . . . . . . : 08-00-27-B8-42-C6
+            IPCONFIG;
+
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Windows',
+        ]);
+
+        $os->expects('run')->with('ipconfig /all')->andReturn($ipconfig);
+
+        $this->assertSame('080027B842C6', (new SystemNic(os: $os))->address());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[TestWith(['DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-32-96-5C-C8-0A-FF-D7-85-4C-0B'])]
+    #[TestWith(['00-01-00-01-32-96-5C'])]
+    #[TestWith(['infiniband 80:00:02:08:fe:80:00:00:00:00:00:00:00:02:c9:03:00:1e:f4:21'])]
+    #[TestWith(['08:00:27:b8:42:c6:01'])]
+    #[TestWith(['01:08:00:27:b8:42:c6'])]
+    #[TestWith(['08-00-27-B8-42-C6:01'])]
+    #[TestWith(['08:00:27:b8:42:c6-01'])]
+    #[TestWith(['108-00-27-B8-42-C6'])]
+    #[TestWith(['08-00-27-B8-42-C61'])]
+    #[TestWith(['08-00-27:B8-42-C6'])]
+    #[TestWith(['08-00-27-B8-42'])]
+    public function testAddressUsesRandomNicWhenTheOnlyCandidateIsNotAnAddress(string $output): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Windows',
+        ]);
+
+        $os->expects('run')->with('ipconfig /all')->andReturn($output);
+
+        $address = (new SystemNic(os: $os))->address();
+
+        $this->assertSame(12, strlen($address));
+
+        // Assert the multicast bit is set, since this is a random MAC address.
+        $this->assertSame(1, hexdec(substr($address, 0, 2)) & 0x01);
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    #[TestWith(['08-00-27-B8-42-C6'])]
+    #[TestWith(['08:00:27:b8:42:c6'])]
+    #[TestWith(["08-00-27-B8-42-C6\r\n"])]
+    #[TestWith(['ether 08:00:27:b8:42:c6'])]
+    #[TestWith(['08:00:27:b8:42:c6 ether'])]
+    #[TestWith(['(08-00-27-B8-42-C6)'])]
+    #[TestWith(['Physical Address. . . . . . . . . : 00-00-00-00-00-00 08-00-27-B8-42-C6'])]
+    public function testAddressIsFoundAtTheEdgesOfTheOutput(string $output): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Windows',
+        ]);
+
+        $os->expects('run')->with('ipconfig /all')->andReturn($output);
+
+        $this->assertSame('080027B842C6', strtoupper((new SystemNic(os: $os))->address()));
     }
 
     #[RunInSeparateProcess]

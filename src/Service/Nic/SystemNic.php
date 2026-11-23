@@ -45,8 +45,13 @@ final class SystemNic implements Nic
 {
     /**
      * Pattern to match addresses in ifconfig and ipconfig output
+     *
+     * An address is six pairs of hexadecimal digits joined by colons or by
+     * hyphens. Six pairs that are part of a longer run of digits and
+     * separators, such as a DHCPv6 identifier in ipconfig output, are not an
+     * address.
      */
-    private const IFCONFIG_PATTERN = '/[^:]([0-9a-f]{2}([:-])[0-9a-f]{2}(\2[0-9a-f]{2}){4})[^:]/i';
+    private const IFCONFIG_PATTERN = '/(?<![0-9a-f:-])[0-9a-f]{2}([:-])[0-9a-f]{2}(?:\1[0-9a-f]{2}){4}(?![0-9a-f:-])/i';
 
     /**
      * Pattern to match addresses in sysfs stream output
@@ -162,7 +167,7 @@ final class SystemNic implements Nic
         $ifconfig = $this->os->run($command);
         preg_match_all(self::IFCONFIG_PATTERN, $ifconfig, $matches, PREG_PATTERN_ORDER);
 
-        foreach ($matches[1] as $address) {
+        foreach ($matches[0] as $address) {
             if ($address !== '00:00:00:00:00:00' && $address !== '00-00-00-00-00-00') {
                 return $address;
             }
