@@ -18,6 +18,7 @@ use Ramsey\Test\Identifier\TestCase;
 use ReflectionClass;
 
 use function bin2hex;
+use function chr;
 use function ord;
 use function str_repeat;
 use function strlen;
@@ -152,11 +153,10 @@ class MonotonicBytesGeneratorTest extends TestCase
             os: $this->os(1700000000.0001, 1700000000.0009, 1700000000.0005),
         );
 
-        // The first increase with a seed of zero bytes is by 0xabc6bc, and the
-        // second is by 0xa1c9cd.
+        // A batch of zero bytes makes every increase 1.
         $this->assertSame(self::TIMESTAMP . '0199' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0e66' . '0000000000abc6bc', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0e66' . '00000000014d9089', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0e66' . '0000000000000001', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0e66' . '0000000000000002', bin2hex($bytesGenerator->bytes()));
     }
 
     public function testBytesWithoutDateTimeStartANewCounterInALaterMillisecond(): void
@@ -168,7 +168,7 @@ class MonotonicBytesGeneratorTest extends TestCase
 
         $bytesGenerator->bytes();
 
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($bytesGenerator->bytes()));
         $this->assertSame('018bcfe56801' . '0000' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
     }
 
@@ -250,7 +250,7 @@ class MonotonicBytesGeneratorTest extends TestCase
         $fourth = bin2hex($bytesGenerator->bytes(dateTime: $dateTime));
 
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', $first);
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', $second);
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', $second);
         $this->assertSame('0174876e8000' . '0000' . '0000000000000000', $third);
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', $fourth);
     }
@@ -266,7 +266,7 @@ class MonotonicBytesGeneratorTest extends TestCase
         $third = bin2hex($bytesGenerator->bytes(dateTime: $later));
 
         $this->assertSame(self::TIMESTAMP . '0199' . '0000000000000000', $first);
-        $this->assertSame(self::TIMESTAMP . '0199' . '0000000000abc6bc', $second);
+        $this->assertSame(self::TIMESTAMP . '0199' . '0000000000000001', $second);
         $this->assertSame(self::TIMESTAMP . '0e66' . '0000000000000000', $third);
     }
 
@@ -282,7 +282,7 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame('03bb2cc3d800', bin2hex(substr($future, 0, 6)));
         $this->assertSame('00dc6acfac00', bin2hex(substr($past, 0, 6)));
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($first));
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($second));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($second));
     }
 
     public function testStepPastTheLastMillisecondThrowsWithoutDateTime(): void
@@ -470,30 +470,43 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame($expectedTimestamp, bin2hex(substr($bytes, 0, 6)));
     }
 
-    public function testSeedIsDrawnOnItsOwnWhenACounterIsFirstIncreased(): void
+    public function testIncreasesUseEachNumberOfABatchOnce(): void
     {
-        $source = new RecordingBytesGenerator([16 => str_repeat("\xa5", 16)]);
+        $batch = '';
+
+        for ($i = 0; $i < 64; $i++) {
+            $batch .= chr($i);
+        }
+
+        $source = new RecordingBytesGenerator([64 => $batch]);
         $bytesGenerator = new MonotonicBytesGenerator(
             $source,
             new FrozenClock(new DateTimeImmutable('@1700000000')),
         );
 
-        $first = $bytesGenerator->bytes();
-
+        // No batch is drawn until a counter is first increased.
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
         $this->assertSame([8], $source->requests);
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($first));
 
-        $this->assertStringNotContainsString("\xa5\xa5", $bytesGenerator->bytes());
-        $this->assertSame([8, 16], $source->requests);
+        $this->assertSame(self::TIMESTAMP . '0000' . '000000000033373c', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '00000000005a626c', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000758190', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame([8, 64], $source->requests);
 
-        for ($i = 0; $i < 100; $i++) {
-            $this->assertStringNotContainsString("\xa5\xa5", $bytesGenerator->bytes());
+        for ($i = 0; $i < 17; $i++) {
+            $bytesGenerator->bytes();
         }
 
-        $this->assertSame([8, 16], $source->requests);
+        // The batch has 21 numbers, and this is the last of them.
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000002898da4', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame([8, 64], $source->requests);
+
+        // The next increase draws a new batch.
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000002bcc4e0', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame([8, 64, 64], $source->requests);
     }
 
-    public function testChangedProcessIdentifierStepsEachSequenceAndDrawsANewSeed(): void
+    public function testChangedProcessIdentifierStepsEachSequenceAndDrawsANewBatch(): void
     {
         $source = new RecordingBytesGenerator();
         $dateTime = new DateTimeImmutable('@1600000000');
@@ -507,12 +520,12 @@ class MonotonicBytesGeneratorTest extends TestCase
         // In the first process, each sequence starts and then increases.
         $bytesGenerator->bytes();
         $bytesGenerator->bytes(dateTime: $dateTime);
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($bytesGenerator->bytes()));
         $this->assertSame(
-            '0174876e8000' . '0000' . '0000000000a1c9cd',
+            '0174876e8000' . '0000' . '0000000000000001',
             bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
         );
-        $this->assertSame([8, 8, 16], $source->requests);
+        $this->assertSame([8, 8, 64], $source->requests);
 
         // In the second process, each sequence steps the first time it would
         // have increased, and gets a new counter.
@@ -520,18 +533,18 @@ class MonotonicBytesGeneratorTest extends TestCase
             '0174876e8000' . '0001' . '0000000000000000',
             bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
         );
-        $this->assertSame([8, 8, 16, 8], $source->requests);
+        $this->assertSame([8, 8, 64, 8], $source->requests);
         $this->assertSame(self::TIMESTAMP . '0001' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame([8, 8, 16, 8, 8], $source->requests);
+        $this->assertSame([8, 8, 64, 8, 8], $source->requests);
 
-        // The next increase draws a new seed, and the chain starts again.
-        $this->assertSame(self::TIMESTAMP . '0001' . '0000000000abc6bc', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame([8, 8, 16, 8, 8, 16], $source->requests);
+        // The next increase draws a new batch of random numbers.
+        $this->assertSame(self::TIMESTAMP . '0001' . '0000000000000001', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame([8, 8, 64, 8, 8, 64], $source->requests);
         $this->assertSame(
-            '0174876e8000' . '0001' . '0000000000a1c9cd',
+            '0174876e8000' . '0001' . '0000000000000001',
             bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
         );
-        $this->assertSame([8, 8, 16, 8, 8, 16], $source->requests);
+        $this->assertSame([8, 8, 64, 8, 8, 64], $source->requests);
     }
 
     public function testChangedProcessIdentifierStepsTheSequenceWithoutADateTimeFirst(): void
@@ -557,12 +570,12 @@ class MonotonicBytesGeneratorTest extends TestCase
         );
         $this->assertSame([8, 8, 8, 8], $source->requests);
 
-        // The first increase in the second process draws that process's seed.
+        // The first increase in the second process draws its own batch.
         $this->assertSame(
-            '0174876e8000' . '0001' . '0000000000abc6bc',
+            '0174876e8000' . '0001' . '0000000000000001',
             bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
         );
-        $this->assertSame([8, 8, 8, 8, 16], $source->requests);
+        $this->assertSame([8, 8, 8, 8, 64], $source->requests);
     }
 
     public function testProcessIdentifierThatCannotBeReadChangesNothing(): void
@@ -576,9 +589,9 @@ class MonotonicBytesGeneratorTest extends TestCase
         $bytesGenerator = new MonotonicBytesGenerator($source, os: $os);
 
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0000' . '00000000014d9089', bin2hex($bytesGenerator->bytes()));
-        $this->assertSame([8, 16], $source->requests);
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000002', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame([8, 64], $source->requests);
     }
 
     public function testBytesThrowsWhenRandomSourceReturnsWrongLengthForACounter(): void
@@ -591,17 +604,17 @@ class MonotonicBytesGeneratorTest extends TestCase
         $bytesGenerator->bytes();
     }
 
-    public function testBytesThrowsWhenRandomSourceReturnsWrongLengthForASeed(): void
+    public function testBytesThrowsWhenRandomSourceReturnsWrongLengthForABatch(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(
-            new RecordingBytesGenerator([16 => str_repeat('a', 20)]),
+            new RecordingBytesGenerator([64 => str_repeat('a', 70)]),
             new FrozenClock(new DateTimeImmutable('@1700000000')),
         );
 
         $bytesGenerator->bytes();
 
         $this->expectException(RandomSourceFailure::class);
-        $this->expectExceptionMessage('The bytes generator must return 16 bytes; received 20 bytes');
+        $this->expectExceptionMessage('The bytes generator must return 64 bytes; received 70 bytes');
 
         $bytesGenerator->bytes();
     }
@@ -622,8 +635,8 @@ class MonotonicBytesGeneratorTest extends TestCase
         $second = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os(1600000000.0));
 
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($first->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($second->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0000' . '00000000014d9089', bin2hex($first->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($second->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000002', bin2hex($first->bytes()));
     }
 
     public function testGeneratorWithAnotherClockKeepsItsOwnSequence(): void
@@ -641,7 +654,7 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($system->bytes()));
         $this->assertSame('03bb2cc3d800' . '0000' . '0000000000000000', bin2hex($future->bytes()));
         $this->assertSame('03bb2cc3d800' . '0000' . '0000000000000000', bin2hex($otherFuture->bytes()));
-        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000abc6bc', bin2hex($system->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000001', bin2hex($system->bytes()));
     }
 
     public function testBytesWithTheSystemClockIncrease(): void

@@ -39,7 +39,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** The bytes `MonotonicBytesGenerator` returns have a new layout: 48 bits of milliseconds, 4 bits at zero, a 12-bit fraction of the millisecond, 2 bits at zero, and a 62-bit counter that starts at a random value. A version 7 UUID or a ULID created for a given time has different bytes after its first 48 bits, and version 7 UUIDs and ULIDs sort by creation time to about a microsecond. `getDateTime()` returns the time to the millisecond.
 - `toUuidV7()` on a ULID created by `UlidFactory` with its default bytes generator returns the version 7 UUID with the same timestamp, fraction, and counter.
 - A `MonotonicBytesGenerator` created with a clock other than `SystemClock` keeps its own timestamp and counter. Generators created with `SystemClock` share one.
-- `MonotonicBytesGenerator` asks the bytes generator it was given for 8 bytes for each new counter, for 16 bytes for a seed, and, when more than 16 bytes are wanted, for the bytes beyond 16.
+- `MonotonicBytesGenerator` asks the bytes generator it was given for 8 bytes for each new counter, for 64 bytes for every 21 times a counter increases, and, when more than 16 bytes are wanted, for the bytes beyond 16.
 - `MonotonicBytesGenerator::bytes()` throws `TimeSourceFailure` when the current time is after 10889-08-02 05:31:50.655 UTC, or is before 1970-01-01 and no earlier call gave the generator a time to continue from. `UuidV7Factory::create()` and `UlidFactory::create()` can throw it.
 - When a PHP function it needs is not available, `SystemNic` goes on to its next way of finding the address, ending with a random address, and `SystemDce` throws `DceIdentifierNotFound`.
 
@@ -68,6 +68,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `MonotonicBytesGenerator` refuses a bytes generator that returns the wrong number of bytes, with `RandomSourceFailure`, in place of PHP warnings and wrong bytes.
 - `MonotonicBytesGenerator` throws `TimeSourceFailure` when its counter would move the timestamp past 10889-08-02 05:31:50.655 UTC, in place of bytes with a wrong timestamp.
 - `MonotonicBytesGenerator` returns the same bytes on big-endian and little-endian machines for the same time and the same random bytes.
+- The amounts by which `MonotonicBytesGenerator` increases a counter cannot be worked out from identifiers it created earlier.
 - `bytes()` on `FixedBytesGenerator`, `MonotonicBytesGenerator`, and `RandomBytesGenerator` throws `InvalidArgument` for a length less than 1, in place of an empty string, the wrong number of bytes, or a PHP `ValueError`.
 
 ## [0.1.0] - 2025-06-19

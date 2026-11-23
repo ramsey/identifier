@@ -44,26 +44,20 @@ final class MonotonicState
     public ?MonotonicSequence $datedSequence = null;
 
     /**
-     * The bytes the next random numbers are derived from; null until a counter
-     * is first increased
+     * The index in $increments of the next random number; 0 when none is left
      */
-    public ?string $seed = null;
+    public int $incrementIndex = 0;
 
     /**
-     * The index in $seedParts of the next random number; 0 when none is left
+     * The identifier of the process that drew the random numbers; false if it
+     * cannot be read
      */
-    public int $seedIndex = 0;
+    public int | false $incrementProcessId = false;
 
     /**
-     * Random numbers derived from the seed, indexed from 1
+     * Random numbers the counters increase by, indexed from 1
      *
      * @var int[]
      */
-    public array $seedParts = [];
-
-    /**
-     * The identifier of the process that drew the seed; false if it cannot be
-     * read
-     */
-    public int | false $seedProcessId = false;
+    public array $increments = [];
 }
