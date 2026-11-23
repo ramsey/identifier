@@ -29,6 +29,8 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure;
+use Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure;
 use Ramsey\Identifier\TimeBasedUuidFactory;
 use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\StandardFactory;
@@ -55,6 +57,8 @@ final class UuidV7Factory implements TimeBasedUuidFactory
      *     creating the identifier
      *
      * @throws InvalidArgument
+     * @throws RandomSourceFailure
+     * @throws TimeSourceFailure
      */
     public function create(?DateTimeInterface $dateTime = null): UuidV7
     {
@@ -84,6 +88,8 @@ final class UuidV7Factory implements TimeBasedUuidFactory
 
     /**
      * @throws InvalidArgument
+     * @throws RandomSourceFailure
+     * @throws TimeSourceFailure
      */
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV7
     {

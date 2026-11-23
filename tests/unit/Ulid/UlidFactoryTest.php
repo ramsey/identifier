@@ -18,6 +18,7 @@ use Ramsey\Identifier\Ulid\Ulid;
 use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\UuidV7Factory;
 use Ramsey\Test\Identifier\TestCase;
 
 use function gmdate;
@@ -356,6 +357,35 @@ class UlidFactoryTest extends TestCase
         $this->expectExceptionMessage('The identifier must be a valid ULID string representation');
 
         $this->factory->createFromString('ffffffff-ffff-7fff-8fff-fffffffffffff');
+    }
+
+    public function testCreateAfterAFutureDateTimeReturnsTheCurrentTime(): void
+    {
+        $this->factory->createFromDateTime(new DateTimeImmutable('2100-01-01 00:00:00 +00:00'));
+
+        $before = gmdate('Y-m-d H:i');
+        $ulid = $this->factory->create();
+        $uuid = (new UuidV7Factory())->create();
+        $after = gmdate('Y-m-d H:i');
+
+        $this->assertContains($ulid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
+        $this->assertContains($uuid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
+    }
+
+    public function testCreatedUlidConvertsToTheVersion7UuidWithTheSameTimeAndCounter(): void
+    {
+        // The version is in the first four bits of the seventh byte, and the
+        // variant is in the first two bits of the ninth.
+        $versionAndVariant = "\x00\x00\x00\x00\x00\x00\x70\x00\x80\x00\x00\x00\x00\x00\x00\x00";
+        $fromDateTime = new DateTimeImmutable('2023-11-14 22:13:20.999999 +00:00');
+
+        for ($i = 0; $i < 1000; $i++) {
+            foreach ([$this->factory->create(), $this->factory->createFromDateTime($fromDateTime)] as $ulid) {
+                $this->assertSame("\x00", $ulid->toBytes()[6] & "\xf0");
+                $this->assertSame("\x00", $ulid->toBytes()[8] & "\xc0");
+                $this->assertSame($ulid->toBytes() | $versionAndVariant, $ulid->toUuidV7()->toBytes());
+            }
+        }
     }
 
     public function testCreateEachUlidIsMonotonicallyIncreasing(): void

@@ -31,6 +31,8 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
+use Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure;
+use Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure;
 use Ramsey\Identifier\Ulid\Internal\Format;
 use Ramsey\Identifier\Ulid\Internal\Validation;
 use Ramsey\Identifier\UlidFactory as UlidFactoryInterface;
@@ -66,6 +68,8 @@ final class UlidFactory implements UlidFactoryInterface
 
     /**
      * @throws InvalidArgument
+     * @throws RandomSourceFailure
+     * @throws TimeSourceFailure
      */
     public function create(): Ulid
     {
@@ -94,6 +98,8 @@ final class UlidFactory implements UlidFactoryInterface
 
     /**
      * @throws InvalidArgument
+     * @throws RandomSourceFailure
+     * @throws TimeSourceFailure
      */
     public function createFromDateTime(DateTimeInterface $dateTime): Ulid
     {

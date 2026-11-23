@@ -12,6 +12,7 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
+use Ramsey\Identifier\Ulid\UlidFactory;
 use Ramsey\Identifier\Uuid\UuidV7Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -234,6 +235,19 @@ class UuidV7FactoryTest extends TestCase
             $this->assertSame($dateTime->format('Y-m-d H:i'), $uuid->getDateTime()->format('Y-m-d H:i'));
             $previous = $uuid;
         }
+    }
+
+    public function testCreateAfterAFutureDateTimeReturnsTheCurrentTime(): void
+    {
+        $this->factory->create(new DateTimeImmutable('2100-01-01 00:00:00 +00:00'));
+
+        $before = gmdate('Y-m-d H:i');
+        $uuid = $this->factory->create();
+        $ulid = (new UlidFactory())->create();
+        $after = gmdate('Y-m-d H:i');
+
+        $this->assertContains($uuid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
+        $this->assertContains($ulid->getDateTime()->format('Y-m-d H:i'), [$before, $after]);
     }
 
     public function testCreateFromHexadecimal(): void
