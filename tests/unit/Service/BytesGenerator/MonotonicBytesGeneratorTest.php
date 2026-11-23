@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure;
@@ -21,6 +23,7 @@ use function bin2hex;
 use function chr;
 use function hexdec;
 use function ord;
+use function pack;
 use function str_repeat;
 use function strlen;
 use function substr;
@@ -781,19 +784,47 @@ class MonotonicBytesGeneratorTest extends TestCase
         }
     }
 
-    #[TestWith([1700000000.1234567, 1700000000.123457])]
-    #[TestWith([1700000000.1234562, 1700000000.123456])]
-    public function testSystemTimeRoundsToTheNearestMicrosecond(float $microtime, float $rounded): void
+    #[TestWith([1700000000.1234567, '074f'])]
+    #[TestWith([1700000000.1234562, '074b'])]
+    public function testSystemTimeRoundsToTheNearestMicrosecond(float $microtime, string $fraction): void
     {
-        $actual = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os($microtime));
-        $expected = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os($rounded));
+        $bytesGenerator = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os($microtime));
 
-        (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
-        $actualBytes = bin2hex($actual->bytes());
+        $this->assertSame('018bcfe5687b' . $fraction, substr(bin2hex($bytesGenerator->bytes()), 0, 16));
+    }
 
-        (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
-        $expectedBytes = bin2hex($expected->bytes());
+    public function testCounterMayReachItsLargestValue(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(
+            new RecordingBytesGenerator([8 => "\x3f\xff\xff\xff\xff\xff\xff\xfe"]),
+            new FrozenClock(new DateTimeImmutable('@1700000000.000000')),
+        );
 
-        $this->assertSame(substr($expectedBytes, 0, 16), substr($actualBytes, 0, 16));
+        $this->assertSame(self::TIMESTAMP . '0000' . '3ffffffffffffffe', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(self::TIMESTAMP . '0000' . '3fffffffffffffff', bin2hex($bytesGenerator->bytes()));
+    }
+
+    public function testMovingToTheNextMillisecondStartsANewCounter(): void
+    {
+        $source = new class implements BytesGenerator {
+            private int $counter = 0x3fffffffffffffff;
+
+            public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
+            {
+                /** @var non-empty-string */
+                return $length === 8 ? pack('J', $this->counter--) : str_repeat("\xff", $length);
+            }
+        };
+
+        $bytesGenerator = new MonotonicBytesGenerator(
+            $source,
+            new FrozenClock(new DateTimeImmutable('@1700000000.000999')),
+        );
+
+        for ($i = 0; $i < 5; $i++) {
+            $bytesGenerator->bytes();
+        }
+
+        $this->assertSame('018bcfe56801' . '0000' . '3ffffffffffffffa', bin2hex($bytesGenerator->bytes()));
     }
 }

@@ -32,9 +32,9 @@ use Ramsey\Identifier\Service\Clock\SystemClock;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
+use function floor;
 use function intdiv;
 use function pack;
-use function round;
 use function sprintf;
 use function strlen;
 use function substr;
@@ -199,7 +199,9 @@ final class MonotonicBytesGenerator implements BytesGenerator
                 ));
             }
 
-            $microseconds = (int) round($seconds * 1_000_000);
+            // On PHP 8.3, round() returns a number of 1e15 or more unchanged,
+            // so it cannot round a count of microseconds for a current time.
+            $microseconds = (int) floor($seconds * 1_000_000 + 0.5);
         } else {
             $microseconds = $this->microsecondsFromClock();
         }
