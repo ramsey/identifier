@@ -67,6 +67,28 @@ jobs:
       - name: "Publish coverage report to Codecov"
         uses: "codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5" # v7.1.1
 
+  mutation:
+    name: "Mutation tests"
+    needs: ["lint"]
+    runs-on: "ubuntu-24.04"
+
+    steps:
+      - name: "Checkout repository"
+        uses: "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1" # v7.0.1
+
+      - name: "Install PHP"
+        uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
+        with:
+          php-version: "8.5"
+          coverage: "xdebug"
+          ini-values: "memory_limit=-1"
+
+      - name: "Install dependencies (Composer)"
+        uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
+
+      - name: "Run mutation tests"
+        run: "composer mutation"
+
   benchmark:
     name: "Benchmark"
     needs: ["coverage"]

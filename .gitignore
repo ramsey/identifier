@@ -2,6 +2,7 @@
 /.phpbench/
 /captainhook.config.json
 /composer.lock
+/infection.json5
 /phpcs.xml
 /phpunit.xml
 /vendor/

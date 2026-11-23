@@ -120,6 +120,16 @@ composer test
 
 CaptainHook will automatically run all tests before pushing to the remote repository.
 
+### Mutation testing
+
+This project uses [Infection] to perform mutation testing, which checks that the tests detect small changes made to the code. GitHub Actions runs mutation tests for pull requests.
+
+You may run mutation tests manually with the following command:
+
+```bash
+composer mutation
+```
+
 ### Benchmarks
 
 This project uses [PHPBench] to measure how long it takes to create identifiers and convert them to strings. The benchmarks are in `tests/bench/`, and GitHub Actions runs them for pull requests.
@@ -160,6 +170,7 @@ After tagging, add a new, empty `## [Unreleased]` heading at the top and point i
 [conventional commits]: https://www.conventionalcommits.org/
 [gh-flow]: https://guides.github.com/introduction/flow/
 [github]: https://github.com/ramsey/identifier
+[infection]: https://infection.github.io
 [issues]: https://github.com/ramsey/identifier/issues
 [keep a changelog]: https://keepachangelog.com/en/1.1.0/
 [per-cs]: https://www.php-fig.org/per/coding-style/
