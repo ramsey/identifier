@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
@@ -19,6 +20,9 @@ use function sprintf;
 use function str_repeat;
 use function unpack;
 use function usleep;
+
+use const PHP_INT_MAX;
+use const PHP_INT_MIN;
 
 class MastodonSnowflakeFactoryTest extends TestCase
 {
@@ -301,5 +305,47 @@ class MastodonSnowflakeFactoryTest extends TestCase
 
         $this->assertSame($base[1] + 5 & 0xffff, $first & 0xffff);
         $this->assertSame($base[1] + 10 & 0xffff, $second & 0xffff);
+    }
+
+    #[TestWith([5, 4])]
+    #[TestWith(['5', 4])]
+    #[TestWith(['0', 65535])]
+    #[TestWith(['-1', 65534])]
+    #[TestWith([PHP_INT_MAX, 65534])]
+    #[TestWith([PHP_INT_MIN, 65535])]
+    #[TestWith(['9223372036854775807', 65534])]
+    #[TestWith(['-9223372036854775808', 65535])]
+    public function testCreateFromDateTimeAcceptsSequenceValuesThatFitAnInteger(int | string $value, int $tail): void
+    {
+        $factory = new MastodonSnowflakeFactory(
+            sequence: new FrozenSequence($value),
+            hash: new FixedHash('ffffffffffffffffffffffffffffffff'),
+        );
+
+        $this->assertSame($tail, $factory->createFromDateTime(new DateTimeImmutable('@0'))->toInteger());
+    }
+
+    #[TestWith(['abc'])]
+    #[TestWith([''])]
+    #[TestWith(['1.5'])]
+    #[TestWith([' 12'])]
+    #[TestWith(['12 '])]
+    #[TestWith(['007'])]
+    #[TestWith(['-0'])]
+    #[TestWith(['0x10'])]
+    #[TestWith(['1e5'])]
+    #[TestWith(['9223372036854775808'])]
+    #[TestWith(['-9223372036854775809'])]
+    public function testCreateFromDateTimeRefusesSequenceValuesItCannotUse(string $value): void
+    {
+        $factory = new MastodonSnowflakeFactory(sequence: new FrozenSequence($value));
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(sprintf(
+            'The sequence must return an integer or a decimal string that fits in one; received "%s"',
+            $value,
+        ));
+
+        $factory->createFromDateTime(new DateTimeImmutable('@0'));
     }
 }

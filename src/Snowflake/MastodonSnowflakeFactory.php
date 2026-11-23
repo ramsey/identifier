@@ -29,6 +29,7 @@ use Brick\Math\BigInteger;
 use DateTimeInterface;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
 use Ramsey\Identifier\Service\Clock\SystemClock;
@@ -45,6 +46,8 @@ use function is_int;
 use function sprintf;
 use function substr;
 use function unpack;
+
+use const PHP_INT_MIN;
 
 /**
  * A factory that generates Snowflake identifiers for use with the Mastodon open
@@ -69,6 +72,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
      *     properly implement Mastodon Snowflake identifiers, you might wish to
      *     create a PostgreSQL sequence class that returns the next sequence for
      *     the related table.
+     *     It must return an integer or a decimal string that fits in one.
      * @param BytesGenerator $bytesGenerator A generator of bytes used to
      *     prevent collisions within the same millisecond; defaults to
      *     {@see RandomBytesGenerator}
@@ -146,7 +150,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
 
         // Add the next sequence to the base and chop the value to the last two
         // bytes.
-        $tail = $sequenceBase[1] + (int) $this->sequence->next($this->tableName) & 0xffff;
+        $tail = $sequenceBase[1] + ($this->nextSequenceValue() & 0xffff) & 0xffff;
 
         if (is_int($millisecondsShifted)) {
             /** @var int<0, max> $identifier */
@@ -185,5 +189,36 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     public function createFromString(string $identifier): MastodonSnowflake
     {
         return new MastodonSnowflake($identifier);
+    }
+
+    /**
+     * Returns the next sequence value as an integer
+     *
+     * @throws InvalidArgument if the value is not an integer or a decimal
+     *     string that fits in one
+     */
+    private function nextSequenceValue(): int
+    {
+        $value = $this->sequence->next($this->tableName);
+
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (IntegerString::isValid($value) && IntegerString::fitsNativeInteger($value)) {
+            return (int) $value;
+        }
+
+        if (
+            IntegerString::isNegative($value)
+            && IntegerString::compare(substr($value, 1), substr((string) PHP_INT_MIN, 1)) <= 0
+        ) {
+            return (int) $value;
+        }
+
+        throw new InvalidArgument(sprintf(
+            'The sequence must return an integer or a decimal string that fits in one; received "%s"',
+            $value,
+        ));
     }
 }

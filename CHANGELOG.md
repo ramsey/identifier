@@ -72,6 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `bytes()` on `FixedBytesGenerator`, `MonotonicBytesGenerator`, and `RandomBytesGenerator` throws `InvalidArgument` for a length less than 1, in place of an empty string, the wrong number of bytes, or a PHP `ValueError`.
 - `MonotonicSequence` does not raise a deprecation on PHP 8.6. A call without a state keeps its value on the instance and does not use the cache, so a new sequence does not continue from an earlier sequence's value, and a sequence does not return to its start value when a cache entry expires.
 - `MonotonicSequence::next()` throws `SequenceOverflow` only when the step would move the sequence past the limit in the step's own direction, so a rising sequence can start at or near `PHP_INT_MIN`. A step of `PHP_INT_MIN` that would pass the minimum throws `SequenceOverflow`.
+- `MastodonSnowflakeFactory` throws `InvalidArgument` when its sequence returns anything other than an integer or a decimal string that fits in an integer.
 
 ## [0.1.0] - 2025-06-19
 
