@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Psr\Clock\ClockInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
+use Ramsey\Identifier\Service\Cache\InvalidCacheArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use stdClass;
 
@@ -396,5 +397,103 @@ class InMemoryCacheTest extends TestCase
 
         $this->assertFalse($inMemoryCache->has('first'));
         $this->assertTrue($inMemoryCache->has('second'));
+    }
+
+    /**
+     * @param callable(InMemoryCache): mixed $call
+     */
+    #[DataProvider('invalidArgumentProvider')]
+    public function testInvalidArgumentsThrow(callable $call, string $message): void
+    {
+        $this->expectException(InvalidCacheArgument::class);
+        $this->expectExceptionMessage($message);
+
+        $call(new InMemoryCache());
+    }
+
+    /**
+     * @return array<string, array{call: callable(InMemoryCache): mixed, message: string}>
+     */
+    public static function invalidArgumentProvider(): array
+    {
+        $key = 'The cache key must be a string; received int';
+        $iterable = 'The cache keys or values must be iterable; received string';
+        $ttl = 'The cache TTL must be null, an integer, or a DateInterval; received string';
+
+        return [
+            'get() with an integer key' => ['call' => static fn (InMemoryCache $c) => $c->get(123), 'message' => $key],
+            'set() with an integer key' => [
+                'call' => static fn (InMemoryCache $c) => $c->set(123, 'value'),
+                'message' => $key,
+            ],
+            'set() with a string TTL' => [
+                'call' => static fn (InMemoryCache $c) => $c->set('key', 'value', 'ttl'),
+                'message' => $ttl,
+            ],
+            'delete() with an integer key' => [
+                'call' => static fn (InMemoryCache $c) => $c->delete(123),
+                'message' => $key,
+            ],
+            'has() with an integer key' => ['call' => static fn (InMemoryCache $c) => $c->has(123), 'message' => $key],
+            'getMultiple() with a string' => [
+                'call' => static fn (InMemoryCache $c) => $c->getMultiple('keys'),
+                'message' => $iterable,
+            ],
+            'getMultiple() with an integer key, before iterating' => [
+                'call' => static fn (InMemoryCache $c) => $c->getMultiple([123]),
+                'message' => $key,
+            ],
+            'setMultiple() with a string' => [
+                'call' => static fn (InMemoryCache $c) => $c->setMultiple('values'),
+                'message' => $iterable,
+            ],
+            'setMultiple() with a string TTL' => [
+                'call' => static fn (InMemoryCache $c) => $c->setMultiple(['key' => 'value'], 'ttl'),
+                'message' => $ttl,
+            ],
+            'setMultiple() with a float key' => [
+                'call' => static fn (InMemoryCache $c) => $c->setMultiple((static function () {
+                    yield 1.5 => 'value';
+                })()),
+                'message' => 'The cache key must be a string; received float',
+            ],
+            'deleteMultiple() with a string' => [
+                'call' => static fn (InMemoryCache $c) => $c->deleteMultiple('keys'),
+                'message' => $iterable,
+            ],
+            'deleteMultiple() with an integer key' => [
+                'call' => static fn (InMemoryCache $c) => $c->deleteMultiple([123]),
+                'message' => $key,
+            ],
+        ];
+    }
+
+    public function testSetMultipleAcceptsKeysThatPhpStoresAsIntegers(): void
+    {
+        $inMemoryCache = new InMemoryCache();
+
+        $this->assertTrue($inMemoryCache->setMultiple(['123' => 'value']));
+        $this->assertSame('value', $inMemoryCache->get('123'));
+    }
+
+    public function testGetMultipleKeepsKeysThatLookLikeIntegersAsStrings(): void
+    {
+        $inMemoryCache = new InMemoryCache();
+        $inMemoryCache->set('123', 'value');
+
+        foreach ($inMemoryCache->getMultiple(['123']) as $key => $value) {
+            $this->assertSame('123', $key);
+            $this->assertSame('value', $value);
+        }
+    }
+
+    public function testEvictionHandlesKeysThatLookLikeIntegers(): void
+    {
+        $inMemoryCache = new InMemoryCache(cacheSize: 1, clock: new FrozenClock(new DateTimeImmutable('@1000')));
+        $inMemoryCache->set('123', 'first');
+        $inMemoryCache->set('456', 'second');
+
+        $this->assertFalse($inMemoryCache->has('123'));
+        $this->assertSame('second', $inMemoryCache->get('456'));
     }
 }

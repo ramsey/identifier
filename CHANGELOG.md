@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** Add `microtime()` and `getMyPid()` to `Ramsey\Identifier\Service\Os\Os`. `microtime()` returns the current time as a float of seconds, and `getMyPid()` returns the identifier of the current process, or `false` when it cannot be read. An implementation of `Os` must have both.
 - Add `getSortKey()` to every identifier. It returns a string of bytes that places the identifier in order among other identifiers. A Microsoft GUID's sort key is in RFC 9562 layout, so it differs from the bytes `toBytes()` returns.
 - Add `Ramsey\Identifier\Exception\NotConvertible`, which `getDateTime()` throws when an identifier cannot return a date-time.
+- Add `Ramsey\Identifier\Service\Cache\InvalidCacheArgument`, which implements the PSR-16 `InvalidArgumentException`. `InMemoryCache` throws it for a key that is not a string, for keys or values that are not iterable, and for a TTL that is not `null`, an integer, or a `DateInterval`.
 - Add `Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure`. `MonotonicBytesGenerator::bytes()` throws it when the current time is after 10889-08-02 05:31:50.655 UTC, when the current time is before 1970-01-01 and no earlier call gave the generator a time to continue from, when the operating system service returns a value that is not a time, and when the timestamp would have to move past the last millisecond.
 - Add `Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure`. `MonotonicBytesGenerator::bytes()` throws it when the bytes generator it was given returns a different number of bytes than it was asked for.
 - Add a third constructor parameter to `MonotonicBytesGenerator`, the `Os` service it reads the system time and the process identifier from. It defaults to `PhpOs`.
@@ -33,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, the same value as its string form; a ULID created from a `MicrosoftGuid` by an earlier release differs.
 - **Breaking:** The bytes `MonotonicBytesGenerator` returns have a new layout: 48 bits of milliseconds, 4 bits at zero, a 12-bit fraction of the millisecond, 2 bits at zero, and a 62-bit counter that starts at a random value. A version 7 UUID or a ULID created for a given time has different bytes after its first 48 bits, and version 7 UUIDs and ULIDs sort by creation time to about a microsecond. `getDateTime()` returns the time to the millisecond.
 - Require PHP 8.3 or later.
+- Support psr/simple-cache `^1.0 || ^2.0 || ^3.0`.
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
 - `getDateTime()` on a version 1, 2, or 6 UUID whose timestamp is not a whole number of microseconds rounds to the nearest microsecond, with a half rounded up, on both sides of the Unix Epoch.
@@ -73,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `MonotonicSequence::next()` throws `SequenceOverflow` only when the step would move the sequence past the limit in the step's own direction, so a rising sequence can start at or near `PHP_INT_MIN`. A step of `PHP_INT_MIN` that would pass the minimum throws `SequenceOverflow`.
 - `Rfc4122ClockSequence` compares date-times before the Unix Epoch that have a fraction of a second in the right order, so its sequence rises only when the date-time moves backward.
 - `InMemoryCache` evicts the least recently used item when its clock is before the Unix Epoch.
+- `InMemoryCache` handles keys that look like integers, such as `123`, in `setMultiple()` and when it evicts an item, in place of a PHP `TypeError`.
 
 ## [0.1.0] - 2025-06-19
 

@@ -21,7 +21,7 @@
         "brick/math": "^1.0",
         "identifier/identifier": "^0.6.1",
         "psr/clock": "^1.0",
-        "psr/simple-cache": "^3.0"
+        "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
     },
     "require-dev": {
         "captainhook/plugin-composer": "^5.3.3",

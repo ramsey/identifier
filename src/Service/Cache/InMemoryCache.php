@@ -32,6 +32,11 @@ use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Clock\SystemClock;
 
 use function count;
+use function get_debug_type;
+use function is_int;
+use function is_iterable;
+use function is_string;
+use function sprintf;
 
 /**
  * A simple PSR-16 in-memory cache implementation
@@ -48,7 +53,7 @@ use function count;
 final class InMemoryCache implements CacheInterface
 {
     /**
-     * @var array<string, CacheItem>
+     * @var array<array-key, CacheItem>
      */
     private array $cache = [];
 
@@ -67,8 +72,16 @@ final class InMemoryCache implements CacheInterface
     ) {
     }
 
-    public function get(string $key, mixed $default = null): mixed
+    /**
+     * @param mixed $key The key of the item, which must be a string
+     * @param mixed $default The value to return if the key does not exist
+     *
+     * @throws InvalidCacheArgument if the key is not a string
+     */
+    public function get(mixed $key, mixed $default = null): mixed
     {
+        $this->checkKey($key);
+
         $cacheItem = $this->cache[$key] ?? null;
 
         if ($this->isValid($key, $cacheItem)) {
@@ -80,8 +93,19 @@ final class InMemoryCache implements CacheInterface
         return $default;
     }
 
-    public function set(string $key, mixed $value, DateInterval | int | null $ttl = null): bool
+    /**
+     * @param mixed $key The key of the item, which must be a string
+     * @param mixed $value The value to store
+     * @param mixed $ttl The number of seconds the item is valid, as an integer
+     *     or a DateInterval, or null for the default
+     *
+     * @throws InvalidCacheArgument if the key or the TTL is not a valid type
+     */
+    public function set(mixed $key, mixed $value, mixed $ttl = null): bool
     {
+        $this->checkKey($key);
+        $this->checkTtl($ttl);
+
         if (count($this->cache) >= $this->cacheSize) {
             // make room for a new value.
             $this->evictCacheItem();
@@ -96,8 +120,15 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
-    public function delete(string $key): bool
+    /**
+     * @param mixed $key The key of the item, which must be a string
+     *
+     * @throws InvalidCacheArgument if the key is not a string
+     */
+    public function delete(mixed $key): bool
     {
+        $this->checkKey($key);
+
         unset($this->cache[$key]);
 
         return true;
@@ -111,34 +142,59 @@ final class InMemoryCache implements CacheInterface
     }
 
     /**
-     * @inheritDoc
+     * @param mixed $keys An iterable of string keys
+     * @param mixed $default The value to return for a key that does not exist
+     *
+     * @return iterable<string, mixed>
+     *
+     * @throws InvalidCacheArgument if the keys are not iterable, or if a key
+     *     is not a string
      */
-    public function getMultiple(iterable $keys, mixed $default = null): iterable
+    public function getMultiple(mixed $keys, mixed $default = null): iterable
     {
+        $this->checkIterable($keys);
+
+        $items = [];
+
         foreach ($keys as $key) {
-            yield $key => $this->get($key, $default);
+            $this->checkKey($key);
+            $items[] = [$key, $this->get($key, $default)];
         }
+
+        return $this->yieldItems($items);
     }
 
     /**
-     * @param iterable<string, mixed> $values
+     * @param mixed $values An iterable of values, indexed by their keys
+     * @param mixed $ttl The number of seconds the items are valid, as an
+     *     integer or a DateInterval, or null for the default
      *
-     * @inheritDoc
+     * @throws InvalidCacheArgument if the values are not iterable, if a key is
+     *     not a string or an integer, or if the TTL is not a valid type
      */
-    public function setMultiple(iterable $values, DateInterval | int | null $ttl = null): bool
+    public function setMultiple(mixed $values, mixed $ttl = null): bool
     {
+        $this->checkIterable($values);
+        $this->checkTtl($ttl);
+
         foreach ($values as $key => $value) {
-            $this->set($key, $value, $ttl);
+            // PHP stores an array key such as "123" as an integer.
+            $this->set(is_int($key) ? (string) $key : $key, $value, $ttl);
         }
 
         return true;
     }
 
     /**
-     * @inheritDoc
+     * @param mixed $keys An iterable of string keys
+     *
+     * @throws InvalidCacheArgument if the keys are not iterable, or if a key
+     *     is not a string
      */
-    public function deleteMultiple(iterable $keys): bool
+    public function deleteMultiple(mixed $keys): bool
     {
+        $this->checkIterable($keys);
+
         foreach ($keys as $key) {
             $this->delete($key);
         }
@@ -146,9 +202,71 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
-    public function has(string $key): bool
+    /**
+     * @param mixed $key The key of the item, which must be a string
+     *
+     * @throws InvalidCacheArgument if the key is not a string
+     */
+    public function has(mixed $key): bool
     {
+        $this->checkKey($key);
+
         return $this->isValid($key, $this->cache[$key] ?? null);
+    }
+
+    /**
+     * @throws InvalidCacheArgument
+     *
+     * @phpstan-assert string $key
+     */
+    private function checkKey(mixed $key): void
+    {
+        if (!is_string($key)) {
+            throw new InvalidCacheArgument(
+                sprintf('The cache key must be a string; received %s', get_debug_type($key)),
+            );
+        }
+    }
+
+    /**
+     * @throws InvalidCacheArgument
+     *
+     * @phpstan-assert iterable<mixed, mixed> $value
+     */
+    private function checkIterable(mixed $value): void
+    {
+        if (!is_iterable($value)) {
+            throw new InvalidCacheArgument(
+                sprintf('The cache keys or values must be iterable; received %s', get_debug_type($value)),
+            );
+        }
+    }
+
+    /**
+     * @throws InvalidCacheArgument
+     *
+     * @phpstan-assert DateInterval | int | null $ttl
+     */
+    private function checkTtl(mixed $ttl): void
+    {
+        if ($ttl !== null && !is_int($ttl) && !$ttl instanceof DateInterval) {
+            throw new InvalidCacheArgument(sprintf(
+                'The cache TTL must be null, an integer, or a DateInterval; received %s',
+                get_debug_type($ttl),
+            ));
+        }
+    }
+
+    /**
+     * @param list<array{string, mixed}> $items
+     *
+     * @return iterable<string, mixed>
+     */
+    private function yieldItems(array $items): iterable
+    {
+        foreach ($items as [$key, $value]) {
+            yield $key => $value;
+        }
     }
 
     /**
@@ -202,7 +320,10 @@ final class InMemoryCache implements CacheInterface
         $keyToRemove = null;
         $leastRecentlyUsed = null;
 
-        foreach ($this->cache as $key => $cacheItem) {
+        foreach ($this->cache as $arrayKey => $cacheItem) {
+            // PHP stores an array key such as "123" as an integer.
+            $key = (string) $arrayKey;
+
             if (!$this->isValid($key, $cacheItem)) {
                 $keyToRemove = $key;
 
