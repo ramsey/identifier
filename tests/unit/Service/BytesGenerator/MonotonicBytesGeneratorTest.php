@@ -255,6 +255,21 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', $fourth);
     }
 
+    public function testBytesForAnotherMicrosecondOfTheSameMillisecondStartANewCounter(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(new RecordingBytesGenerator());
+        $dateTime = new DateTimeImmutable('@1700000000.000100');
+        $later = new DateTimeImmutable('@1700000000.000900');
+
+        $first = bin2hex($bytesGenerator->bytes(dateTime: $dateTime));
+        $second = bin2hex($bytesGenerator->bytes(dateTime: $dateTime));
+        $third = bin2hex($bytesGenerator->bytes(dateTime: $later));
+
+        $this->assertSame(self::TIMESTAMP . '0199' . '0000000000000000', $first);
+        $this->assertSame(self::TIMESTAMP . '0199' . '0000000000abc6bc', $second);
+        $this->assertSame(self::TIMESTAMP . '0e66' . '0000000000000000', $third);
+    }
+
     public function testDateTimeDoesNotChangeBytesWithoutDateTime(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os(1700000000.0));
@@ -391,6 +406,32 @@ class MonotonicBytesGeneratorTest extends TestCase
         $bytesGenerator->bytes();
     }
 
+    public function testBytesThrowsWhenSystemTimeMovesPastTheRange(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(os: $this->os(1700000000.0, 281474976710.656));
+
+        $bytesGenerator->bytes();
+
+        $this->expectException(TimeSourceFailure::class);
+        $this->expectExceptionMessage(
+            'The current time is after 10889-08-02 05:31:50.655 UTC, the last time the generator can use',
+        );
+
+        $bytesGenerator->bytes();
+    }
+
+    public function testBytesThrowsWhenFirstSystemTimeIsNotATime(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(os: $this->os(NAN));
+
+        $this->expectException(TimeSourceFailure::class);
+        $this->expectExceptionMessage(
+            'The operating system service must return the current time as a count of seconds; received NAN',
+        );
+
+        $bytesGenerator->bytes();
+    }
+
     public function testBytesAtTheLimitsOfTheRangeForTheSystemTime(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(os: $this->os(0.0, 281474976710.655));
@@ -442,12 +483,11 @@ class MonotonicBytesGeneratorTest extends TestCase
         $this->assertSame([8], $source->requests);
         $this->assertSame(self::TIMESTAMP . '0000' . '0000000000000000', bin2hex($first));
 
-        $bytesGenerator->bytes();
-
+        $this->assertStringNotContainsString("\xa5\xa5", $bytesGenerator->bytes());
         $this->assertSame([8, 16], $source->requests);
 
         for ($i = 0; $i < 100; $i++) {
-            $bytesGenerator->bytes();
+            $this->assertStringNotContainsString("\xa5\xa5", $bytesGenerator->bytes());
         }
 
         $this->assertSame([8, 16], $source->requests);
@@ -492,6 +532,37 @@ class MonotonicBytesGeneratorTest extends TestCase
             bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
         );
         $this->assertSame([8, 8, 16, 8, 8, 16], $source->requests);
+    }
+
+    public function testChangedProcessIdentifierStepsTheSequenceWithoutADateTimeFirst(): void
+    {
+        $source = new RecordingBytesGenerator();
+        $dateTime = new DateTimeImmutable('@1600000000');
+
+        $os = $this->mockery(Os::class);
+        $os->allows('microtime')->andReturn(1700000000.0);
+        $os->allows('getMyPid')->andReturn(100, 100, 200);
+
+        $bytesGenerator = new MonotonicBytesGenerator($source, os: $os);
+
+        $bytesGenerator->bytes();
+        $bytesGenerator->bytes(dateTime: $dateTime);
+
+        // In the second process, the sequence for calls without a date-time
+        // steps first, and then the one for calls with a date-time does.
+        $this->assertSame(self::TIMESTAMP . '0001' . '0000000000000000', bin2hex($bytesGenerator->bytes()));
+        $this->assertSame(
+            '0174876e8000' . '0001' . '0000000000000000',
+            bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
+        );
+        $this->assertSame([8, 8, 8, 8], $source->requests);
+
+        // The first increase in the second process draws that process's seed.
+        $this->assertSame(
+            '0174876e8000' . '0001' . '0000000000abc6bc',
+            bin2hex($bytesGenerator->bytes(dateTime: $dateTime)),
+        );
+        $this->assertSame([8, 8, 8, 8, 16], $source->requests);
     }
 
     public function testProcessIdentifierThatCannotBeReadChangesNothing(): void
