@@ -103,6 +103,10 @@ interface Os
     /**
      * Executes the given command and returns its full output
      *
+     * The command goes to the shell as written, so shell syntax in it, such as
+     * a pipe, has its usual meaning. The caller must escape each argument that
+     * comes from outside the program before adding it to the command.
+     *
      * @param string $command The command to execute
      *
      * @throws MissingFunction if a PHP function the method needs is not

@@ -35,7 +35,6 @@ class PhpOsTest extends TestCase
 
         $properties = [
             'hasEscapeShellArg',
-            'hasEscapeShellCmd',
             'hasFileGetContents',
             'hasGetMyPid',
             'hasGlob',
@@ -139,12 +138,38 @@ class PhpOsTest extends TestCase
         $this->assertSame($expected, trim($this->os->run('echo "foo bar"')));
     }
 
+    public function testRunPassesAPipeToTheShell(): void
+    {
+        $filter = match (PHP_OS_FAMILY) {
+            'Windows' => 'findstr two',
+            default => 'grep two',
+        };
+
+        $this->assertSame('two', trim($this->os->run('echo two | ' . $filter)));
+    }
+
+    public function testRunDoesNotEscapeAQuotedArgument(): void
+    {
+        $expected = match (PHP_OS_FAMILY) {
+            'Windows' => '"R&D Team"',
+            default => 'R&D Team',
+        };
+
+        $this->assertSame($expected, trim($this->os->run('echo "R&D Team"')));
+    }
+
+    public function testRunReturnsTheErrorOutput(): void
+    {
+        $output = $this->os->run('ramsey-identifier-no-such-command');
+
+        $this->assertStringContainsString('ramsey-identifier-no-such-command', $output);
+    }
+
     #[TestWith(['hasEscapeShellArg', 'escapeShellArg', 'escapeshellarg() is not available on this system'])]
     #[TestWith(['hasFileGetContents', 'fileGetContents', 'file_get_contents() is not available on this system'])]
     #[TestWith(['hasGlob', 'glob', 'glob() is not available on this system'])]
     #[TestWith(['hasIsReadable', 'isReadable', 'is_readable() is not available on this system'])]
     #[TestWith(['hasShellExec', 'run', 'shell_exec() is not available on this system'])]
-    #[TestWith(['hasEscapeShellCmd', 'run', 'escapeshellcmd() is not available on this system'])]
     public function testMethodThrowsWhenItsFunctionIsNotAvailable(
         string $property,
         string $method,

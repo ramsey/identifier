@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** Require identifier/identifier `^0.6.1`.
 - **Breaking:** Four exceptions are in the namespace of the code that throws them: `Ramsey\Identifier\Service\Nic\MacAddressNotFound`, `Ramsey\Identifier\Service\Os\MissingFunction`, `Ramsey\Identifier\Service\Dce\DceIdentifierNotFound`, and `Ramsey\Identifier\Uuid\CannotDetermineVersion`. Each was in `Ramsey\Identifier\Exception`.
 - **Breaking:** `PhpOs` and `Md5Hash` are final, as the other service classes are.
+- **Breaking:** `PhpOs::run()` passes the command to the shell as written and does not escape it, so shell syntax such as a pipe has its usual meaning. A caller that adds an argument from outside the program must escape it.
 - **Breaking:** `Ramsey\Identifier\Exception\NotComparable` extends `Ramsey\Identifier\Exception\InvalidArgument` in place of `RuntimeException`.
 - **Breaking:** `compareTo()` given any `Identifier\Identifier` compares the two sort keys and does not throw.
 - **Breaking:** `compareTo()` throws `NotComparable` for `null`, numbers, booleans, objects that are neither identifiers nor `Stringable`, and strings (or `Stringable` objects) not in the identifier's own string form, including raw bytes and bare hexadecimal strings.
@@ -39,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
 - `getDateTime()` on a version 1, 2, or 6 UUID whose timestamp is not a whole number of microseconds rounds to the nearest microsecond, with a half rounded up, on both sides of the Unix Epoch.
-- `PhpOs` checks for `shell_exec()`, `escapeshellcmd()`, `escapeshellarg()`, `file_get_contents()`, `glob()`, and `is_readable()` when the method that needs each one is called, and that method throws `MissingFunction`. Its constructor throws nothing, so `SystemNic`, `SystemDce`, and `UuidV2Factory` can be created on a system that disables one of these functions.
+- `PhpOs` checks for `shell_exec()`, `escapeshellarg()`, `file_get_contents()`, `glob()`, and `is_readable()` when the method that needs each one is called, and that method throws `MissingFunction`. Its constructor throws nothing, so `SystemNic`, `SystemDce`, and `UuidV2Factory` can be created on a system that disables one of these functions.
 - When a PHP function it needs is not available, `SystemNic` goes on to its next way of finding the address, ending with a random address, and `SystemDce` throws `DceIdentifierNotFound`.
 - `toUuidV7()` on a ULID created by `UlidFactory` with its default bytes generator returns the version 7 UUID with the same timestamp, fraction, and counter.
 - A `MonotonicBytesGenerator` created with a clock other than `SystemClock` keeps its own timestamp and counter. Generators created with `SystemClock` share one.

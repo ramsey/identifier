@@ -28,7 +28,6 @@ namespace Ramsey\Identifier\Service\Os;
 use DateTimeImmutable;
 
 use function escapeshellarg;
-use function escapeshellcmd;
 use function file_get_contents;
 use function function_exists;
 use function getmypid;
@@ -50,11 +49,6 @@ final class PhpOs implements Os
      * Whether escapeshellarg() is available; null until it is first needed
      */
     private static ?bool $hasEscapeShellArg = null;
-
-    /**
-     * Whether escapeshellcmd() is available; null until it is first needed
-     */
-    private static ?bool $hasEscapeShellCmd = null;
 
     /**
      * Whether file_get_contents() is available; null until it is first needed
@@ -181,8 +175,7 @@ final class PhpOs implements Os
     }
 
     /**
-     * @throws MissingFunction if shell_exec() or escapeshellcmd() is not
-     *     available on this system
+     * @throws MissingFunction if shell_exec() is not available on this system
      */
     public function run(string $command): string
     {
@@ -192,17 +185,7 @@ final class PhpOs implements Os
             throw new MissingFunction('shell_exec() is not available on this system');
         }
 
-        self::$hasEscapeShellCmd ??= function_exists('escapeshellcmd');
-
-        if (!self::$hasEscapeShellCmd) {
-            throw new MissingFunction('escapeshellcmd() is not available on this system');
-        }
-
-        $command = escapeshellcmd($command);
-
         // Redirect stderr to stdout.
-        $command .= ' 2>&1';
-
-        return (string) @shell_exec($command);
+        return (string) @shell_exec($command . ' 2>&1');
     }
 }
