@@ -77,6 +77,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - `Rfc4122ClockSequence` compares date-times before the Unix Epoch that have a fraction of a second in the right order, so its sequence rises only when the date-time moves backward.
 - `InMemoryCache` evicts the least recently used item when its clock is before the Unix Epoch.
 - `InMemoryCache` handles keys that look like integers, such as `123`, in `setMultiple()` and when it evicts an item, in place of a PHP `TypeError`.
+- `SystemDce::groupId()` returns a group identifier on Windows. It is the lowest relative identifier among the built-in groups of the running user, or, for a user in no built-in group, the lowest among the user's machine and domain groups.
 
 ## [0.1.0] - 2025-06-19
 

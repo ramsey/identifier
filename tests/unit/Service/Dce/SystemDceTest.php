@@ -6,7 +6,6 @@ namespace Ramsey\Test\Identifier\Service\Dce;
 
 use Exception;
 use Hamcrest\Type\IsInteger;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
@@ -19,6 +18,8 @@ use Ramsey\Identifier\Service\Dce\SystemDce;
 use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Test\Identifier\TestCase;
+
+use function implode;
 
 class SystemDceTest extends TestCase
 {
@@ -158,30 +159,11 @@ class SystemDceTest extends TestCase
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
     #[DataProvider('provideWindowsGroupValues')]
-    public function testGroupIdWindows(
-        string $netUserResponse,
-        ?string $wmicGroupResponse = null,
-        ?string $expectedGroup = null,
-        ?int $expectedId = null,
-    ): void {
+    public function testGroupIdWindows(string $whoamiResponse, ?int $expectedId): void
+    {
         $os = $this->mockery(Os::class);
         $os->expects('getOsFamily')->andReturn('Windows');
-
-        $os->expects('run')
-            ->with('net user %username% | findstr /b /i "Local Group Memberships"')
-            ->andReturn($netUserResponse);
-
-        if ($wmicGroupResponse === null) {
-            $os->expects('escapeShellArg')->never();
-            $os->expects('run')
-                ->with(Mockery::pattern('/^wmic group get name,sid \| findstr \/b \/i .*$/'))
-                ->never();
-        } else {
-            $os->expects('escapeShellArg')->with($expectedGroup)->andReturn('"' . $expectedGroup . '"');
-            $os->expects('run')
-                ->with('wmic group get name,sid | findstr /b /i "' . $expectedGroup . '"')
-                ->andReturn($wmicGroupResponse);
-        }
+        $os->expects('run')->with('whoami /groups /fo csv /nh')->andReturn($whoamiResponse);
 
         $dce = new SystemDce(os: $os);
 
@@ -200,57 +182,177 @@ class SystemDceTest extends TestCase
     }
 
     /**
-     * @return list<array{netUserResponse: string, wmicGroupResponse?: string, expectedGroup?: string, expectedId?: int}>
+     * @return array<string, array{whoamiResponse: string, expectedId: int | null}>
      */
     public static function provideWindowsGroupValues(): array
     {
+        $attributes = '"Mandatory group, Enabled by default, Enabled group"';
+        $domain = 'S-1-5-21-3102628041-531311518-2056980507';
+
+        $everyone = '"Everyone","Well-known group","S-1-1-0",' . $attributes;
+        $administrators = '"BUILTIN\Administrators","Alias","S-1-5-32-544",' . $attributes;
+        $users = '"BUILTIN\Users","Alias","S-1-5-32-545",' . $attributes;
+        $sshUsers = '"BUILTIN\OpenSSH Users","Alias","S-1-5-32-585",' . $attributes;
+        $network = '"NT AUTHORITY\NETWORK","Well-known group","S-1-5-2",' . $attributes;
+        $authenticated = '"NT AUTHORITY\Authenticated Users","Well-known group","S-1-5-11",' . $attributes;
+        $ntlm = '"NT AUTHORITY\NTLM Authentication","Well-known group","S-1-5-64-10",' . $attributes;
+        $domainAdmins = '"EXAMPLE\Domain Admins","Group","' . $domain . '-512",' . $attributes;
+        $domainUsers = '"EXAMPLE\Domain Users","Group","' . $domain . '-513",' . $attributes;
+        $schemaAdmins = '"EXAMPLE\Schema Admins","Group","' . $domain . '-518",' . $attributes;
+        $label = '"Mandatory Label\Medium Mandatory Level","Label","S-1-16-8192",""';
+
+        $response = static fn (string ...$rows): string => implode("\r\n", $rows) . "\r\n";
+
         return [
-            [
-                'netUserResponse' => 'Local Group Memberships    *Administrators  *Users',
-                'wmicGroupResponse' => 'Administrators  S-1-5-32-544',
-                'expectedGroup' => 'Administrators',
+            'a local administrator' => [
+                'whoamiResponse' => $response($everyone, $administrators, $users, $network, $authenticated, $label),
                 'expectedId' => 544,
             ],
-            [
-                'netUserResponse' => 'Local Group Memberships    Users',
-                'wmicGroupResponse' => 'Users  S-1-5-32-545',
-                'expectedGroup' => 'Users',
+            'a local user who is not an administrator' => [
+                'whoamiResponse' => $response($everyone, $users, $sshUsers, $network, $authenticated, $ntlm, $label),
                 'expectedId' => 545,
             ],
-            [
-                'netUserResponse' => 'Local Group Memberships    Guests  Nobody',
-                'wmicGroupResponse' => 'Guests  S-1-5-32-546',
-                'expectedGroup' => 'Guests',
-                'expectedId' => 546,
+            'the same groups in another order' => [
+                'whoamiResponse' => $response($everyone, $sshUsers, $users, $network, $authenticated, $ntlm, $label),
+                'expectedId' => 545,
             ],
-            [
-                'netUserResponse' => 'Local Group Memberships   Some Group  Another Group',
-                'wmicGroupResponse' => 'Some Group    S-1-5-80-19088743-1985229328-4294967295-1324',
-                'expectedGroup' => 'Some Group',
-                'expectedId' => 1324,
+            'an administrator of a domain' => [
+                'whoamiResponse' => $response(
+                    $everyone,
+                    $administrators,
+                    $users,
+                    $network,
+                    $domainAdmins,
+                    $schemaAdmins,
+                    $label,
+                ),
+                'expectedId' => 544,
+            ],
+            'a lower domain RID before a built-in group' => [
+                'whoamiResponse' => $response($everyone, $domainAdmins, $users, $label),
+                'expectedId' => 545,
+            ],
+            'groups of a domain only' => [
+                'whoamiResponse' => $response($everyone, $schemaAdmins, $domainUsers, $network, $label),
+                'expectedId' => 513,
+            ],
+            'lines that end with a line feed only' => [
+                'whoamiResponse' => $everyone . "\n" . $users . "\n",
+                'expectedId' => 545,
+            ],
+            'one row with no line ending' => [
+                'whoamiResponse' => $users,
+                'expectedId' => 545,
+            ],
+            'group names in another language' => [
+                'whoamiResponse' => $response(
+                    '"Jeder","Bekannte Gruppe","S-1-1-0",' . $attributes,
+                    '"VORDEFINIERT\Benutzer","Alias","S-1-5-32-545",' . $attributes,
+                ),
+                'expectedId' => 545,
+            ],
+            'a group name with a comma and a quotation mark' => [
+                'whoamiResponse' => $response(
+                    '"EXAMPLE\Sales, ""East""","Group","' . $domain . '-1105",' . $attributes,
+                ),
+                'expectedId' => 1105,
+            ],
+            'a byte that is a line break in some encodings, in a name with a comma' => [
+                'whoamiResponse' => $response(
+                    '"EXAMPLE\Ventes ' . "\x85" . ' Paris, Est","Group","' . $domain . '-1105",' . $attributes,
+                ),
+                'expectedId' => 1105,
+            ],
+            'the highest RID that fits in 32 bits' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-4294967295",' . $attributes),
+                'expectedId' => 4294967295,
+            ],
+            'an RID of zero' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-0",' . $attributes),
+                'expectedId' => 0,
+            ],
+            'an RID too large for 32 bits beside one that fits' => [
+                'whoamiResponse' => $response(
+                    '"BUILTIN\Example","Alias","S-1-5-32-4294967296",' . $attributes,
+                    $sshUsers,
+                ),
+                'expectedId' => 585,
             ],
 
             // These should all fail with an exception:
-            ['netUserResponse' => ''],
-            ['netUserResponse' => 'foobar'],
-            ['netUserResponse' => 'foo,bar,baz'],
-            ['netUserResponse' => '1234'],
-            ['netUserResponse' => 'Local Group Memberships'],
-            ['netUserResponse' => 'Local Group Memberships    ****  Foo'],
-            [
-                'netUserResponse' => 'Local Group Memberships    Users',
-                'wmicGroupResponse' => '',
-                'expectedGroup' => 'Users',
+            'empty output' => ['whoamiResponse' => '', 'expectedId' => null],
+            'blank lines' => ['whoamiResponse' => "\r\n\r\n", 'expectedId' => null],
+            'the text of an error' => [
+                'whoamiResponse' => "'whoami' is not recognized as an internal or external command,\r\n"
+                    . "operable program or batch file.\r\n",
+                'expectedId' => null,
             ],
-            [
-                'netUserResponse' => 'Local Group Memberships    Users',
-                'wmicGroupResponse' => 'Users  Not a valid SID string',
-                'expectedGroup' => 'Users',
+            'no built-in, machine, or domain group' => [
+                'whoamiResponse' => $response($everyone, $network, $authenticated, $ntlm, $label),
+                'expectedId' => null,
             ],
-            [
-                'netUserResponse' => 'Local Group Memberships    Users',
-                'wmicGroupResponse' => 'Users  344aab9758bb0d018b93739e7893fb3a',
-                'expectedGroup' => 'Users',
+            'a row with too few fields' => [
+                'whoamiResponse' => $response('"BUILTIN\Users","Alias"'),
+                'expectedId' => null,
+            ],
+            'an SID in the first field' => [
+                'whoamiResponse' => $response('"S-1-5-32-545","Alias","BUILTIN\Users",' . $attributes),
+                'expectedId' => null,
+            ],
+            'an RID too large for 32 bits' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-4294967296",' . $attributes),
+                'expectedId' => null,
+            ],
+            'an RID of eleven digits' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-10000000000",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a built-in RID with a leading zero' => [
+                'whoamiResponse' => $response('"BUILTIN\Users","Alias","S-1-5-32-0545",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a machine RID with a leading zero' => [
+                'whoamiResponse' => $response('"EXAMPLE\Group","Group","S-1-5-21-1-2-3-0513",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a machine SID with a leading zero in an earlier part' => [
+                'whoamiResponse' => $response('"EXAMPLE\Group","Group","S-1-5-21-1-02-3-513",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a machine SID with parts of zero' => [
+                'whoamiResponse' => $response('"EXAMPLE\Group","Group","S-1-5-21-0-0-0-513",' . $attributes),
+                'expectedId' => 513,
+            ],
+            'an RID that is not a number' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-54x",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a machine SID with too few parts' => [
+                'whoamiResponse' => $response('"EXAMPLE\Group","Group","S-1-5-21-1-2-513",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a machine SID with too many parts' => [
+                'whoamiResponse' => $response('"EXAMPLE\Group","Group","S-1-5-21-1-2-3-4-513",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a built-in SID with an extra part' => [
+                'whoamiResponse' => $response('"BUILTIN\Example","Alias","S-1-5-32-545-1",' . $attributes),
+                'expectedId' => null,
+            ],
+            'a service SID' => [
+                'whoamiResponse' => $response(
+                    '"NT SERVICE\Example","Well-known group","S-1-5-80-19088743-1985229328-4294967295-1324",'
+                    . $attributes,
+                ),
+                'expectedId' => null,
+            ],
+            'an SID with text after it' => [
+                'whoamiResponse' => $response('"BUILTIN\Users","Alias","S-1-5-32-545 ",' . $attributes),
+                'expectedId' => null,
+            ],
+            'an SID with text before it' => [
+                'whoamiResponse' => $response('"BUILTIN\Users","Alias","XS-1-5-32-545",' . $attributes),
+                'expectedId' => null,
             ],
         ];
     }
@@ -485,34 +587,6 @@ class SystemDceTest extends TestCase
         } catch (DceIdentifierNotFound $exception) {
             $this->assertSame(
                 'Unable to get a user identifier using the system DCE service; please provide a custom identifier '
-                . 'or use a different DCE service class',
-                $exception->getMessage(),
-            );
-            $this->assertSame($missingFunction, $exception->getPrevious());
-        }
-    }
-
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    public function testGroupIdWindowsThrowsExceptionWhenEscapeShellArgIsNotAvailable(): void
-    {
-        $missingFunction = new MissingFunction('escapeshellarg() is not available on this system');
-
-        $os = $this->mockery(Os::class);
-        $os->expects('getOsFamily')->andReturn('Windows');
-        $os->expects('run')
-            ->with('net user %username% | findstr /b /i "Local Group Memberships"')
-            ->andReturn('Local Group Memberships    *Administrators  *Users');
-        $os->expects('escapeShellArg')->with('Administrators')->andThrow($missingFunction);
-
-        $dce = new SystemDce(os: $os);
-
-        try {
-            $dce->groupId();
-            $this->fail('Expected ' . DceIdentifierNotFound::class);
-        } catch (DceIdentifierNotFound $exception) {
-            $this->assertSame(
-                'Unable to get a group identifier using the system DCE service; please provide a custom identifier '
                 . 'or use a different DCE service class',
                 $exception->getMessage(),
             );

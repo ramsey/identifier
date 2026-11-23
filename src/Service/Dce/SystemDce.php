@@ -32,6 +32,8 @@ use Ramsey\Identifier\Service\Os\MissingFunction;
 use Ramsey\Identifier\Service\Os\Os;
 use Ramsey\Identifier\Service\Os\PhpOs;
 
+use function min;
+use function preg_match;
 use function preg_split;
 use function sprintf;
 use function str_getcsv;
@@ -69,6 +71,14 @@ final class SystemDce implements Dce
      * ```
      */
     private const UID_CACHE_KEY = '__ramsey_id_63e41035';
+
+    /**
+     * Pattern to match the SID of a built-in local group, S-1-5-32-RID, or of
+     * a group of the machine or of a domain, S-1-5-21-X-Y-Z-RID
+     *
+     * Each number is written as Windows writes it, with no leading zero.
+     */
+    private const WINDOWS_GROUP_SID_PATTERN = '/^S-1-5-(32|21(?:-(?:0|[1-9]\d*)){3})-(0|[1-9]\d{0,9})$/D';
 
     /**
      * @var int<0, 4294967295> | null
@@ -258,50 +268,62 @@ final class SystemDce implements Dce
     /**
      * Returns a group identifier for a user on a Windows system
      *
-     * Since Windows does not have the same concept as an effective POSIX GID
-     * for the running script, we will get the local group memberships for the
-     * user running the script. Then, we will get the SID (security identifier)
-     * for the first group that appears in that list. Finally, we will return
-     * the RID (relative identifier) for the group and use that as the GID.
+     * Windows does not have the same concept as an effective POSIX GID for the
+     * running script. Instead, we list the groups of the user running the
+     * script, each with its SID (security identifier), and use the RID
+     * (relative identifier) of one group as the GID.
      *
-     * @link https://www.windows-commandline.com/list-of-user-groups-command-line/ List of user groups command line
+     * A built-in local group, such as Users, has an SID of the form
+     * S-1-5-32-RID, and its RID is the same on every Windows system. A group
+     * of the machine or of a domain has an SID of the form
+     * S-1-5-21-X-Y-Z-RID. We return the lowest RID among the built-in groups,
+     * or, for a user in no built-in group, the lowest RID among the groups of
+     * the machine or domain. The order in which Windows lists the groups has
+     * no effect on the result.
+     *
+     * @link https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/whoami whoami
+     * @link https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids Well-known SIDs
      *
      * @return int<0, 4294967295> | null
      */
     private function getWindowsGid(): ?int
     {
-        $response = $this->os->run('net user %username% | findstr /b /i "Local Group Memberships"');
+        $response = $this->os->run('whoami /groups /fo csv /nh');
 
-        if ($response === '') {
-            return null;
+        $builtInRids = [];
+        $otherRids = [];
+
+        /** @var list<string> $lines */
+        $lines = preg_split('/\r\n|\r|\n/', $response, -1, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($lines as $line) {
+            $sid = str_getcsv(string: $line, escape: '')[2] ?? '';
+
+            if (preg_match(self::WINDOWS_GROUP_SID_PATTERN, $sid, $matches) !== 1) {
+                continue;
+            }
+
+            $rid = (int) $matches[2];
+
+            if ($rid > 0xffffffff) {
+                continue;
+            }
+
+            if ($matches[1] === '32') {
+                $builtInRids[] = $rid;
+            } else {
+                $otherRids[] = $rid;
+            }
         }
 
-        /** @var list<string> $userGroups */
-        $userGroups = preg_split('/\s{2,}/', $response, -1, PREG_SPLIT_NO_EMPTY);
+        $rids = $builtInRids !== [] ? $builtInRids : $otherRids;
 
-        $firstGroup = trim($userGroups[1] ?? '', "* \t\n\r\0\x0B");
-
-        if ($firstGroup === '') {
-            return null;
-        }
-
-        $response = $this->os->run('wmic group get name,sid | findstr /b /i ' . $this->os->escapeShellArg($firstGroup));
-
-        if ($response === '') {
-            return null;
-        }
-
-        /** @var list<string> $userGroup */
-        $userGroup = preg_split('/\s{2,}/', $response, -1, PREG_SPLIT_NO_EMPTY);
-
-        $sid = $userGroup[1] ?? '';
-
-        if (($lastHyphen = strrpos($sid, '-')) === false) {
+        if ($rids === []) {
             return null;
         }
 
         /** @var int<0, 4294967295> */
-        return (int) trim(substr($sid, $lastHyphen + 1));
+        return min($rids);
     }
 
     /**
