@@ -442,4 +442,11 @@ class GenericSnowflakeTest extends TestCase
 
         $this->assertSame('292279133-12-30 14:48:06.910', $snowflake->getDateTime()->format('Y-m-d H:i:s.v'));
     }
+
+    public function testGetDateTimeAtTheLargestMillisecondAnIntegerCanHold(): void
+    {
+        $snowflake = new GenericSnowflake(1 << 22, PHP_INT_MAX - 1);
+
+        $this->assertSame('9223372036854775.807', $snowflake->getDateTime()->format('U.v'));
+    }
 }

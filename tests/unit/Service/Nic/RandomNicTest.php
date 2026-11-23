@@ -13,6 +13,7 @@ use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Nic\MacAddressNotFound;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Test\Identifier\TestCase;
+use ReflectionMethod;
 
 use function hexdec;
 use function strlen;
@@ -115,5 +116,22 @@ class RandomNicTest extends TestCase
         $this->expectExceptionMessage('Unable to retrieve MAC address from cache');
 
         $nic->address();
+    }
+
+    public function testGeneratedAddressesSetOnlyTheMulticastBit(): void
+    {
+        $method = new ReflectionMethod(RandomNic::class, 'generateAddress');
+        $nic = new RandomNic();
+        $lowestBits = [];
+
+        // The chance that 64 random addresses all have the same lowest bit is
+        // too small to matter.
+        for ($i = 0; $i < 64; $i++) {
+            /** @var string $address */
+            $address = $method->invoke($nic);
+            $lowestBits[hexdec(substr($address, -1)) & 1] = true;
+        }
+
+        $this->assertCount(2, $lowestBits);
     }
 }

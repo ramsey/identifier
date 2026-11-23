@@ -8,13 +8,17 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
+use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Internal\Time;
 use Ramsey\Identifier\Uuid\UuidFactory;
+use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
 use function bin2hex;
 use function sprintf;
+use function str_repeat;
 
 class TimeTest extends TestCase
 {
@@ -207,5 +211,17 @@ class TimeTest extends TestCase
                 'expectedTime' => '5236-03-31 21:21:00.684697',
             ],
         ];
+    }
+
+    public function testGetDateTimeForUuidThrowsForAVersionWithoutATime(): void
+    {
+        $uuid = $this->mockery(TimeBasedUuid::class);
+        $uuid->allows('toBytes')->andReturn(str_repeat("\x00", 16));
+        $uuid->allows('getVersion')->andReturn(Version::Random);
+
+        $this->expectException(BadMethodCall::class);
+        $this->expectExceptionMessage('method called out of context');
+
+        Time::getDateTimeForUuid($uuid);
     }
 }

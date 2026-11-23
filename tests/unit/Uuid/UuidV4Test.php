@@ -421,4 +421,11 @@ class UuidV4Test extends TestCase
             ],
         ];
     }
+
+    public function testConstructorThrowsForStringWithAnExtraHyphen(): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        new UuidV4('0000000-0000-0400-0800-000000000000-');
+    }
 }

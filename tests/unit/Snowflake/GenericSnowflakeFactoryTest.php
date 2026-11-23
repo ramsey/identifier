@@ -478,4 +478,14 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $factory->createFromDateTime(new DateTimeImmutable('@9300000000000000'));
     }
+
+    public function testCreateFromDateTimeSaysTimeIsTooFarJustPastTheLargestExactEpoch(): void
+    {
+        $factory = new GenericSnowflakeFactory(15, Time::MAX_EXACT_UNIX_MILLISECONDS - 0x3ffffffffff + 1);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('is too far from the Unix Epoch to count in milliseconds');
+
+        $factory->createFromDateTime(new DateTimeImmutable('@9300000000000000'));
+    }
 }

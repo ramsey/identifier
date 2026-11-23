@@ -238,4 +238,15 @@ class MonotonicSequenceTest extends TestCase
 
         $sequence->next();
     }
+
+    public function testNamedStateUsesAPrefixedCacheKey(): void
+    {
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->expects($this->once())
+            ->method('get')
+            ->with('__ramsey_id_259414de|state', 0)
+            ->willReturn(4);
+
+        $this->assertSame(4, (new MonotonicSequence(cache: $cache))->current('state'));
+    }
 }
