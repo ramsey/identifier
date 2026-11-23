@@ -29,7 +29,6 @@ use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 
 use function abs;
-use function spl_object_hash;
 
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -54,25 +53,34 @@ final class MonotonicSequence implements Sequence
      */
     private const CACHE_KEY = '__ramsey_id_259414de';
 
-    private ?string $defaultCacheKey = null;
+    /**
+     * The current value of the sequence for calls without a state
+     */
+    private int $value;
 
     /**
      * @param int $start The sequence starting value; please note, the first
      *     call to `next()` will return this value + `$step`
      * @param int $step How much the sequence should increase or decrease
      *     between values
-     * @param CacheInterface $cache A cache for storing the sequence and
-     *     maintaining state
+     * @param CacheInterface $cache A cache for storing the value of each named
+     *     state; a call without a state keeps its value on this instance and
+     *     does not use the cache
      */
     public function __construct(
         private readonly int $start = 0,
         private readonly int $step = 1,
         private readonly CacheInterface $cache = new InMemoryCache(),
     ) {
+        $this->value = $start;
     }
 
     public function current(?string $state = null): int
     {
+        if ($state === null) {
+            return $this->value;
+        }
+
         /** @var int */
         return $this->cache->get($this->generateCacheKey($state), $this->start);
     }
@@ -88,23 +96,18 @@ final class MonotonicSequence implements Sequence
         }
 
         $next = $previous + $this->step;
-        $this->cache->set($this->generateCacheKey($state), $next);
+
+        if ($state === null) {
+            $this->value = $next;
+        } else {
+            $this->cache->set($this->generateCacheKey($state), $next);
+        }
 
         return $next;
     }
 
-    private function generateCacheKey(?string $state): string
+    private function generateCacheKey(string $state): string
     {
-        if ($state === null) {
-            if ($this->defaultCacheKey === null) {
-                $this->defaultCacheKey = self::CACHE_KEY
-                    . "|start={$this->start};step={$this->step}|"
-                    . spl_object_hash($this);
-            }
-
-            return $this->defaultCacheKey;
-        }
-
         return self::CACHE_KEY . '|' . $state;
     }
 }

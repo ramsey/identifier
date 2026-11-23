@@ -6,6 +6,8 @@ namespace Ramsey\Test\Identifier\Service\Sequence;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
+use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Sequence\MonotonicSequence;
 use Ramsey\Identifier\Service\Sequence\SequenceOverflow;
 
@@ -126,5 +128,69 @@ class MonotonicSequenceTest extends TestCase
 
         // This should be exactly at the minimum.
         $this->assertSame(PHP_INT_MIN, $sequence->next());
+    }
+
+    public function testNewSequenceDoesNotReadValueOfDestroyedSequence(): void
+    {
+        $cache = new InMemoryCache();
+
+        // PHP may give each new object the handle of the one just destroyed.
+        for ($i = 0; $i < 10; $i++) {
+            $this->assertSame(1, (new MonotonicSequence(cache: $cache))->next());
+        }
+    }
+
+    public function testLiveSequencesSharingCacheKeepSeparateValues(): void
+    {
+        $cache = new InMemoryCache();
+        $first = new MonotonicSequence(cache: $cache);
+        $second = new MonotonicSequence(cache: $cache);
+
+        $this->assertSame(1, $first->next());
+        $this->assertSame(2, $first->next());
+        $this->assertSame(1, $second->next());
+        $this->assertSame(2, $first->current());
+    }
+
+    public function testSequenceWithoutStateDoesNotUseCache(): void
+    {
+        $cache = $this->createMock(CacheInterface::class);
+        $cache->expects($this->never())->method($this->anything());
+
+        $sequence = new MonotonicSequence(start: 5, step: 2, cache: $cache);
+
+        $this->assertSame(5, $sequence->current());
+        $this->assertSame(7, $sequence->next());
+        $this->assertSame(7, $sequence->current());
+    }
+
+    public function testSequenceWithoutStateKeepsValueWhenCacheIsCleared(): void
+    {
+        $cache = new InMemoryCache();
+        $sequence = new MonotonicSequence(cache: $cache);
+
+        $sequence->next();
+        $cache->clear();
+
+        $this->assertSame(2, $sequence->next());
+    }
+
+    public function testCloneContinuesIndependentlyFromCurrentValue(): void
+    {
+        $original = new MonotonicSequence();
+        $original->next();
+
+        $clone = clone $original;
+
+        $this->assertSame(2, $clone->next());
+        $this->assertSame(1, $original->current());
+    }
+
+    public function testSequencesWithSameStateShareValueInCache(): void
+    {
+        $cache = new InMemoryCache();
+
+        $this->assertSame(1, (new MonotonicSequence(cache: $cache))->next('state'));
+        $this->assertSame(2, (new MonotonicSequence(cache: $cache))->next('state'));
     }
 }
