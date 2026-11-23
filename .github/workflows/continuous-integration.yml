@@ -159,6 +159,8 @@ jobs:
         with:
           php-version: "${{ matrix.php }}"
           coverage: "none"
+        env:
+          update: "true"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
