@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
@@ -13,6 +13,7 @@ use Ramsey\Identifier\Service\Clock\GeneratorState;
 use Ramsey\Identifier\Service\Clock\InvalidGeneratorState;
 use Ramsey\Identifier\Service\Clock\MonotonicClockSequence;
 use Ramsey\Identifier\Service\Nic\StaticNic;
+use Ramsey\Test\Identifier\TestCase;
 
 use function substr;
 
@@ -147,5 +148,23 @@ class MonotonicClockSequenceTest extends TestCase
 
         /** @phpstan-ignore argument.type */
         $sequence->next(state: '');
+    }
+
+    public function testInitialValueIsUsedForOneStateOnly(): void
+    {
+        $sequence = new MonotonicClockSequence(initialValue: 7);
+        $first = $sequence->current('aaaaaaaaaaaa');
+
+        $this->assertSame(7, $first);
+        $this->assertNotSame(7, $sequence->current('bbbbbbbbbbbb'));
+    }
+
+    public function testNextSavesTheIncreasedSequenceToTheCache(): void
+    {
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->allows('get')->andReturnNull();
+        $cache->expects('set')->twice()->andReturnTrue();
+
+        (new MonotonicClockSequence(initialValue: 1, cache: $cache))->next('aaaaaaaaaaaa');
     }
 }

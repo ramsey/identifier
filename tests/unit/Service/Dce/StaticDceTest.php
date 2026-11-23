@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Service\Dce;
 
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Dce\DceIdentifierNotFound;
 use Ramsey\Identifier\Service\Dce\StaticDce;
@@ -123,5 +124,19 @@ class StaticDceTest extends TestCase
 
         /** @phpstan-ignore argument.type */
         new StaticDce(orgId: 0x100000000);
+    }
+
+    /**
+     * @param int<0, 4294967295> $identifier
+     */
+    #[TestWith([0])]
+    #[TestWith([0xffffffff])]
+    public function testAcceptsIdentifiersAtTheLimits(int $identifier): void
+    {
+        $dce = new StaticDce($identifier, $identifier, $identifier);
+
+        $this->assertSame($identifier, $dce->userId());
+        $this->assertSame($identifier, $dce->groupId());
+        $this->assertSame($identifier, $dce->orgId());
     }
 }

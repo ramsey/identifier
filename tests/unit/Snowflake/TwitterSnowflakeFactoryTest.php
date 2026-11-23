@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
+use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\TwitterSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -293,5 +294,14 @@ class TwitterSnowflakeFactoryTest extends TestCase
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2080-07-10 17:30:30.208'));
 
         $this->assertSame(0x7fffffffffffffff, $snowflake->toInteger());
+    }
+
+    public function testConstructorRollsOverIdentifier(): void
+    {
+        $clock = new FrozenClock(new DateTimeImmutable(Epoch::Twitter->toIso8601()));
+        $rolledOver = new TwitterSnowflakeFactory(0x0400, $clock, new FrozenClockSequence(0));
+        $zero = new TwitterSnowflakeFactory(0, $clock, new FrozenClockSequence(0));
+
+        $this->assertSame($zero->create()->toString(), $rolledOver->create()->toString());
     }
 }

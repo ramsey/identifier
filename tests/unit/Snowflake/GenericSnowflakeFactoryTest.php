@@ -12,6 +12,7 @@ use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Identifier\Snowflake\GenericSnowflake;
 use Ramsey\Identifier\Snowflake\GenericSnowflakeFactory;
+use Ramsey\Identifier\Snowflake\Internal\Time;
 use Ramsey\Test\Identifier\TestCase;
 
 use function sprintf;
@@ -435,5 +436,46 @@ class GenericSnowflakeFactoryTest extends TestCase
         ));
 
         $factory->createFromDateTime(new DateTimeImmutable($dateTime));
+    }
+
+    public function testConstructorRollsOverNodeId(): void
+    {
+        $clock = new FrozenClock(new DateTimeImmutable('2024-01-01 00:00:00'));
+        $rolledOver = new GenericSnowflakeFactory(0x0400, self::EPOCH_OFFSET, $clock, new FrozenClockSequence(0));
+        $zero = new GenericSnowflakeFactory(0, self::EPOCH_OFFSET, $clock, new FrozenClockSequence(0));
+
+        $this->assertSame($zero->create()->toString(), $rolledOver->create()->toString());
+    }
+
+    public function testCreateFromBytesWithZeroGivesAnInteger(): void
+    {
+        $this->assertSame(0, $this->factory->createFromBytes("\x00\x00\x00\x00\x00\x00\x00\x00")->toInteger());
+    }
+
+    public function testCreateFromHexadecimalWithLargestSignedValueGivesAnInteger(): void
+    {
+        $this->assertSame(PHP_INT_MAX, $this->factory->createFromHexadecimal('7fffffffffffffff')->toInteger());
+    }
+
+    #[TestWith([0])]
+    #[TestWith([Time::MIN_EXACT_UNIX_MILLISECONDS])]
+    public function testCreateFromDateTimeThrowsForTimeTooEarlyToCountExactly(int $epochOffset): void
+    {
+        $factory = new GenericSnowflakeFactory(15, $epochOffset);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('Timestamp may not be earlier than the epoch');
+
+        $factory->createFromDateTime(new DateTimeImmutable('@-9300000000000000'));
+    }
+
+    public function testCreateFromDateTimeThrowsForTimeTooLateAtTheLargestExactEpoch(): void
+    {
+        $factory = new GenericSnowflakeFactory(15, Time::MAX_EXACT_UNIX_MILLISECONDS - 0x3ffffffffff);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('cannot have a date-time greater than');
+
+        $factory->createFromDateTime(new DateTimeImmutable('@9300000000000000'));
     }
 }

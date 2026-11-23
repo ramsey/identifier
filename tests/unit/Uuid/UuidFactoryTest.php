@@ -642,4 +642,16 @@ class UuidFactoryTest extends TestCase
 
         $this->assertSame('00000000-0000-0000-0000-000000000000', $uuid->toString());
     }
+
+    /**
+     * @param non-empty-string $input
+     */
+    #[TestWith(['27433D43011D4A6A91611550863792C9'])]
+    #[TestWith(['27433D43-011D-4A6A-9161-1550863792C9'])]
+    public function testUppercaseInputGivesLowercaseHexadecimal(string $input): void
+    {
+        $uuid = new UuidV4($input);
+
+        $this->assertSame('27433d43011d4a6a91611550863792c9', $uuid->toHexadecimal());
+    }
 }

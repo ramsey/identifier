@@ -7,6 +7,7 @@ namespace Ramsey\Test\Identifier\Snowflake;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\Clock\ClockSequence;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
 use Ramsey\Identifier\Snowflake\DiscordSnowflakeFactory;
@@ -290,5 +291,31 @@ class DiscordSnowflakeFactoryTest extends TestCase
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.103'));
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());
+    }
+
+    public function testConstructorRollsOverWorkerAndProcessIds(): void
+    {
+        $clock = new FrozenClock(new DateTimeImmutable('2024-01-01 00:00:00'));
+        $rolledOver = new DiscordSnowflakeFactory(0x20, 0x20, $clock, new FrozenClockSequence(0));
+        $zero = new DiscordSnowflakeFactory(0, 0, $clock, new FrozenClockSequence(0));
+
+        $this->assertSame($zero->create()->toString(), $rolledOver->create()->toString());
+    }
+
+    public function testCreateUsesTheSumOfWorkerAndProcessIdsAsSequenceState(): void
+    {
+        $sequence = $this->mockery(ClockSequence::class);
+        $sequence->expects('next')
+            ->withArgs(static fn (?string $state): bool => $state === '45')
+            ->andReturn(0);
+
+        $factory = new DiscordSnowflakeFactory(
+            15,
+            30,
+            new FrozenClock(new DateTimeImmutable('2024-01-01 00:00:00')),
+            $sequence,
+        );
+
+        $factory->create();
     }
 }

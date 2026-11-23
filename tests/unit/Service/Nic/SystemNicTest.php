@@ -451,4 +451,19 @@ class SystemNicTest extends TestCase
 
         $this->assertSame('fedcba987654', $nic->address());
     }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testAddressOnLinuxTrimsWhitespaceFromTheAddressFile(): void
+    {
+        $os = $this->mockery(Os::class, [
+            'getOsFamily' => 'Linux',
+        ]);
+
+        $os->expects('glob')->with('/sys/class/net/*/address')->andReturn(['/sys/class/net/foo/address']);
+        $os->expects('isReadable')->with('/sys/class/net/foo/address')->andReturnTrue();
+        $os->expects('fileGetContents')->with('/sys/class/net/foo/address')->andReturn(" fe:dc:ba:98:76:54\n");
+
+        $this->assertSame('fedcba987654', (new SystemNic(os: $os))->address());
+    }
 }

@@ -10,6 +10,7 @@ use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\TestWith;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -81,6 +82,8 @@ class SystemDceTest extends TestCase
         $this->assertSame($groupId, $dce->groupId());
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testGroupIdFromCacheThrowsException(): void
     {
         $exception = new class extends Exception implements CacheException {
@@ -293,6 +296,8 @@ class SystemDceTest extends TestCase
         $this->assertSame($userId, $dce->userId());
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testUserIdFromCacheThrowsException(): void
     {
         $exception = new class extends Exception implements CacheException {
@@ -513,5 +518,61 @@ class SystemDceTest extends TestCase
             );
             $this->assertSame($missingFunction, $exception->getPrevious());
         }
+    }
+
+    /**
+     * @param int<0, 4294967295> $orgId
+     */
+    #[TestWith([0])]
+    #[TestWith([0xffffffff])]
+    public function testOrgIdAcceptsIdentifiersAtTheLimits(int $orgId): void
+    {
+        $this->assertSame($orgId, (new SystemDce(orgId: $orgId))->orgId());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGroupIdAcceptsZeroFromCache(): void
+    {
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->allows('get')->andReturn(0);
+
+        $this->assertSame(0, (new SystemDce(cache: $cache))->groupId());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testGroupIdNotFoundWhenPosixCommandReturnsOnlyWhitespace(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -g')->andReturn(" \n");
+
+        $this->expectException(DceIdentifierNotFound::class);
+
+        (new SystemDce(os: $os))->groupId();
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testUserIdAcceptsZeroFromCache(): void
+    {
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->allows('get')->andReturn(0);
+
+        $this->assertSame(0, (new SystemDce(cache: $cache))->userId());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testUserIdNotFoundWhenPosixCommandReturnsOnlyWhitespace(): void
+    {
+        $os = $this->mockery(Os::class);
+        $os->expects('getOsFamily')->andReturn('Unknown');
+        $os->expects('run')->with('id -u')->andReturn(" \n");
+
+        $this->expectException(DceIdentifierNotFound::class);
+
+        (new SystemDce(os: $os))->userId();
     }
 }

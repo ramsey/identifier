@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
+use Ramsey\Identifier\Snowflake\Epoch;
 use Ramsey\Identifier\Snowflake\InstagramSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -286,5 +287,14 @@ class InstagramSnowflakeFactoryTest extends TestCase
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('2081-04-30 12:54:37.272'));
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());
+    }
+
+    public function testConstructorRollsOverIdentifier(): void
+    {
+        $clock = new FrozenClock(new DateTimeImmutable(Epoch::Instagram->toIso8601()));
+        $rolledOver = new InstagramSnowflakeFactory(0x2000, $clock, new FrozenClockSequence(0));
+        $zero = new InstagramSnowflakeFactory(0, $clock, new FrozenClockSequence(0));
+
+        $this->assertSame($zero->create()->toString(), $rolledOver->create()->toString());
     }
 }

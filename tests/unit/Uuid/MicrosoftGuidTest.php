@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use Brick\Math\BigInteger;
 use Identifier\Exception\NotConvertible as IdentifierNotConvertible;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -795,5 +796,15 @@ class MicrosoftGuidTest extends TestCase
                 'expectedEquality' => false,
             ],
         ];
+    }
+
+    public function testToIntegerIsUnsignedWhenBytesAreInGuidOrder(): void
+    {
+        $guid = new MicrosoftGuid("\x00\x00\x00\xff\x00\x00\x46\x40\xc0\x00\x00\x00\x00\x00\x00\x00");
+
+        $this->assertSame(
+            (string) BigInteger::fromBase('ff00000000004046c000000000000000', 16),
+            (string) $guid->toInteger(),
+        );
     }
 }

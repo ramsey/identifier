@@ -257,4 +257,19 @@ class UuidV1FactoryTest extends TestCase
 
         $this->assertSame($dateTime, $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
+
+    public function testCreateRollsOverClockSequenceAtFourteenBits(): void
+    {
+        $uuid = $this->factory->create(clockSequence: 0x4001);
+
+        $this->assertSame('8001', substr($uuid->toString(), 19, 4));
+    }
+
+    public function testCreateFromIntegerThrowsWithCodeZeroForWrongVersion(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionCode(0);
+
+        $this->factory->createFromInteger(1);
+    }
 }

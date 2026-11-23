@@ -474,4 +474,11 @@ class UuidV2Test extends TestCase
 
         $this->assertSame('1582-10-15 00:00:00.000000', $uuid->getDateTime()->format('Y-m-d H:i:s.u'));
     }
+
+    public function testConstructorThrowsForUnknownDomainWithSameLowDigit(): void
+    {
+        $this->expectException(InvalidArgument::class);
+
+        new UuidV2('000001f5-0000-2000-8011-000000000000');
+    }
 }

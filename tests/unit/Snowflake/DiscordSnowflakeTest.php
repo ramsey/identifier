@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use Identifier\Identifier;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -328,5 +329,13 @@ class DiscordSnowflakeTest extends TestCase
         $dateTime = $snowflake->getDateTime();
 
         $this->assertSame('2154-05-15 07:35:11.103', $dateTime->format('Y-m-d H:i:s.v'));
+    }
+
+    public function testEqualsIsFalseForAnotherKindOfIdentifierWithTheSameString(): void
+    {
+        $other = $this->mockery(Identifier::class);
+        $other->allows('__toString')->andReturn('1');
+
+        $this->assertFalse((new DiscordSnowflake(1))->equals($other));
     }
 }

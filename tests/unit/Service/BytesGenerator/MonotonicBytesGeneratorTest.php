@@ -19,6 +19,7 @@ use ReflectionClass;
 
 use function bin2hex;
 use function chr;
+use function hexdec;
 use function ord;
 use function str_repeat;
 use function strlen;
@@ -39,6 +40,15 @@ class MonotonicBytesGeneratorTest extends TestCase
         // Generators with a SystemClock share one state, so each test starts
         // without it.
         (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
+    }
+
+    protected function tearDown(): void
+    {
+        // A test may leave the shared state at a time far in the future, which
+        // later tests of other classes would then use.
+        (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
+
+        parent::tearDown();
     }
 
     public function testBytesForTheSystemTime(): void
@@ -744,5 +754,46 @@ class MonotonicBytesGeneratorTest extends TestCase
         $os->allows('getMyPid')->andReturn(100);
 
         return $os;
+    }
+
+    public function testBytesAcceptsLengthOfOne(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os(1700000000.123456));
+
+        $this->assertSame('01', bin2hex($bytesGenerator->bytes(1)));
+    }
+
+    public function testIncrementsBuiltFromHighBytesIgnoreTheOtherBytes(): void
+    {
+        $bytesGenerator = new MonotonicBytesGenerator(
+            new FixedBytesGenerator("\x00\x01\x01\x00"),
+            os: $this->os(1700000000.123456),
+        );
+
+        $previous = (int) hexdec(substr(bin2hex($bytesGenerator->bytes()), 16));
+
+        for ($i = 0; $i < 5; $i++) {
+            $counter = (int) hexdec(substr(bin2hex($bytesGenerator->bytes()), 16));
+
+            $this->assertSame($previous + 1, $counter);
+
+            $previous = $counter;
+        }
+    }
+
+    #[TestWith([1700000000.1234567, 1700000000.123457])]
+    #[TestWith([1700000000.1234562, 1700000000.123456])]
+    public function testSystemTimeRoundsToTheNearestMicrosecond(float $microtime, float $rounded): void
+    {
+        $actual = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os($microtime));
+        $expected = new MonotonicBytesGenerator(new RecordingBytesGenerator(), os: $this->os($rounded));
+
+        (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
+        $actualBytes = bin2hex($actual->bytes());
+
+        (new ReflectionClass(MonotonicBytesGenerator::class))->setStaticPropertyValue('sharedState', null);
+        $expectedBytes = bin2hex($expected->bytes());
+
+        $this->assertSame(substr($expectedBytes, 0, 16), substr($actualBytes, 0, 16));
     }
 }

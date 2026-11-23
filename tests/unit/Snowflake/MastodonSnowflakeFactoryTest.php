@@ -14,7 +14,10 @@ use Ramsey\Identifier\Service\Sequence\FrozenSequence;
 use Ramsey\Identifier\Snowflake\MastodonSnowflakeFactory;
 use Ramsey\Test\Identifier\TestCase;
 
+use function md5;
 use function sprintf;
+use function str_repeat;
+use function unpack;
 use function usleep;
 
 class MastodonSnowflakeFactoryTest extends TestCase
@@ -278,5 +281,25 @@ class MastodonSnowflakeFactoryTest extends TestCase
         $snowflake = $factory->createFromDateTime(new DateTimeImmutable('@281474976710.655'));
 
         $this->assertSame('18446744073709551615', $snowflake->toInteger());
+    }
+
+    public function testDefaultSequenceStepsByFiveFromZero(): void
+    {
+        $factory = new MastodonSnowflakeFactory(
+            tableName: 'statuses',
+            clock: new FrozenClock(new DateTimeImmutable('2024-01-01 00:00:00')),
+            bytesGenerator: new FixedBytesGenerator('a'),
+        );
+
+        $first = (int) $factory->create()->toInteger();
+        $second = (int) $factory->create()->toInteger();
+
+        $data = 'statuses' . str_repeat('61', 16) . ($first & ~0xffff);
+
+        /** @var array{1: int} $base */
+        $base = unpack('n', md5($data, true));
+
+        $this->assertSame($base[1] + 5 & 0xffff, $first & 0xffff);
+        $this->assertSame($base[1] + 10 & 0xffff, $second & 0xffff);
     }
 }

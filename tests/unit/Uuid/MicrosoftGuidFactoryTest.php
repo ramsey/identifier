@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Uuid;
 
+use Brick\Math\BigInteger;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\MicrosoftGuidFactory;
@@ -20,6 +21,7 @@ use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 use Ramsey\Test\Identifier\TestCase;
 
+use function bin2hex;
 use function sprintf;
 
 class MicrosoftGuidFactoryTest extends TestCase
@@ -264,5 +266,23 @@ class MicrosoftGuidFactoryTest extends TestCase
             'too long' => ['hexadecimal' => '27433d43011d4a6ac1611550863792c9a'],
             'not hexadecimal' => ['hexadecimal' => '27433d43011d4a6ac1611550863792cg'],
         ];
+    }
+
+    public function testCreateFromIntegerReversesBytesOfTheFirstThreeFields(): void
+    {
+        /** @var numeric-string $integer */
+        $integer = (string) BigInteger::fromBase('0011223344554677c899aabbccddeeff', 16);
+
+        $guid = $this->factory->createFromInteger($integer);
+
+        $this->assertSame('3322110055447746c899aabbccddeeff', bin2hex($guid->toBytes()));
+    }
+
+    public function testCreateFromIntegerThrowsWithCodeZeroForNegativeInteger(): void
+    {
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionCode(0);
+
+        $this->factory->createFromInteger('-1');
     }
 }

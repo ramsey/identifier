@@ -6,7 +6,7 @@ namespace Ramsey\Test\Identifier\Service\Clock;
 
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\TestWith;
-use PHPUnit\Framework\TestCase;
+use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
@@ -14,6 +14,7 @@ use Ramsey\Identifier\Service\Clock\GeneratorState;
 use Ramsey\Identifier\Service\Clock\InvalidGeneratorState;
 use Ramsey\Identifier\Service\Clock\Rfc4122ClockSequence;
 use Ramsey\Identifier\Service\Nic\StaticNic;
+use Ramsey\Test\Identifier\TestCase;
 
 use const PHP_INT_MAX;
 
@@ -180,5 +181,42 @@ class Rfc4122ClockSequenceTest extends TestCase
 
         /** @phpstan-ignore argument.type */
         $sequence->next(state: '');
+    }
+
+    public function testInitialValueIsUsedForOneStateOnly(): void
+    {
+        $sequence = new Rfc4122ClockSequence(initialValue: 7);
+        $first = $sequence->current('aaaaaaaaaaaa');
+
+        $this->assertSame(7, $first);
+        $this->assertNotSame(7, $sequence->current('bbbbbbbbbbbb'));
+    }
+
+    public function testNextSavesTheSequenceWhenTheClockMovesBackward(): void
+    {
+        $state = new GeneratorState(node: 'aaaaaaaaaaaa', sequence: 1, timestamp: PHP_INT_MAX);
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->allows('get')->andReturn($state);
+        $cache->expects('set')->once()->andReturnTrue();
+
+        $sequence = new Rfc4122ClockSequence(cache: $cache);
+
+        $this->assertSame(2, $sequence->next('aaaaaaaaaaaa', new DateTimeImmutable('@1000')));
+    }
+
+    #[TestWith([9223372036854, PHP_INT_MAX])]
+    #[TestWith([9223372036853, 9223372036853000000])]
+    #[TestWith([-9223372036854, -9223372036854000000])]
+    public function testStateTimestampAtTheLimitsOfAnInteger(int $seconds, int $expected): void
+    {
+        $cache = $this->mockery(CacheInterface::class);
+        $cache->allows('get')->andReturnNull();
+        $cache->expects('set')
+            ->withArgs(static fn (string $key, GeneratorState $state): bool => $state->timestamp === $expected)
+            ->andReturnTrue();
+
+        $sequence = new Rfc4122ClockSequence(initialValue: 1, cache: $cache);
+
+        $this->assertSame(1, $sequence->current('aaaaaaaaaaaa', new DateTimeImmutable("@$seconds")));
     }
 }

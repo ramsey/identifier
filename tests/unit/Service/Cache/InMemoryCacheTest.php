@@ -11,6 +11,7 @@ use PHPUnit\Framework\Attributes\TestDox;
 use PHPUnit\Framework\TestCase;
 use Psr\Clock\ClockInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
+use Ramsey\Identifier\Service\Clock\FrozenClock;
 use stdClass;
 
 use function array_keys;
@@ -294,5 +295,106 @@ class InMemoryCacheTest extends TestCase
             ['qux' => $values['qux'], 'quux' => $values['quux'], 'grault' => $values['grault']],
             iterator_to_array($inMemoryCache->getMultiple(['qux', 'quux', 'grault'])),
         );
+    }
+
+    public function testDefaultTtlIsTwoMinutes(): void
+    {
+        $clock = new class (new DateTimeImmutable('@1000')) implements ClockInterface {
+            public function __construct(public DateTimeImmutable $time)
+            {
+            }
+
+            public function now(): DateTimeImmutable
+            {
+                return $this->time;
+            }
+        };
+        $inMemoryCache = new InMemoryCache(clock: $clock);
+        $inMemoryCache->set('foo', 'bar');
+
+        $clock->time = new DateTimeImmutable('@1119');
+        $this->assertTrue($inMemoryCache->has('foo'));
+
+        $clock->time = new DateTimeImmutable('@1120');
+        $this->assertTrue($inMemoryCache->has('foo'));
+
+        $clock->time = new DateTimeImmutable('@1121');
+        $this->assertFalse($inMemoryCache->has('foo'));
+    }
+
+    public function testDefaultCacheSizeIsOneHundred(): void
+    {
+        $inMemoryCache = new InMemoryCache(clock: new FrozenClock(new DateTimeImmutable('@1000')));
+
+        for ($i = 0; $i < 100; $i++) {
+            $inMemoryCache->set("key$i", $i);
+        }
+
+        $this->assertTrue($inMemoryCache->has('key0'));
+
+        $inMemoryCache->set('key100', 100);
+
+        $this->assertFalse($inMemoryCache->has('key0'));
+        $this->assertTrue($inMemoryCache->has('key1'));
+        $this->assertTrue($inMemoryCache->has('key100'));
+    }
+
+    public function testTtlIsAddedToTheCurrentTime(): void
+    {
+        $clock = new class (new DateTimeImmutable('@1000')) implements ClockInterface {
+            public function __construct(public DateTimeImmutable $time)
+            {
+            }
+
+            public function now(): DateTimeImmutable
+            {
+                return $this->time;
+            }
+        };
+        $inMemoryCache = new InMemoryCache(clock: $clock);
+        $inMemoryCache->set('integer', 'value', 10);
+        $inMemoryCache->set('interval', 'value', new DateInterval('PT10S'));
+
+        $clock->time = new DateTimeImmutable('@1010');
+
+        $this->assertTrue($inMemoryCache->has('integer'));
+        $this->assertTrue($inMemoryCache->has('interval'));
+    }
+
+    public function testEvictionRemovesAnExpiredItemAndKeepsValidItems(): void
+    {
+        $clock = new class (new DateTimeImmutable('@1000')) implements ClockInterface {
+            public function __construct(public DateTimeImmutable $time)
+            {
+            }
+
+            public function now(): DateTimeImmutable
+            {
+                return $this->time;
+            }
+        };
+        $inMemoryCache = new InMemoryCache(cacheSize: 2, clock: $clock);
+        $inMemoryCache->set('expired', 'value', 1);
+        $inMemoryCache->set('valid', 'value', 100);
+
+        $clock->time = new DateTimeImmutable('@1002');
+        $inMemoryCache->set('new', 'value', 100);
+
+        $this->assertTrue($inMemoryCache->has('valid'));
+        $this->assertTrue($inMemoryCache->has('new'));
+    }
+
+    public function testEvictionRemovesTheFirstItemWhenLastAccessTimesAreEqual(): void
+    {
+        $inMemoryCache = new InMemoryCache(
+            cacheSize: 2,
+            clock: new FrozenClock(new DateTimeImmutable('@1000')),
+        );
+        $inMemoryCache->set('first', 'value');
+        $inMemoryCache->set('second', 'value');
+        $inMemoryCache->set('third', 'value');
+
+        $this->assertFalse($inMemoryCache->has('first'));
+        $this->assertTrue($inMemoryCache->has('second'));
     }
 }

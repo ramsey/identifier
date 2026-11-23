@@ -618,4 +618,26 @@ class UlidFactoryTest extends TestCase
 
         $this->assertSame('00000000000000000000000000', $ulid->toString());
     }
+
+    public function testUppercaseHexadecimalGivesLowercaseHexadecimal(): void
+    {
+        $ulid = new Ulid('017F21CFD12946A1B2C3D4E5F6071829');
+
+        $this->assertSame('017f21cfd12946a1b2c3d4e5f6071829', $ulid->toHexadecimal());
+    }
+
+    public function testLowercaseUlidGivesTheSameIntegerAsUppercase(): void
+    {
+        $this->assertSame(
+            (string) (new Ulid('01FWHWZM99ANGCF35CCBYCDH1Z'))->toInteger(),
+            (string) (new Ulid('01fwhwzm99angcf35ccbycdh1z'))->toInteger(),
+        );
+    }
+
+    public function testUppercaseMaxHexadecimalIsAMaxUlid(): void
+    {
+        $ulid = new MaxUlid('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF');
+
+        $this->assertSame('ffffffffffffffffffffffffffffffff', $ulid->toHexadecimal());
+    }
 }

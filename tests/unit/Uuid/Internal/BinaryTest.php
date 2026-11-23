@@ -261,4 +261,24 @@ class BinaryTest extends TestCase
             ],
         ];
     }
+
+    public function testApplyVersionAndVariantForNcsKeepsTheOtherBits(): void
+    {
+        $bytes = "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff";
+
+        $this->assertSame(
+            '00112233445566770899aabbccddeeff',
+            bin2hex(Binary::applyVersionAndVariant($bytes, null, Variant::Ncs)),
+        );
+    }
+
+    public function testApplyVersionAndVariantForFutureKeepsTheOtherBits(): void
+    {
+        $bytes = "\x00\x11\x22\x33\x44\x55\x66\x77\x88\x99\xaa\xbb\xcc\xdd\xee\xff";
+
+        $this->assertSame(
+            '0011223344556677e899aabbccddeeff',
+            bin2hex(Binary::applyVersionAndVariant($bytes, null, Variant::Future)),
+        );
+    }
 }

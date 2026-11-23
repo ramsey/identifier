@@ -81,4 +81,14 @@ class FixedBytesGeneratorTest extends TestCase
         /** @phpstan-ignore argument.type */
         new FixedBytesGenerator('');
     }
+
+    public function testBytesDefaultsToSixteenBytes(): void
+    {
+        $this->assertSame('abcdabcdabcdabcd', (new FixedBytesGenerator('abcd'))->bytes());
+    }
+
+    public function testBytesAcceptsLengthOfOne(): void
+    {
+        $this->assertSame('a', (new FixedBytesGenerator('abcd'))->bytes(1));
+    }
 }

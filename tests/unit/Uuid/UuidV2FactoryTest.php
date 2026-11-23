@@ -306,4 +306,30 @@ class UuidV2FactoryTest extends TestCase
             'not hexadecimal' => ['hexadecimal' => '27433d43011d2a6a91001550863792cg'],
         ];
     }
+
+    public function testCreateRollsOverClockSequenceAtSixBits(): void
+    {
+        $uuid = $this->factory->create(localIdentifier: 1, clockSequence: 0x41);
+
+        $this->assertSame('81', substr($uuid->toString(), 19, 2));
+    }
+
+    /**
+     * @param int<0, 4294967295> $localIdentifier
+     */
+    #[TestWith([0])]
+    #[TestWith([0xffffffff])]
+    public function testCreateAcceptsLocalIdentifierAtTheLimits(int $localIdentifier): void
+    {
+        $uuid = $this->factory->create(localIdentifier: $localIdentifier);
+
+        $this->assertSame($localIdentifier, $uuid->getLocalIdentifier());
+    }
+
+    public function testCreateUsesOrgIdForTheOrgDomain(): void
+    {
+        $factory = new UuidV2Factory(dce: new StaticDce(orgId: 4001));
+
+        $this->assertSame(4001, $factory->create(DceDomain::Org)->getLocalIdentifier());
+    }
 }

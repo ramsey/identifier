@@ -33,4 +33,9 @@ class RandomBytesGeneratorTest extends TestCase
         // @phpstan-ignore argument.type (the generator must refuse a length its annotation forbids)
         $bytesGenerator->bytes($length);
     }
+
+    public function testBytesAcceptsLengthOfOne(): void
+    {
+        $this->assertSame(1, strlen((new RandomBytesGenerator())->bytes(1)));
+    }
 }
