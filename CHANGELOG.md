@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - **Breaking:** `UlidFactory::createFromUuid()` given a `MicrosoftGuid` returns a ULID with the GUID's value, the same value as its string form; a ULID created from a `MicrosoftGuid` by an earlier release differs.
 - **Breaking:** The bytes `MonotonicBytesGenerator` returns have a new layout: 48 bits of milliseconds, 4 bits at zero, a 12-bit fraction of the millisecond, 2 bits at zero, and a 62-bit counter that starts at a random value. A version 7 UUID or a ULID created for a given time has different bytes after its first 48 bits, and version 7 UUIDs and ULIDs sort by creation time to about a microsecond. `getDateTime()` returns the time to the millisecond.
 - Require PHP 8.3 or later.
+- Support brick/math `^0.14.2 || ^0.15 || ^0.16 || ^0.17 || ^0.18 || ^0.19 || ^0.20 || ^1.0`.
 - Support psr/simple-cache `^1.0 || ^2.0 || ^3.0`.
 - `Uuid`, `Ulid`, and `Snowflake` now extend `Identifier\StringIdentifier`, `JsonSerializable`, and `Stringable`.
 - `getDateTime()` on `MicrosoftGuid` and `UntypedUuid` throws `NotConvertible` for a UUID that has no date-time. It extends `BadMethodCall`, so code that catches `BadMethodCall` is unaffected.
