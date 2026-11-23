@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\Sequence;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
@@ -192,5 +193,49 @@ class MonotonicSequenceTest extends TestCase
 
         $this->assertSame(1, (new MonotonicSequence(cache: $cache))->next('state'));
         $this->assertSame(2, (new MonotonicSequence(cache: $cache))->next('state'));
+    }
+
+    #[TestWith([PHP_INT_MIN, 1])]
+    #[TestWith([PHP_INT_MIN + 2, 5])]
+    public function testRisingSequenceNearTheMinimumDoesNotOverflow(int $start, int $step): void
+    {
+        $sequence = new MonotonicSequence(start: $start, step: $step);
+
+        $this->assertSame($start + $step, $sequence->next());
+    }
+
+    #[TestWith([PHP_INT_MAX, -1])]
+    #[TestWith([PHP_INT_MAX - 2, -5])]
+    public function testFallingSequenceNearTheMaximumDoesNotOverflow(int $start, int $step): void
+    {
+        $sequence = new MonotonicSequence(start: $start, step: $step);
+
+        $this->assertSame($start + $step, $sequence->next());
+    }
+
+    #[TestWith([PHP_INT_MAX])]
+    #[TestWith([PHP_INT_MIN])]
+    public function testStepOfZeroAtTheLimitsDoesNotOverflow(int $start): void
+    {
+        $sequence = new MonotonicSequence(start: $start, step: 0);
+
+        $this->assertSame($start, $sequence->next());
+    }
+
+    public function testStepOfTheMinimumIntegerReachesTheMinimumFromZero(): void
+    {
+        $sequence = new MonotonicSequence(start: 0, step: PHP_INT_MIN);
+
+        $this->assertSame(PHP_INT_MIN, $sequence->next());
+    }
+
+    public function testStepOfTheMinimumIntegerOverflowsBelowZero(): void
+    {
+        $sequence = new MonotonicSequence(start: -1, step: PHP_INT_MIN);
+
+        $this->expectException(SequenceOverflow::class);
+        $this->expectExceptionMessage('Unable to decrease sequence beyond its minimum value');
+
+        $sequence->next();
     }
 }

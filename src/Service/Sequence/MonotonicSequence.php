@@ -28,8 +28,6 @@ namespace Ramsey\Identifier\Service\Sequence;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 
-use function abs;
-
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
@@ -89,9 +87,11 @@ final class MonotonicSequence implements Sequence
     {
         $previous = $this->current($state);
 
-        if ($this->step > 0 && $previous === PHP_INT_MAX || (PHP_INT_MAX - $previous) < $this->step) {
+        if ($this->step > 0 && $previous > PHP_INT_MAX - $this->step) {
             throw new SequenceOverflow('Unable to increase sequence beyond its maximum value');
-        } elseif ($this->step < 0 && $previous === PHP_INT_MIN || ($previous - PHP_INT_MIN) < abs($this->step)) {
+        }
+
+        if ($this->step < 0 && $previous < PHP_INT_MIN - $this->step) {
             throw new SequenceOverflow('Unable to decrease sequence beyond its minimum value');
         }
 
