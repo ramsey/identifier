@@ -135,8 +135,9 @@ final class MonotonicBytesGenerator implements BytesGenerator
     }
 
     /**
-     * @throws InvalidArgument if the date-time is before 1970-01-01 00:00:00.000
-     *     UTC or after 10889-08-02 05:31:50.655 UTC
+     * @throws InvalidArgument if the length is less than 1, or if the date-time
+     *     is before 1970-01-01 00:00:00.000 UTC or after 10889-08-02
+     *     05:31:50.655 UTC
      * @throws RandomSourceFailure if the source of random bytes returns a
      *     different number of bytes than it was asked for
      * @throws TimeSourceFailure if the current time is outside that same range
@@ -145,6 +146,10 @@ final class MonotonicBytesGenerator implements BytesGenerator
      */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
+        if ($length < 1) {
+            throw new InvalidArgument(sprintf('The length must be a positive integer; received %d', $length));
+        }
+
         if ($dateTime === null) {
             $sequence = $this->nextForClock();
         } else {

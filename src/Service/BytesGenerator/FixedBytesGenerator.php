@@ -29,6 +29,7 @@ use DateTimeInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function intdiv;
+use function sprintf;
 use function str_repeat;
 use function strlen;
 use function substr;
@@ -52,8 +53,15 @@ final readonly class FixedBytesGenerator implements BytesGenerator
         }
     }
 
+    /**
+     * @throws InvalidArgument if the length is less than 1
+     */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
+        if ($length < 1) {
+            throw new InvalidArgument(sprintf('The length must be a positive integer; received %d', $length));
+        }
+
         $bytes = str_repeat($this->bytes, intdiv($length, $this->bytesLength) + 1);
 
         /** @var non-empty-string */

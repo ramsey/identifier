@@ -587,6 +587,26 @@ class MonotonicBytesGeneratorTest extends TestCase
         }
     }
 
+    #[TestWith([0])]
+    #[TestWith([-1])]
+    #[TestWith([-16])]
+    public function testBytesThrowsExceptionForALengthLessThanOne(int $length): void
+    {
+        $source = new RecordingBytesGenerator();
+        $bytesGenerator = new MonotonicBytesGenerator($source);
+
+        try {
+            // @phpstan-ignore argument.type (the generator must refuse a length its annotation forbids)
+            $bytesGenerator->bytes($length);
+            $this->fail('The generator accepted the length');
+        } catch (InvalidArgument $exception) {
+            $this->assertSame('The length must be a positive integer; received ' . $length, $exception->getMessage());
+        }
+
+        // The refused call started no sequence.
+        $this->assertSame([], $source->requests);
+    }
+
     public function testShorterLengthReturnsTheFirstBytes(): void
     {
         $bytesGenerator = new MonotonicBytesGenerator(

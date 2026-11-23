@@ -26,6 +26,8 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
+use Ramsey\Identifier\Exception\IdentifierException;
+use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
  * Generates bytes used to create identifiers
@@ -41,6 +43,9 @@ interface BytesGenerator
      *     this parameter
      *
      * @return non-empty-string
+     *
+     * @throws InvalidArgument if the length is less than 1
+     * @throws IdentifierException if the generator cannot generate the bytes
      */
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string;
 }

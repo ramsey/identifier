@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ramsey\Test\Identifier\Service\BytesGenerator;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Test\Identifier\TestCase;
@@ -56,6 +57,20 @@ class FixedBytesGeneratorTest extends TestCase
                 'expectedBytes' => "\xff\xff\xff\xff\xab\xcd\xef\x01",
             ],
         ];
+    }
+
+    #[TestWith([0])]
+    #[TestWith([-1])]
+    #[TestWith([-16])]
+    public function testBytesThrowsExceptionForALengthLessThanOne(int $length): void
+    {
+        $bytesGenerator = new FixedBytesGenerator("\xff");
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage('The length must be a positive integer; received ' . $length);
+
+        // @phpstan-ignore argument.type (the generator must refuse a length its annotation forbids)
+        $bytesGenerator->bytes($length);
     }
 
     public function testBytesMustBeNonEmptyString(): void
