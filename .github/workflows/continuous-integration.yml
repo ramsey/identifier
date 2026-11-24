@@ -24,7 +24,7 @@ env:
 jobs:
   lint:
     name: "Lint"
-    runs-on: "ubuntu-24.04"
+    runs-on: "ubuntu-26.04"
 
     steps:
       - name: "Checkout repository"
@@ -33,8 +33,10 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
         with:
-          php-version: "8.5"
+          php-version: "8.6"
           coverage: "none"
+        env:
+          update: "true"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
@@ -45,7 +47,7 @@ jobs:
   coverage:
     name: "Coverage"
     needs: ["lint"]
-    runs-on: "ubuntu-24.04"
+    runs-on: "ubuntu-26.04"
 
     steps:
       - name: "Checkout repository"
@@ -54,9 +56,11 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
         with:
-          php-version: "8.5"
-          coverage: "xdebug"
+          php-version: "8.6"
+          coverage: "xdebug-alpha"
           ini-values: "memory_limit=-1"
+        env:
+          update: "true"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
@@ -70,7 +74,7 @@ jobs:
   mutation:
     name: "Mutation tests"
     needs: ["lint"]
-    runs-on: "ubuntu-24.04"
+    runs-on: "ubuntu-26.04"
 
     steps:
       - name: "Checkout repository"
@@ -79,9 +83,11 @@ jobs:
       - name: "Install PHP"
         uses: "shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962" # 2.40.0
         with:
-          php-version: "8.5"
-          coverage: "xdebug"
+          php-version: "8.6"
+          coverage: "xdebug-alpha"
           ini-values: "memory_limit=-1"
+        env:
+          update: "true"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
@@ -92,7 +98,7 @@ jobs:
   benchmark:
     name: "Benchmark"
     needs: ["coverage"]
-    runs-on: "ubuntu-24.04"
+    runs-on: "ubuntu-26.04"
 
     strategy:
       matrix:
@@ -115,6 +121,8 @@ jobs:
           php-version: "${{ matrix.php }}"
           coverage: "none"
           ini-values: "memory_limit=-1"
+        env:
+          update: "true"
 
       - name: "Install dependencies (Composer)"
         uses: "ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda" # 4.0.0
@@ -144,8 +152,9 @@ jobs:
           - "8.5"
           - "8.6"
         os:
-          - "ubuntu-24.04"
+          - "ubuntu-26.04"
           - "windows-2025"
+          - "macos-26"
         composer-deps:
           - "lowest"
           - "highest"
