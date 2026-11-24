@@ -78,39 +78,36 @@ trait Validation
      *
      * The domain field is only relevant to version 2 UUIDs.
      */
-    private function getLocalDomainFromUuid(string $uuid, ?Format $format): ?DceDomain
+    private function getLocalDomainFromUuid(string $uuid, Format $format): ?DceDomain
     {
         return match ($format) {
             Format::Bytes => DceDomain::tryFrom($this->getLocalDomainFromBytes($uuid)),
             Format::Hex => DceDomain::tryFrom((int) hexdec(substr($uuid, 18, 2))),
             Format::String => DceDomain::tryFrom((int) hexdec(substr($uuid, 21, 2))),
-            default => null,
         };
     }
 
     /**
-     * Returns the UUID variant, if available
+     * Returns the variant of a UUID that has a valid format
      */
-    private function getVariantFromUuid(string $uuid, ?Format $format): ?Variant
+    private function getVariantFromUuid(string $uuid, Format $format): Variant
     {
         return match ($format) {
             Format::Bytes => $this->determineVariant($this->getVariantFromBytes($uuid)),
             Format::Hex => $this->determineVariant((int) hexdec($uuid[16])),
             Format::String => $this->determineVariant((int) hexdec($uuid[19])),
-            default => null,
         };
     }
 
     /**
-     * Returns the UUID version, if available
+     * Returns the value of the version field of a UUID that has a valid format
      */
-    private function getVersionFromUuid(string $uuid, ?Format $format, bool $guid = false): ?int
+    private function getVersionFromUuid(string $uuid, Format $format, bool $guid = false): int
     {
         return match ($format) {
             Format::Bytes => $this->getVersionFromBytes($uuid, $guid),
             Format::Hex => (int) hexdec($uuid[12]),
             Format::String => (int) hexdec($uuid[14]),
-            default => null,
         };
     }
 
@@ -120,7 +117,7 @@ trait Validation
      *
      * @phpstan-assert-if-true non-empty-string $uuid
      */
-    private function hasValidFormat(string $uuid, ?Format $format): bool
+    private function hasValidFormat(string $uuid, Format $format): bool
     {
         $length = strlen($uuid);
 
@@ -128,7 +125,6 @@ trait Validation
             Format::Bytes => $length === 16,
             Format::Hex => $length === 32 && strspn($uuid, Mask::HEX) === $length,
             Format::String => $length === 36 && $this->isValidStringLayout($uuid, Mask::HEX),
-            default => false,
         };
     }
 
@@ -136,13 +132,12 @@ trait Validation
      * Returns true if the given standard string, hexadecimal, or byte
      * representation of a UUID is a Max UUID
      */
-    private function isMax(string $uuid, ?Format $format): bool
+    private function isMax(string $uuid, Format $format): bool
     {
         return match ($format) {
             Format::Bytes => $uuid === "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
             Format::Hex => strtolower($uuid) === 'ffffffffffffffffffffffffffffffff',
             Format::String => strtolower($uuid) === 'ffffffff-ffff-ffff-ffff-ffffffffffff',
-            default => false,
         };
     }
 
@@ -150,13 +145,12 @@ trait Validation
      * Returns true if the given standard string, hexadecimal, or byte
      * representation of a UUID is a Nil UUID
      */
-    private function isNil(string $uuid, ?Format $format): bool
+    private function isNil(string $uuid, Format $format): bool
     {
         return match ($format) {
             Format::Bytes => $uuid === "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00",
             Format::Hex => $uuid === '00000000000000000000000000000000',
             Format::String => $uuid === '00000000-0000-0000-0000-000000000000',
-            default => false,
         };
     }
 
@@ -167,7 +161,7 @@ trait Validation
      *
      * @phpstan-assert-if-true non-empty-string $uuid
      */
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, Format $format): bool
     {
         return $this->hasValidFormat($uuid, $format)
             && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc

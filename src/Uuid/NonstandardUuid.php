@@ -31,7 +31,6 @@ use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Format;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 
-use function assert;
 use function sprintf;
 use function strlen;
 
@@ -54,7 +53,7 @@ final readonly class NonstandardUuid implements Uuid
 {
     use Standard;
 
-    private ?Variant $variant;
+    private Variant $variant;
 
     /**
      * @param non-empty-string $uuid A representation of the UUID as a string
@@ -64,18 +63,23 @@ final readonly class NonstandardUuid implements Uuid
      */
     public function __construct(private string $uuid)
     {
-        $this->format = Format::tryFrom(strlen($this->uuid));
-        $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
+        $format = Format::tryFrom(strlen($this->uuid));
+        $variant = null;
 
-        if (!$this->isValid($this->uuid, $this->format)) {
+        if ($format !== null && $this->hasValidFormat($this->uuid, $format)) {
+            $variant = $this->getVariantFromUuid($this->uuid, $format);
+        }
+
+        if ($format === null || $variant === null || !$this->isNonstandard($this->uuid, $format, $variant)) {
             throw new InvalidArgument(sprintf('Invalid nonstandard UUID: "%s"', $this->uuid));
         }
+
+        $this->format = $format;
+        $this->variant = $variant;
     }
 
     public function getVariant(): Variant
     {
-        assert($this->variant !== null);
-
         return $this->variant;
     }
 
@@ -87,17 +91,17 @@ final readonly class NonstandardUuid implements Uuid
         throw new BadMethodCall('Nonstandard UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    /**
+     * Returns true if a UUID that has a valid format, and the given variant,
+     * is a nonstandard UUID
+     */
+    private function isNonstandard(string $uuid, Format $format, Variant $variant): bool
     {
-        if (!$this->hasValidFormat($uuid, $format)) {
-            return false;
-        }
-
         if ($this->isMax($uuid, $format) || $this->isNil($uuid, $format)) {
             return false;
         }
 
-        if ($this->variant !== Variant::Rfc && $this->variant !== Variant::Microsoft) {
+        if ($variant !== Variant::Rfc && $variant !== Variant::Microsoft) {
             return true;
         }
 

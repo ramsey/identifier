@@ -35,7 +35,6 @@ use Ramsey\Identifier\Uuid\Internal\Format;
 use Ramsey\Identifier\Uuid\Internal\Mask;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 
-use function assert;
 use function preg_match;
 use function sprintf;
 use function strlen;
@@ -76,11 +75,13 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
      */
     public function __construct(private readonly string $uuid)
     {
-        $this->format = Format::tryFrom(strlen($this->uuid));
+        $format = Format::tryFrom(strlen($this->uuid));
 
-        if (!$this->isValid($this->uuid, $this->format)) {
+        if ($format === null || !$this->isValid($this->uuid, $format)) {
             throw new InvalidArgument(sprintf('Invalid UUID: "%s"', $this->uuid));
         }
+
+        $this->format = $format;
     }
 
     /**
@@ -127,8 +128,6 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
             }
         }
 
-        assert($this->variant !== null);
-
         return $this->variant;
     }
 
@@ -140,7 +139,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         $variant = $this->getVariant();
 
         if ($this->version === null && ($variant === Variant::Rfc || $variant === Variant::Microsoft)) {
-            $this->version = Version::tryFrom((int) $this->getVersionFromUuid($this->uuid, $this->format));
+            $this->version = Version::tryFrom($this->getVersionFromUuid($this->uuid, $this->format));
         }
 
         return $this->version
@@ -201,13 +200,12 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         return $this->typedUuid;
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, Format $format): bool
     {
         return match ($format) {
             Format::Bytes => strlen($uuid) === 16,
             Format::Hex => strspn($uuid, Mask::HEX) === 32,
             Format::String => preg_match(self::VALID_UUID, $uuid) === 1,
-            default => false,
         };
     }
 }

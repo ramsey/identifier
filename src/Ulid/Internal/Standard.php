@@ -38,7 +38,6 @@ use Ramsey\Identifier\Uuid\UuidV7;
 use Ramsey\Identifier\Uuid\Version;
 
 use function abs;
-use function assert;
 use function bin2hex;
 use function hex2bin;
 use function intdiv;
@@ -72,7 +71,7 @@ trait Standard
      */
     private const CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
-    private readonly ?Format $format;
+    private readonly Format $format;
 
     /**
      * @var non-empty-string
@@ -88,16 +87,17 @@ trait Standard
     public function __construct(string $ulid)
     {
         $original = $ulid;
-        $this->format = Format::tryFrom(strlen($ulid));
+        $format = Format::tryFrom(strlen($ulid));
 
-        if ($this->format === Format::Ulid) {
+        if ($format === Format::Ulid) {
             $ulid = strtr($ulid, ...self::DECODE_SYMBOLS);
         }
 
-        if (!$this->isValid($ulid, $this->format)) {
+        if ($format === null || !$this->isValid($ulid, $format)) {
             throw new InvalidArgument(sprintf('Invalid ULID: "%s"', $original));
         }
 
+        $this->format = $format;
         $this->ulid = $ulid;
     }
 
@@ -264,26 +264,28 @@ trait Standard
             return null;
         }
 
-        return $this->getFormat(Format::Bytes, $value);
+        return $this->convert($value, Format::Ulid, Format::Bytes);
     }
 
     /**
-     * @param non-empty-string | null $ulid
+     * @return non-empty-string
+     */
+    private function getFormat(?Format $formatToReturn): string
+    {
+        return $this->convert($this->ulid, $this->format, $formatToReturn);
+    }
+
+    /**
+     * Converts a ULID from one format to another
+     *
+     * @param non-empty-string $ulid A valid ULID in the format `$formatOfUlid`
+     * @param Format | null $formatToReturn The format to return, or null for
+     *     a string of decimal digits
      *
      * @return non-empty-string
      */
-    private function getFormat(?Format $formatToReturn, ?string $ulid = null): string
+    private function convert(string $ulid, Format $formatOfUlid, ?Format $formatToReturn): string
     {
-        $formatOfUlid = null;
-        if ($ulid !== null) {
-            $formatOfUlid = Format::tryFrom(strlen($ulid));
-        }
-
-        $formatOfUlid ??= $this->format;
-        assert($formatOfUlid !== null);
-
-        $ulid ??= $this->ulid;
-
         /** @var non-empty-string */
         return match ($formatToReturn) {
             Format::Bytes => match ($formatOfUlid) {

@@ -38,13 +38,10 @@ use Ramsey\Identifier\Uuid\Internal\NodeBased;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 use Ramsey\Identifier\Uuid\Internal\TimeBased;
 
-use function assert;
 use function bin2hex;
-use function hex2bin;
 use function hexdec;
 use function is_string;
 use function sprintf;
-use function str_replace;
 use function strlen;
 use function substr;
 
@@ -89,8 +86,8 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
         getDateTime as private baseGetDateTime;
     }
 
-    private ?Variant $variant;
-    private ?Version $version;
+    private Variant $variant;
+    private Version $version;
 
     /**
      * @param non-empty-string $uuid A representation of the GUID as a string
@@ -100,13 +97,29 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      */
     public function __construct(private string $uuid)
     {
-        $this->format = Format::tryFrom(strlen($this->uuid));
-        $this->variant = $this->getVariantFromUuid($this->uuid, $this->format);
-        $this->version = Version::tryFrom((int) $this->getVersionFromUuid($this->uuid, $this->format, true));
+        $format = Format::tryFrom(strlen($this->uuid));
+        $variant = null;
+        $version = null;
 
-        if (!$this->isValid($this->uuid, $this->format)) {
+        if ($format !== null && $this->hasValidFormat($this->uuid, $format)) {
+            $variant = $this->getVariantFromUuid($this->uuid, $format);
+            $version = Version::tryFrom($this->getVersionFromUuid($this->uuid, $format, true));
+        }
+
+        // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer
+        // is using MicrosoftGuid, it's because they know the bytes of the time
+        // fields are stored in "native" (little-endian) byte order.
+        if (
+            $format === null
+            || $version === null
+            || ($variant !== Variant::Microsoft && $variant !== Variant::Rfc)
+        ) {
             throw new InvalidArgument(sprintf('Invalid Microsoft GUID: "%s"', $this->uuid));
         }
+
+        $this->format = $format;
+        $this->variant = $variant;
+        $this->version = $version;
     }
 
     /**
@@ -223,15 +236,11 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
 
     public function getVariant(): Variant
     {
-        assert($this->variant !== null);
-
         return $this->variant;
     }
 
     public function getVersion(): Version
     {
-        assert($this->version !== null);
-
         return $this->version;
     }
 
@@ -262,51 +271,30 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * @return non-empty-string
      */
-    protected function getFormat(?Format $formatToReturn, ?string $uuid = null): string
+    protected function getFormat(?Format $formatToReturn): string
     {
-        $formatOfUuid = null;
-        if ($uuid !== null) {
-            $formatOfUuid = Format::tryFrom(strlen($uuid));
-        }
-
-        $formatOfUuid ??= $this->format;
-        assert($formatOfUuid !== null);
-
-        $uuid ??= $this->uuid;
+        $formatOfUuid = $this->format;
+        $uuid = $this->uuid;
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
             Format::Bytes => match ($formatOfUuid) {
                 Format::Bytes => $uuid,
-                Format::Hex => $this->swapBytes((string) hex2bin($uuid)),
-                Format::String => $this->swapBytes((string) hex2bin(str_replace('-', '', $uuid))),
+                Format::Hex, Format::String => $this->swapBytes($this->baseGetFormat(Format::Bytes)),
             },
             Format::Hex => match ($formatOfUuid) {
                 Format::Bytes => bin2hex($this->swapBytes($uuid)),
-                Format::Hex, Format::String => $this->baseGetFormat(Format::Hex, $uuid),
+                Format::Hex, Format::String => $this->baseGetFormat(Format::Hex),
             },
             Format::String => match ($formatOfUuid) {
                 Format::Bytes => $this->toStringFromHex(bin2hex($this->swapBytes($uuid))),
-                Format::Hex, Format::String => $this->baseGetFormat(Format::String, $uuid),
+                Format::Hex, Format::String => $this->baseGetFormat(Format::String),
             },
             default => match ($formatOfUuid) {
                 Format::Bytes => BigInteger::fromBytes($this->swapBytes($uuid), false)->toBase(10),
-                Format::Hex, Format::String => $this->baseGetFormat(null, $uuid),
+                Format::Hex, Format::String => $this->baseGetFormat(null),
             },
         };
-    }
-
-    /**
-     * @phpstan-assert-if-true non-empty-string $uuid
-     */
-    private function isValid(string $uuid, ?Format $format): bool
-    {
-        // We'll assume RFC 9562 as valid GUIDs and trust that, if a developer
-        // is using MicrosoftGuid, it's because they know the bytes of the time
-        // fields are stored in "native" (little-endian) byte order.
-        return $this->hasValidFormat($uuid, $format)
-            && ($this->variant === Variant::Microsoft || $this->variant === Variant::Rfc)
-            && $this->version !== null;
     }
 
     /**
@@ -315,12 +303,12 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      *
      * @link https://en.wikipedia.org/w/index.php?title=Universally_unique_identifier&oldid=1116582443#Encoding Encoding
      *
+     * @param non-empty-string $bytes
+     *
      * @return non-empty-string
      */
     private function swapBytes(string $bytes): string
     {
-        assert(strlen($bytes) === 16);
-
         return $bytes[3] . $bytes[2] . $bytes[1] . $bytes[0]
             . $bytes[5] . $bytes[4] . $bytes[7] . $bytes[6]
             . substr($bytes, 8);

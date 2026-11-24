@@ -103,7 +103,7 @@ final readonly class UuidV2 implements NodeBasedUuid, TimeBasedUuid
         return Version::DceSecurity;
     }
 
-    protected function isValid(string $uuid, ?Format $format): bool
+    protected function isValid(string $uuid, Format $format): bool
     {
         return $this->baseIsValid($uuid, $format)
             && $this->getLocalDomainFromUuid($uuid, $format) !== null;

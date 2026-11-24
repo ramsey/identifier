@@ -58,11 +58,13 @@ final readonly class MaxUlid implements UlidInterface
      */
     public function __construct(private string $ulid = self::MAX)
     {
-        $this->format = Format::tryFrom(strlen($ulid));
+        $format = Format::tryFrom(strlen($ulid));
 
-        if (!$this->isValid($this->ulid, $this->format)) {
+        if ($format === null || !$this->isValid($this->ulid, $format)) {
             throw new InvalidArgument(sprintf('Invalid Max ULID: "%s"', $this->ulid));
         }
+
+        $this->format = $format;
     }
 
     /**

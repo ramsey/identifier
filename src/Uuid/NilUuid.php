@@ -53,11 +53,13 @@ final readonly class NilUuid implements Uuid
      */
     public function __construct(private string $uuid = self::NIL)
     {
-        $this->format = Format::tryFrom(strlen($this->uuid));
+        $format = Format::tryFrom(strlen($this->uuid));
 
-        if (!$this->isValid($this->uuid, $this->format)) {
+        if ($format === null || !$this->isValid($this->uuid, $format)) {
             throw new InvalidArgument(sprintf('Invalid Nil UUID: "%s"', $this->uuid));
         }
+
+        $this->format = $format;
     }
 
     /**
@@ -81,7 +83,7 @@ final readonly class NilUuid implements Uuid
         throw new BadMethodCall('Nil UUIDs do not have a version field');
     }
 
-    private function isValid(string $uuid, ?Format $format): bool
+    private function isValid(string $uuid, Format $format): bool
     {
         return $this->isNil($uuid, $format);
     }

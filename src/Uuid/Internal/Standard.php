@@ -33,7 +33,6 @@ use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Variant;
 
-use function assert;
 use function bin2hex;
 use function hex2bin;
 use function is_string;
@@ -55,7 +54,7 @@ trait Standard
     use ComparesBySortKey;
     use Validation;
 
-    private readonly ?Format $format;
+    private readonly Format $format;
 
     /**
      * @param non-empty-string $uuid A representation of the UUID as a string
@@ -65,15 +64,17 @@ trait Standard
      */
     public function __construct(private readonly string $uuid)
     {
-        $this->format = Format::tryFrom(strlen($this->uuid));
+        $format = Format::tryFrom(strlen($this->uuid));
 
-        if (!$this->isValid($this->uuid, $this->format)) {
+        if ($format === null || !$this->isValid($this->uuid, $format)) {
             throw new InvalidArgument(sprintf(
                 'Invalid version %d UUID: "%s"',
                 $this->getVersion()->value,
                 $this->uuid,
             ));
         }
+
+        $this->format = $format;
     }
 
     /**
@@ -182,18 +183,10 @@ trait Standard
     /**
      * @return non-empty-string
      */
-    private function getFormat(?Format $formatToReturn, ?string $uuid = null): string
+    private function getFormat(?Format $formatToReturn): string
     {
-        $formatOfUuid = null;
-        if ($uuid !== null) {
-            $formatOfUuid = Format::tryFrom(strlen($uuid));
-        }
-
-        $formatOfUuid ??= $this->format;
-        assert($formatOfUuid !== null);
-
-        /** @var non-empty-string $uuid */
-        $uuid ??= $this->uuid;
+        $formatOfUuid = $this->format;
+        $uuid = $this->uuid;
 
         /** @var non-empty-string */
         return match ($formatToReturn) {
