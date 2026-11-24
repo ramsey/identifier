@@ -44,6 +44,9 @@ use function unpack;
  */
 final class Binary
 {
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }

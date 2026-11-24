@@ -50,6 +50,9 @@ final class IntegerString
 {
     private const DIGITS = '0123456789';
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }

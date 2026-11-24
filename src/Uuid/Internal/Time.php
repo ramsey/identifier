@@ -74,6 +74,9 @@ final class Time
      */
     private const INTERVALS_PER_MICROSECOND = 10;
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }

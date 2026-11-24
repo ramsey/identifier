@@ -68,6 +68,9 @@ final class Time
      */
     private const MILLISECONDS = 1000;
 
+    /**
+     * @codeCoverageIgnore
+     */
     private function __construct()
     {
     }
