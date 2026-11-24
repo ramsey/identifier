@@ -19,7 +19,6 @@ use function md5;
 use function sprintf;
 use function str_repeat;
 use function unpack;
-use function usleep;
 
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -232,14 +231,16 @@ class MastodonSnowflakeFactoryTest extends TestCase
 
     public function testSnowflakesCreatedInDifferentMillisecondsAreMonotonicallyIncreasing(): void
     {
-        $previous = $this->factory->create();
+        // Mastodon Snowflakes are not guaranteed to be monotonically increasing
+        // when generated within the same millisecond, so each date-time is one
+        // millisecond after the one before it.
+        $dateTime = new DateTimeImmutable('2022-09-25 17:32:12.345');
+        $previous = $this->factory->createFromDateTime($dateTime);
 
-        for ($i = 0; $i < 500; $i++) {
-            // Sleep for 1 millisecond to advance the clock, since Mastodon
-            // Snowflakes are not guaranteed to be monotonically increasing when
-            // generated within the same millisecond.
-            usleep(1000);
-            $snowflake = $this->factory->create();
+        for ($i = 1; $i <= 500; $i++) {
+            $snowflake = $this->factory->createFromDateTime(
+                $dateTime->modify(sprintf('+%d milliseconds', $i)),
+            );
             $this->assertTrue(
                 $snowflake->compareTo($previous) > 0,
                 sprintf(
