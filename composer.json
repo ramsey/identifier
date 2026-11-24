@@ -88,7 +88,7 @@
             "XDEBUG_MODE=coverage phpunit --colors=always --coverage-html build/coverage/coverage-html",
             "open build/coverage/coverage-html/index.html"
         ],
-        "coverage-ci": "XDEBUG_MODE=coverage phpunit --colors=always --testdox --coverage-text --coverage-clover build/coverage/clover.xml",
+        "coverage-ci": "XDEBUG_MODE=coverage phpunit --colors=always --coverage-text --coverage-clover build/coverage/clover.xml --log-junit build/logs/junit.xml",
         "fix": [
             "@composer normalize",
             "vendor/bin/phpcbf --cache=build/cache/phpcs.cache"
@@ -100,7 +100,7 @@
             "@analyze"
         ],
         "mutation": "XDEBUG_MODE=coverage php -d memory_limit=-1 vendor/bin/infection --show-mutations=0",
-        "test": "vendor/bin/phpunit --colors=always"
+        "test": "vendor/bin/phpunit --colors=always --log-junit build/logs/junit.xml"
     },
     "scripts-descriptions": {
         "analyze": "Runs static analysis.",
