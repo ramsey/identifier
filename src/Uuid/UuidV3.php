@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Override;
 use Ramsey\Identifier\Uuid;
+use Ramsey\Identifier\Uuid\Internal\FromRawBytes;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 
 /**
@@ -38,6 +39,7 @@ use Ramsey\Identifier\Uuid\Internal\Standard;
  */
 final readonly class UuidV3 implements Uuid
 {
+    use FromRawBytes;
     use Standard;
 
     #[Override]

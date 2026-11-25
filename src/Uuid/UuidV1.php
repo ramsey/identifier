@@ -28,6 +28,7 @@ namespace Ramsey\Identifier\Uuid;
 use Override;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
+use Ramsey\Identifier\Uuid\Internal\FromRawBytes;
 use Ramsey\Identifier\Uuid\Internal\NodeBased;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 use Ramsey\Identifier\Uuid\Internal\TimeBased;
@@ -40,6 +41,7 @@ use Ramsey\Identifier\Uuid\Internal\TimeBased;
  */
 final readonly class UuidV1 implements NodeBasedUuid, TimeBasedUuid
 {
+    use FromRawBytes;
     use Standard;
     use NodeBased;
     use TimeBased;
