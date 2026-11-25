@@ -6,6 +6,7 @@ namespace Ramsey\Test\Identifier\Uuid;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Uuid\UuidV4Factory;
 use Ramsey\Test\Identifier\TestCase;
 
@@ -180,5 +181,20 @@ class UuidV4FactoryTest extends TestCase
             'too long' => ['hexadecimal' => '27433d43011d4a6a91611550863792c9a'],
             'not hexadecimal' => ['hexadecimal' => '27433d43011d4a6a91611550863792cg'],
         ];
+    }
+
+    public function testCreateThrowsExceptionWhenTheBytesGeneratorDoesNotReturn16Bytes(): void
+    {
+        $bytesGenerator = $this->mockery(BytesGenerator::class);
+        $bytesGenerator->expects('bytes')->andReturn("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+
+        $factory = new UuidV4Factory($bytesGenerator);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'When applying the version and variant bits, the bytes must be a 16-byte octet string',
+        );
+
+        $factory->create();
     }
 }

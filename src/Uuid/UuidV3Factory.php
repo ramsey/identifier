@@ -56,9 +56,8 @@ final class UuidV3Factory implements UuidFactoryInterface
         }
 
         $bytes = hash('md5', Binary::getNetworkBytes($namespace) . $name, true);
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::NameMd5);
 
-        return new UuidV3($bytes);
+        return UuidV3::fromRawBytes($bytes);
     }
 
     /**

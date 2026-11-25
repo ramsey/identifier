@@ -33,7 +33,6 @@ use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomSourceFailure;
 use Ramsey\Identifier\Service\BytesGenerator\TimeSourceFailure;
 use Ramsey\Identifier\TimeBasedUuidFactory;
-use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 
 use function sprintf;
@@ -74,9 +73,8 @@ final class UuidV7Factory implements TimeBasedUuidFactory
         }
 
         $bytes = $this->bytesGenerator->bytes(dateTime: $dateTime);
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::UnixTime);
 
-        return new UuidV7($bytes);
+        return UuidV7::fromRawBytes($bytes);
     }
 
     /**

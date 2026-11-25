@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use Ramsey\Identifier\Exception\InvalidArgument;
+use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\FixedBytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
@@ -276,5 +277,20 @@ class UuidV7FactoryTest extends TestCase
             'too long' => ['hexadecimal' => '017f22e279b07cc398c4dc0c0c07398fa'],
             'not hexadecimal' => ['hexadecimal' => '017f22e279b07cc398c4dc0c0c07398g'],
         ];
+    }
+
+    public function testCreateThrowsExceptionWhenTheBytesGeneratorDoesNotReturn16Bytes(): void
+    {
+        $bytesGenerator = $this->mockery(BytesGenerator::class);
+        $bytesGenerator->expects('bytes')->andReturn("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00");
+
+        $factory = new UuidV7Factory($bytesGenerator);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'When applying the version and variant bits, the bytes must be a 16-byte octet string',
+        );
+
+        $factory->create();
     }
 }

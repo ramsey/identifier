@@ -27,7 +27,6 @@ namespace Ramsey\Identifier\Uuid;
 
 use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
-use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
@@ -63,9 +62,7 @@ final class UuidV8Factory implements UuidFactoryInterface
             throw new InvalidArgument('To create a version 8 UUID, the bytes must be a 16-byte octet string');
         }
 
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::Custom);
-
-        return new UuidV8($bytes);
+        return UuidV8::fromRawBytes($bytes);
     }
 
     /**

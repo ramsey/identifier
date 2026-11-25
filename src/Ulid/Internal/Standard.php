@@ -33,10 +33,8 @@ use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
 use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Ulid;
-use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\UntypedUuid;
 use Ramsey\Identifier\Uuid\UuidV7;
-use Ramsey\Identifier\Uuid\Version;
 
 use function abs;
 use function bin2hex;
@@ -248,7 +246,7 @@ trait Standard
      */
     public function toUuidV7(): UuidV7
     {
-        return new UuidV7(Binary::applyVersionAndVariant($this->toBytes(), Version::UnixTime));
+        return UuidV7::fromRawBytes($this->toBytes());
     }
 
     #[Override]

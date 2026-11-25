@@ -36,7 +36,6 @@ use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\RandomNic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\TimeBasedUuidFactory;
-use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 use Ramsey\Identifier\Uuid\Internal\Time;
 
@@ -109,9 +108,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
             . pack('n', $clockSequence)
             . hex2bin(sprintf('%012s', $node));
 
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::GregorianTime);
-
-        return new UuidV1($bytes);
+        return UuidV1::fromRawBytes($bytes);
     }
 
     /**

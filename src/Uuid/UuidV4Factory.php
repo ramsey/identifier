@@ -29,7 +29,6 @@ use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
-use Ramsey\Identifier\Uuid\Internal\Binary;
 use Ramsey\Identifier\Uuid\Internal\StandardFactory;
 use Ramsey\Identifier\UuidFactory as UuidFactoryInterface;
 
@@ -52,9 +51,8 @@ final class UuidV4Factory implements UuidFactoryInterface
     public function create(): UuidV4
     {
         $bytes = $this->bytesGenerator->bytes();
-        $bytes = Binary::applyVersionAndVariant($bytes, Version::Random);
 
-        return new UuidV4($bytes);
+        return UuidV4::fromRawBytes($bytes);
     }
 
     /**
