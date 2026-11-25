@@ -32,6 +32,7 @@ use Ramsey\Identifier\Uuid\Version;
 use function count;
 use function explode;
 use function hexdec;
+use function ord;
 use function strlen;
 use function strspn;
 use function strtolower;
@@ -163,6 +164,12 @@ trait Validation
      */
     private function isValid(string $uuid, Format $format): bool
     {
+        if ($format === Format::Bytes) {
+            return strlen($uuid) === 16
+                && (ord($uuid[8]) & 0xc0) === 0x80
+                && ord($uuid[6]) >> 4 === $this->getVersion()->value;
+        }
+
         return $this->hasValidFormat($uuid, $format)
             && $this->getVariantFromUuid($uuid, $format) === Variant::Rfc
             && $this->getVersionFromUuid($uuid, $format) === $this->getVersion()->value;
