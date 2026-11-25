@@ -31,10 +31,10 @@ use Ramsey\Identifier\Uuid\MicrosoftGuid;
 use Ramsey\Identifier\Uuid\Variant;
 use Ramsey\Identifier\Uuid\Version;
 
+use function chr;
 use function hex2bin;
-use function pack;
+use function ord;
 use function strlen;
-use function unpack;
 
 /**
  * Binary utilities for UUID generation
@@ -77,23 +77,18 @@ final class Binary
             );
         }
 
-        /** @var int[] $parts */
-        $parts = unpack('n8', $bytes);
-
         if ($version !== null) {
-            $parts[4] = $parts[4] & 0x0fff;
-            $parts[4] |= $version->value << 12;
+            $bytes[6] = chr(ord($bytes[6]) & 0x0f | $version->value << 4);
         }
 
-        $parts[5] = match ($variant) {
-            Variant::Ncs => $parts[5] & 0x7fff,
-            Variant::Rfc => $parts[5] & 0x3fff | 0x8000,
-            Variant::Microsoft => $parts[5] & 0x1fff | 0xc000,
-            Variant::Future => $parts[5] & 0x1fff | 0xe000,
-        };
+        $bytes[8] = chr(match ($variant) {
+            Variant::Ncs => ord($bytes[8]) & 0x7f,
+            Variant::Rfc => ord($bytes[8]) & 0x3f | 0x80,
+            Variant::Microsoft => ord($bytes[8]) & 0x1f | 0xc0,
+            Variant::Future => ord($bytes[8]) & 0x1f | 0xe0,
+        });
 
-        /** @var non-empty-string */
-        return pack('n8', ...$parts);
+        return $bytes;
     }
 
     /**
