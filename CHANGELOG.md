@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** The value of each `Ramsey\Identifier\Uuid\NamespaceId` case is the namespace's 16 bytes, so `NamespaceId::Dns->value` is a string of bytes and `NamespaceId::tryFrom()` takes bytes, not a UUID string.
+- `Ramsey\Identifier\Snowflake\Epoch::toIso8601()` writes a UTC offset as `+00:00`, as in `1970-01-01T00:00:00.000+00:00`.
+
+### Removed
+
+- **Breaking:** Remove the constant `Ramsey\Identifier\Snowflake\Epoch::ISO_EXTENDED_FORMAT`. Use `DateTimeInterface::RFC3339_EXTENDED`.
+
 ## [0.2.0] - 2026-11-24
 
 ### Added
