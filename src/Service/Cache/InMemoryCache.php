@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Service\Cache;
 
 use DateInterval;
 use DateTimeImmutable;
+use Override;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Clock\SystemClock;
@@ -78,6 +79,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @throws InvalidCacheArgument if the key is not a string
      */
+    #[Override]
     public function get(mixed $key, mixed $default = null): mixed
     {
         $this->checkKey($key);
@@ -101,6 +103,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @throws InvalidCacheArgument if the key or the TTL is not a valid type
      */
+    #[Override]
     public function set(mixed $key, mixed $value, mixed $ttl = null): bool
     {
         $this->checkKey($key);
@@ -125,6 +128,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @throws InvalidCacheArgument if the key is not a string
      */
+    #[Override]
     public function delete(mixed $key): bool
     {
         $this->checkKey($key);
@@ -134,6 +138,7 @@ final class InMemoryCache implements CacheInterface
         return true;
     }
 
+    #[Override]
     public function clear(): bool
     {
         $this->cache = [];
@@ -150,6 +155,7 @@ final class InMemoryCache implements CacheInterface
      * @throws InvalidCacheArgument if the keys are not iterable, or if a key
      *     is not a string
      */
+    #[Override]
     public function getMultiple(mixed $keys, mixed $default = null): iterable
     {
         $this->checkIterable($keys);
@@ -172,6 +178,7 @@ final class InMemoryCache implements CacheInterface
      * @throws InvalidCacheArgument if the values are not iterable, if a key is
      *     not a string or an integer, or if the TTL is not a valid type
      */
+    #[Override]
     public function setMultiple(mixed $values, mixed $ttl = null): bool
     {
         $this->checkIterable($values);
@@ -191,6 +198,7 @@ final class InMemoryCache implements CacheInterface
      * @throws InvalidCacheArgument if the keys are not iterable, or if a key
      *     is not a string
      */
+    #[Override]
     public function deleteMultiple(mixed $keys): bool
     {
         $this->checkIterable($keys);
@@ -207,6 +215,7 @@ final class InMemoryCache implements CacheInterface
      *
      * @throws InvalidCacheArgument if the key is not a string
      */
+    #[Override]
     public function has(mixed $key): bool
     {
         $this->checkKey($key);

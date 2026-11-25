@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -79,6 +80,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(
         Nic | int | string | null $node = null,
         ?int $clockSequence = null,
@@ -115,6 +117,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UuidV1
     {
         /** @var UuidV1 */
@@ -124,6 +127,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV1
     {
         return $this->create(dateTime: $dateTime);
@@ -132,6 +136,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UuidV1
     {
         /** @var UuidV1 */
@@ -141,6 +146,7 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UuidV1
     {
         /** @var UuidV1 */
@@ -150,18 +156,21 @@ final class UuidV1Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UuidV1
     {
         /** @var UuidV1 */
         return $this->createFromStringInternal($identifier);
     }
 
-    protected function getVersion(): Version
+    #[Override]
+    private function getVersion(): Version
     {
         return Version::GregorianTime;
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return UuidV1::class;
     }

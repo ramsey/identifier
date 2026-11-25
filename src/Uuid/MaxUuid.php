@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
@@ -43,7 +44,7 @@ final readonly class MaxUuid implements Uuid
 {
     use Standard;
 
-    private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+    private const string MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
      * @param non-empty-string $uuid A representation of the UUID as a string
@@ -70,6 +71,7 @@ final readonly class MaxUuid implements Uuid
      * {@link https://www.rfc-editor.org/rfc/rfc9562#section-5.10 5.10}, the Max
      * UUID falls within the range of the future variant.
      */
+    #[Override]
     public function getVariant(): Variant
     {
         return Variant::Future;
@@ -78,6 +80,7 @@ final readonly class MaxUuid implements Uuid
     /**
      * @throws BadMethodCall
      */
+    #[Override]
     public function getVersion(): never
     {
         throw new BadMethodCall('Max UUIDs do not have a version field');

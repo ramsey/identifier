@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
 use Identifier\Identifier;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
@@ -49,7 +50,7 @@ final readonly class GenericSnowflake implements Snowflake
     use ComparesBySortKey;
     use Validation;
 
-    private const TIMESTAMP_BIT_SHIFTS = 22;
+    private const int TIMESTAMP_BIT_SHIFTS = 22;
 
     private int $epochOffset;
 
@@ -90,6 +91,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function __toString(): string
     {
         return (string) $this->snowflake;
@@ -124,6 +126,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @throws NotConvertible when the date-time cannot be represented
      */
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         return Time::getDateTimeForSnowflake($this, $this->epochOffset, self::TIMESTAMP_BIT_SHIFTS);
@@ -135,6 +138,7 @@ final readonly class GenericSnowflake implements Snowflake
      *
      * @return non-empty-string
      */
+    #[Override]
     public function getSortKey(): string
     {
         return Format::formatBytes($this->snowflake);
@@ -143,6 +147,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function jsonSerialize(): string
     {
         return (string) $this->snowflake;
@@ -151,6 +156,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toBytes(): string
     {
         return Format::formatBytes($this->snowflake);
@@ -159,6 +165,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toHexadecimal(): string
     {
         return Format::formatHex($this->snowflake);
@@ -167,6 +174,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return int<0, max> | numeric-string
      */
+    #[Override]
     public function toInteger(): int | string
     {
         return Format::formatInt($this->snowflake);
@@ -175,11 +183,13 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toString(): string
     {
         return (string) $this->snowflake;
     }
 
+    #[Override]
     private function isSameKind(Identifier $other): bool
     {
         return $other instanceof Snowflake;
@@ -188,6 +198,7 @@ final readonly class GenericSnowflake implements Snowflake
     /**
      * @return non-empty-string | null
      */
+    #[Override]
     private function sortKeyFromString(string $value): ?string
     {
         if (!$this->isValid($value)) {

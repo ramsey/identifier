@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Internal;
 
 use Identifier\Identifier;
+use Override;
 use Ramsey\Identifier\Exception\NotComparable;
 use Stringable;
 use Throwable;
@@ -53,6 +54,7 @@ trait ComparesBySortKey
      * @throws NotComparable when the other value is not an identifier or a
      *     string in the identifier's own string form
      */
+    #[Override]
     public function compareTo(mixed $other): int
     {
         if ($other instanceof Identifier) {
@@ -85,6 +87,7 @@ trait ComparesBySortKey
         );
     }
 
+    #[Override]
     public function equals(mixed $other): bool
     {
         if ($other instanceof Identifier) {

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 
@@ -39,6 +40,7 @@ final readonly class UuidV5 implements Uuid
 {
     use Standard;
 
+    #[Override]
     public function getVersion(): Version
     {
         return Version::NameSha1;

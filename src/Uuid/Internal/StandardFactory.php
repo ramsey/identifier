@@ -53,7 +53,7 @@ trait StandardFactory
      *
      * @return class-string<Uuid>
      */
-    abstract protected function getUuidClass(): string;
+    abstract private function getUuidClass(): string;
 
     /**
      * @throws InvalidArgument

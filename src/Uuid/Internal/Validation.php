@@ -55,7 +55,7 @@ trait Validation
      * We use this in {@see self::isValid()} to determine whether the UUID is
      * valid for the type the class represents.
      */
-    abstract protected function getVersion(): Version;
+    abstract private function getVersion(): Version;
 
     /**
      * Given an integer value of the variant bits, this returns the variant

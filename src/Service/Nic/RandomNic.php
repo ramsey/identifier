@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Nic;
 
+use Override;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 
@@ -49,7 +50,7 @@ final class RandomNic implements Nic
      * hash('adler32', RandomNic::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_33d80f4b';
+    private const string CACHE_KEY = '__ramsey_id_33d80f4b';
 
     /**
      * The address, stored statically for better performance
@@ -69,6 +70,7 @@ final class RandomNic implements Nic
     {
     }
 
+    #[Override]
     public function address(): string
     {
         if (self::$address === null) {

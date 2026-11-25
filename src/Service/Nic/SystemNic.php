@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Nic;
 
+use Override;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Os\MissingFunction;
@@ -51,12 +52,13 @@ final class SystemNic implements Nic
      * separators, such as a DHCPv6 identifier in ipconfig output, are not an
      * address.
      */
-    private const IFCONFIG_PATTERN = '/(?<![0-9a-f:-])[0-9a-f]{2}([:-])[0-9a-f]{2}(?:\1[0-9a-f]{2}){4}(?![0-9a-f:-])/i';
+    private const string IFCONFIG_PATTERN =
+        '/(?<![0-9a-f:-])[0-9a-f]{2}([:-])[0-9a-f]{2}(?:\1[0-9a-f]{2}){4}(?![0-9a-f:-])/i';
 
     /**
      * Pattern to match addresses in sysfs stream output
      */
-    private const SYSFS_PATTERN = '/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i';
+    private const string SYSFS_PATTERN = '/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/i';
 
     /**
      * The cache key is generated from the Adler-32 checksum of this class name
@@ -65,7 +67,7 @@ final class SystemNic implements Nic
      * hash('adler32', SystemNic::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_34f20f6f';
+    private const string CACHE_KEY = '__ramsey_id_34f20f6f';
 
     /**
      * The system address, stored statically for better performance
@@ -87,6 +89,7 @@ final class SystemNic implements Nic
     ) {
     }
 
+    #[Override]
     public function address(): string
     {
         if (self::$address === null) {

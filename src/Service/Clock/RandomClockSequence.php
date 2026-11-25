@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Service\Sequence\RandomSequence;
 
 /**
@@ -40,6 +41,7 @@ final class RandomClockSequence implements ClockSequence
         $this->sequence = new RandomSequence(min: 0);
     }
 
+    #[Override]
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         /** @var int<0, max> */
@@ -53,6 +55,7 @@ final class RandomClockSequence implements ClockSequence
      * {@see RandomClockSequence} is randomly generated. It is not guaranteed to
      * be a value greater than or less than the current value.
      */
+    #[Override]
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         // Prevent against randomly generating the same as the current value.

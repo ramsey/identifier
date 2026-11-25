@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function random_bytes;
@@ -42,6 +43,7 @@ final class RandomBytesGenerator implements BytesGenerator
     /**
      * @throws InvalidArgument if the length is less than 1
      */
+    #[Override]
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
         if ($length < 1) {

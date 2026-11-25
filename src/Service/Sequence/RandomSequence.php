@@ -25,6 +25,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Sequence;
 
+use Override;
+
 use function random_int;
 
 use const PHP_INT_MAX;
@@ -55,11 +57,13 @@ final class RandomSequence implements Sequence
         $this->current = random_int($this->min, $this->max);
     }
 
+    #[Override]
     public function current(?string $state = null): int
     {
         return $this->current;
     }
 
+    #[Override]
     public function next(?string $state = null): int
     {
         return $this->current = random_int($this->min, $this->max);

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Internal\Format;
@@ -98,12 +99,13 @@ final readonly class UuidV2 implements NodeBasedUuid, TimeBasedUuid
         return (int) hexdec(substr($this->getFormat(Format::String), 0, 8));
     }
 
+    #[Override]
     public function getVersion(): Version
     {
         return Version::DceSecurity;
     }
 
-    protected function isValid(string $uuid, Format $format): bool
+    private function isValid(string $uuid, Format $format): bool
     {
         return $this->baseIsValid($uuid, $format)
             && $this->getLocalDomainFromUuid($uuid, $format) !== null;

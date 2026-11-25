@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
 use Ramsey\Identifier\Uuid\Internal\Binary;
@@ -43,6 +44,7 @@ final class UuidV3Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(?Uuid $namespace = null, ?string $name = null): UuidV3
     {
         if ($namespace === null) {
@@ -62,6 +64,7 @@ final class UuidV3Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UuidV3
     {
         /** @var UuidV3 */
@@ -71,6 +74,7 @@ final class UuidV3Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UuidV3
     {
         /** @var UuidV3 */
@@ -80,6 +84,7 @@ final class UuidV3Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UuidV3
     {
         /** @var UuidV3 */
@@ -89,18 +94,21 @@ final class UuidV3Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UuidV3
     {
         /** @var UuidV3 */
         return $this->createFromStringInternal($identifier);
     }
 
-    protected function getVersion(): Version
+    #[Override]
+    private function getVersion(): Version
     {
         return Version::NameMd5;
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return UuidV3::class;
     }

@@ -48,7 +48,7 @@ use const PHP_INT_MAX;
  */
 final class IntegerString
 {
-    private const DIGITS = '0123456789';
+    private const string DIGITS = '0123456789';
 
     /**
      * @codeCoverageIgnore

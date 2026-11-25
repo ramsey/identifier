@@ -48,7 +48,7 @@ final readonly class MaxUlid implements UlidInterface
 {
     use Standard;
 
-    private const MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
+    private const string MAX = "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff";
 
     /**
      * @param non-empty-string $ulid A representation of a ULID in either

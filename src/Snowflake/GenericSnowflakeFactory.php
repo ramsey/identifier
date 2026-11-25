@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -49,7 +50,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
-    private const TIMESTAMP_BIT_SHIFTS = 22;
+    private const int TIMESTAMP_BIT_SHIFTS = 22;
 
     /**
      * We increase this value each time our clock sequence rolls over and add
@@ -91,6 +92,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(): Snowflake
     {
         return $this->createFromDateTime($this->clock->now());
@@ -101,6 +103,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): Snowflake
     {
         return new GenericSnowflake($this->convertFromBytes($identifier), $this->epochOffset);
@@ -109,6 +112,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake
     {
         $milliseconds = Time::getUnixMilliseconds($dateTime) - $this->epochOffset;
@@ -119,7 +123,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         if ($milliseconds < 0 && ($isExact || $this->epochOffset >= Time::MIN_EXACT_UNIX_MILLISECONDS)) {
             throw new InvalidArgument(sprintf(
                 'Timestamp may not be earlier than the epoch, %s',
-                Time::getDateTimeForUnixMilliseconds($this->epochOffset)->format(Epoch::ISO_EXTENDED_FORMAT),
+                Time::getDateTimeForUnixMilliseconds($this->epochOffset)->format(DateTimeInterface::RFC3339_EXTENDED),
             ));
         }
 
@@ -134,7 +138,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
             throw new InvalidArgument(sprintf(
                 'Snowflakes with epoch offset %d cannot have a date-time greater than %s',
                 $this->epochOffset,
-                $maxDateTime->format(Epoch::ISO_EXTENDED_FORMAT),
+                $maxDateTime->format(DateTimeInterface::RFC3339_EXTENDED),
             ));
         }
 
@@ -143,7 +147,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
         if (!$isExact) {
             throw new InvalidArgument(sprintf(
                 'The date-time %s is too far from the Unix Epoch to count in milliseconds',
-                $dateTime->format(Epoch::ISO_EXTENDED_FORMAT),
+                $dateTime->format(DateTimeInterface::RFC3339_EXTENDED),
             ));
         }
 
@@ -179,6 +183,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): Snowflake
     {
         return new GenericSnowflake($this->convertFromHexadecimal($identifier), $this->epochOffset);
@@ -189,6 +194,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): Snowflake
     {
         return new GenericSnowflake($identifier, $this->epochOffset);
@@ -199,6 +205,7 @@ final class GenericSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): Snowflake
     {
         return new GenericSnowflake($identifier, $this->epochOffset);

@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
 use DateTimeImmutable;
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
@@ -149,6 +150,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      * @throws NotConvertible when called on a GUID that does not support
      *     date-time values
      */
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         return match ($this->getVersion()) {
@@ -208,6 +210,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      * @throws BadMethodCall when called on a GUID that does not support node
      *     values
      */
+    #[Override]
     public function getNode(): string
     {
         /** @var non-empty-string */
@@ -229,16 +232,19 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
      *
      * @return non-empty-string
      */
+    #[Override]
     public function getSortKey(): string
     {
         return $this->swapBytes($this->toBytes());
     }
 
+    #[Override]
     public function getVariant(): Variant
     {
         return $this->variant;
     }
 
+    #[Override]
     public function getVersion(): Version
     {
         return $this->version;
@@ -271,7 +277,7 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * @return non-empty-string
      */
-    protected function getFormat(?Format $formatToReturn): string
+    private function getFormat(?Format $formatToReturn): string
     {
         $formatOfUuid = $this->format;
         $uuid = $this->uuid;

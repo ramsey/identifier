@@ -11,9 +11,9 @@ use function array_map;
 
 final class UuidStringConversionBench
 {
-    private const TINY_UUID = '00000000-0000-0000-0000-000000000001';
-    private const HUGE_UUID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
-    private const UUIDS_TO_BE_SHORTENED = [
+    private const string TINY_UUID = '00000000-0000-0000-0000-000000000001';
+    private const string HUGE_UUID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+    private const array UUIDS_TO_BE_SHORTENED = [
         '0ae0cac5-2a40-465c-99ed-3d331b7cf72a',
         '5759b9ce-07b5-4e89-b33a-f864317a2951',
         '20c8664e-81a8-498d-9e98-444973ef3122',

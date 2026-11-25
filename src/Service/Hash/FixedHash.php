@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Hash;
 
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function hex2bin;
@@ -59,6 +60,7 @@ final readonly class FixedHash implements Hash
         $this->bytes = $bytes;
     }
 
+    #[Override]
     public function hash(string $data, bool $binary = false): string
     {
         return $binary ? $this->bytes : $this->hash;

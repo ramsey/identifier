@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeImmutable;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Snowflake;
 use Ramsey\Identifier\Snowflake\Internal\Standard;
@@ -42,7 +43,7 @@ final readonly class InstagramSnowflake implements Snowflake
 {
     use Standard;
 
-    private const TIMESTAMP_BIT_SHIFTS = 23;
+    private const int TIMESTAMP_BIT_SHIFTS = 23;
 
     /**
      * @param int<0, max> | numeric-string $snowflake A representation of the
@@ -55,6 +56,7 @@ final readonly class InstagramSnowflake implements Snowflake
         $this->snowflake = new GenericSnowflake($snowflake, Epoch::Instagram);
     }
 
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         return Time::getDateTimeForSnowflake($this, Epoch::Instagram->value, self::TIMESTAMP_BIT_SHIFTS);

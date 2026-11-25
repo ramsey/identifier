@@ -94,40 +94,40 @@ enum Version: int
     /**
      * Alias for {@see self::GregorianTime}
      */
-    public const V1 = self::GregorianTime;
+    public const Version V1 = self::GregorianTime;
 
     /**
      * Alias for {@see self::DceSecurity}
      */
-    public const V2 = self::DceSecurity;
+    public const Version V2 = self::DceSecurity;
 
     /**
      * Alias for {@see self::NameMd5}
      */
-    public const V3 = self::NameMd5;
+    public const Version V3 = self::NameMd5;
 
     /**
      * Alias for {@see self::Random}
      */
-    public const V4 = self::Random;
+    public const Version V4 = self::Random;
 
     /**
      * Alias for {@see self::NameSha1}
      */
-    public const V5 = self::NameSha1;
+    public const Version V5 = self::NameSha1;
 
     /**
      * Alias for {@see self::ReorderedGregorianTime}
      */
-    public const V6 = self::ReorderedGregorianTime;
+    public const Version V6 = self::ReorderedGregorianTime;
 
     /**
      * Alias for {@see self::UnixTime}
      */
-    public const V7 = self::UnixTime;
+    public const Version V7 = self::UnixTime;
 
     /**
      * Alias for {@see self::Custom}
      */
-    public const V8 = self::Custom;
+    public const Version V8 = self::Custom;
 }

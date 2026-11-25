@@ -46,16 +46,16 @@ enum NamespaceId: string
      * Names in the CBOR PEN namespace represent Concise Binary Object
      * Representation Private Enterprise Numbers (CBOR PEN)
      *
-     * @link https://www.ietf.org/archive/id/draft-ietf-suit-manifest-34.html#section-8.4.8.1 draft-ietf-suit-manifest-34, section 8.4.8.1. CBOR PEN UUID Namespace Identifier
+     * @link https://datatracker.ietf.org/doc/html/draft-ietf-suit-manifest-38#section-8.4.8.1 draft-ietf-suit-manifest-38, section 8.4.8.1. CBOR PEN UUID Namespace Identifier
      */
-    case CborPen = '47fbdabb-f2e4-55f0-bb39-3620c2f6df4e';
+    case CborPen = "\x47\xfb\xda\xbb\xf2\xe4\x55\xf0\xbb\x39\x36\x20\xc2\xf6\xdf\x4e";
 
     /**
      * Names in the DNS namespace represent fully qualified domain names
      *
      * @link https://www.rfc-editor.org/rfc/rfc9499 RFC 9499, DNS Terminology
      */
-    case Dns = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+    case Dns = "\x6b\xa7\xb8\x10\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8";
 
     /**
      * Names in the OID namespace represent ISO object identifiers (OID)
@@ -63,14 +63,14 @@ enum NamespaceId: string
      * @link https://en.wikipedia.org/wiki/Object_identifier Object identifier
      * @link https://www.itu.int/itu-t/recommendations/rec.aspx?rec=X.660/ ISO/IEC 9834-1, ITU-T Rec. X.660, 2011
      */
-    case Oid = '6ba7b812-9dad-11d1-80b4-00c04fd430c8';
+    case Oid = "\x6b\xa7\xb8\x12\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8";
 
     /**
      * Names in the URL namespace represent uniform resource locators (URL)
      *
      * @link https://www.rfc-editor.org/rfc/rfc3986 RFC 3986, Uniform Resource Identifier (URI): Generic Syntax
      */
-    case Url = '6ba7b811-9dad-11d1-80b4-00c04fd430c8';
+    case Url = "\x6b\xa7\xb8\x11\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8";
 
     /**
      * Names in the X500 namespace represent the Distinguished Names (DN) of
@@ -80,7 +80,7 @@ enum NamespaceId: string
      * @link https://en.wikipedia.org/wiki/Distinguished_Name Distinguished Name
      * @link https://www.itu.int/ITU-T/recommendations/rec.aspx?rec=x.500 ISO/IEC 9594-1, ITU-T Rec. X.500, 2019
      */
-    case X500 = '6ba7b814-9dad-11d1-80b4-00c04fd430c8';
+    case X500 = "\x6b\xa7\xb8\x14\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8";
 
     /**
      * Returns a {@see \Ramsey\Identifier\Uuid} instance of the namespace

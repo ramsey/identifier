@@ -30,6 +30,7 @@ use Identifier\BytesIdentifierFactory;
 use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
@@ -41,10 +42,13 @@ interface SnowflakeFactory extends
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
+    #[Override]
     public function create(): Snowflake;
 
+    #[Override]
     public function createFromBytes(string $identifier): Snowflake;
 
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): Snowflake;
 
     /**
@@ -56,7 +60,9 @@ interface SnowflakeFactory extends
      */
     public function createFromHexadecimal(string $identifier): Snowflake;
 
+    #[Override]
     public function createFromInteger(int | string $identifier): Snowflake;
 
+    #[Override]
     public function createFromString(string $identifier): Snowflake;
 }

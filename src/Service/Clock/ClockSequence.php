@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Service\Sequence\Sequence;
 use Ramsey\Identifier\Service\Sequence\SequenceOverflow;
 
@@ -81,6 +82,7 @@ interface ClockSequence extends Sequence
      * @return int<0, max> Clock sequence values are always greater than or
      *     equal to zero
      */
+    #[Override]
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int;
 
     /**
@@ -107,5 +109,6 @@ interface ClockSequence extends Sequence
      *
      * @throws SequenceOverflow if the maximum clock sequence value is reached
      */
+    #[Override]
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int;
 }

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Internal\Standard;
 use Ramsey\Identifier\Uuid\Internal\TimeBased;
@@ -42,6 +43,7 @@ final readonly class UuidV7 implements TimeBasedUuid
     use Standard;
     use TimeBased;
 
+    #[Override]
     public function getVersion(): Version
     {
         return Version::UnixTime;

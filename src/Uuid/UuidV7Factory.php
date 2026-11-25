@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\MonotonicBytesGenerator;
@@ -60,6 +61,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
      * @throws RandomSourceFailure
      * @throws TimeSourceFailure
      */
+    #[Override]
     public function create(?DateTimeInterface $dateTime = null): UuidV7
     {
         if ($dateTime !== null && $dateTime->getTimestamp() < 0) {
@@ -80,6 +82,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UuidV7
     {
         /** @var UuidV7 */
@@ -91,6 +94,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
      * @throws RandomSourceFailure
      * @throws TimeSourceFailure
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV7
     {
         return $this->create(dateTime: $dateTime);
@@ -99,6 +103,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UuidV7
     {
         /** @var UuidV7 */
@@ -108,6 +113,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UuidV7
     {
         /** @var UuidV7 */
@@ -117,18 +123,21 @@ final class UuidV7Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UuidV7
     {
         /** @var UuidV7 */
         return $this->createFromStringInternal($identifier);
     }
 
-    protected function getVersion(): Version
+    #[Override]
+    private function getVersion(): Version
     {
         return Version::UnixTime;
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return UuidV7::class;
     }

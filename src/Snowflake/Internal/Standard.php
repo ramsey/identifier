@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake\Internal;
 
 use DateTimeImmutable;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotComparable;
 use Ramsey\Identifier\Exception\NotConvertible;
@@ -55,6 +56,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->snowflake->toString();
@@ -80,11 +82,13 @@ trait Standard
     /**
      * @throws NotComparable
      */
+    #[Override]
     public function compareTo(mixed $other): int
     {
         return $this->snowflake->compareTo($other);
     }
 
+    #[Override]
     public function equals(mixed $other): bool
     {
         return $this->snowflake->equals($other);
@@ -93,6 +97,7 @@ trait Standard
     /**
      * @throws NotConvertible when the date-time cannot be represented
      */
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         return $this->snowflake->getDateTime();
@@ -104,6 +109,7 @@ trait Standard
      *
      * @return non-empty-string
      */
+    #[Override]
     public function getSortKey(): string
     {
         return $this->snowflake->getSortKey();
@@ -112,6 +118,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function jsonSerialize(): string
     {
         return $this->snowflake->toString();
@@ -120,6 +127,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toBytes(): string
     {
         /** @var non-empty-string */
@@ -129,6 +137,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toHexadecimal(): string
     {
         /** @var non-empty-string */
@@ -138,6 +147,7 @@ trait Standard
     /**
      * @return int<0, max> | numeric-string
      */
+    #[Override]
     public function toInteger(): int | string
     {
         /** @var int<0, max> | numeric-string */
@@ -147,6 +157,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toString(): string
     {
         return $this->snowflake->toString();

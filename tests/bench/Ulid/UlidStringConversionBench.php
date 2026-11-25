@@ -11,9 +11,9 @@ use function array_map;
 
 final class UlidStringConversionBench
 {
-    private const TINY_ULID = '00000000000000000000000001';
-    private const HUGE_ULID = '7ZZZZZZZZZZZZZZZZZZZZZZZZZ';
-    private const ULIDS_TO_BE_SHORTENED = [
+    private const string TINY_ULID = '00000000000000000000000001';
+    private const string HUGE_ULID = '7ZZZZZZZZZZZZZZZZZZZZZZZZZ';
+    private const array ULIDS_TO_BE_SHORTENED = [
         '0AW35CAAJ08SE9KV9X6CDQSXSA',
         '2QB6WWW1XN9T4V6EQRCGRQMAAH',
         '10S1K4X0D8966SX62495SYYC92',

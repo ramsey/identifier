@@ -30,6 +30,7 @@ use Identifier\BytesIdentifierFactory;
 use Identifier\DateTimeIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
@@ -41,10 +42,13 @@ interface UlidFactory extends
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
+    #[Override]
     public function create(): Ulid;
 
+    #[Override]
     public function createFromBytes(string $identifier): Ulid;
 
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): Ulid;
 
     /**
@@ -59,7 +63,9 @@ interface UlidFactory extends
     /**
      * @param int | numeric-string $identifier
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): Ulid;
 
+    #[Override]
     public function createFromString(string $identifier): Ulid;
 }

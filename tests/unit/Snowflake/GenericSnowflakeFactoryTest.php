@@ -22,7 +22,7 @@ use const PHP_INT_MIN;
 
 class GenericSnowflakeFactoryTest extends TestCase
 {
-    private const EPOCH_OFFSET = 946684800000;
+    private const int EPOCH_OFFSET = 946684800000;
 
     private GenericSnowflakeFactory $factory;
 
@@ -294,7 +294,7 @@ class GenericSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the epoch, 2000-01-01T00:00:00.000Z',
+            'Timestamp may not be earlier than the epoch, 2000-01-01T00:00:00.000+00:00',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('1999-12-31 23:59:59.999'));
@@ -306,7 +306,8 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Snowflakes with epoch offset 946684800000 cannot have a date-time greater than 2139-05-15T07:35:11.103Z',
+            'Snowflakes with epoch offset 946684800000 cannot have a date-time greater than '
+            . '2139-05-15T07:35:11.103+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2139-05-15 07:35:11.104'));
@@ -337,7 +338,7 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Snowflakes with epoch offset 0 cannot have a date-time greater than 2109-05-15T07:35:11.103Z',
+            'Snowflakes with epoch offset 0 cannot have a date-time greater than 2109-05-15T07:35:11.103+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('@9223372036858375.807'));
@@ -349,7 +350,7 @@ class GenericSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'The date-time 292278994-08-17T07:12:55.808Z is too far from the Unix Epoch to count in milliseconds',
+            'The date-time 292278994-08-17T07:12:55.808+00:00 is too far from the Unix Epoch to count in milliseconds',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('@9223372036854775.808'));
@@ -400,11 +401,11 @@ class GenericSnowflakeFactoryTest extends TestCase
         ];
     }
 
-    #[TestWith([-1, '1969-12-31 23:59:59.998', '1969-12-31T23:59:59.999Z'])]
-    #[TestWith([-500, '1969-12-31 23:59:59.499', '1969-12-31T23:59:59.500Z'])]
-    #[TestWith([-1000, '1969-12-31 23:59:58.999', '1969-12-31T23:59:59.000Z'])]
-    #[TestWith([-1500, '1969-12-31 23:59:58.499', '1969-12-31T23:59:58.500Z'])]
-    #[TestWith([5, '1970-01-01 00:00:00.004', '1970-01-01T00:00:00.005Z'])]
+    #[TestWith([-1, '1969-12-31 23:59:59.998', '1969-12-31T23:59:59.999+00:00'])]
+    #[TestWith([-500, '1969-12-31 23:59:59.499', '1969-12-31T23:59:59.500+00:00'])]
+    #[TestWith([-1000, '1969-12-31 23:59:58.999', '1969-12-31T23:59:59.000+00:00'])]
+    #[TestWith([-1500, '1969-12-31 23:59:58.499', '1969-12-31T23:59:58.500+00:00'])]
+    #[TestWith([5, '1970-01-01 00:00:00.004', '1970-01-01T00:00:00.005+00:00'])]
     public function testCreateFromDateTimeThrowsExceptionForDateTimeBeforeEpoch(
         int $epochOffset,
         string $dateTime,
@@ -418,9 +419,9 @@ class GenericSnowflakeFactoryTest extends TestCase
         $factory->createFromDateTime(new DateTimeImmutable($dateTime));
     }
 
-    #[TestWith([-98, '2109-05-15 07:35:11.006', '2109-05-15T07:35:11.005Z'])]
-    #[TestWith([-4398046511603, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.500Z'])]
-    #[TestWith([-4398046512103, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.000Z'])]
+    #[TestWith([-98, '2109-05-15 07:35:11.006', '2109-05-15T07:35:11.005+00:00'])]
+    #[TestWith([-4398046511603, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.500+00:00'])]
+    #[TestWith([-4398046512103, '1970-01-01 00:00:00.000', '1969-12-31T23:59:59.000+00:00'])]
     public function testCreateFromDateTimeThrowsExceptionForDateTimeAfterLatest(
         int $epochOffset,
         string $dateTime,

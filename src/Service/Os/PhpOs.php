@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Os;
 
 use DateTimeImmutable;
+use Override;
 
 use function file_get_contents;
 use function function_exists;
@@ -78,6 +79,7 @@ final class PhpOs implements Os
      * @throws MissingFunction if file_get_contents() is not available on this
      *     system
      */
+    #[Override]
     public function fileGetContents(string $filename): string
     {
         self::$hasFileGetContents ??= function_exists('file_get_contents');
@@ -89,6 +91,7 @@ final class PhpOs implements Os
         return (string) file_get_contents($filename);
     }
 
+    #[Override]
     public function getMyPid(): int | false
     {
         self::$hasGetMyPid ??= function_exists('getmypid');
@@ -100,6 +103,7 @@ final class PhpOs implements Os
         return getmypid();
     }
 
+    #[Override]
     public function getOsFamily(): string
     {
         /** @var "Windows" | "BSD" | "Darwin" | "Solaris" | "Linux" | "Unknown" */
@@ -111,6 +115,7 @@ final class PhpOs implements Os
      *
      * @throws MissingFunction if glob() is not available on this system
      */
+    #[Override]
     public function glob(string $pattern): array
     {
         self::$hasGlob ??= function_exists('glob');
@@ -127,6 +132,7 @@ final class PhpOs implements Os
     /**
      * @throws MissingFunction if is_readable() is not available on this system
      */
+    #[Override]
     public function isReadable(string $filename): bool
     {
         self::$hasIsReadable ??= function_exists('is_readable');
@@ -142,6 +148,7 @@ final class PhpOs implements Os
      * Returns the time from a new date-time object when microtime() is not
      * available on this system
      */
+    #[Override]
     public function microtime(): float
     {
         self::$hasMicrotime ??= function_exists('microtime');
@@ -156,6 +163,7 @@ final class PhpOs implements Os
     /**
      * @throws MissingFunction if shell_exec() is not available on this system
      */
+    #[Override]
     public function run(string $command): string
     {
         self::$hasShellExec ??= function_exists('shell_exec');

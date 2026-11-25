@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Ulid;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
@@ -71,6 +72,7 @@ final class UlidFactory implements UlidFactoryInterface
      * @throws RandomSourceFailure
      * @throws TimeSourceFailure
      */
+    #[Override]
     public function create(): Ulid
     {
         return new Ulid($this->bytesGenerator->bytes());
@@ -79,6 +81,7 @@ final class UlidFactory implements UlidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::Bytes)) {
@@ -101,6 +104,7 @@ final class UlidFactory implements UlidFactoryInterface
      * @throws RandomSourceFailure
      * @throws TimeSourceFailure
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): Ulid
     {
         if ($dateTime->getTimestamp() < 0) {
@@ -118,6 +122,7 @@ final class UlidFactory implements UlidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::Hex)) {
@@ -138,6 +143,7 @@ final class UlidFactory implements UlidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): MaxUlid | NilUlid | Ulid
     {
         if (is_string($identifier)) {
@@ -174,6 +180,7 @@ final class UlidFactory implements UlidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): MaxUlid | NilUlid | Ulid
     {
         if ($this->isMax($identifier, Format::Ulid)) {

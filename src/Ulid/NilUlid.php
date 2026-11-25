@@ -43,7 +43,7 @@ final readonly class NilUlid implements UlidInterface
 {
     use Standard;
 
-    private const NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+    private const string NIL = "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
     /**
      * @param non-empty-string $ulid A representation of a ULID in either

@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -53,9 +54,9 @@ final class MonotonicClockSequence implements ClockSequence
      * hash('adler32', MonotonicClockSequence::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_4cdb157d';
+    private const string CACHE_KEY = '__ramsey_id_4cdb157d';
 
-    private const STATE_ERROR_MESSAGE =
+    private const string STATE_ERROR_MESSAGE =
         'When getting the current or next clock sequence value, the state must be a non-empty string or null';
 
     /**
@@ -90,6 +91,7 @@ final class MonotonicClockSequence implements ClockSequence
         $this->defaultState = $nic->address();
     }
 
+    #[Override]
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {
@@ -99,6 +101,7 @@ final class MonotonicClockSequence implements ClockSequence
         return $this->getGeneratorState($state, $dateTime, false)->sequence;
     }
 
+    #[Override]
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         if ($state !== null && strlen($state) === 0) {

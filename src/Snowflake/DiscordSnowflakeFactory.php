@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -49,7 +50,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
-    private const TIMESTAMP_BIT_SHIFTS = 22;
+    private const int TIMESTAMP_BIT_SHIFTS = 22;
 
     /**
      * For performance, we'll prepare the worker and process ID bits and store
@@ -90,6 +91,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(): DiscordSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
@@ -100,6 +102,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): DiscordSnowflake
     {
         return new DiscordSnowflake($this->convertFromBytes($identifier));
@@ -108,6 +111,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): DiscordSnowflake
     {
         $milliseconds = Time::getUnixMilliseconds($dateTime) - Epoch::Discord->value;
@@ -121,7 +125,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
 
         if ($milliseconds > 0x3ffffffffff) {
             throw new InvalidArgument(
-                'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103Z',
+                'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103+00:00',
             );
         }
 
@@ -157,6 +161,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): DiscordSnowflake
     {
         return new DiscordSnowflake($this->convertFromHexadecimal($identifier));
@@ -167,6 +172,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): DiscordSnowflake
     {
         return new DiscordSnowflake($identifier);
@@ -177,6 +183,7 @@ final class DiscordSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): DiscordSnowflake
     {
         return new DiscordSnowflake($identifier);

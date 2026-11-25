@@ -28,6 +28,7 @@ namespace Ramsey\Identifier;
 use Identifier\BytesIdentifierFactory;
 use Identifier\IntegerIdentifierFactory;
 use Identifier\StringIdentifierFactory;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
@@ -38,8 +39,10 @@ interface UuidFactory extends
     IntegerIdentifierFactory,
     StringIdentifierFactory
 {
+    #[Override]
     public function create(): Uuid;
 
+    #[Override]
     public function createFromBytes(string $identifier): Uuid;
 
     /**
@@ -54,7 +57,9 @@ interface UuidFactory extends
     /**
      * @param int<0, max> | numeric-string $identifier
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): Uuid;
 
+    #[Override]
     public function createFromString(string $identifier): Uuid;
 }

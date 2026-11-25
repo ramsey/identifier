@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
+use DateTimeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -22,7 +23,7 @@ class NilUlidTest extends TestCase
 {
     use UlidComparisonTests;
 
-    private const NIL_ULID = '00000000000000000000000000';
+    private const string NIL_ULID = '00000000000000000000000000';
 
     private Ulid\NilUlid $nilUlid;
     private Ulid\NilUlid $nilUlidWithString;
@@ -329,6 +330,9 @@ class NilUlidTest extends TestCase
     {
         $nil = new Ulid\NilUlid();
 
-        $this->assertSame('1970-01-01T00:00:00.000Z', $nil->getDateTime()->format('Y-m-d\TH:i:s.vp'));
+        $this->assertSame(
+            '1970-01-01T00:00:00.000+00:00',
+            $nil->getDateTime()->format(DateTimeInterface::RFC3339_EXTENDED),
+        );
     }
 }

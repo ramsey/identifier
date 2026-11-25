@@ -28,6 +28,7 @@ namespace Ramsey\Identifier\Ulid\Internal;
 use Brick\Math\BigInteger;
 use DateTimeImmutable;
 use Identifier\Identifier;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
 use Ramsey\Identifier\Internal\IntegerString;
@@ -69,7 +70,7 @@ trait Standard
     /**
      * @link https://www.crockford.com/base32.html Crockford base-32 specification
      */
-    private const CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+    private const string CROCKFORD32_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 
     private readonly Format $format;
 
@@ -112,6 +113,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->getFormat(Format::Ulid);
@@ -132,6 +134,7 @@ trait Standard
         $this->__construct($data['ulid']);
     }
 
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         $bytes = $this->getFormat(Format::Bytes);
@@ -154,6 +157,7 @@ trait Standard
      *
      * @return non-empty-string
      */
+    #[Override]
     public function getSortKey(): string
     {
         return $this->getFormat(Format::Bytes);
@@ -162,6 +166,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function jsonSerialize(): string
     {
         return $this->getFormat(Format::Ulid);
@@ -170,6 +175,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toBytes(): string
     {
         return $this->getFormat(Format::Bytes);
@@ -178,6 +184,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toHexadecimal(): string
     {
         return $this->getFormat(Format::Hex);
@@ -186,6 +193,7 @@ trait Standard
     /**
      * @return int<0, max> | numeric-string
      */
+    #[Override]
     public function toInteger(): int | string
     {
         /** @var numeric-string $ulidInteger */
@@ -202,6 +210,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toString(): string
     {
         return $this->getFormat(Format::Ulid);
@@ -242,6 +251,7 @@ trait Standard
         return new UuidV7(Binary::applyVersionAndVariant($this->toBytes(), Version::UnixTime));
     }
 
+    #[Override]
     private function isSameKind(Identifier $other): bool
     {
         return $other instanceof Ulid;
@@ -250,6 +260,7 @@ trait Standard
     /**
      * @return non-empty-string | null
      */
+    #[Override]
     private function sortKeyFromString(string $value): ?string
     {
         if (strlen($value) !== Format::Ulid->value) {

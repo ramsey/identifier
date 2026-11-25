@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Uuid\Internal;
 
 use Brick\Math\BigInteger;
 use Identifier\Identifier;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\ComparesBySortKey;
 use Ramsey\Identifier\Internal\IntegerString;
@@ -88,6 +89,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function __toString(): string
     {
         return $this->getFormat(Format::String);
@@ -114,11 +116,13 @@ trait Standard
      *
      * @return non-empty-string
      */
+    #[Override]
     public function getSortKey(): string
     {
         return $this->getFormat(Format::Bytes);
     }
 
+    #[Override]
     public function getVariant(): Variant
     {
         return Variant::Rfc;
@@ -127,6 +131,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function jsonSerialize(): string
     {
         return $this->getFormat(Format::String);
@@ -135,6 +140,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toBytes(): string
     {
         return $this->getFormat(Format::Bytes);
@@ -143,6 +149,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toHexadecimal(): string
     {
         return $this->getFormat(Format::Hex);
@@ -151,6 +158,7 @@ trait Standard
     /**
      * @return int<0, max> | numeric-string
      */
+    #[Override]
     public function toInteger(): int | string
     {
         /** @var numeric-string $uuidInteger */
@@ -167,6 +175,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toString(): string
     {
         return $this->getFormat(Format::String);
@@ -175,6 +184,7 @@ trait Standard
     /**
      * @return non-empty-string
      */
+    #[Override]
     public function toUrn(): string
     {
         return 'urn:uuid:' . $this->getFormat(Format::String);
@@ -213,6 +223,7 @@ trait Standard
         };
     }
 
+    #[Override]
     private function isSameKind(Identifier $other): bool
     {
         return $other instanceof Uuid;
@@ -221,6 +232,7 @@ trait Standard
     /**
      * @return non-empty-string | null
      */
+    #[Override]
     private function sortKeyFromString(string $value): ?string
     {
         if (preg_match('/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i', $value) !== 1) {

@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
@@ -64,6 +65,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     {
     }
 
+    #[Override]
     public function create(): MicrosoftGuid
     {
         $bytes = $this->bytesGenerator->bytes();
@@ -75,6 +77,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): MicrosoftGuid
     {
         /** @var MicrosoftGuid */
@@ -84,6 +87,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): MicrosoftGuid
     {
         /** @var MicrosoftGuid */
@@ -93,6 +97,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): MicrosoftGuid
     {
         // A negative integer string is an integer and is refused below with a
@@ -137,6 +142,7 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): MicrosoftGuid
     {
         /** @var MicrosoftGuid */
@@ -146,12 +152,14 @@ final readonly class MicrosoftGuidFactory implements UuidFactoryInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function getVersion(): never
+    #[Override]
+    private function getVersion(): never
     {
         throw new BadMethodCall('getVersion() called out of context');
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return MicrosoftGuid::class;
     }

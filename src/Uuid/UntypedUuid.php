@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeImmutable;
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Exception\NotConvertible;
@@ -60,10 +61,10 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
 {
     use Standard;
 
-    private const VALID_UUID = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
+    private const string VALID_UUID = '/\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i';
 
     private ?Variant $variant = null;
-    private ?Version $version = null;
+    private Version | false | null $version = false;
 
     private MaxUuid | MicrosoftGuid | NilUuid | NonstandardUuid | UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8 | null $typedUuid = null; // phpcs:ignore Generic.Files.LineLength
 
@@ -87,6 +88,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * @throws NotConvertible
      */
+    #[Override]
     public function getDateTime(): DateTimeImmutable
     {
         $uuid = $this->toTypedUuid();
@@ -104,6 +106,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * @throws BadMethodCall
      */
+    #[Override]
     public function getNode(): string
     {
         $uuid = $this->toTypedUuid();
@@ -118,6 +121,7 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
         ));
     }
 
+    #[Override]
     public function getVariant(): Variant
     {
         if ($this->variant === null) {
@@ -134,12 +138,19 @@ final class UntypedUuid implements NodeBasedUuid, TimeBasedUuid
     /**
      * @throws CannotDetermineVersion
      */
+    #[Override]
     public function getVersion(): Version
     {
-        $variant = $this->getVariant();
+        if ($this->version === false) {
+            $variant = $this->getVariant();
 
-        if ($this->version === null && ($variant === Variant::Rfc || $variant === Variant::Microsoft)) {
-            $this->version = Version::tryFrom($this->getVersionFromUuid($this->uuid, $this->format));
+            if ($variant === Variant::Rfc || $variant === Variant::Microsoft) {
+                $this->version = Version::tryFrom($this->getVersionFromUuid($this->uuid, $this->format));
+            }
+
+            if ($this->version === false) {
+                $this->version = null;
+            }
         }
 
         return $this->version

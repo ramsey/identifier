@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\BytesGenerator;
 
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\SystemClock;
@@ -150,6 +151,7 @@ final class MonotonicBytesGenerator implements BytesGenerator
      *     not a time at all; or if the timestamp would have to move past the
      *     end of the range
      */
+    #[Override]
     public function bytes(int $length = 16, ?DateTimeInterface $dateTime = null): string
     {
         if ($length < 1) {

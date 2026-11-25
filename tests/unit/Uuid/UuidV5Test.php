@@ -23,9 +23,9 @@ class UuidV5Test extends TestCase
 {
     use UuidComparisonTests;
 
-    private const UUID_V5_STRING = '27433d43-011d-5a6a-9161-1550863792c9';
-    private const UUID_V5_HEX = '27433d43011d5a6a91611550863792c9';
-    private const UUID_V5_BYTES = "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9";
+    private const string UUID_V5_STRING = '27433d43-011d-5a6a-9161-1550863792c9';
+    private const string UUID_V5_HEX = '27433d43011d5a6a91611550863792c9';
+    private const string UUID_V5_BYTES = "\x27\x43\x3d\x43\x01\x1d\x5a\x6a\x91\x61\x15\x50\x86\x37\x92\xc9";
 
     private Uuid\UuidV5 $uuidWithString;
     private Uuid\UuidV5 $uuidWithHex;

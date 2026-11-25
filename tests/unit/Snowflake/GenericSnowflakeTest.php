@@ -27,9 +27,9 @@ class GenericSnowflakeTest extends TestCase
 {
     use SnowflakeComparisonTests;
 
-    private const SNOWFLAKE_INT = 9223372036854775807;
-    private const SNOWFLAKE_STRING = '9223372036854775807';
-    private const EPOCH_OFFSET = 1662744255000;
+    private const int SNOWFLAKE_INT = 9223372036854775807;
+    private const string SNOWFLAKE_STRING = '9223372036854775807';
+    private const int EPOCH_OFFSET = 1662744255000;
 
     private GenericSnowflake $snowflakeWithInt;
     private GenericSnowflake $snowflakeWithString;

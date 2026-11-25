@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
@@ -60,7 +61,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
-    private const TIMESTAMP_BIT_SHIFTS = 16;
+    private const int TIMESTAMP_BIT_SHIFTS = 16;
 
     /**
      * @param non-empty-string | null $tableName An optional database table name
@@ -91,6 +92,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(): MastodonSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
@@ -101,6 +103,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): MastodonSnowflake
     {
         return new MastodonSnowflake($this->convertFromBytes($identifier));
@@ -109,6 +112,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): MastodonSnowflake
     {
         /** @var int<0, 281474976710655> $milliseconds */
@@ -123,11 +127,10 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
 
         if ($milliseconds > 0xffffffffffff) {
             throw new InvalidArgument(
-                'Mastodon Snowflakes cannot have a date-time greater than 10889-08-02T05:31:50.655Z',
+                'Mastodon Snowflakes cannot have a date-time greater than 10889-08-02T05:31:50.655+00:00',
             );
         }
 
-        /** @var int $millisecondsShifted */
         $millisecondsShifted = $milliseconds << self::TIMESTAMP_BIT_SHIFTS;
 
         // Did we go beyond the bounds of a signed, 64-bit integer?
@@ -166,6 +169,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): MastodonSnowflake
     {
         return new MastodonSnowflake($this->convertFromHexadecimal($identifier));
@@ -176,6 +180,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): MastodonSnowflake
     {
         return new MastodonSnowflake($identifier);
@@ -186,6 +191,7 @@ final class MastodonSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): MastodonSnowflake
     {
         return new MastodonSnowflake($identifier);

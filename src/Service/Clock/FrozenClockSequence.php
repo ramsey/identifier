@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 /**
@@ -45,6 +46,7 @@ final readonly class FrozenClockSequence implements ClockSequence
         }
     }
 
+    #[Override]
     public function current(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         return $this->value;
@@ -56,6 +58,7 @@ final readonly class FrozenClockSequence implements ClockSequence
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function next(?string $state = null, ?DateTimeInterface $dateTime = null): int
     {
         return $this->value;

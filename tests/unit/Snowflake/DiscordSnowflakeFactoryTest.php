@@ -267,7 +267,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Discord epoch, 2015-01-01T00:00:00.000Z',
+            'Timestamp may not be earlier than the Discord epoch, 2015-01-01T00:00:00.000+00:00',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('2014-12-31 23:59:59.999'));
@@ -279,7 +279,7 @@ class DiscordSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103Z',
+            'Discord Snowflakes cannot have a date-time greater than 2154-05-15T07:35:11.103+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2154-05-15 07:35:11.104'));

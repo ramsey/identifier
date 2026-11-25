@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Snowflake;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -49,7 +50,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
-    private const TIMESTAMP_BIT_SHIFTS = 23;
+    private const int TIMESTAMP_BIT_SHIFTS = 23;
 
     /**
      * We increase this value each time our clock sequence rolls over and add
@@ -86,6 +87,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(): InstagramSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
@@ -96,6 +98,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): InstagramSnowflake
     {
         return new InstagramSnowflake($this->convertFromBytes($identifier));
@@ -104,6 +107,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): InstagramSnowflake
     {
         $milliseconds = Time::getUnixMilliseconds($dateTime) - Epoch::Instagram->value;
@@ -117,7 +121,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
 
         if ($milliseconds > 0x1ffffffffff) {
             throw new InvalidArgument(
-                'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272Z',
+                'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272+00:00',
             );
         }
 
@@ -153,6 +157,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): InstagramSnowflake
     {
         return new InstagramSnowflake($this->convertFromHexadecimal($identifier));
@@ -163,6 +168,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): InstagramSnowflake
     {
         return new InstagramSnowflake($identifier);
@@ -173,6 +179,7 @@ final class InstagramSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): InstagramSnowflake
     {
         return new InstagramSnowflake($identifier);

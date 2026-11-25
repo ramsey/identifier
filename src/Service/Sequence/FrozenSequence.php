@@ -25,6 +25,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Sequence;
 
+use Override;
+
 /**
  * A sequence that always returns the same pre-determined value
  *
@@ -39,6 +41,7 @@ final readonly class FrozenSequence implements Sequence
     {
     }
 
+    #[Override]
     public function current(?string $state = null): int | string
     {
         return $this->value;
@@ -49,6 +52,7 @@ final readonly class FrozenSequence implements Sequence
      *
      * {@inheritDoc}
      */
+    #[Override]
     public function next(?string $state = null): int | string
     {
         return $this->value;

@@ -23,7 +23,7 @@ class NilUuidTest extends TestCase
 {
     use UuidComparisonTests;
 
-    private const NIL_UUID = '00000000-0000-0000-0000-000000000000';
+    private const string NIL_UUID = '00000000-0000-0000-0000-000000000000';
 
     private Uuid\NilUuid $nilUuid;
     private Uuid\NilUuid $nilUuidWithString;

@@ -27,6 +27,7 @@ namespace Ramsey\Identifier\Uuid;
 
 use Brick\Math\BigInteger;
 use DateTimeInterface;
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Internal\IntegerString;
@@ -64,6 +65,7 @@ final class UuidFactory implements UuidFactoryInterface
     ) {
     }
 
+    #[Override]
     public function create(): UuidV4
     {
         return $this->v4Factory->create();
@@ -72,6 +74,7 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UntypedUuid
     {
         if (strlen($identifier) === Format::Bytes->value) {
@@ -84,6 +87,7 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UntypedUuid
     {
         if (strlen($identifier) === Format::Hex->value) {
@@ -96,6 +100,7 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UntypedUuid
     {
         if (is_string($identifier)) {
@@ -132,6 +137,7 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UntypedUuid
     {
         if (strlen($identifier) === 36) {
@@ -334,7 +340,8 @@ final class UuidFactory implements UuidFactoryInterface
     /**
      * @codeCoverageIgnore
      */
-    protected function getVersion(): never
+    #[Override]
+    private function getVersion(): never
     {
         throw new BadMethodCall('method called out of context');
     }

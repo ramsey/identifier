@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Uuid;
 
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -96,6 +97,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(
         DceDomain $localDomain = DceDomain::Person,
         ?int $localIdentifier = null,
@@ -144,6 +146,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UuidV2
     {
         /** @var UuidV2 */
@@ -154,6 +157,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
      * @throws DceIdentifierNotFound
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): UuidV2
     {
         return $this->create(dateTime: $dateTime);
@@ -162,6 +166,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UuidV2
     {
         /** @var UuidV2 */
@@ -171,6 +176,7 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UuidV2
     {
         /** @var UuidV2 */
@@ -180,18 +186,21 @@ final class UuidV2Factory implements TimeBasedUuidFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UuidV2
     {
         /** @var UuidV2 */
         return $this->createFromStringInternal($identifier);
     }
 
-    protected function getVersion(): Version
+    #[Override]
+    private function getVersion(): Version
     {
         return Version::DceSecurity;
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return UuidV2::class;
     }

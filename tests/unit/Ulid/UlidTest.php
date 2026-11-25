@@ -25,9 +25,9 @@ class UlidTest extends TestCase
 {
     use UlidComparisonTests;
 
-    private const ULID_STRING = '01FWHE4YDGFK1SHH6W1G60EECF';
-    private const ULID_HEX = '017f22e279b07cc398c4dc0c0c07398f';
-    private const ULID_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
+    private const string ULID_STRING = '01FWHE4YDGFK1SHH6W1G60EECF';
+    private const string ULID_HEX = '017f22e279b07cc398c4dc0c0c07398f';
+    private const string ULID_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
 
     private Ulid $ulidWithString;
     private Ulid $ulidWithHex;

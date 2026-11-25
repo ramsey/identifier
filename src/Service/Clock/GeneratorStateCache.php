@@ -41,7 +41,7 @@ use const PHP_INT_MIN;
  */
 trait GeneratorStateCache
 {
-    private const MICROSECONDS_PER_SECOND = 1_000_000;
+    private const int MICROSECONDS_PER_SECOND = 1_000_000;
 
     /**
      * @var int<0, max> | null

@@ -46,7 +46,7 @@ trait Validation
      * letters are accepted, and `i` and `l` will be treated as `1` and `o` will
      * be treated as `0`."
      */
-    private const DECODE_SYMBOLS = ['from' => 'IiLlOo', 'to' => '111100'];
+    private const array DECODE_SYMBOLS = ['from' => 'IiLlOo', 'to' => '111100'];
 
     /**
      * Returns true if the given Crockford base-32, hexadecimal, or bytes

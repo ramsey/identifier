@@ -27,21 +27,28 @@ namespace Ramsey\Identifier;
 
 use DateTimeInterface;
 use Identifier\DateTimeIdentifierFactory;
+use Override;
 
 /**
  * A factory for creating time-based UUIDs
  */
 interface TimeBasedUuidFactory extends DateTimeIdentifierFactory, UuidFactory
 {
+    #[Override]
     public function create(): TimeBasedUuid;
 
+    #[Override]
     public function createFromBytes(string $identifier): TimeBasedUuid;
 
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): TimeBasedUuid;
 
+    #[Override]
     public function createFromHexadecimal(string $identifier): TimeBasedUuid;
 
+    #[Override]
     public function createFromInteger(int | string $identifier): TimeBasedUuid;
 
+    #[Override]
     public function createFromString(string $identifier): TimeBasedUuid;
 }

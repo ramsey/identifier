@@ -37,13 +37,13 @@ final class Mask
      * A mask used with functions like {@see strspn()} to validate Crockford
      * base-32 strings
      */
-    public const CROCKFORD32 = '0123456789abcdefghjkmnpqrstvwxyzABCDEFGHJKMNPQRSTVWXYZ';
+    public const string CROCKFORD32 = '0123456789abcdefghjkmnpqrstvwxyzABCDEFGHJKMNPQRSTVWXYZ';
 
     /**
      * A mask used with functions like {@see strspn()} to validate hexadecimal
      * strings
      */
-    public const HEX = '0123456789abcdefABCDEF';
+    public const string HEX = '0123456789abcdefABCDEF';
 
     /**
      * @codeCoverageIgnore

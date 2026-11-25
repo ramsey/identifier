@@ -37,7 +37,7 @@ final class Mask
      * A character mask used with functions like {@see strspn()} to validate
      * hexadecimal strings
      */
-    public const HEX = '0123456789abcdefABCDEF';
+    public const string HEX = '0123456789abcdefABCDEF';
 
     /**
      * @codeCoverageIgnore

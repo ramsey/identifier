@@ -23,9 +23,9 @@ class NonstandardUuidTest extends TestCase
 {
     use UuidComparisonTests;
 
-    private const UUID_NONSTANDARD_STRING = '27433d43-011d-0a6a-0161-1550863792c9';
-    private const UUID_NONSTANDARD_HEX = '27433d43011d0a6a01611550863792c9';
-    private const UUID_NONSTANDARD_BYTES = "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x01\x61\x15\x50\x86\x37\x92\xc9";
+    private const string UUID_NONSTANDARD_STRING = '27433d43-011d-0a6a-0161-1550863792c9';
+    private const string UUID_NONSTANDARD_HEX = '27433d43011d0a6a01611550863792c9';
+    private const string UUID_NONSTANDARD_BYTES = "\x27\x43\x3d\x43\x01\x1d\x0a\x6a\x01\x61\x15\x50\x86\x37\x92\xc9";
 
     private Uuid\NonstandardUuid $uuidWithString;
     private Uuid\NonstandardUuid $uuidWithHex;

@@ -51,28 +51,28 @@ final class Time
      * The number of 100-nanosecond intervals between the Gregorian epoch and
      * the Unix epoch
      */
-    private const GREGORIAN_OFFSET = 0x01b21dd213814000;
+    private const int GREGORIAN_OFFSET = 0x01b21dd213814000;
 
     /**
      * The maximum timestamp allowed in 100-nanosecond intervals since the
      * Gregorian epoch
      */
-    private const MAX_GREGORIAN_TIME = 0x0fffffffffffffff;
+    private const int MAX_GREGORIAN_TIME = 0x0fffffffffffffff;
 
     /**
      * The number of microseconds in one second
      */
-    private const MICROSECONDS = 1_000_000;
+    private const int MICROSECONDS = 1_000_000;
 
     /**
      * The number of 100-nanosecond intervals in one second
      */
-    private const INTERVALS_PER_SECOND = 10_000_000;
+    private const int INTERVALS_PER_SECOND = 10_000_000;
 
     /**
      * The number of 100-nanosecond intervals in one microsecond
      */
-    private const INTERVALS_PER_MICROSECOND = 10;
+    private const int INTERVALS_PER_MICROSECOND = 10;
 
     /**
      * @codeCoverageIgnore

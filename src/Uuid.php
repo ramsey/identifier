@@ -38,7 +38,12 @@ use Stringable;
  *
  * @link https://www.rfc-editor.org/rfc/rfc9562 RFC 9562: Universally Unique IDentifiers (UUIDs)
  */
-interface Uuid extends BytesIdentifier, IntegerIdentifier, JsonSerializable, Stringable, StringIdentifier
+interface Uuid extends
+    BytesIdentifier,
+    IntegerIdentifier,
+    JsonSerializable,
+    Stringable,
+    StringIdentifier
 {
     /**
      * Returns the variant of this UUID, describing the layout of the UUID

@@ -270,7 +270,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Twitter epoch, 2010-11-04T01:42:54.657Z',
+            'Timestamp may not be earlier than the Twitter epoch, 2010-11-04T01:42:54.657+00:00',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('2010-11-04 01:42:54.656'));
@@ -282,7 +282,7 @@ class TwitterSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208Z',
+            'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2080-07-10 17:30:30.209'));

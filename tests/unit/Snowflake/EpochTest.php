@@ -22,9 +22,9 @@ class EpochTest extends TestCase
     public static function toIso8601Provider(): array
     {
         return [
-            ['epoch' => Epoch::Instagram, 'expected' => '2011-08-24T21:07:01.721Z'],
-            ['epoch' => Epoch::Twitter, 'expected' => '2010-11-04T01:42:54.657Z'],
-            ['epoch' => Epoch::Discord, 'expected' => '2015-01-01T00:00:00.000Z'],
+            ['epoch' => Epoch::Instagram, 'expected' => '2011-08-24T21:07:01.721+00:00'],
+            ['epoch' => Epoch::Twitter, 'expected' => '2010-11-04T01:42:54.657+00:00'],
+            ['epoch' => Epoch::Discord, 'expected' => '2015-01-01T00:00:00.000+00:00'],
         ];
     }
 }

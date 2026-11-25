@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Nic;
 
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid\Internal\Mask;
 
@@ -46,7 +47,8 @@ use function unpack;
  */
 final readonly class StaticNic implements Nic
 {
-    private const ADDRESS_ERROR_MESSAGE = 'The NIC address must be a positive 48-bit integer or hexadecimal string';
+    private const string ADDRESS_ERROR_MESSAGE =
+        'The NIC address must be a positive 48-bit integer or hexadecimal string';
 
     /**
      * @var non-empty-string
@@ -68,6 +70,7 @@ final readonly class StaticNic implements Nic
         }
     }
 
+    #[Override]
     public function address(): string
     {
         return $this->address;

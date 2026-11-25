@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Test\Identifier\Ulid;
 
+use DateTimeInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -22,7 +23,7 @@ class MaxUlidTest extends TestCase
 {
     use UlidComparisonTests;
 
-    private const MAX_ULID = '7ZZZZZZZZZZZZZZZZZZZZZZZZZ';
+    private const string MAX_ULID = '7ZZZZZZZZZZZZZZZZZZZZZZZZZ';
 
     private Ulid\MaxUlid $maxUlid;
     private Ulid\MaxUlid $maxUlidWithString;
@@ -361,6 +362,9 @@ class MaxUlidTest extends TestCase
     {
         $max = new Ulid\MaxUlid();
 
-        $this->assertSame('10889-08-02T05:31:50.655Z', $max->getDateTime()->format('Y-m-d\TH:i:s.vp'));
+        $this->assertSame(
+            '10889-08-02T05:31:50.655+00:00',
+            $max->getDateTime()->format(DateTimeInterface::RFC3339_EXTENDED),
+        );
     }
 }

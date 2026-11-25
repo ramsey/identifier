@@ -23,7 +23,7 @@ class MaxUuidTest extends TestCase
 {
     use UuidComparisonTests;
 
-    private const MAX_UUID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
+    private const string MAX_UUID = 'ffffffff-ffff-ffff-ffff-ffffffffffff';
 
     private Uuid\MaxUuid $maxUuid;
     private Uuid\MaxUuid $maxUuidWithString;

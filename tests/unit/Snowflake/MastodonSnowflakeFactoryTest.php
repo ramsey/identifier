@@ -35,7 +35,7 @@ class MastodonSnowflakeFactoryTest extends TestCase
     public function testCreateWithFactoryDeterministicValues(): void
     {
         $factory = new MastodonSnowflakeFactory(
-            clock: new FrozenClock(new DateTimeImmutable('1970-01-01T00:00:00.000Z')),
+            clock: new FrozenClock(new DateTimeImmutable('1970-01-01T00:00:00.000+00:00')),
             sequence: new FrozenSequence(0),
             bytesGenerator: new FixedBytesGenerator("\x00"),
         );
@@ -258,7 +258,7 @@ class MastodonSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Mastodon epoch, 1970-01-01T00:00:00.000Z',
+            'Timestamp may not be earlier than the Mastodon epoch, 1970-01-01T00:00:00.000+00:00',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('1969-12-31 23:59:59.999'));
@@ -270,7 +270,7 @@ class MastodonSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Mastodon Snowflakes cannot have a date-time greater than 10889-08-02T05:31:50.655Z',
+            'Mastodon Snowflakes cannot have a date-time greater than 10889-08-02T05:31:50.655+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('@281474976710.656'));

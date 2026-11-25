@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Dce;
 
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 
 use function sprintf;
@@ -71,6 +72,7 @@ final readonly class StaticDce implements Dce
      * @throws DceIdentifierNotFound if a group identifier was not provided upon
      *     instantiation
      */
+    #[Override]
     public function groupId(): int
     {
         if ($this->groupId === null) {
@@ -87,6 +89,7 @@ final readonly class StaticDce implements Dce
      * @throws DceIdentifierNotFound if an org identifier was not provided upon
      *     instantiation
      */
+    #[Override]
     public function orgId(): int
     {
         if ($this->orgId === null) {
@@ -103,6 +106,7 @@ final readonly class StaticDce implements Dce
      * @throws DceIdentifierNotFound if a user identifier was not provided upon
      *     instantiation
      */
+    #[Override]
     public function userId(): int
     {
         if ($this->userId === null) {

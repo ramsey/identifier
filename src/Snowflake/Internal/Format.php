@@ -62,7 +62,7 @@ enum Format: int
      * The largest unsigned 64-bit integer, which is the largest value a
      * Snowflake identifier has
      */
-    private const MAXIMUM = '18446744073709551615';
+    private const string MAXIMUM = '18446744073709551615';
 
     /**
      * Formats a Snowflake identifier from its integer or numeric string form

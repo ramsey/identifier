@@ -26,8 +26,8 @@ class DiscordSnowflakeTest extends TestCase
 {
     use SnowflakeComparisonTests;
 
-    private const SNOWFLAKE_INT = 9223372036854775807;
-    private const SNOWFLAKE_STRING = '9223372036854775807';
+    private const int SNOWFLAKE_INT = 9223372036854775807;
+    private const string SNOWFLAKE_STRING = '9223372036854775807';
 
     private DiscordSnowflake $snowflakeWithInt;
     private DiscordSnowflake $snowflakeWithString;

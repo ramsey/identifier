@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Snowflake;
 
 use DateTimeInterface;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\ClockSequence;
@@ -48,7 +49,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
 {
     use StandardFactory;
 
-    private const TIMESTAMP_BIT_SHIFTS = 22;
+    private const int TIMESTAMP_BIT_SHIFTS = 22;
 
     /**
      * For performance, we'll prepare the machine ID bits and store them for
@@ -85,6 +86,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function create(): TwitterSnowflake
     {
         return $this->createFromDateTime($this->clock->now());
@@ -95,6 +97,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): TwitterSnowflake
     {
         return new TwitterSnowflake($this->convertFromBytes($identifier));
@@ -103,6 +106,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromDateTime(DateTimeInterface $dateTime): TwitterSnowflake
     {
         $milliseconds = Time::getUnixMilliseconds($dateTime) - Epoch::Twitter->value;
@@ -116,7 +120,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
 
         if ($milliseconds > 0x1ffffffffff) {
             throw new InvalidArgument(
-                'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208Z',
+                'Twitter Snowflakes cannot have a date-time greater than 2080-07-10T17:30:30.208+00:00',
             );
         }
 
@@ -144,6 +148,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): TwitterSnowflake
     {
         return new TwitterSnowflake($this->convertFromHexadecimal($identifier));
@@ -154,6 +159,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): TwitterSnowflake
     {
         return new TwitterSnowflake($identifier);
@@ -164,6 +170,7 @@ final class TwitterSnowflakeFactory implements SnowflakeFactory
      *
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): TwitterSnowflake
     {
         return new TwitterSnowflake($identifier);

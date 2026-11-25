@@ -53,20 +53,20 @@ final class Time
      * The latest date-time that getUnixMilliseconds() counts exactly, in
      * milliseconds from the Unix Epoch
      */
-    public const MAX_EXACT_UNIX_MILLISECONDS = PHP_INT_MAX - PHP_INT_MAX % self::MILLISECONDS - 1;
+    public const int MAX_EXACT_UNIX_MILLISECONDS = PHP_INT_MAX - PHP_INT_MAX % self::MILLISECONDS - 1;
 
     /**
      * The earliest date-time that getUnixMilliseconds() counts exactly, in
      * milliseconds from the Unix Epoch
      */
-    public const MIN_EXACT_UNIX_MILLISECONDS = PHP_INT_MIN - PHP_INT_MIN % self::MILLISECONDS;
+    public const int MIN_EXACT_UNIX_MILLISECONDS = PHP_INT_MIN - PHP_INT_MIN % self::MILLISECONDS;
 
-    private const SNOWFLAKE_BITS = 64;
+    private const int SNOWFLAKE_BITS = 64;
 
     /**
      * The number of milliseconds in one second
      */
-    private const MILLISECONDS = 1000;
+    private const int MILLISECONDS = 1000;
 
     /**
      * @codeCoverageIgnore

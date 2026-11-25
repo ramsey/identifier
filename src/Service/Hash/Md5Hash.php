@@ -25,6 +25,8 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Hash;
 
+use Override;
+
 use function hash;
 
 /**
@@ -34,6 +36,7 @@ use function hash;
  */
 final class Md5Hash implements Hash
 {
+    #[Override]
     public function hash(string $data, bool $binary = false): string
     {
         return hash('md5', $data, $binary);

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\BytesGenerator\BytesGenerator;
 use Ramsey\Identifier\Service\BytesGenerator\RandomBytesGenerator;
@@ -47,6 +48,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     {
     }
 
+    #[Override]
     public function create(): UuidV4
     {
         $bytes = $this->bytesGenerator->bytes();
@@ -58,6 +60,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromBytes(string $identifier): UuidV4
     {
         /** @var UuidV4 */
@@ -67,6 +70,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromHexadecimal(string $identifier): UuidV4
     {
         /** @var UuidV4 */
@@ -76,6 +80,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromInteger(int | string $identifier): UuidV4
     {
         /** @var UuidV4 */
@@ -85,18 +90,21 @@ final class UuidV4Factory implements UuidFactoryInterface
     /**
      * @throws InvalidArgument
      */
+    #[Override]
     public function createFromString(string $identifier): UuidV4
     {
         /** @var UuidV4 */
         return $this->createFromStringInternal($identifier);
     }
 
-    protected function getVersion(): Version
+    #[Override]
+    private function getVersion(): Version
     {
         return Version::Random;
     }
 
-    protected function getUuidClass(): string
+    #[Override]
+    private function getUuidClass(): string
     {
         return UuidV4::class;
     }

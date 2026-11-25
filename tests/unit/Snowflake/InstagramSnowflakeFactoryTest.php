@@ -263,7 +263,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
     {
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Timestamp may not be earlier than the Instagram epoch, 2011-08-24T21:07:01.721Z',
+            'Timestamp may not be earlier than the Instagram epoch, 2011-08-24T21:07:01.721+00:00',
         );
 
         $this->factory->createFromDateTime(new DateTimeImmutable('2011-08-24 21:07:01.720'));
@@ -275,7 +275,7 @@ class InstagramSnowflakeFactoryTest extends TestCase
 
         $this->expectException(InvalidArgument::class);
         $this->expectExceptionMessage(
-            'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272Z',
+            'Instagram Snowflakes cannot have a date-time greater than 2081-04-30T12:54:37.272+00:00',
         );
 
         $factory->createFromDateTime(new DateTimeImmutable('2081-04-30 12:54:37.273'));

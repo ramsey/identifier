@@ -29,9 +29,9 @@ class MicrosoftGuidTest extends TestCase
 {
     use UuidComparisonTests;
 
-    private const GUID_STRING = '27433d43-011d-4a6a-c161-1550863792c9';
-    private const GUID_HEX = '27433d43011d4a6ac1611550863792c9';
-    private const GUID_BYTES = "\x43\x3d\x43\x27\x1d\x01\x6a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9";
+    private const string GUID_STRING = '27433d43-011d-4a6a-c161-1550863792c9';
+    private const string GUID_HEX = '27433d43011d4a6ac1611550863792c9';
+    private const string GUID_BYTES = "\x43\x3d\x43\x27\x1d\x01\x6a\x4a\xc1\x61\x15\x50\x86\x37\x92\xc9";
 
     private Uuid\MicrosoftGuid $guidWithString;
     private Uuid\MicrosoftGuid $guidWithHex;

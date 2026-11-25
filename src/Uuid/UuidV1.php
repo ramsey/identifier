@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\NodeBasedUuid;
 use Ramsey\Identifier\TimeBasedUuid;
 use Ramsey\Identifier\Uuid\Internal\NodeBased;
@@ -43,6 +44,7 @@ final readonly class UuidV1 implements NodeBasedUuid, TimeBasedUuid
     use NodeBased;
     use TimeBased;
 
+    #[Override]
     public function getVersion(): Version
     {
         return Version::GregorianTime;

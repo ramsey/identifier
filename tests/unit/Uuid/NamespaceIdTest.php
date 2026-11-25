@@ -25,23 +25,23 @@ class NamespaceIdTest extends TestCase
     {
         return [
             [
-                'value' => '6ba7b810-9dad-11d1-80b4-00c04fd430c8',
+                'value' => "\x6b\xa7\xb8\x10\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8",
                 'expectedCase' => 'Dns',
             ],
             [
-                'value' => '6ba7b812-9dad-11d1-80b4-00c04fd430c8',
+                'value' => "\x6b\xa7\xb8\x12\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8",
                 'expectedCase' => 'Oid',
             ],
             [
-                'value' => '6ba7b811-9dad-11d1-80b4-00c04fd430c8',
+                'value' => "\x6b\xa7\xb8\x11\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8",
                 'expectedCase' => 'Url',
             ],
             [
-                'value' => '6ba7b814-9dad-11d1-80b4-00c04fd430c8',
+                'value' => "\x6b\xa7\xb8\x14\x9d\xad\x11\xd1\x80\xb4\x00\xc0\x4f\xd4\x30\xc8",
                 'expectedCase' => 'X500',
             ],
             [
-                'value' => '47fbdabb-f2e4-55f0-bb39-3620c2f6df4e',
+                'value' => "\x47\xfb\xda\xbb\xf2\xe4\x55\xf0\xbb\x39\x36\x20\xc2\xf6\xdf\x4e",
                 'expectedCase' => 'CborPen',
             ],
         ];

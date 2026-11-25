@@ -53,10 +53,10 @@ use function var_export;
  */
 class ComparisonRulesTest extends TestCase
 {
-    private const SHARED_UUID = '017f22e2-79b0-7cc3-98c4-dc0c0c07398f';
-    private const SHARED_HEX = '017f22e279b07cc398c4dc0c0c07398f';
-    private const SHARED_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
-    private const SHARED_FIRST_EIGHT_BYTES_AS_INTEGER = 107843272179743939;
+    private const string SHARED_UUID = '017f22e2-79b0-7cc3-98c4-dc0c0c07398f';
+    private const string SHARED_HEX = '017f22e279b07cc398c4dc0c0c07398f';
+    private const string SHARED_BYTES = "\x01\x7f\x22\xe2\x79\xb0\x7c\xc3\x98\xc4\xdc\x0c\x0c\x07\x39\x8f";
+    private const int SHARED_FIRST_EIGHT_BYTES_AS_INTEGER = 107843272179743939;
 
     public function testAnIdentifierIsEqualToItself(): void
     {

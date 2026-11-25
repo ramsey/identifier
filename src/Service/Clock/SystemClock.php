@@ -26,6 +26,7 @@ declare(strict_types=1);
 namespace Ramsey\Identifier\Service\Clock;
 
 use DateTimeImmutable;
+use Override;
 use Psr\Clock\ClockInterface as Clock;
 
 /**
@@ -33,6 +34,7 @@ use Psr\Clock\ClockInterface as Clock;
  */
 final class SystemClock implements Clock
 {
+    #[Override]
     public function now(): DateTimeImmutable
     {
         return new DateTimeImmutable('now');

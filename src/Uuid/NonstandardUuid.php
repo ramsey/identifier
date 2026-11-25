@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Uuid;
 
+use Override;
 use Ramsey\Identifier\Exception\BadMethodCall;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Uuid;
@@ -78,6 +79,7 @@ final readonly class NonstandardUuid implements Uuid
         $this->variant = $variant;
     }
 
+    #[Override]
     public function getVariant(): Variant
     {
         return $this->variant;
@@ -86,6 +88,7 @@ final readonly class NonstandardUuid implements Uuid
     /**
      * @throws BadMethodCall
      */
+    #[Override]
     public function getVersion(): never
     {
         throw new BadMethodCall('Nonstandard UUIDs do not have a version field');

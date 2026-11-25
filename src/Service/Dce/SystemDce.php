@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Dce;
 
+use Override;
 use Psr\SimpleCache\CacheException;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Exception\InvalidArgument;
@@ -60,7 +61,7 @@ final class SystemDce implements Dce
      * hash('adler32', SystemDce::class . 'GID');
      * ```
      */
-    private const GID_CACHE_KEY = '__ramsey_id_63ba1027';
+    private const string GID_CACHE_KEY = '__ramsey_id_63ba1027';
 
     /**
      * The cache key is generated from the Adler-32 checksum of this class name
@@ -70,7 +71,7 @@ final class SystemDce implements Dce
      * hash('adler32', SystemDce::class . 'UID');
      * ```
      */
-    private const UID_CACHE_KEY = '__ramsey_id_63e41035';
+    private const string UID_CACHE_KEY = '__ramsey_id_63e41035';
 
     /**
      * Pattern to match the SID of a built-in local group, S-1-5-32-RID, or of
@@ -78,7 +79,7 @@ final class SystemDce implements Dce
      *
      * Each number is written as Windows writes it, with no leading zero.
      */
-    private const WINDOWS_GROUP_SID_PATTERN = '/^S-1-5-(32|21(?:-(?:0|[1-9]\d*)){3})-(0|[1-9]\d{0,9})$/D';
+    private const string WINDOWS_GROUP_SID_PATTERN = '/^S-1-5-(32|21(?:-(?:0|[1-9]\d*)){3})-(0|[1-9]\d{0,9})$/D';
 
     /**
      * @var int<0, 4294967295> | null
@@ -112,6 +113,7 @@ final class SystemDce implements Dce
     /**
      * @throws DceIdentifierNotFound if unable to get a system group ID
      */
+    #[Override]
     public function groupId(): int
     {
         if (self::$groupId === null) {
@@ -139,6 +141,7 @@ final class SystemDce implements Dce
      * @throws DceIdentifierNotFound if an org identifier was not provided upon
      *     instantiation
      */
+    #[Override]
     public function orgId(): int
     {
         if ($this->orgId === null) {
@@ -154,6 +157,7 @@ final class SystemDce implements Dce
     /**
      * @throws DceIdentifierNotFound if unable to get a system user ID
      */
+    #[Override]
     public function userId(): int
     {
         if (self::$userId === null) {

@@ -25,6 +25,7 @@ declare(strict_types=1);
 
 namespace Ramsey\Identifier\Service\Sequence;
 
+use Override;
 use Psr\SimpleCache\CacheInterface;
 use Ramsey\Identifier\Service\Cache\InMemoryCache;
 
@@ -49,7 +50,7 @@ final class MonotonicSequence implements Sequence
      * hash('adler32', MonotonicSequence::class);
      * ```
      */
-    private const CACHE_KEY = '__ramsey_id_259414de';
+    private const string CACHE_KEY = '__ramsey_id_259414de';
 
     /**
      * The current value of the sequence for calls without a state
@@ -73,6 +74,7 @@ final class MonotonicSequence implements Sequence
         $this->value = $start;
     }
 
+    #[Override]
     public function current(?string $state = null): int
     {
         if ($state === null) {
@@ -83,6 +85,7 @@ final class MonotonicSequence implements Sequence
         return $this->cache->get($this->generateCacheKey($state), $this->start);
     }
 
+    #[Override]
     public function next(?string $state = null): int
     {
         $previous = $this->current($state);
