@@ -164,6 +164,8 @@ trait Validation
      */
     private function isValid(string $uuid, Format $format): bool
     {
+        // For 16 bytes, read the variant and the version from the two bytes
+        // that hold them. The result is the same as that of the checks below.
         if ($format === Format::Bytes) {
             return strlen($uuid) === 16
                 && (ord($uuid[8]) & 0xc0) === 0x80
