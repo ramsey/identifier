@@ -72,9 +72,7 @@ final class UuidV7Factory implements TimeBasedUuidFactory
             ));
         }
 
-        $bytes = $this->bytesGenerator->bytes(dateTime: $dateTime);
-
-        return UuidV7::fromRawBytes($bytes);
+        return UuidV7::fromRawBytes($this->bytesGenerator->bytes(dateTime: $dateTime));
     }
 
     /**

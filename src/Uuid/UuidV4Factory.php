@@ -50,9 +50,7 @@ final class UuidV4Factory implements UuidFactoryInterface
     #[Override]
     public function create(): UuidV4
     {
-        $bytes = $this->bytesGenerator->bytes();
-
-        return UuidV4::fromRawBytes($bytes);
+        return UuidV4::fromRawBytes($this->bytesGenerator->bytes());
     }
 
     /**

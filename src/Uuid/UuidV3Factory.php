@@ -55,9 +55,7 @@ final class UuidV3Factory implements UuidFactoryInterface
             throw new InvalidArgument('When creating version 3 UUIDs, the name cannot be null');
         }
 
-        $bytes = hash('md5', Binary::getNetworkBytes($namespace) . $name, true);
-
-        return UuidV3::fromRawBytes($bytes);
+        return UuidV3::fromRawBytes(hash('md5', Binary::getNetworkBytes($namespace) . $name, true));
     }
 
     /**
