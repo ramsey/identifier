@@ -10,6 +10,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use Ramsey\Identifier\Exception\InvalidArgument;
 use Ramsey\Identifier\Service\Clock\FrozenClock;
 use Ramsey\Identifier\Service\Clock\FrozenClockSequence;
+use Ramsey\Identifier\Service\Nic\Nic;
 use Ramsey\Identifier\Service\Nic\StaticNic;
 use Ramsey\Identifier\Uuid\UuidV6Factory;
 use Ramsey\Test\Identifier\TestCase;
@@ -249,5 +250,20 @@ class UuidV6FactoryTest extends TestCase
         $uuid = $this->factory->create(clockSequence: 0x4001);
 
         $this->assertSame('8001', substr($uuid->toString(), 19, 4));
+    }
+
+    public function testCreateThrowsExceptionWhenTheNicReturnsAnAddressOfTheWrongLength(): void
+    {
+        $nic = $this->mockery(Nic::class);
+        $nic->expects('address')->andReturn('0123456789abcd');
+
+        $factory = new UuidV6Factory(nic: $nic);
+
+        $this->expectException(InvalidArgument::class);
+        $this->expectExceptionMessage(
+            'When applying the version and variant bits, the bytes must be a 16-byte octet string',
+        );
+
+        $factory->create();
     }
 }

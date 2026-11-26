@@ -129,6 +129,7 @@ class FromRawBytesTest extends TestCase
         $uuid = $class::fromRawBytes($bytes);
         $unserialized = unserialize(serialize($uuid));
 
+        $this->assertSame(serialize(new $class($uuid->toBytes())), serialize($uuid));
         $this->assertInstanceOf($class, $unserialized);
         $this->assertSame($expectedHex, $unserialized->toHexadecimal());
         $this->assertTrue($uuid->equals($unserialized));
