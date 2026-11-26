@@ -260,17 +260,16 @@ final readonly class MicrosoftGuid implements NodeBasedUuid, TimeBasedUuid
     public function toRfc(): UuidV1 | UuidV2 | UuidV3 | UuidV4 | UuidV5 | UuidV6 | UuidV7 | UuidV8
     {
         $bytes = $this->swapBytes($this->toBytes());
-        $bytes = Binary::applyVersionAndVariant($bytes, $this->getVersion());
 
         return match ($this->getVersion()) {
-            Version::V1 => new UuidV1($bytes),
-            Version::V2 => new UuidV2($bytes),
-            Version::V3 => new UuidV3($bytes),
-            Version::V4 => new UuidV4($bytes),
-            Version::V5 => new UuidV5($bytes),
-            Version::V6 => new UuidV6($bytes),
-            Version::V7 => new UuidV7($bytes),
-            Version::V8 => new UuidV8($bytes),
+            Version::V1 => UuidV1::fromRawBytes($bytes),
+            Version::V2 => new UuidV2(Binary::applyVersionAndVariant($bytes, Version::V2)),
+            Version::V3 => UuidV3::fromRawBytes($bytes),
+            Version::V4 => UuidV4::fromRawBytes($bytes),
+            Version::V5 => UuidV5::fromRawBytes($bytes),
+            Version::V6 => UuidV6::fromRawBytes($bytes),
+            Version::V7 => UuidV7::fromRawBytes($bytes),
+            Version::V8 => UuidV8::fromRawBytes($bytes),
         };
     }
 
